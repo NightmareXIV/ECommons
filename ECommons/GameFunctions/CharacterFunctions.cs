@@ -16,5 +16,10 @@ namespace ECommons.GameFunctions
             if (v == IntPtr.Zero) return false;
             return Bitmask.IsBitSet(*(byte*)(v + 136), 0);
         }
+
+        public static int GetModelId(this Character a)
+        {
+            return *(int*)(a.Address + 0x01B4);
+        }
     }
 }

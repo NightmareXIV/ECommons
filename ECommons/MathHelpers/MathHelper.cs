@@ -16,7 +16,7 @@ namespace ECommons.MathHelpers
             return ((MathF.Atan2(vector2.Z, vector2.X) - MathF.Atan2(vector1.Y, vector1.X)) * (180 / MathF.PI) + 360+180) % 360;
         }
 
-        public static CardinalDirection GetQuadrant(Vector3 origin, Vector3 target)
+        public static CardinalDirection GetCardinalDirection(Vector3 origin, Vector3 target)
         {
             return GetCardinalDirection(GetRelativeAngle(origin, target));
         }
