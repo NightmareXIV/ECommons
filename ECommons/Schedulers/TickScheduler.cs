@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ballerina
+namespace ECommons.Schedulers
 {
     public class TickScheduler : IDisposable
     {
@@ -17,7 +17,7 @@ namespace Ballerina
 
         public TickScheduler(Action function, long delayMS = 0)
         {
-            this.executeAt = Environment.TickCount64 + delayMS;
+            executeAt = Environment.TickCount64 + delayMS;
             this.function = function;
             Svc.Framework.Update += Execute;
         }
@@ -42,7 +42,7 @@ namespace Ballerina
             {
                 PluginLog.Error(e.Message + "\n" + e.StackTrace ?? "");
             }
-            this.Dispose();
+            Dispose();
         }
     }
 }

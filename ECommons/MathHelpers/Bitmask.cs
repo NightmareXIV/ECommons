@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommons.Math
+namespace ECommons.MathHelpers
 {
     public static class Bitmask
     {
