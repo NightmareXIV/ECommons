@@ -49,5 +49,43 @@ namespace ECommons.GameFunctions
             }
             return num;
         }
+
+        public static bool TryGetPartyMemberObjectByObjectId(uint objectId, out GameObject partyMemberObject)
+        {
+            if (objectId == Svc.ClientState.LocalPlayer?.ObjectId)
+            {
+                partyMemberObject = Svc.ClientState.LocalPlayer;
+                return true;
+            }
+            foreach (var p in Svc.Party)
+            {
+                if (p.GameObject?.ObjectId == objectId)
+                {
+                    partyMemberObject = p.GameObject;
+                    return true;
+                }
+            }
+            partyMemberObject = default;
+            return false;
+        }
+
+        public static bool TryGetPartyMemberObjectByAddress(IntPtr address, out GameObject partyMemberObject)
+        {
+            if (address == Svc.ClientState.LocalPlayer?.Address)
+            {
+                partyMemberObject = Svc.ClientState.LocalPlayer;
+                return true;
+            }
+            foreach (var p in Svc.Party)
+            {
+                if (p.GameObject?.Address == address)
+                {
+                    partyMemberObject = p.GameObject;
+                    return true;
+                }
+            }
+            partyMemberObject = default;
+            return false;
+        }
     }
 }
