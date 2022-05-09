@@ -13,7 +13,7 @@ namespace ECommons
     {
         public static void Init(DalamudPluginInterface pluginInterface)
         {
-            pluginInterface.Create<Svc>();
+            Svc.Init(pluginInterface);
             ObjectFunctions.Init();
         }
     }
