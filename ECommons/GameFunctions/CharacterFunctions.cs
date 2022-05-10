@@ -21,5 +21,14 @@ namespace ECommons.GameFunctions
         {
             return *(int*)(a.Address + 0x01B4);
         }
+
+        public static CombatRole GetRole(this Character c)
+        {
+            if (c.ClassJob.GameData.Role == 1) return CombatRole.Tank;
+            if (c.ClassJob.GameData.Role == 2) return CombatRole.DPS;
+            if (c.ClassJob.GameData.Role == 3) return CombatRole.DPS;
+            if (c.ClassJob.GameData.Role == 4) return CombatRole.Healer;
+            return CombatRole.NonCombat;
+        }
     }
 }
