@@ -51,7 +51,7 @@ namespace ECommons.ImGuiMethods
         {
             base.PreDraw();
             ImGui.SetNextWindowPos(new Vector2(ImGuiHelpers.MainViewport.Size.X / 2 - pos.X / 2,
-                TopOffset ?? ImGuiHelpers.MainViewport.Size.Y / 2 - pos.Y / 2));
+                TopOffset ?? ImGuiHelpers.MainViewport.Size.Y / 3));
             if (bgCol.HasValue) ImGui.PushStyleColor(ImGuiCol.WindowBg, bgCol.Value);
         }
 
