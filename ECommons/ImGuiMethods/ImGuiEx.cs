@@ -14,7 +14,7 @@ namespace ECommons.ImGuiMethods
 {
     public static class ImGuiEx
     {
-        public static void ImGuiEnumCombo<T>(string name, ref T refConfigField, string[] overrideNames = null) where T : IConvertible
+        public static void EnumCombo<T>(string name, ref T refConfigField, string[] overrideNames = null) where T : IConvertible
         {
             var values = overrideNames ?? Enum.GetValues(typeof(T)).Cast<T>().Select(x => x.ToString().Replace("_", " ")).ToArray();
             var num = Convert.ToInt32(refConfigField);
@@ -22,7 +22,7 @@ namespace ECommons.ImGuiMethods
             refConfigField = Enum.GetValues(typeof(T)).Cast<T>().ToArray()[num];
         }
 
-        public static bool ImGuiIconButton(FontAwesomeIcon icon, string id = "ECommonsButton")
+        public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton")
         {
             ImGui.PushFont(UiBuilder.IconFont);
             var result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{id}");
@@ -62,6 +62,15 @@ namespace ECommons.ImGuiMethods
             if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
             {
                 ImGui.SetClipboardText(text);
+                Svc.PluginInterface.UiBuilder.AddNotification("Text copied to clipboard", null, NotificationType.Success);
+            }
+        }
+
+        public static void ButtonCopy(string buttonText, string copy)
+        {
+            if(ImGui.Button(buttonText.Replace("$COPY", copy)))
+            {
+                ImGui.SetClipboardText(copy);
                 Svc.PluginInterface.UiBuilder.AddNotification("Text copied to clipboard", null, NotificationType.Success);
             }
         }
