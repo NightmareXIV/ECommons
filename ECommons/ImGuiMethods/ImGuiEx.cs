@@ -52,6 +52,18 @@ namespace ECommons.ImGuiMethods
             }
         }
 
+        public static void InputUint(string name, ref uint uInt)
+        {
+            var text = $"{uInt}";
+            if (ImGui.InputText(name, ref text, 16))
+            {
+                if (uint.TryParse(text, out var num))
+                {
+                    uInt = num;
+                }
+            }
+        }
+
         public static void TextCopy(string text)
         {
             ImGui.TextUnformatted(text);
