@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ECommons.ImGuiMethods
 {
-    public class TimedMiddleOverlayWindow : Window
+    public class TimedMiddleOverlayWindow : Window, IDisposable
     {
         int? TopOffset = null;
         Vector4? bgCol = null;
@@ -19,6 +19,7 @@ namespace ECommons.ImGuiMethods
         WindowSystem ws = new();
         Action draw;
         long destroyAt;
+        bool disposed = false;
         public TimedMiddleOverlayWindow(string name, long destroyAfterMS, Action draw, int? topOffset = null, Vector4? bgCol = null) : base(name, ImGuiWindowFlags.NoInputs
             | ImGuiWindowFlags.NoNav
             | ImGuiWindowFlags.NoTitleBar
@@ -65,6 +66,15 @@ namespace ECommons.ImGuiMethods
         {
             if(Environment.TickCount64 > destroyAt)
             {
+                Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!disposed)
+            {
+                disposed = true;
                 Svc.PluginInterface.UiBuilder.Draw -= ws.Draw;
                 ws.RemoveWindow(this);
             }
