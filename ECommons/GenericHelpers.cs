@@ -49,5 +49,24 @@ namespace ECommons
                 return false;
             }
         }
+
+        public static bool EqualsAny<T>(this T obj, params T[] values)
+        {
+            return values.Any(x => x.Equals(obj));
+        }
+
+        public static bool TryGetFirst<K, V>(this IDictionary<K, V> dictionary, Func<KeyValuePair<K, V>, bool> predicate, out KeyValuePair<K, V> keyValuePair)
+        {
+            try
+            {
+                keyValuePair = dictionary.First(predicate);
+                return true;
+            }
+            catch(Exception)
+            {
+                keyValuePair = default;
+                return false;
+            }
+        }
     }
 }

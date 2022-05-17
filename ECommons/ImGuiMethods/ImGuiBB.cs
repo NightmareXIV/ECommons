@@ -15,11 +15,11 @@ namespace ECommons.ImGuiMethods
     {
         static Dictionary<int, List<Action>> Cache = new();
 
-        public static void Text(string str)
+        public static void Text(string str, bool ignoreCache = false)
         {
             Safe(delegate
             {
-                var result = Regex.Split(str, @"(\[color=[0-9a-z#]+\])|(\[\/color\])|(\[size=[0-9\.\,]+\])|(\[\/size\])|(\n)", RegexOptions.IgnoreCase);
+                var result = Regex.Split(str, @"(\[color=[0-9a-z#]+\])|(\[\/color\])|(\[size=[0-9\.\,]+\])|(\[\/size\])|(\[img\].*?\[\/img\])|(\n)", RegexOptions.IgnoreCase);
                 var first = false;
                 foreach (var s in result)
                 {
@@ -63,6 +63,23 @@ namespace ECommons.ImGuiMethods
                     else if (s.Equals("[/size]", StringComparison.OrdinalIgnoreCase))
                     {
                         ImGui.SetWindowFontScale(1f);
+                    }
+                    else if (s.StartsWith("[img]", StringComparison.OrdinalIgnoreCase))
+                    {
+                        
+                        var imageUrl = s[5..^6];
+                        if (ThreadLoadImageHandler.TryGetTextureWrap(imageUrl, out var texture))
+                        {
+                            if (first)
+                            {
+                                ImGui.SameLine(0, 0);
+                            }
+                            else
+                            {
+                                first = true;
+                            }
+                            ImGui.Image(texture.ImGuiHandle, new(texture.Width, texture.Height));
+                        }
                     }
                     else
                     {
