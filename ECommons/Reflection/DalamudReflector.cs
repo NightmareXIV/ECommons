@@ -1,4 +1,5 @@
-﻿using Dalamud.Logging;
+﻿using Dalamud.Game.ClientState.Keys;
+using Dalamud.Logging;
 using Dalamud.Plugin;
 using ECommons.DalamudServices;
 using System;
@@ -12,6 +13,22 @@ namespace ECommons.Reflection
 {
     public static class DalamudReflector
     {
+        delegate ref int GetRefValue(int vkCode);
+        static GetRefValue getRefValue;
+
+        internal static void Init()
+        {
+            getRefValue = (GetRefValue)Delegate.CreateDelegate(typeof(GetRefValue), Svc.KeyState,
+                        Svc.KeyState.GetType().GetMethod("GetRefValue",
+                        BindingFlags.NonPublic | BindingFlags.Instance,
+                        null, new Type[] { typeof(int) }, null));
+        }
+
+        public static void SetKeyState(VirtualKey key, int state)
+        {
+            getRefValue((int)key) = state;
+        }
+
         public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false)
         {
             try

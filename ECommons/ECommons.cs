@@ -1,6 +1,7 @@
 ﻿using Dalamud.Plugin;
 using ECommons.DalamudServices;
 using ECommons.GameFunctions;
+using ECommons.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,9 @@ namespace ECommons
     {
         public static void Init(DalamudPluginInterface pluginInterface)
         {
-            Svc.Init(pluginInterface);
-            ObjectFunctions.Init();
+            GenericHelpers.Safe(() => Svc.Init(pluginInterface));
+            GenericHelpers.Safe(ObjectFunctions.Init);
+            GenericHelpers.Safe(DalamudReflector.Init);
         }
     }
 }
