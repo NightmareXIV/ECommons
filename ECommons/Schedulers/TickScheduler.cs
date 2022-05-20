@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ECommons.Schedulers
 {
-    public class TickScheduler : IDisposable
+    public class TickScheduler : IScheduler
     {
         long executeAt;
         Action function;

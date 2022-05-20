@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ECommons.Schedulers
 {
-    public class ExecuteForScheduler : IDisposable
+    public class ExecuteForScheduler : IScheduler
     {
         long stopExecAt;
         Action function;

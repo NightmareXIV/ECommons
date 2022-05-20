@@ -12,11 +12,31 @@ namespace ECommons
 {
     public static class ECommons
     {
+        static ContextMenu.ContextMenu contextMenu;
+
         public static void Init(DalamudPluginInterface pluginInterface)
         {
             GenericHelpers.Safe(() => Svc.Init(pluginInterface));
             GenericHelpers.Safe(ObjectFunctions.Init);
             GenericHelpers.Safe(DalamudReflector.Init);
+        }
+
+        public static void InitContextMenu()
+        {
+            contextMenu = new();
+        }
+
+        public static void Dispose()
+        {
+            foreach(var x in ImGuiMethods.ThreadLoadImageHandler.CachedTextures)
+            {
+                GenericHelpers.Safe(x.Value.texture.Dispose);
+            }
+            GenericHelpers.Safe(ImGuiMethods.ThreadLoadImageHandler.CachedTextures.Clear);
+            if (contextMenu != null)
+            {
+                GenericHelpers.Safe(contextMenu.Dispose);
+            }
         }
     }
 }

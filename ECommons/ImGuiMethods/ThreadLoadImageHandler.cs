@@ -15,8 +15,7 @@ namespace ECommons.ImGuiMethods
 {
     internal class ThreadLoadImageHandler
     {
-        //todo: add disposing
-        static ConcurrentDictionary<string, ImageLoadingResult> CachedTextures = new();
+        internal static ConcurrentDictionary<string, ImageLoadingResult> CachedTextures = new();
         static volatile bool ThreadRunning = false;
         static HttpClient httpClient = new()
         {
