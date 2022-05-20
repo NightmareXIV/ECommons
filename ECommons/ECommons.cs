@@ -21,11 +21,6 @@ namespace ECommons
             GenericHelpers.Safe(DalamudReflector.Init);
         }
 
-        public static void InitContextMenu()
-        {
-            contextMenu = new();
-        }
-
         public static void Dispose()
         {
             foreach(var x in ImGuiMethods.ThreadLoadImageHandler.CachedTextures)
@@ -33,10 +28,6 @@ namespace ECommons
                 GenericHelpers.Safe(x.Value.texture.Dispose);
             }
             GenericHelpers.Safe(ImGuiMethods.ThreadLoadImageHandler.CachedTextures.Clear);
-            if (contextMenu != null)
-            {
-                GenericHelpers.Safe(contextMenu.Dispose);
-            }
         }
     }
 }

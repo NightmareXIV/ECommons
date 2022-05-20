@@ -138,7 +138,7 @@ namespace ECommons.ContextMenu
         UiAlloc uiAlloc;
 
 
-        internal ContextMenu()
+        public ContextMenu()
         {
             uiAlloc = new(Svc.SigScanner);
             this.Language = Svc.ClientState.ClientLanguage;
