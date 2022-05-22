@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+#pragma warning disable
 namespace ECommons.ContextMenu.Inventory {
     /// <summary>
     /// The arguments for when an inventory context menu is opened

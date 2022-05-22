@@ -1,5 +1,5 @@
 ﻿using System;
-
+#pragma warning disable
 namespace ECommons.ContextMenu.Inventory {
     /// <summary>
     /// The arguments for when an inventory context menu item is selected

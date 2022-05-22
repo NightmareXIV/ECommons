@@ -15,7 +15,7 @@ using Framework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 using ECommons.DalamudServices;
 using Dalamud.Logging;
-
+#pragma warning disable
 namespace ECommons.ContextMenu
 {
     /// <summary>

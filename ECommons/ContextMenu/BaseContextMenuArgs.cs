@@ -1,6 +1,6 @@
 ﻿using System;
 using Dalamud.Game.Text.SeStringHandling;
-
+#pragma warning disable
 namespace ECommons.ContextMenu
 {
     /// <summary>

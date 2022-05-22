@@ -10,10 +10,8 @@ using System.Threading.Tasks;
 
 namespace ECommons
 {
-    public static class ECommons
+    public static class ECommonsMain
     {
-        static ContextMenu.ContextMenu contextMenu;
-
         public static void Init(DalamudPluginInterface pluginInterface)
         {
             GenericHelpers.Safe(() => Svc.Init(pluginInterface));

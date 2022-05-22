@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using Dalamud.Game;
 namespace ECommons.ContextMenu;
-
+#pragma warning disable
 internal class UiAlloc
 {
     private static class Signatures
