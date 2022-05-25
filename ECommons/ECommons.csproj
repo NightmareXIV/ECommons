@@ -22,9 +22,12 @@
 		<DocumentationFile></DocumentationFile>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
-
+	
 	<PropertyGroup>
 		<DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+	</PropertyGroup>
+
+	<PropertyGroup>
 		<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
 		<SignAssembly>False</SignAssembly>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>

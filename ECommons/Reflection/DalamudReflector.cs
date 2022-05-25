@@ -1,4 +1,5 @@
-﻿using Dalamud.Game.ClientState.Keys;
+﻿using Dalamud;
+using Dalamud.Game.ClientState.Keys;
 using Dalamud.Logging;
 using Dalamud.Plugin;
 using ECommons.DalamudServices;
@@ -62,5 +63,23 @@ namespace ECommons.Reflection
                 return false;
             }
         }
+
+        public static bool TryGetDalamudStartInfo(out DalamudStartInfo dalamudStartInfo)
+        {
+            try
+            {
+                var info = Svc.PluginInterface.GetType().Assembly.
+                        GetType("Dalamud.Service`1", true).MakeGenericType(typeof(DalamudStartInfo)).
+                        GetMethod("Get").Invoke(null, BindingFlags.Default, null, Array.Empty<object>(), null);
+                dalamudStartInfo = (DalamudStartInfo)info;
+                return true;
+            }
+            catch (Exception e)
+            {
+                PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
+                dalamudStartInfo = default;
+                return false;
+            }
+        } 
     }
 }

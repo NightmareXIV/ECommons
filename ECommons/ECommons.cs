@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ECommons
 {
-    public static class ECommonsMain
+    public static class ECommons
     {
         public static void Init(DalamudPluginInterface pluginInterface)
         {
