@@ -14,6 +14,15 @@ namespace ECommons.ImGuiMethods
 {
     public static class ImGuiEx
     {
+        public static void InvisibleButton(int width = 0)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, Vector4.Zero);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, Vector4.Zero);
+            ImGui.Button(" ");
+            ImGui.PopStyleColor(3);
+        }
+
         public static void EnumCombo<T>(string name, ref T refConfigField, string[] overrideNames = null) where T : IConvertible
         {
             var values = overrideNames ?? Enum.GetValues(typeof(T)).Cast<T>().Select(x => x.ToString().Replace("_", " ")).ToArray();

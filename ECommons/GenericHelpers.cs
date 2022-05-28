@@ -9,6 +9,16 @@ namespace ECommons
 {
     public static class GenericHelpers
     {
+        public static string Repeat(this string s, int num)
+        {
+            StringBuilder str = new();
+            for(var i = 0; i < num; i++)
+            {
+                str.Append(s);
+            }
+            return str.ToString();
+        }
+
         public static void Safe(Action a)
         {
             try
