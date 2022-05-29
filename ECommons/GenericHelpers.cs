@@ -9,6 +9,42 @@ namespace ECommons
 {
     public static class GenericHelpers
     {
+        public static ushort GetParsedSeSetingColor(int percent)
+        {
+            if(percent < 25)
+            {
+                return 3;
+            }
+            else if(percent < 50)
+            {
+                return 45;
+            }
+            else if(percent < 75)
+            {
+                return 37;
+            }
+            else if(percent < 95)
+            {
+                return 541;
+            }
+            else if(percent < 99)
+            {
+                return 500;
+            }
+            else if (percent == 99)
+            {
+                return 561;
+            }
+            else if (percent == 100)
+            {
+                return 573;
+            }
+            else
+            {
+                return 518;
+            }
+        }
+
         public static string Repeat(this string s, int num)
         {
             StringBuilder str = new();

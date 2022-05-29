@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Dalamud.Interface;
+using Dalamud.Interface.Colors;
 using Dalamud.Interface.Internal.Notifications;
 using ECommons.DalamudServices;
 using ImGuiNET;
@@ -14,6 +15,71 @@ namespace ECommons.ImGuiMethods
 {
     public static class ImGuiEx
     {
+        public static Vector4 GetParsedColor(int percent)
+        {
+            if (percent < 25)
+            {
+                return ImGuiColors.ParsedGrey;
+            }
+            else if (percent < 50)
+            {
+                return ImGuiColors.ParsedGreen;
+            }
+            else if (percent < 75)
+            {
+                return ImGuiColors.ParsedBlue;
+            }
+            else if (percent < 95)
+            {
+                return ImGuiColors.ParsedPurple;
+            }
+            else if (percent < 99)
+            {
+                return ImGuiColors.ParsedOrange;
+            }
+            else if (percent == 99)
+            {
+                return ImGuiColors.ParsedPink;
+            }
+            else if (percent == 100)
+            {
+                return ImGuiColors.ParsedGold;
+            }
+            else
+            {
+                return ImGuiColors.DalamudRed;
+            }
+        }
+
+        public static void EzTabBar(string id, params (string name, Action function, Vector4? color)[] tabs)
+        {
+            ImGui.BeginTabBar(id);
+            foreach(var x in tabs)
+            {
+                if(x.color != null)
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Text, x.color.Value);
+                }
+                if (ImGui.BeginTabItem(x.name))
+                {
+                    if (x.color != null)
+                    {
+                        ImGui.PopStyleColor();
+                    }
+                    x.function();
+                    ImGui.EndTabItem();
+                }
+                else
+                {
+                    if (x.color != null)
+                    {
+                        ImGui.PopStyleColor();
+                    }
+                }
+            }
+            ImGui.EndTabBar();
+        }
+
         public static uint ToUint(this Vector4 color) 
         {
             return ImGui.ColorConvertFloat4ToU32(color);
