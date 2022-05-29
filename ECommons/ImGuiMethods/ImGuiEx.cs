@@ -15,6 +15,46 @@ namespace ECommons.ImGuiMethods
 {
     public static class ImGuiEx
     {
+        public static void Text(string s)
+        {
+            ImGui.TextUnformatted(s);
+        }
+
+        public static void Text(Vector4 col, string s)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, col);
+            ImGui.TextUnformatted(s);
+            ImGui.PopStyleColor();
+        }
+
+        public static void Text(uint col, string s)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, col);
+            ImGui.TextUnformatted(s);
+            ImGui.PopStyleColor();
+        }
+
+        public static void TextWrapped(string s)
+        {
+            ImGui.PushTextWrapPos();
+            ImGui.TextUnformatted(s);
+            ImGui.PopTextWrapPos();
+        }
+
+        public static void TextWrapped(Vector4 col, string s)
+        {
+            ImGui.PushTextWrapPos();
+            ImGuiEx.Text(col, s);
+            ImGui.PopTextWrapPos();
+        }
+
+        public static void TextWrapped(uint col, string s)
+        {
+            ImGui.PushTextWrapPos();
+            ImGuiEx.Text(col, s);
+            ImGui.PopTextWrapPos();
+        }
+
         public static Vector4 GetParsedColor(int percent)
         {
             if (percent < 25)
@@ -51,7 +91,7 @@ namespace ECommons.ImGuiMethods
             }
         }
 
-        public static void EzTabBar(string id, params (string name, Action function, Vector4? color)[] tabs)
+        public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs)
         {
             ImGui.BeginTabBar(id);
             foreach(var x in tabs)
@@ -66,7 +106,9 @@ namespace ECommons.ImGuiMethods
                     {
                         ImGui.PopStyleColor();
                     }
+                    if(x.child) ImGui.BeginChild(x.name + "child");
                     x.function();
+                    if(x.child) ImGui.EndChild();
                     ImGui.EndTabItem();
                 }
                 else
