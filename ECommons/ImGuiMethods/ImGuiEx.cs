@@ -14,6 +14,11 @@ namespace ECommons.ImGuiMethods
 {
     public static class ImGuiEx
     {
+        public static uint ToUint(this Vector4 color) 
+        {
+            return ImGui.ColorConvertFloat4ToU32(color);
+        }
+        
         public static void InvisibleButton(int width = 0)
         {
             ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero);
