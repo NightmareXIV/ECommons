@@ -12,11 +12,14 @@ namespace ECommons
 {
     public static class ECommons
     {
-        public static void Init(DalamudPluginInterface pluginInterface)
+        public static void Init(DalamudPluginInterface pluginInterface, bool initModules = true)
         {
             GenericHelpers.Safe(() => Svc.Init(pluginInterface));
-            GenericHelpers.Safe(ObjectFunctions.Init);
-            GenericHelpers.Safe(DalamudReflector.Init);
+            if (initModules)
+            {
+                GenericHelpers.Safe(ObjectFunctions.Init);
+                GenericHelpers.Safe(DalamudReflector.Init);
+            }
         }
 
         public static void Dispose()

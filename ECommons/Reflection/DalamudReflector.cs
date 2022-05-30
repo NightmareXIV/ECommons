@@ -81,5 +81,15 @@ namespace ECommons.Reflection
                 return false;
             }
         } 
+
+        public static string GetPluginName()
+        {
+            string ret = null;
+            GenericHelpers.Safe(delegate
+            {
+                ret = (string)Svc.PluginInterface.GetType().GetField("pluginName", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Svc.PluginInterface);
+            });
+            return ret;
+        }
     }
 }

@@ -55,7 +55,7 @@ namespace ECommons
             return str.ToString();
         }
 
-        public static void Safe(Action a)
+        public static void Safe(Action a, bool suppressErrors = false)
         {
             try
             {
@@ -63,7 +63,29 @@ namespace ECommons
             }
             catch (Exception e)
             {
-                PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
+                if(!suppressErrors) PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
+            }
+        }
+
+        public static void Safe(Action a, Action<string> fail, bool suppressErrors = false)
+        {
+            try
+            {
+                a();
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    fail(e.Message);
+                }
+                catch(Exception ex)
+                {
+                    PluginLog.Error("Error while trying to process error handler:");
+                    PluginLog.Error($"{ex.Message}\n{ex.StackTrace ?? ""}");
+                    suppressErrors = false;
+                }
+                if (!suppressErrors) PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
             }
         }
 

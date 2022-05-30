@@ -15,6 +15,14 @@ namespace ECommons.ImGuiMethods
 {
     public static class ImGuiEx
     {
+        public static void Tooltip(string s)
+        {
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetTooltip(s);
+            }
+        }
+
         public static void Text(string s)
         {
             ImGui.TextUnformatted(s);
