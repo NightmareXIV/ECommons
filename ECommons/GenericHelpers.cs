@@ -1,6 +1,8 @@
 ﻿using Dalamud.Logging;
+using ECommons.ImGuiMethods;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +11,27 @@ namespace ECommons
 {
     public static class GenericHelpers
     {
+        public static void ShellStart(string s)
+        {
+            Safe(delegate
+            {
+                Process.Start(new ProcessStartInfo()
+                {
+                    FileName = s,
+                    UseShellExecute = true
+                });
+            }, (e) =>
+            {
+                Notify.Error($"Could not open {s.Cut(60)}\n{e}");
+            });
+        }
+
+        public static string Cut(this string s, int num)
+        {
+            if (s.Length <= num) return s;
+            return s[0..num] + "...";
+        }
+
         public static ushort GetParsedSeSetingColor(int percent)
         {
             if(percent < 25)
@@ -53,6 +76,11 @@ namespace ECommons
                 str.Append(s);
             }
             return str.ToString();
+        }
+
+        public static string Join(this IEnumerable<string> e, string separator)
+        {
+            return string.Join(separator, e);
         }
 
         public static void Safe(Action a, bool suppressErrors = false)
@@ -119,6 +147,11 @@ namespace ECommons
         }
 
         public static bool EqualsAny<T>(this T obj, params T[] values)
+        {
+            return values.Any(x => x.Equals(obj));
+        }
+
+        public static bool EqualsAny<T>(this T obj, IEnumerable<T> values)
         {
             return values.Any(x => x.Equals(obj));
         }

@@ -30,5 +30,23 @@ namespace ECommons.GameFunctions
             if (c.ClassJob.GameData.Role == 4) return CombatRole.Healer;
             return CombatRole.NonCombat;
         }
+
+        public static bool IsCasting(this Character c, uint spellId = 0)
+        {
+            var castInfo = ((FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)c.Address)->GetCastInfo();
+            return castInfo->IsCasting != 0 && (spellId == 0 || castInfo->ActionID == spellId);
+        }
+
+        public static bool IsCasting(this Character c, params uint[] spellId)
+        {
+            var castInfo = ((FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)c.Address)->GetCastInfo();
+            return castInfo->IsCasting != 0 && castInfo->ActionID.EqualsAny(spellId);
+        }
+
+        public static bool IsCasting(this Character c, IEnumerable<uint> spellId)
+        {
+            var castInfo = ((FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)c.Address)->GetCastInfo();
+            return castInfo->IsCasting != 0 && castInfo->ActionID.EqualsAny(spellId);
+        }
     }
 }

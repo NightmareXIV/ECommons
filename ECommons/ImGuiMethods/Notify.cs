@@ -36,5 +36,10 @@ namespace ECommons.ImGuiMethods
         {
             Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.None);
         }
+
+        static void SafeNotification(string s, NotificationType type)
+        {
+            
+        }
     }
 }

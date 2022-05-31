@@ -15,6 +15,73 @@ namespace ECommons.ImGuiMethods
 {
     public static class ImGuiEx
     {
+        static Dictionary<string, Box<uint>> InputListValues = new();
+        public static void InputListUint(string name, List<uint> list, Dictionary<uint, string> overrideValues = null)
+        {
+            if (!InputListValues.ContainsKey(name)) InputListValues[name] = new(0);
+            InputList(name, list, overrideValues, delegate
+            {
+                var buttonSize = ImGuiHelpers.GetButtonSize("Add");
+                ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - buttonSize.X - ImGui.GetStyle().ItemSpacing.X);
+                ImGuiEx.InputUint($"##{name.Replace("#", "_")}", ref InputListValues[name].Value);
+                ImGui.SameLine();
+                if (ImGui.Button("Add"))
+                {
+                    list.Add(InputListValues[name].Value);
+                    InputListValues[name].Value = 0;
+                }
+            });
+        }
+
+        public static void InputList<T>(string name, List<T> list, Dictionary<T, string> overrideValues, Action addFunction)
+        {
+            var text = list.Count == 0 ? "- No values -" : (list.Count == 1 ? $"{(overrideValues != null && overrideValues.ContainsKey(list[0]) ? overrideValues[list[0]] : list[0])}" : $"- {list.Count} elements -");
+            if(ImGui.BeginCombo(name, text))
+            {
+                addFunction();
+                var rem = -1;
+                for (var i = 0;i<list.Count;i++)
+                {
+                    var id = $"{name}ECommonsDeleItem{i}";
+                    var x = list[i];
+                    ImGui.Selectable($"{(overrideValues != null && overrideValues.ContainsKey(x) ? overrideValues[x]:x)}");
+                    if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+                    {
+                        ImGui.OpenPopup(id);
+                    }
+                    if (ImGui.BeginPopup(id))
+                    {
+                        if (ImGui.Selectable("Delete##ECommonsDeleItem"))
+                        {
+                            rem = i;
+                        }
+                        if (ImGui.Selectable("Clear (hold shift+ctrl)##ECommonsDeleItem")
+                            && ImGui.GetIO().KeyShift && ImGui.GetIO().KeyCtrl)
+                        {
+                            rem = -2;
+                        }
+                        ImGui.EndPopup();
+                    }
+                }
+                if(rem > -1)
+                {
+                    list.RemoveAt(rem);
+                }
+                if(rem == -2)
+                {
+                    list.Clear();
+                }
+                ImGui.EndCombo();
+            }
+        }
+
+        public static void WithTextColor(Vector4 col, Action func)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, col);
+            GenericHelpers.Safe(func);
+            ImGui.PopStyleColor();
+        }
+
         public static void Tooltip(string s)
         {
             if (ImGui.IsItemHovered())
