@@ -1,6 +1,7 @@
 ﻿using Dalamud.Plugin;
 using ECommons.DalamudServices;
 using ECommons.GameFunctions;
+using ECommons.ObjectLifeTracker;
 using ECommons.Reflection;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace ECommons
             if (initModules)
             {
                 GenericHelpers.Safe(ObjectFunctions.Init);
-                GenericHelpers.Safe(DalamudReflector.Init);
+                GenericHelpers.Safe(DalamudReflector.Init); 
             }
         }
 
@@ -29,6 +30,7 @@ namespace ECommons
                 GenericHelpers.Safe(x.Value.texture.Dispose);
             }
             GenericHelpers.Safe(ImGuiMethods.ThreadLoadImageHandler.CachedTextures.Clear);
+            GenericHelpers.Safe(ObjectLife.Dispose);
         }
     }
 }

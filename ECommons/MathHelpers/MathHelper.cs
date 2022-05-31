@@ -60,7 +60,52 @@ namespace ECommons.MathHelpers
             return CardinalDirection.North;
         }
 
+        public static bool InRange(this double f, double inclusiveStart, double exclusiveEnd)
+        {
+            return f >= inclusiveStart && f < exclusiveEnd;
+        }
+
         public static bool InRange(this float f, float inclusiveStart, float exclusiveEnd)
+        {
+            return f >= inclusiveStart && f < exclusiveEnd;
+        }
+
+        public static bool InRange(this long f, long inclusiveStart, long exclusiveEnd)
+        {
+            return f >= inclusiveStart && f < exclusiveEnd;
+        }
+
+        public static bool InRange(this int f, int inclusiveStart, int exclusiveEnd)
+        {
+            return f >= inclusiveStart && f < exclusiveEnd;
+        }
+
+        public static bool InRange(this short f, short inclusiveStart, short exclusiveEnd)
+        {
+            return f >= inclusiveStart && f < exclusiveEnd;
+        }
+
+        public static bool InRange(this byte f, byte inclusiveStart, byte exclusiveEnd)
+        {
+            return f >= inclusiveStart && f < exclusiveEnd;
+        }
+
+        public static bool InRange(this ulong f, ulong inclusiveStart, ulong exclusiveEnd)
+        {
+            return f >= inclusiveStart && f < exclusiveEnd;
+        }
+
+        public static bool InRange(this uint f, uint inclusiveStart, uint exclusiveEnd)
+        {
+            return f >= inclusiveStart && f < exclusiveEnd;
+        }
+
+        public static bool InRange(this ushort f, ushort inclusiveStart, ushort exclusiveEnd)
+        {
+            return f >= inclusiveStart && f < exclusiveEnd;
+        }
+
+        public static bool InRange(this sbyte f, sbyte inclusiveStart, sbyte exclusiveEnd)
         {
             return f >= inclusiveStart && f < exclusiveEnd;
         }
