@@ -1,6 +1,7 @@
 ﻿using Dalamud.Interface.Internal.Notifications;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
+using ECommons.Schedulers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,32 +15,42 @@ namespace ECommons.ImGuiMethods
     {
         public static void Success(string s)
         {
-            Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Success);
+            _ = new TickScheduler(delegate
+            {
+                Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Success);
+            });
         }
 
         public static void Info(string s)
         {
-            Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Info);
+            _ = new TickScheduler(delegate
+            {
+                Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Info);
+            });
         }
 
         public static void Error(string s)
         {
-            Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Error);
+            _ = new TickScheduler(delegate
+            {
+                Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Error);
+            });
         }
 
         public static void Warning(string s)
         {
-            Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Warning);
+            _ = new TickScheduler(delegate
+            {
+                Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Warning);
+            });
         }
 
         public static void Plain(string s)
         {
-            Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.None);
-        }
-
-        static void SafeNotification(string s, NotificationType type)
-        {
-            
+            _ = new TickScheduler(delegate
+            {
+                Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.None);
+            });
         }
     }
 }
