@@ -1,4 +1,5 @@
-﻿using Dalamud.Plugin;
+﻿using Dalamud.Logging;
+using Dalamud.Plugin;
 using ECommons.DalamudServices;
 using ECommons.GameFunctions;
 using ECommons.ObjectLifeTracker;
@@ -13,13 +14,23 @@ namespace ECommons
 {
     public static class ECommons
     {
-        public static void Init(DalamudPluginInterface pluginInterface, bool initModules = true)
+        public static void Init(DalamudPluginInterface pluginInterface, params Module[] modules)
         {
             GenericHelpers.Safe(() => Svc.Init(pluginInterface));
-            if (initModules)
+            if (modules.ContainsAny(Module.All, Module.ObjectFunctions))
             {
+                PluginLog.Information("Object functions module has been requested");
                 GenericHelpers.Safe(ObjectFunctions.Init);
-                GenericHelpers.Safe(DalamudReflector.Init); 
+            }
+            if (modules.ContainsAny(Module.All, Module.DalamudReflector))
+            {
+                PluginLog.Information("Advanced Dalamud reflection module has been requested");
+                GenericHelpers.Safe(DalamudReflector.Init);
+            }
+            if (modules.ContainsAny(Module.All, Module.ObjectLife))
+            {
+                PluginLog.Information("Object life module has been requested");
+                GenericHelpers.Safe(ObjectLife.Init);
             }
         }
 
@@ -31,6 +42,7 @@ namespace ECommons
             }
             GenericHelpers.Safe(ImGuiMethods.ThreadLoadImageHandler.CachedTextures.Clear);
             GenericHelpers.Safe(ObjectLife.Dispose);
+            GenericHelpers.Safe(DalamudReflector.Dispose);
         }
     }
 }

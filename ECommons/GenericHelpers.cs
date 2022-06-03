@@ -146,6 +146,30 @@ namespace ECommons
             }
         }
 
+        public static bool ContainsAny<T>(this IEnumerable<T> obj, params T[] values)
+        {
+            foreach (var x in values)
+            {
+                if (obj.Contains(x))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool ContainsAny<T>(this IEnumerable<T> obj, IEnumerable<T> values)
+        {
+            foreach (var x in values)
+            {
+                if (obj.Contains(x))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static bool EqualsAny<T>(this T obj, params T[] values)
         {
             return values.Any(x => x.Equals(obj));

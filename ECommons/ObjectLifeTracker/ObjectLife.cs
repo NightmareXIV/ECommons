@@ -16,7 +16,7 @@ namespace ECommons.ObjectLifeTracker
         static Hook<GameObject_ctor> GameObject_ctor_hook = null;
         static Dictionary<IntPtr, long> GameObjectLifeTime = null;
 
-        public static void Init()
+        internal static void Init()
         {
             GameObjectLifeTime = new();
             GameObject_ctor_hook = new(Svc.SigScanner.ScanText("E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 48 8D 35"), GameObject_ctor_detour);
@@ -27,7 +27,7 @@ namespace ECommons.ObjectLifeTracker
             }
         }
 
-        public static void Dispose()
+        internal static void Dispose()
         {
             if (GameObject_ctor_hook != null)
             {
