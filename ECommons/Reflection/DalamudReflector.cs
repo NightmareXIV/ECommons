@@ -109,11 +109,12 @@ namespace ECommons.Reflection
             }
         }
 
-        public static bool TryGetDalamudStartInfo(out DalamudStartInfo dalamudStartInfo)
+        public static bool TryGetDalamudStartInfo(out DalamudStartInfo dalamudStartInfo, DalamudPluginInterface pluginInterface = null)
         {
             try
             {
-                var info = Svc.PluginInterface.GetType().Assembly.
+                if (pluginInterface == null) pluginInterface = Svc.PluginInterface;
+                var info = pluginInterface.GetType().Assembly.
                         GetType("Dalamud.Service`1", true).MakeGenericType(typeof(DalamudStartInfo)).
                         GetMethod("Get").Invoke(null, BindingFlags.Default, null, Array.Empty<object>(), null);
                 dalamudStartInfo = (DalamudStartInfo)info;
