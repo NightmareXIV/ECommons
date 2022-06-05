@@ -10,6 +10,11 @@ namespace ECommons.MathHelpers
 {
     public static class MathHelper
     {
+        public static float Float(this int i)
+        {
+            return (float)i;
+        }
+
         public static Vector2 ToVector2(this Vector3 vector3)
         {
             return new Vector2(vector3.X, vector3.Z);
