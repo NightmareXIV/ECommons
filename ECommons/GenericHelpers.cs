@@ -1,5 +1,7 @@
 ﻿using Dalamud.Logging;
+using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ECommons
 {
-    public static class GenericHelpers
+    public static unsafe class GenericHelpers
     {
         public static void ShellStart(string s)
         {
@@ -192,6 +194,28 @@ namespace ECommons
                 keyValuePair = default;
                 return false;
             }
+        }
+
+        public static bool TryGetAddonByName<T>(string Addon, out T* AddonPtr) where T : unmanaged
+        {
+            var a = Svc.GameGui.GetAddonByName(Addon, 1);
+            if (a == IntPtr.Zero)
+            {
+                AddonPtr = null;
+                return false;
+            }
+            else
+            {
+                AddonPtr = (T*)a;
+                return true;
+            }
+        }
+
+        public static bool IsSelectItemEnabled(AtkTextNode* textNodePtr)
+        {
+            var col = textNodePtr->TextColor;
+            //EEE1C5FF
+            return (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5);
         }
     }
 }
