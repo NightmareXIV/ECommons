@@ -69,5 +69,13 @@
 			<HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
+		<Reference Include="PInvoke.User32">
+			<HintPath>$(DalamudLibPath)PInvoke.User32.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="PInvoke.Windows.Core">
+			<HintPath>$(DalamudLibPath)PInvoke.Windows.Core.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
 	</ItemGroup>
 </Project>

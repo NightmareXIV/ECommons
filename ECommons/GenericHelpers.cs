@@ -1,4 +1,5 @@
-﻿using Dalamud.Logging;
+﻿using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Logging;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -13,6 +14,30 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static bool IsNoConditions()
+        {
+            if (!Svc.Condition[ConditionFlag.NormalConditions]) return false;
+            for(var i = 2; i < 100; i++)
+            {
+                if (Svc.Condition[i]) return false;
+            }
+            return true;
+        }
+
+        public static bool Invert(this bool b, bool invert)
+        {
+            return invert ? !b : b;
+        }
+
+        public static bool ContainsAll<T>(this IEnumerable<T> source, IEnumerable<T> values)
+        {
+            foreach(var x in values)
+            {
+                if (!source.Contains(x)) return false;
+            }
+            return true;
+        }
+
         public static void ShellStart(string s)
         {
             Safe(delegate

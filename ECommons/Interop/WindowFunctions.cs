@@ -1,10 +1,12 @@
-﻿using System;
+﻿using PInvoke;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static ECommons.Interop.WindowFunctionsExtern;
+using System.Windows.Forms;
+using static PInvoke.User32;
 
 namespace ECommons.Interop
 {
@@ -42,6 +44,22 @@ namespace ECommons.Interop
             GetWindowThreadProcessId(activatedHandle, out int activeProcId);
 
             return activeProcId == procId;
+        }
+
+        public static bool SendKeypress(int keycode)
+        {
+            if (TryFindGameWindow(out var hwnd))
+            {
+                User32.SendMessage(hwnd, WindowMessage.WM_KEYDOWN, (IntPtr)keycode, (IntPtr)0);
+                User32.SendMessage(hwnd, WindowMessage.WM_KEYUP, (IntPtr)keycode, (IntPtr)0);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool SendKeypress(Keys key)
+        {
+            return SendKeypress((int)key);
         }
     }
 }
