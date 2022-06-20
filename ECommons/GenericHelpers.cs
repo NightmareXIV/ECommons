@@ -14,6 +14,18 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static void ValidateRange(this ref int i, int min, int max)
+        {
+            if (i > max) i = max;
+            if (i < min) i = min;
+        }
+
+        public static void ValidateRange(this ref float i, float min, float max)
+        {
+            if (i > max) i = max;
+            if (i < min) i = min;
+        }
+
         public static void Log(this Exception e)
         {
             PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
