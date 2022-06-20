@@ -14,6 +14,11 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static void Log(this Exception e)
+        {
+            PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
+        }
+
         public static bool IsNoConditions()
         {
             if (!Svc.Condition[ConditionFlag.NormalConditions]) return false;
