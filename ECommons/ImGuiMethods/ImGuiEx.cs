@@ -15,6 +15,27 @@ namespace ECommons.ImGuiMethods
 {
     public static class ImGuiEx
     {
+        public static void SetNextItemFullWidth()
+        {
+            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
+        }
+
+        static Dictionary<string, float> InputWithRightButtonsAreaValues = new();
+        public static void InputWithRightButtonsArea(string id, Action inputAction, Action rightAction)
+        {
+            if (InputWithRightButtonsAreaValues.ContainsKey(id))
+            {
+                ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - InputWithRightButtonsAreaValues[id]); 
+            }
+            inputAction();
+            ImGui.SameLine();
+            var cur1 = ImGui.GetCursorPosX();
+            rightAction();
+            ImGui.SameLine(0, 0);
+            InputWithRightButtonsAreaValues[id] = ImGui.GetCursorPosX() - cur1 + ImGui.GetStyle().ItemSpacing.X;
+            ImGui.Dummy(Vector2.Zero);
+        }
+
         static Dictionary<string, Box<uint>> InputListValues = new();
         public static void InputListUint(string name, List<uint> list, Dictionary<uint, string> overrideValues = null)
         {
@@ -118,7 +139,7 @@ namespace ECommons.ImGuiMethods
 
         public static void TextWrapped(Vector4 col, string s)
         {
-            ImGui.PushTextWrapPos();
+            ImGui.PushTextWrapPos(0);
             ImGuiEx.Text(col, s);
             ImGui.PopTextWrapPos();
         }
@@ -227,14 +248,14 @@ namespace ECommons.ImGuiMethods
             return result;
         }
 
-        public static float Measure(Action func)
+        public static float Measure(Action func, bool includeSpacing = true)
         {
             var pos = ImGui.GetCursorPosX();
             func();
             ImGui.SameLine(0, 0);
             var diff = ImGui.GetCursorPosX() - pos;
             ImGui.Dummy(Vector2.Zero);
-            return diff;
+            return diff + (includeSpacing?ImGui.GetStyle().ItemSpacing.X:0);
         }
 
         public static void InputHex(string name, ref uint hexInt)

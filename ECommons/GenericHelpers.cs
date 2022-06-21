@@ -135,7 +135,19 @@ namespace ECommons
             }
             catch (Exception e)
             {
-                if(!suppressErrors) PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
+                if (!suppressErrors) PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
+            }
+        }
+
+        public static void Safe(Action a, Action<string, object[]> logAction)
+        {
+            try
+            {
+                a();
+            }
+            catch (Exception e)
+            {
+                logAction($"{e.Message}\n{e.StackTrace ?? ""}", Array.Empty<object>());
             }
         }
 
