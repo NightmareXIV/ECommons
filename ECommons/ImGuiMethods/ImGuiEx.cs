@@ -232,12 +232,19 @@ namespace ECommons.ImGuiMethods
             ImGui.PopStyleColor(3);
         }
 
-        public static void EnumCombo<T>(string name, ref T refConfigField, string[] overrideNames = null) where T : IConvertible
+        public static void EnumCombo<T>(string name, ref T refConfigField) where T : IConvertible
         {
-            var values = overrideNames ?? Enum.GetValues(typeof(T)).Cast<T>().Select(x => x.ToString().Replace("_", " ")).ToArray();
-            var num = Convert.ToInt32(refConfigField);
-            ImGui.Combo(name, ref num, values, values.Length);
-            refConfigField = Enum.GetValues(typeof(T)).Cast<T>().ToArray()[num];
+            if(ImGui.BeginCombo(name, refConfigField.ToString().Replace("_", " ")))
+            {
+                foreach(var x in Enum.GetValues(typeof(T)))
+                {
+                    if(ImGui.Selectable(x.ToString().Replace("_", " ")))
+                    {
+                        refConfigField = (T)x;
+                    }
+                }
+                ImGui.EndCombo();
+            }
         }
 
         public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton")
