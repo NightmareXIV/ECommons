@@ -77,5 +77,13 @@
 			<HintPath>$(DalamudLibPath)PInvoke.Windows.Core.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
+		<Reference Include="SharpDX.Mathematics">
+			<HintPath>$(DalamudLibPath)SharpDX.Mathematics.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Reloaded.Hooks.Definitions">
+			<HintPath>$(DalamudLibPath)Reloaded.Hooks.Definitions.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
 	</ItemGroup>
 </Project>

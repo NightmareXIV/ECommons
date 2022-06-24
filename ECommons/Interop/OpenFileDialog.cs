@@ -22,7 +22,7 @@ namespace ECommons.Interop
         [DllImport("Comdlg32.dll", CharSet = CharSet.Auto)]
         static extern bool GetOpenFileName([In, Out] OpenFileName ofn);
 
-        public void SelectFile(Action<OpenFileName> successCallback, Action cancelCallback = null, string initialDir = null, string title = "Select a file...", IEnumerable<(string Description, IEnumerable<string> Extensions)> fileTypes = null)
+        public static void SelectFile(Action<OpenFileName> successCallback, Action cancelCallback = null, string initialDir = null, string title = "Select a file...", IEnumerable<(string Description, IEnumerable<string> Extensions)> fileTypes = null)
         {
             if (SelectorSemaphore.Wait(0))
             {

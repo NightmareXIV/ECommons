@@ -9,6 +9,9 @@ namespace ECommons
 {
     public unsafe class PointerHelpers
     {
-        
+        public static T* As<T>(IntPtr ptr) where T:unmanaged
+        {
+            return (T*)ptr;
+        }
     }
 }

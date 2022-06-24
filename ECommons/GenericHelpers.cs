@@ -3,10 +3,12 @@ using Dalamud.Logging;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +16,16 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static uint ToUint(this Vector4 color)
+        {
+            return ImGui.ColorConvertFloat4ToU32(color);
+        }
+
+        public static Vector4 ToVector4(this uint color)
+        {
+            return ImGui.ColorConvertU32ToFloat4(color);
+        }
+
         public static void ValidateRange(this ref int i, int min, int max)
         {
             if (i > max) i = max;

@@ -217,11 +217,6 @@ namespace ECommons.ImGuiMethods
             }
             ImGui.EndTabBar();
         }
-
-        public static uint ToUint(this Vector4 color) 
-        {
-            return ImGui.ColorConvertFloat4ToU32(color);
-        }
         
         public static void InvisibleButton(int width = 0)
         {
