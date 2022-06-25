@@ -15,12 +15,12 @@ namespace ECommons.Opcodes
     public static class OpcodeUpdater
     {
         static HttpClient client;
-        public static void DownloadOpcodes(string url, Action<Dictionary<string, uint>> successCallback, Action<HttpStatusCode> failureCallback = null)
+        public static void DownloadOpcodes(string url, Action<Dictionary<string, uint>> successCallback, Action<string> failureCallback = null)
         {
             client ??= new();
             new Thread(() =>
             {
-                GenericHelpers.Safe(() =>
+                try
                 {
                     Dictionary<string, uint> dic = new();
                     PluginLog.Debug($"Opcode list downloading from {url}...");
@@ -29,7 +29,15 @@ namespace ECommons.Opcodes
                     {
                         _ = new TickScheduler(delegate
                         {
-                            failureCallback?.Invoke(result.StatusCode);
+                            var error = $"{(int)result.StatusCode} {result.StatusCode}";
+                            if (failureCallback == null)
+                            {
+                                PluginLog.Warning($"Failed to download opcodes: {error}");
+                            }
+                            else
+                            {
+                                failureCallback(error);
+                            }
                         });
                     }
                     else
@@ -54,7 +62,19 @@ namespace ECommons.Opcodes
                             successCallback(dic);
                         });
                     }
-                });
+                }
+                catch(Exception e)
+                {
+                    var error = $"{e.Message} \n {e.StackTrace ?? ""}";
+                    if(failureCallback == null)
+                    {
+                        PluginLog.Warning($"Failed to download opcodes: {error}");
+                    }
+                    else
+                    {
+                        failureCallback(error);
+                    }
+                }
             }).Start();
         }
     }

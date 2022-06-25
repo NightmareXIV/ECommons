@@ -192,6 +192,7 @@ namespace ECommons.ImGuiMethods
             ImGui.BeginTabBar(id);
             foreach(var x in tabs)
             {
+                if (x.name == null) continue;
                 if(x.color != null)
                 {
                     ImGui.PushStyleColor(ImGuiCol.Text, x.color.Value);
