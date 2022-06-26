@@ -16,6 +16,11 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static Vector4 Invert(this Vector4 v)
+        {
+            return v with { X = 1f - v.X, Y = 1f - v.Y, Z = 1f - v.Z };
+        }
+
         public static uint ToUint(this Vector4 color)
         {
             return ImGui.ColorConvertFloat4ToU32(color);

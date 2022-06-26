@@ -15,6 +15,20 @@ namespace ECommons.ImGuiMethods
 {
     public static class ImGuiEx
     {
+        static readonly Dictionary<string, float> CenteredLineWidths = new();
+        public static void ImGuiLineCentered(string id, Action func)
+        {
+            if (CenteredLineWidths.TryGetValue(id, out var dims))
+            {
+                ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X / 2 - dims / 2);
+            }
+            var oldCur = ImGui.GetCursorPosX();
+            func();
+            ImGui.SameLine(0, 0);
+            CenteredLineWidths[id] = ImGui.GetCursorPosX() - oldCur;
+            ImGui.Dummy(Vector2.Zero);
+        }
+
         public static void SetNextItemFullWidth()
         {
             ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
