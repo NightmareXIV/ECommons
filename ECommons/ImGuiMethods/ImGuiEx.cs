@@ -15,6 +15,13 @@ namespace ECommons.ImGuiMethods
 {
     public static class ImGuiEx
     {
+        public static void SetTooltip(string text)
+        {
+            ImGui.BeginTooltip();
+            ImGui.TextUnformatted(text);
+            ImGui.EndTooltip();
+        }
+
         static readonly Dictionary<string, float> CenteredLineWidths = new();
         public static void ImGuiLineCentered(string id, Action func)
         {
