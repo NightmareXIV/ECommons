@@ -27,7 +27,7 @@ using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using Framework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
-namespace ECommons
+namespace ECommons.Automation
 {
     /// <summary>
     /// A class containing chat functionality
@@ -46,13 +46,13 @@ namespace ECommons
         {
             if (Svc.SigScanner.TryScanText(Signatures.SendChat, out var processChatBoxPtr))
             {
-                this.ProcessChatBox = Marshal.GetDelegateForFunctionPointer<ProcessChatBoxDelegate>(processChatBoxPtr);
+                ProcessChatBox = Marshal.GetDelegateForFunctionPointer<ProcessChatBoxDelegate>(processChatBoxPtr);
             }
             unsafe
             {
                 if (Svc.SigScanner.TryScanText(Signatures.SanitiseString, out var sanitisePtr))
                 {
-                    this._sanitiseString = (delegate* unmanaged<Utf8String*, int, IntPtr, void>)sanitisePtr;
+                    _sanitiseString = (delegate* unmanaged<Utf8String*, int, IntPtr, void>)sanitisePtr;
                 }
             }
         }
@@ -71,7 +71,7 @@ namespace ECommons
         /// <exception cref="InvalidOperationException">If the signature for this function could not be found</exception>
         public unsafe void SendMessageUnsafe(byte[] message)
         {
-            if (this.ProcessChatBox == null)
+            if (ProcessChatBox == null)
             {
                 throw new InvalidOperationException("Could not find signature for chat sending");
             }
@@ -79,7 +79,7 @@ namespace ECommons
             using var payload = new ChatPayload(message);
             var mem1 = Marshal.AllocHGlobal(400);
             Marshal.StructureToPtr(payload, mem1, false);
-            this.ProcessChatBox(uiModule, mem1, IntPtr.Zero, 0);
+            ProcessChatBox(uiModule, mem1, IntPtr.Zero, 0);
             Marshal.FreeHGlobal(mem1);
         }
         /// <summary>
@@ -106,11 +106,11 @@ namespace ECommons
             {
                 throw new ArgumentException("message is longer than 500 bytes", nameof(message));
             }
-            if (message.Length != this.SanitiseText(message).Length)
+            if (message.Length != SanitiseText(message).Length)
             {
                 throw new ArgumentException("message contained invalid characters", nameof(message));
             }
-            this.SendMessageUnsafe(bytes);
+            SendMessageUnsafe(bytes);
         }
         /// <summary>
         /// <para>
@@ -127,12 +127,12 @@ namespace ECommons
         /// <exception cref="InvalidOperationException">If the signature for this function could not be found</exception>
         public unsafe string SanitiseText(string text)
         {
-            if (this._sanitiseString == null)
+            if (_sanitiseString == null)
             {
                 throw new InvalidOperationException("Could not find signature for chat sanitisation");
             }
             var uText = Utf8String.FromString(text);
-            this._sanitiseString(uText, 0x27F, IntPtr.Zero);
+            _sanitiseString(uText, 0x27F, IntPtr.Zero);
             var sanitised = uText->ToString();
             uText->Dtor();
             IMemorySpace.Free(uText);
@@ -151,16 +151,16 @@ namespace ECommons
             private readonly ulong unk2;
             internal ChatPayload(byte[] stringBytes)
             {
-                this.textPtr = Marshal.AllocHGlobal(stringBytes.Length + 30);
-                Marshal.Copy(stringBytes, 0, this.textPtr, stringBytes.Length);
-                Marshal.WriteByte(this.textPtr + stringBytes.Length, 0);
-                this.textLen = (ulong)(stringBytes.Length + 1);
-                this.unk1 = 64;
-                this.unk2 = 0;
+                textPtr = Marshal.AllocHGlobal(stringBytes.Length + 30);
+                Marshal.Copy(stringBytes, 0, textPtr, stringBytes.Length);
+                Marshal.WriteByte(textPtr + stringBytes.Length, 0);
+                textLen = (ulong)(stringBytes.Length + 1);
+                unk1 = 64;
+                unk2 = 0;
             }
             public void Dispose()
             {
-                Marshal.FreeHGlobal(this.textPtr);
+                Marshal.FreeHGlobal(textPtr);
             }
         }
     }
