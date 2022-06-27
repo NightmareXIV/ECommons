@@ -1,5 +1,6 @@
 ﻿using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using System;
@@ -16,7 +17,9 @@ namespace ECommons.GameFunctions
         {
             for(var i = 1; i <= 8; i++)
             {
-                if(pc.Address == (IntPtr)Framework.Instance()->GetUiModule()->GetPronounModule()->ResolvePlaceholder($"<number>", 0, 0))
+                var optr = Framework.Instance()->GetUiModule()->GetPronounModule()->ResolvePlaceholder($"<{i}>", 0, 0);
+                PluginLog.Debug($"Placeholder {i} value {(optr == null ? "null" : optr->ObjectID)}");
+                if (pc.Address == (IntPtr)optr)
                 {
                     number = i;
                     return true;
