@@ -10,6 +10,16 @@ namespace ECommons.GameFunctions
 {
     public static unsafe class CharacterFunctions
     {
+        public static FFXIVClientStructs.FFXIV.Client.Game.Character.Character* Struct(this Character o)
+        {
+            return (FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)o.Address;
+        }
+
+        public static FFXIVClientStructs.FFXIV.Client.Game.Character.BattleChara* Struct(this BattleChara o)
+        {
+            return (FFXIVClientStructs.FFXIV.Client.Game.Character.BattleChara*)o.Address;
+        }
+
         public static bool IsCharacterVisible(this Character chr)
         {
             var v = (IntPtr)(((FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)chr.Address)->GameObject.DrawObject);
