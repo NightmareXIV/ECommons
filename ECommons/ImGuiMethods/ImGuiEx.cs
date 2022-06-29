@@ -254,13 +254,20 @@ namespace ECommons.ImGuiMethods
             ImGui.PopStyleColor(3);
         }
 
-        public static void EnumCombo<T>(string name, ref T refConfigField) where T : IConvertible
+        public static void EnumCombo<T>(string name, ref T refConfigField, Dictionary<T, string> names) where T:IConvertible
         {
-            if(ImGui.BeginCombo(name, refConfigField.ToString().Replace("_", " ")))
+            EnumCombo(name, ref refConfigField, null, names);
+        }
+
+        public static void EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, Dictionary<T, string> names = null) where T : IConvertible
+        {
+            if(ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString().Replace("_", " ")))
             {
                 foreach(var x in Enum.GetValues(typeof(T)))
                 {
-                    if(ImGui.Selectable(x.ToString().Replace("_", " ")))
+                    if((filter == null || filter((T)x)) && ImGui.Selectable(
+                        (names != null && names.TryGetValue((T)x, out n)) ? n : x.ToString().Replace("_", " "))
+                        )
                     {
                         refConfigField = (T)x;
                     }
