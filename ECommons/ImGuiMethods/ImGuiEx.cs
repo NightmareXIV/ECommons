@@ -15,6 +15,11 @@ namespace ECommons.ImGuiMethods
 {
     public static class ImGuiEx
     {
+        public static float Scale(this float f)
+        {
+            return f * ImGuiHelpers.GlobalScale;
+        }
+
         public static void SetTooltip(string text)
         {
             ImGui.BeginTooltip();
