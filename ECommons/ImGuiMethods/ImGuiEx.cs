@@ -254,6 +254,7 @@ namespace ECommons.ImGuiMethods
             ImGui.PopStyleColor(3);
         }
 
+        public static Dictionary<string, Box<string>> EnumComboSearch = new();
         public static void EnumCombo<T>(string name, ref T refConfigField, Dictionary<T, string> names) where T:IConvertible
         {
             EnumCombo(name, ref refConfigField, null, names);
@@ -263,10 +264,21 @@ namespace ECommons.ImGuiMethods
         {
             if(ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString().Replace("_", " ")))
             {
-                foreach(var x in Enum.GetValues(typeof(T)))
+                var values = Enum.GetValues(typeof(T));
+                Box<string> fltr = null;
+                if (values.Length > 10)
                 {
-                    if((filter == null || filter((T)x)) && ImGui.Selectable(
-                        (names != null && names.TryGetValue((T)x, out n)) ? n : x.ToString().Replace("_", " "))
+                    if (!EnumComboSearch.ContainsKey(name)) EnumComboSearch.Add(name, new(""));
+                    fltr = EnumComboSearch[name];
+                    ImGuiEx.SetNextItemFullWidth();
+                    ImGui.InputTextWithHint($"##{name.Replace("#", "_")}", "Filter...", ref fltr.Value, 50);
+                }
+                foreach(var x in values)
+                {
+                    var element = (names != null && names.TryGetValue((T)x, out n)) ? n : x.ToString().Replace("_", " ");
+                    if ((filter == null || filter((T)x))
+                        && (fltr == null || element.Contains(fltr.Value, StringComparison.OrdinalIgnoreCase))
+                        && ImGui.Selectable(element)
                         )
                     {
                         refConfigField = (T)x;
