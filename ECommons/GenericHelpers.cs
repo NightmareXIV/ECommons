@@ -16,6 +16,17 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static bool TryGetWorldByName(string world, out Lumina.Excel.GeneratedSheets.World worldId) 
+        {
+            if(Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.World>().TryGetFirst(x => x.Name.ToString().Equals(world, StringComparison.OrdinalIgnoreCase), out var w))
+            {
+                worldId = w;
+                return true;
+            }
+            worldId = default;
+            return false;
+        }
+
         public static Vector4 Invert(this Vector4 v)
         {
             return v with { X = 1f - v.X, Y = 1f - v.Y, Z = 1f - v.Z };
