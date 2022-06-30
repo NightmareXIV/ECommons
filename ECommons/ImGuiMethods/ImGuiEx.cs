@@ -260,11 +260,14 @@ namespace ECommons.ImGuiMethods
             EnumCombo(name, ref refConfigField, null, names);
         }
 
-        public static void EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, Dictionary<T, string> names = null) where T : IConvertible
+        static Dictionary<string, bool> EnumComboStates = new();
+        public static bool EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, Dictionary<T, string> names = null) where T : IConvertible
         {
-            if(ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString().Replace("_", " ")))
+            var ret = false;
+            if (ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString().Replace("_", " ")))
             {
                 var values = Enum.GetValues(typeof(T));
+                if (!EnumComboStates.ContainsKey(name)) EnumComboStates[name] = false;
                 Box<string> fltr = null;
                 if (values.Length > 10)
                 {
@@ -275,17 +278,26 @@ namespace ECommons.ImGuiMethods
                 }
                 foreach(var x in values)
                 {
+                    var equals = EqualityComparer<T>.Default.Equals((T)x, refConfigField);
                     var element = (names != null && names.TryGetValue((T)x, out n)) ? n : x.ToString().Replace("_", " ");
                     if ((filter == null || filter((T)x))
                         && (fltr == null || element.Contains(fltr.Value, StringComparison.OrdinalIgnoreCase))
-                        && ImGui.Selectable(element)
+                        && ImGui.Selectable(element, equals)
                         )
                     {
+                        ret = true;
                         refConfigField = (T)x;
                     }
+                    if (equals && !EnumComboStates[name]) ImGui.SetScrollHereY();
                 }
                 ImGui.EndCombo();
+                EnumComboStates[name] = true;
             }
+            else
+            {
+                EnumComboStates[name] = false;
+            }
+            return ret;
         }
 
         public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton")
