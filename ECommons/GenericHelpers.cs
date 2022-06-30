@@ -16,6 +16,15 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static IEnumerable<R> SelectMulti<T, R>(this IEnumerable<T> values, params Func<T, R>[] funcs)
+        {
+            foreach(var v in values)
+            foreach(var x in funcs)
+            {
+                    yield return x(v);
+            }
+        }
+
         public static bool TryGetWorldByName(string world, out Lumina.Excel.GeneratedSheets.World worldId) 
         {
             if(Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.World>().TryGetFirst(x => x.Name.ToString().Equals(world, StringComparison.OrdinalIgnoreCase), out var w))
