@@ -64,6 +64,7 @@ namespace ECommons
             if (!Svc.Condition[ConditionFlag.NormalConditions]) return false;
             for(var i = 2; i < 100; i++)
             {
+                if (i == (int)ConditionFlag.ParticipatingInCrossWorldPartyOrAlliance) continue;
                 if (Svc.Condition[i]) return false;
             }
             return true;
