@@ -15,6 +15,11 @@ namespace ECommons.ImGuiMethods
 {
     public static class ImGuiEx
     {
+        public static void Spacing(float pix = 10f, bool accountForScale = true)
+        {
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (accountForScale ? pix : pix * ImGuiHelpers.GlobalScale));
+        }
+
         public static float Scale(this float f)
         {
             return f * ImGuiHelpers.GlobalScale;

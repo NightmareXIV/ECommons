@@ -4,6 +4,7 @@ using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -267,6 +268,11 @@ namespace ECommons
         public static bool EqualsAny<T>(this T obj, params T[] values)
         {
             return values.Any(x => x.Equals(obj));
+}
+
+        public static bool EqualsIgnoreCaseAny(this string obj, params string[] values)
+        {
+            return values.Any(x => x.Equals(obj, StringComparison.OrdinalIgnoreCase));
         }
 
         public static bool EqualsAny<T>(this T obj, IEnumerable<T> values)
