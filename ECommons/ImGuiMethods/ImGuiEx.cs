@@ -313,6 +313,14 @@ namespace ECommons.ImGuiMethods
             return result;
         }
 
+        public static Vector2 CalcIconSize(FontAwesomeIcon icon)
+        {
+            ImGui.PushFont(UiBuilder.IconFont);
+            var result = ImGui.CalcTextSize($"{icon.ToIconString()}");
+            ImGui.PopFont();
+            return result;
+        }
+
         public static float Measure(Action func, bool includeSpacing = true)
         {
             var pos = ImGui.GetCursorPosX();
