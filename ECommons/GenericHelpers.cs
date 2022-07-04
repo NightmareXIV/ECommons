@@ -17,6 +17,16 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static bool EqualsIgnoreCase(this string s, string other)
+        {
+            return s.Equals(other, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool IsNullOrEmpty(this string s)
+        {
+            return string.IsNullOrEmpty(s);
+        }
+
         public static IEnumerable<R> SelectMulti<T, R>(this IEnumerable<T> values, params Func<T, R>[] funcs)
         {
             foreach(var v in values)
