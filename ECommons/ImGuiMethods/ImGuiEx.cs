@@ -265,14 +265,12 @@ namespace ECommons.ImGuiMethods
             EnumCombo(name, ref refConfigField, null, names);
         }
 
-        static Dictionary<string, bool> EnumComboStates = new();
         public static bool EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, Dictionary<T, string> names = null) where T : IConvertible
         {
             var ret = false;
             if (ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString().Replace("_", " ")))
             {
                 var values = Enum.GetValues(typeof(T));
-                if (!EnumComboStates.ContainsKey(name)) EnumComboStates[name] = false;
                 Box<string> fltr = null;
                 if (values.Length > 10)
                 {
@@ -293,14 +291,42 @@ namespace ECommons.ImGuiMethods
                         ret = true;
                         refConfigField = (T)x;
                     }
-                    if (equals && !EnumComboStates[name]) ImGui.SetScrollHereY();
+                    if (ImGui.IsWindowAppearing() && equals) ImGui.SetScrollHereY();
                 }
                 ImGui.EndCombo();
-                EnumComboStates[name] = true;
             }
-            else
+            return ret;
+        }
+
+        public static Dictionary<string, Box<string>> ComboSearch = new();
+        public static bool Combo<T>(string name, ref T refConfigField, IEnumerable<T> values, Func<T, bool> filter = null, Dictionary<T, string> names = null)
+        {
+            var ret = false;
+            if (ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString()))
             {
-                EnumComboStates[name] = false;
+                Box<string> fltr = null;
+                if (values.Count() > 10)
+                {
+                    if (!ComboSearch.ContainsKey(name)) ComboSearch.Add(name, new(""));
+                    fltr = ComboSearch[name];
+                    ImGuiEx.SetNextItemFullWidth();
+                    ImGui.InputTextWithHint($"##{name}fltr", "Filter...", ref fltr.Value, 50);
+                }
+                foreach (var x in values)
+                {
+                    var equals = EqualityComparer<T>.Default.Equals(x, refConfigField);
+                    var element = (names != null && names.TryGetValue(x, out n)) ? n : x.ToString();
+                    if ((filter == null || filter(x))
+                        && (fltr == null || element.Contains(fltr.Value, StringComparison.OrdinalIgnoreCase))
+                        && ImGui.Selectable(element, equals)
+                        )
+                    {
+                        ret = true;
+                        refConfigField = x;
+                    }
+                    if (ImGui.IsWindowAppearing() && equals) ImGui.SetScrollHereY();
+                }
+                ImGui.EndCombo();
             }
             return ret;
         }
