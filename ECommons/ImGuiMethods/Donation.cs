@@ -27,5 +27,11 @@ namespace ECommons.ImGuiMethods
             ImGuiEx.TextWrapped(ImGuiColors.DalamudRed, "Attention! Malware programs may replace crypto wallet address inside your clipboard. ALWAYS double-check destination address before sending any funds.");
 
         }
+
+        public static void DonationTabDraw()
+        {
+            ImGuiEx.TextWrapped("If you have found this plugin useful and wish to thank me for making it, you may send any amount of any of the following cryptocurrencies to any of the following wallets:");
+            PrintDonationInfo();
+        }
     }
 }
