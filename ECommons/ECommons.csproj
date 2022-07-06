@@ -40,6 +40,10 @@
 		<PackageProjectUrl>https://github.com/Eternita-S/ECommons</PackageProjectUrl>
 	</PropertyGroup>
 
+	<PropertyGroup>
+	  <LangVersion>preview</LangVersion>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<Reference Include="Newtonsoft.Json">
 			<HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
