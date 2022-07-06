@@ -252,11 +252,9 @@ namespace ECommons.ImGuiMethods
         
         public static void InvisibleButton(int width = 0)
         {
-            ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero);
-            ImGui.PushStyleColor(ImGuiCol.ButtonActive, Vector4.Zero);
-            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, Vector4.Zero);
+            ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0);
             ImGui.Button(" ");
-            ImGui.PopStyleColor(3);
+            ImGui.PopStyleVar();
         }
 
         public static Dictionary<string, Box<string>> EnumComboSearch = new();

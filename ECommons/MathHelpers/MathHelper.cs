@@ -10,6 +10,26 @@ namespace ECommons.MathHelpers
 {
     public static class MathHelper
     {
+        public static Vector3 RotateWorldPoint(Vector3 origin, float angle, Vector3 p)
+        {
+            if (angle == 0f) return p;
+            var s = (float)Math.Sin(angle);
+            var c = (float)Math.Cos(angle);
+
+            // translate point back to origin:
+            p.X -= origin.X;
+            p.Z -= origin.Z;
+
+            // rotate point
+            float xnew = p.X * c - p.Z * s;
+            float ynew = p.X * s + p.Z * c;
+
+            // translate point back:
+            p.X = xnew + origin.X;
+            p.Z = ynew + origin.Z;
+            return p;
+        }
+
         public static float Float(this int i)
         {
             return (float)i;
