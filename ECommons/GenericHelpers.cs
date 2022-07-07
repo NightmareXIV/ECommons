@@ -17,6 +17,24 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static T FirstOr0<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
+        {
+            foreach(var x in collection)
+            {
+                if (predicate(x))
+                {
+                    return x;
+                }
+            }
+            return collection.First();
+        }
+
+        public static string Default(this string s, string defaultValue)
+        {
+            if (string.IsNullOrEmpty(s)) return defaultValue;
+            return s;
+        }
+
         public static bool EqualsIgnoreCase(this string s, string other)
         {
             return s.Equals(other, StringComparison.OrdinalIgnoreCase);
