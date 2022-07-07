@@ -126,16 +126,16 @@ namespace ECommons.Reflection
                 dalamudStartInfo = default;
                 return false;
             }
-        } 
+        }
 
+        static string pluginName = null;
         public static string GetPluginName()
         {
-            string ret = null;
             GenericHelpers.Safe(delegate
             {
-                ret = (string)Svc.PluginInterface.GetType().GetField("pluginName", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Svc.PluginInterface);
+                pluginName ??= (string)Svc.PluginInterface.GetType().GetField("pluginName", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Svc.PluginInterface);
             });
-            return ret;
+            return pluginName;
         }
 
         internal static void OnInstalledPluginsChanged()
