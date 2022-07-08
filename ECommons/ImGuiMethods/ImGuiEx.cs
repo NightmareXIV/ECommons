@@ -46,9 +46,9 @@ namespace ECommons.ImGuiMethods
             ImGui.Dummy(Vector2.Zero);
         }
 
-        public static void SetNextItemFullWidth()
+        public static void SetNextItemFullWidth(int mod = 0)
         {
-            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
+            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X + mod);
         }
 
         static Dictionary<string, float> InputWithRightButtonsAreaValues = new();
