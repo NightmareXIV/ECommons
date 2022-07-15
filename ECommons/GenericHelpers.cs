@@ -4,6 +4,7 @@ using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
+using Lumina.Excel.GeneratedSheets;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,18 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static IEnumerable<string> Split(this string str, int chunkSize)
+        {
+            return Enumerable.Range(0, str.Length / chunkSize)
+                .Select(i => str.Substring(i * chunkSize, chunkSize));
+        }
+
+        public static string GetTerritoryName(this uint terr)
+        {
+            var t = Svc.Data.GetExcelSheet<TerritoryType>().GetRow(terr);
+            return $"{terr} | {t.ContentFinderCondition.Value.Name.ToString().Default(t.PlaceName.Value.Name.ToString())}";
+        }
+
         public static T FirstOr0<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
         {
             foreach(var x in collection)
@@ -95,6 +108,11 @@ namespace ECommons
         public static void Log(this Exception e)
         {
             PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
+        }
+
+        public static void LogDuo(this Exception e)
+        {
+            DuoLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
         }
 
         public static bool IsNoConditions()
@@ -194,7 +212,7 @@ namespace ECommons
             return string.Join(separator, e);
         }
 
-        public static void Safe(Action a, bool suppressErrors = false)
+        public static void Safe(System.Action a, bool suppressErrors = false)
         {
             try
             {
@@ -206,7 +224,7 @@ namespace ECommons
             }
         }
 
-        public static void Safe(Action a, Action<string, object[]> logAction)
+        public static void Safe(System.Action a, Action<string, object[]> logAction)
         {
             try
             {
@@ -218,7 +236,7 @@ namespace ECommons
             }
         }
 
-        public static void Safe(Action a, Action<string> fail, bool suppressErrors = false)
+        public static void Safe(System.Action a, Action<string> fail, bool suppressErrors = false)
         {
             try
             {
@@ -240,7 +258,7 @@ namespace ECommons
             }
         }
 
-        public static bool TryExecute(Action a)
+        public static bool TryExecute(System.Action a)
         {
             try
             {

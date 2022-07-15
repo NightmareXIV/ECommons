@@ -72,6 +72,13 @@ namespace ECommons.Reflection
                     GetMethod("Get").Invoke(null, BindingFlags.Default, null, Array.Empty<object>(), null);
         }
 
+        public static object GetService(string serviceFullName)
+        {
+            return Svc.PluginInterface.GetType().Assembly.
+                    GetType("Dalamud.Service`1", true).MakeGenericType(Svc.PluginInterface.GetType().Assembly.GetType(serviceFullName, true)).
+                    GetMethod("Get").Invoke(null, BindingFlags.Default, null, Array.Empty<object>(), null);
+        }
+
         public static bool TryGetDalamudPlugin(string internalName, out dynamic instance, bool suppressErrors = false)
         {
             if(pluginCache.TryGetValue(internalName, out instance))

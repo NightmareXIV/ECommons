@@ -367,6 +367,18 @@ namespace ECommons.ImGuiMethods
             }
         }
 
+        public static void InputHex(string name, ref byte hexByte)
+        {
+            var text = $"{hexByte:X}";
+            if (ImGui.InputText(name, ref text, 2))
+            {
+                if (byte.TryParse(text, NumberStyles.HexNumber, null, out var num))
+                {
+                    hexByte = num;
+                }
+            }
+        }
+
         public static void InputUint(string name, ref uint uInt)
         {
             var text = $"{uInt}";
