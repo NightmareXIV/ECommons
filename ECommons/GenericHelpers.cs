@@ -354,6 +354,20 @@ namespace ECommons
             }
         }
 
+        public static bool TryGetLast<K>(this IEnumerable<K> enumerable, Func<K, bool> predicate, out K value)
+        {
+            try
+            {
+                value = enumerable.Last(predicate);
+                return true;
+            }
+            catch (Exception)
+            {
+                value = default;
+                return false;
+            }
+        }
+
         public static bool TryGetAddonByName<T>(string Addon, out T* AddonPtr) where T : unmanaged
         {
             var a = Svc.GameGui.GetAddonByName(Addon, 1);
