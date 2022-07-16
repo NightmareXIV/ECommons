@@ -47,7 +47,7 @@ namespace ECommons.ImGuiMethods
         public static void TextWrapped(Vector4 col, string s)
         {
             ImGui.PushTextWrapPos(0);
-            ImGuiEx.Text(col, s);
+            ImGuiTrans.Text(col, s);
             ImGui.PopTextWrapPos();
         }
     }
