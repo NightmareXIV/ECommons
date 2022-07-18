@@ -17,7 +17,7 @@ namespace ECommons.Reflection
     {
         delegate ref int GetRefValue(int vkCode);
         static GetRefValue getRefValue;
-        static Dictionary<string, dynamic> pluginCache;
+        static Dictionary<string, IDalamudPlugin> pluginCache;
         static List<Action> onPluginsChangedActions;
 
         internal static void Init()
@@ -79,7 +79,7 @@ namespace ECommons.Reflection
                     GetMethod("Get").Invoke(null, BindingFlags.Default, null, Array.Empty<object>(), null);
         }
 
-        public static bool TryGetDalamudPlugin(string internalName, out dynamic instance, bool suppressErrors = false)
+        public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false)
         {
             if(pluginCache.TryGetValue(internalName, out instance))
             {
@@ -95,7 +95,7 @@ namespace ECommons.Reflection
                     if ((string)t.GetType().GetProperty("Name").GetValue(t) == internalName)
                     {
                         var type = t.GetType().Name == "LocalDevPlugin" ? t.GetType().BaseType : t.GetType();
-                        var plugin = (dynamic)type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t);
+                        var plugin = (IDalamudPlugin)type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t);
                         instance = plugin;
                         pluginCache[internalName] = plugin;
                         return true;
