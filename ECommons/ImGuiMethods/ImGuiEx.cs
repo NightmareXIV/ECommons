@@ -67,20 +67,38 @@ namespace ECommons.ImGuiMethods
             ImGui.Dummy(Vector2.Zero);
         }
 
-        static Dictionary<string, Box<uint>> InputListValues = new();
-        public static void InputListUint(string name, List<uint> list, Dictionary<uint, string> overrideValues = null)
+        static Dictionary<string, Box<string>> InputListValuesString = new();
+        public static void InputListString(string name, List<string> list, Dictionary<string, string> overrideValues = null)
         {
-            if (!InputListValues.ContainsKey(name)) InputListValues[name] = new(0);
+            if (!InputListValuesString.ContainsKey(name)) InputListValuesString[name] = new("");
             InputList(name, list, overrideValues, delegate
             {
                 var buttonSize = ImGuiHelpers.GetButtonSize("Add");
                 ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - buttonSize.X - ImGui.GetStyle().ItemSpacing.X);
-                ImGuiEx.InputUint($"##{name.Replace("#", "_")}", ref InputListValues[name].Value);
+                ImGui.InputText($"##{name.Replace("#", "_")}", ref InputListValuesString[name].Value, 100);
                 ImGui.SameLine();
                 if (ImGui.Button("Add"))
                 {
-                    list.Add(InputListValues[name].Value);
-                    InputListValues[name].Value = 0;
+                    list.Add(InputListValuesString[name].Value);
+                    InputListValuesString[name].Value = "";
+                }
+            });
+        }
+
+        static Dictionary<string, Box<uint>> InputListValuesUint = new();
+        public static void InputListUint(string name, List<uint> list, Dictionary<uint, string> overrideValues = null)
+        {
+            if (!InputListValuesUint.ContainsKey(name)) InputListValuesUint[name] = new(0);
+            InputList(name, list, overrideValues, delegate
+            {
+                var buttonSize = ImGuiHelpers.GetButtonSize("Add");
+                ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - buttonSize.X - ImGui.GetStyle().ItemSpacing.X);
+                ImGuiEx.InputUint($"##{name.Replace("#", "_")}", ref InputListValuesUint[name].Value);
+                ImGui.SameLine();
+                if (ImGui.Button("Add"))
+                {
+                    list.Add(InputListValuesUint[name].Value);
+                    InputListValuesUint[name].Value = 0;
                 }
             });
         }

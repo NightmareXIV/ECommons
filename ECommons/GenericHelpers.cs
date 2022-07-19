@@ -326,6 +326,17 @@ namespace ECommons
             return values.Any(x => x.Equals(obj));
         }
 
+        public static IEnumerable<K> FindKeysByValue<K, V>(this IDictionary<K, V> dictionary, V value)
+        {
+            foreach(var x in dictionary)
+            {
+                if (value.Equals(x.Value))
+                {
+                    yield return x.Key;
+                }
+            }
+        }
+
         public static bool TryGetFirst<K, V>(this IDictionary<K, V> dictionary, Func<KeyValuePair<K, V>, bool> predicate, out KeyValuePair<K, V> keyValuePair)
         {
             try
