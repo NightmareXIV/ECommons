@@ -15,6 +15,11 @@ namespace ECommons.ImGuiMethods
 {
     public static class ImGuiEx
     {
+        public static float GetWindowContentRegionWidth()
+        {
+            return ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X;
+        }
+
         public static void Spacing(float pix = 10f, bool accountForScale = true)
         {
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (accountForScale ? pix : pix * ImGuiHelpers.GlobalScale));
@@ -378,7 +383,7 @@ namespace ECommons.ImGuiMethods
             var text = $"{hexInt:X}";
             if (ImGui.InputText(name, ref text, 8))
             {
-                if (uint.TryParse(text, NumberStyles.HexNumber, null, out var num))
+                if (uint.TryParse(text.Replace("0x", ""), NumberStyles.HexNumber, null, out var num))
                 {
                     hexInt = num;
                 }
