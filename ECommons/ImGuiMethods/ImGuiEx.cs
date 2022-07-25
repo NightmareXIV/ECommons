@@ -165,6 +165,17 @@ namespace ECommons.ImGuiMethods
             }
         }
 
+        public static void TextV(string s)
+        {
+            var cur = ImGui.GetCursorPos();
+            ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0);
+            ImGui.Button("");
+            ImGui.PopStyleVar();
+            ImGui.SameLine();
+            ImGui.SetCursorPos(cur);
+            ImGui.TextUnformatted(s);
+        }
+
         public static void Text(string s)
         {
             ImGui.TextUnformatted(s);

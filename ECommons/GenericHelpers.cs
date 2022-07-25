@@ -18,6 +18,20 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static bool Toggle<T>(this HashSet<T> hashSet, T value)
+        {
+            if (hashSet.Contains(value))
+            {
+                hashSet.Remove(value);
+                return false;
+            }
+            else
+            {
+                hashSet.Add(value);
+                return true;
+            }
+        }
+
         public static IEnumerable<string> Split(this string str, int chunkSize)
         {
             return Enumerable.Range(0, str.Length / chunkSize)
@@ -51,6 +65,11 @@ namespace ECommons
         public static bool EqualsIgnoreCase(this string s, string other)
         {
             return s.Equals(other, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static string NullWhenEmpty(this string s)
+        {
+            return s == string.Empty ? null : s;
         }
 
         public static bool IsNullOrEmpty(this string s)
