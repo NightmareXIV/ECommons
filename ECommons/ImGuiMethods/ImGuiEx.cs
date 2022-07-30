@@ -15,6 +15,32 @@ namespace ECommons.ImGuiMethods
 {
     public static class ImGuiEx
     {
+        public static void TextUnderlined(uint color, string text)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, color);
+            TextUnderlined(text);
+            ImGui.PopStyleColor();
+        }
+
+        public static void TextUnderlined(Vector4 color, string text)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, color);
+            TextUnderlined(text);
+            ImGui.PopStyleColor();
+        }
+
+        public static void TextUnderlined(string text)
+        {
+            var size = ImGui.CalcTextSize(text);
+            var cur = ImGui.GetCursorScreenPos();
+            cur.Y += size.Y;
+            ImGui.GetForegroundDrawList().PathLineTo(cur);
+            cur.X += size.X;
+            ImGui.GetForegroundDrawList().PathLineTo(cur);
+            ImGui.GetForegroundDrawList().PathStroke(ImGuiColors.DalamudWhite.ToUint());
+            ImGuiEx.Text(text);
+        }
+
         public static float GetWindowContentRegionWidth()
         {
             return ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X;
