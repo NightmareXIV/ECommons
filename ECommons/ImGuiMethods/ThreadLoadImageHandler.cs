@@ -13,7 +13,7 @@ using static ECommons.GenericHelpers;
 
 namespace ECommons.ImGuiMethods
 {
-    internal class ThreadLoadImageHandler
+    public class ThreadLoadImageHandler
     {
         internal static ConcurrentDictionary<string, ImageLoadingResult> CachedTextures = new();
         static volatile bool ThreadRunning = false;
@@ -22,7 +22,7 @@ namespace ECommons.ImGuiMethods
             Timeout = TimeSpan.FromSeconds(10),
         };
 
-        internal static bool TryGetTextureWrap(string url, out TextureWrap textureWrap)
+        public static bool TryGetTextureWrap(string url, out TextureWrap textureWrap)
         {
             ImageLoadingResult result;
             if(!CachedTextures.TryGetValue(url, out result))
