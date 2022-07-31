@@ -34,16 +34,6 @@ namespace ECommons.MathHelpers
         #endregion Public Static Properties
 
         #region Public instance methods
-        /// <summary>
-        /// Returns the hash code for this instance.
-        /// </summary>
-        /// <returns>The hash code.</returns>
-        /*public override int GetHashCode()
-        {
-            int hash = this.X.GetHashCode();
-            //hash = HashCodeHelper.CombineHashCodes(hash, this.Y.GetHashCode());
-            return hash;
-        }*/
 
         /// <summary>
         /// Returns a boolean indicating whether the given Object is equal to this Vector2 instance.
@@ -734,6 +724,11 @@ namespace ECommons.MathHelpers
         public Vector2 ToVector2()
         {
             return new Vector2((float)X, (float)Y);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y);
         }
     }
 

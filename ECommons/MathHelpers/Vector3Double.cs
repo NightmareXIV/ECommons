@@ -768,6 +768,11 @@ namespace ECommons.MathHelpers
         {
             return new Vector3((float)X, (float)Y, (float)Z);
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y, Z);
+        }
     }
 
     public static class Vector3DoubleExtension

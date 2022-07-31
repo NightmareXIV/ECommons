@@ -27,7 +27,7 @@
 		<DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
 	</PropertyGroup>
 
-	<PropertyGroup>
+	<!--PropertyGroup>
 		<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
 		<SignAssembly>False</SignAssembly>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -38,7 +38,7 @@
 		<NeutralLanguage>en</NeutralLanguage>
 		<PackageTags>Final Fantasy XIV, FFXIV Quick Launcher, Dalamud</PackageTags>
 		<PackageProjectUrl>https://github.com/Eternita-S/ECommons</PackageProjectUrl>
-	</PropertyGroup>
+	</PropertyGroup-->
 
 	<PropertyGroup>
 	  <LangVersion>preview</LangVersion>

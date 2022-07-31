@@ -19,7 +19,9 @@ namespace ECommons.ObjectLifeTracker
         internal static void Init()
         {
             GameObjectLifeTime = new();
+#pragma warning disable CS0618 // Type or member is obsolete
             GameObject_ctor_hook = new(Svc.SigScanner.ScanText("E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 48 8D 35"), GameObject_ctor_detour);
+#pragma warning restore CS0618 // Type or member is obsolete
             GameObject_ctor_hook.Enable();
             foreach (var x in Svc.Objects)
             {
