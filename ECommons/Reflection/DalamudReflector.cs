@@ -81,7 +81,7 @@ namespace ECommons.Reflection
 
         public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false)
         {
-            if(pluginCache.TryGetValue(internalName, out instance))
+            if(pluginCache.TryGetValue(internalName, out instance) && instance != null)
             {
                 return true;
             }
