@@ -27,11 +27,6 @@ namespace ECommons.GameFunctions
             return Bitmask.IsBitSet(*(byte*)(v + 136), 0);
         }
 
-        public static int GetModelId(this Character a)
-        {
-            return *(int*)(a.Address + 0x01B4);
-        }
-
         public static CombatRole GetRole(this Character c)
         {
             if (c.ClassJob.GameData.Role == 1) return CombatRole.Tank;
