@@ -36,22 +36,19 @@ namespace ECommons.GameFunctions
             return CombatRole.NonCombat;
         }
 
-        public static bool IsCasting(this Character c, uint spellId = 0)
+        public static bool IsCasting(this BattleChara c, uint spellId = 0)
         {
-            var castInfo = ((FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)c.Address)->GetCastInfo();
-            return castInfo->IsCasting != 0 && (spellId == 0 || castInfo->ActionID == spellId);
+            return c.IsCasting && (spellId == 0 || c.CastActionId.EqualsAny(spellId));
         }
 
-        public static bool IsCasting(this Character c, params uint[] spellId)
+        public static bool IsCasting(this BattleChara c, params uint[] spellId)
         {
-            var castInfo = ((FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)c.Address)->GetCastInfo();
-            return castInfo->IsCasting != 0 && castInfo->ActionID.EqualsAny(spellId);
+            return c.IsCasting && c.CastActionId.EqualsAny(spellId);
         }
 
-        public static bool IsCasting(this Character c, IEnumerable<uint> spellId)
+        public static bool IsCasting(this BattleChara c, IEnumerable<uint> spellId)
         {
-            var castInfo = ((FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)c.Address)->GetCastInfo();
-            return castInfo->IsCasting != 0 && castInfo->ActionID.EqualsAny(spellId);
+            return c.IsCasting && c.CastActionId.EqualsAny(spellId);
         }
     }
 }
