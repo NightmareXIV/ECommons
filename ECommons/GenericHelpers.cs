@@ -417,7 +417,9 @@ namespace ECommons
         {
             var col = textNodePtr->TextColor;
             //EEE1C5FF
-            return (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5);
+            return (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5)
+                //7D523BFF
+                || (col.A == 0xFF && col.R == 0x7D && col.G == 0x52 && col.B == 0x3B);
         }
     }
 }
