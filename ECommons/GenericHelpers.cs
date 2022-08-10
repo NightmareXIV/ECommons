@@ -127,13 +127,11 @@ namespace ECommons
         public static void Log(this Exception e)
         {
             PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
-            SimpleLogger.OnLogError?.Invoke($"{e.Message}\n{e.StackTrace ?? ""}");
         }
 
         public static void LogDuo(this Exception e)
         {
             DuoLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
-            SimpleLogger.OnLogError?.Invoke($"{e.Message}\n{e.StackTrace ?? ""}");
         }
 
         public static bool IsNoConditions()
@@ -241,11 +239,7 @@ namespace ECommons
             }
             catch (Exception e)
             {
-                if (!suppressErrors)
-                {
-                    PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
-                }
-                SimpleLogger.OnLogError?.Invoke($"{e.Message}\n{e.StackTrace ?? ""}");
+                if (!suppressErrors) PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
             }
         }
 
@@ -258,7 +252,6 @@ namespace ECommons
             catch (Exception e)
             {
                 logAction($"{e.Message}\n{e.StackTrace ?? ""}", Array.Empty<object>());
-                SimpleLogger.OnLogError?.Invoke($"{e.Message}\n{e.StackTrace ?? ""}");
             }
         }
 
@@ -278,15 +271,9 @@ namespace ECommons
                 {
                     PluginLog.Error("Error while trying to process error handler:");
                     PluginLog.Error($"{ex.Message}\n{ex.StackTrace ?? ""}");
-                    SimpleLogger.OnLogError?.Invoke("Error while trying to process error handler:");
-                    SimpleLogger.OnLogError?.Invoke($"{ex.Message}\n{ex.StackTrace ?? ""}");
                     suppressErrors = false;
                 }
-                if (!suppressErrors)
-                {
-                    PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
-                }
-                SimpleLogger.OnLogError?.Invoke($"{e.Message}\n{e.StackTrace ?? ""}");
+                if (!suppressErrors) PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
             }
         }
 
@@ -300,7 +287,6 @@ namespace ECommons
             catch (Exception e)
             {
                 PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
-                SimpleLogger.OnLogError?.Invoke($"{e.Message}\n{e.StackTrace ?? ""}");
                 return false;
             }
         }
@@ -315,7 +301,6 @@ namespace ECommons
             catch (Exception e)
             {
                 PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
-                SimpleLogger.OnLogError?.Invoke($"{e.Message}\n{e.StackTrace ?? ""}");
                 result = default;
                 return false;
             }
