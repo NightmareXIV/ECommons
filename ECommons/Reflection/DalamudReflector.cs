@@ -111,6 +111,8 @@ namespace ECommons.Reflection
                     PluginLog.Error($"Can't find {internalName} plugin: " + e.Message);
                     PluginLog.Error(e.StackTrace);
                 }
+                SimpleLogger.OnLogError?.Invoke($"Can't find {internalName} plugin: " + e.Message);
+                SimpleLogger.OnLogError?.Invoke(e.StackTrace);
                 instance = null;
                 return false;
             }
@@ -130,6 +132,7 @@ namespace ECommons.Reflection
             catch (Exception e)
             {
                 PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
+                SimpleLogger.OnLogError?.Invoke($"{e.Message}\n{e.StackTrace ?? ""}");
                 dalamudStartInfo = default;
                 return false;
             }

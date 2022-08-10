@@ -17,6 +17,7 @@ namespace ECommons
         {
             var str = $"[{DalamudReflector.GetPluginName()}] {s}";
             PluginLog.Information(str);
+            SimpleLogger.OnDuoLogMessage?.Invoke(str);
             _ = new TickScheduler(delegate
             {
                 Svc.Chat.PrintChat(new()
@@ -30,6 +31,7 @@ namespace ECommons
         {
             var str = $"[{DalamudReflector.GetPluginName()}] {s}";
             PluginLog.Debug(str);
+            SimpleLogger.OnDuoLogMessage?.Invoke(str);
             _ = new TickScheduler(delegate
             {
                 Svc.Chat.PrintChat(new()
@@ -43,6 +45,7 @@ namespace ECommons
         {
             var str = $"[{DalamudReflector.GetPluginName()}] {s}";
             PluginLog.Verbose(str);
+            SimpleLogger.OnDuoLogMessage?.Invoke(str);
             _ = new TickScheduler(delegate
             {
                 Svc.Chat.PrintChat(new()
@@ -56,6 +59,7 @@ namespace ECommons
         {
             var str = $"[{DalamudReflector.GetPluginName()}] {s}";
             PluginLog.Warning(str);
+            SimpleLogger.OnDuoLogMessage?.Invoke(str);
             _ = new TickScheduler(delegate
             {
                 Svc.Chat.PrintChat(new()
@@ -69,6 +73,7 @@ namespace ECommons
         {
             var str = $"[{DalamudReflector.GetPluginName()}] {s}";
             PluginLog.Error(str);
+            SimpleLogger.OnDuoLogMessage?.Invoke(str);
             _ = new TickScheduler(delegate
             {
                 Svc.Chat.PrintChat(new()
@@ -82,6 +87,7 @@ namespace ECommons
         {
             var str = $"[{DalamudReflector.GetPluginName()}] {s}";
             PluginLog.Fatal(str);
+            SimpleLogger.OnDuoLogMessage?.Invoke(str);
             _ = new TickScheduler(delegate
             {
                 Svc.Chat.PrintChat(new()
