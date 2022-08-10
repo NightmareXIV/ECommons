@@ -15,6 +15,7 @@ namespace ECommons
         BlockingCollection<string> logQueue = new();
         public SimpleLogger(string dir, string filename)
         {
+            filename = filename.Split(Path.GetInvalidFileNameChars()).Join("_");
             new Thread((ThreadStart)delegate 
             {
                 try
@@ -22,10 +23,17 @@ namespace ECommons
                     using (StreamWriter stream = new(Path.Combine(dir, filename), true, Encoding.UTF8))
                     {
                         stream.WriteLine($"Log begins at {DateTimeOffset.Now:s}");
-                        while (!logQueue.IsCompleted)
+                        try
                         {
-                            var str = $"{logQueue.Take()}";
-                            stream.WriteLine(str);
+                            while (!logQueue.IsCompleted)
+                            {
+                                var str = $"{logQueue.Take()}";
+                                stream.WriteLine(str);
+                            }
+                        }
+                        catch(InvalidOperationException e)
+                        {
+                            PluginLog.Information($"Not an error: {e.Message}\n{e.StackTrace ?? ""}");
                         }
                         stream.WriteLine($"Log ends at {DateTimeOffset.Now:s}");
                     }
@@ -50,12 +58,13 @@ namespace ECommons
         {
             if (logQueue.IsAddingCompleted)
             {
-                PluginLog.Error($"Can not log, collection is marked as completed");
+                PluginLog.Information($"Can not log, collection is marked as completed\n{s}");
+                return;
             }
             s = $"{DateTimeOffset.Now:s} {s}";
             if (!logQueue.TryAdd(s))
             {
-                Task.Run(delegate { logQueue.Add(s); });
+                Task.Run(delegate { try { logQueue.Add(s); } catch (Exception e) { e.Log(false); } });
             }
         }
 
