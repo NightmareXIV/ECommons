@@ -10,8 +10,6 @@ namespace ECommons
 {
     public class SimpleLogger : IDisposable
     {
-        public static Action<string> OnLogError = null;
-        public static Action<string> OnDuoLogMessage = null;
         BlockingCollection<string> logQueue = new();
         public SimpleLogger(string dir, string filename)
         {
@@ -64,7 +62,7 @@ namespace ECommons
             s = $"{DateTimeOffset.Now:s} {s}";
             if (!logQueue.TryAdd(s))
             {
-                Task.Run(delegate { try { logQueue.Add(s); } catch (Exception e) { e.Log(false); } });
+                Task.Run(delegate { try { logQueue.Add(s); } catch (Exception e) { e.Log(); } });
             }
         }
 

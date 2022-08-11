@@ -15,6 +15,12 @@ namespace ECommons.ImGuiMethods
 {
     public static class ImGuiEx
     {
+        public static bool IsKeyPressed(int key, bool repeat)
+        {
+            byte repeat2 = (byte)(repeat ? 1 : 0);
+            return ImGuiNative.igIsKeyPressed((ImGuiKey)key, repeat2) != 0;
+        }
+
         public static void TextUnderlined(uint color, string text)
         {
             ImGui.PushStyleColor(ImGuiCol.Text, color);

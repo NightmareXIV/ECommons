@@ -1,4 +1,5 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Logging;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
@@ -18,6 +19,15 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static SeStringBuilder Add(this SeStringBuilder b, IEnumerable<Payload> payloads)
+        {
+            foreach(var x in payloads)
+            {
+                b = b.Add(x);
+            }
+            return b;
+        }
+
         public static bool Toggle<T>(this HashSet<T> hashSet, T value)
         {
             if (hashSet.Contains(value))
