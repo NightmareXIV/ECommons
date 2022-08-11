@@ -471,6 +471,20 @@ namespace ECommons.ImGuiMethods
             }
         }
 
+        public static void TextWrappedCopy(string text)
+        {
+            ImGuiEx.TextWrapped(text);
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+            }
+            if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
+            {
+                ImGui.SetClipboardText(text);
+                Svc.PluginInterface.UiBuilder.AddNotification("Text copied to clipboard", null, NotificationType.Success);
+            }
+        }
+
         public static void ButtonCopy(string buttonText, string copy)
         {
             if(ImGui.Button(buttonText.Replace("$COPY", copy)))

@@ -1,5 +1,6 @@
 ﻿using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.MathHelpers;
+using FFXIVClientStructs.FFXIV.Client.Graphics.Vfx;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,12 @@ namespace ECommons.GameFunctions
 {
     public static unsafe class CharacterFunctions
     {
+        public static ushort GetVFXId(void* VfxData)
+        {
+            if (VfxData == null) return 0;
+            return *(ushort*)((IntPtr)(VfxData) + 8);
+        }
+
         public static FFXIVClientStructs.FFXIV.Client.Game.Character.Character* Struct(this Character o)
         {
             return (FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)o.Address;
