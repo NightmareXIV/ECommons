@@ -340,6 +340,31 @@ namespace ECommons
             return false;
         }
 
+        public static bool ContainsAny(this string obj, params string[] values)
+        {
+            foreach (var x in values)
+            {
+                if (obj.Contains(x))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool ContainsAny(this string obj, StringComparison comp, params string[] values)
+        {
+            foreach (var x in values)
+            {
+                if (obj.Contains(x, comp))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
         public static bool EqualsAny<T>(this T obj, params T[] values)
         {
             return values.Any(x => x.Equals(obj));
