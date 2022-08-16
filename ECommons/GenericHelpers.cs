@@ -1,6 +1,8 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Logging;
+using Dalamud.Utility;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -19,6 +21,34 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static string ExtractText(this Lumina.Text.SeString s, bool onlyFirst = false)
+        {
+            return s.ToDalamudString().ExtractText(onlyFirst);
+        }
+
+        public static string ExtractText(this SeString seStr, bool onlyFirst = false)
+        {
+            StringBuilder sb = new();
+            foreach(var x in seStr.Payloads)
+            {
+                if(x is TextPayload tp)
+                {
+                    sb.Append(tp.Text);
+                    if (onlyFirst) break;
+                }
+            }
+            return sb.ToString();
+        }
+
+        public static bool StartsWithAny(this string source, IEnumerable<string> compareTo, StringComparison stringComparison = StringComparison.Ordinal)
+        {
+            foreach(var x in compareTo)
+            {
+                if (source.StartsWith(x, stringComparison)) return true;
+            }
+            return false;
+        }
+
         public static SeStringBuilder Add(this SeStringBuilder b, IEnumerable<Payload> payloads)
         {
             foreach(var x in payloads)
