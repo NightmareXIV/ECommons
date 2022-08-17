@@ -14,6 +14,7 @@ namespace ECommons
 {
     public static class ECommons
     {
+        //test
         public static void Init(DalamudPluginInterface pluginInterface, params Module[] modules)
         {
             GenericHelpers.Safe(() => Svc.Init(pluginInterface));
