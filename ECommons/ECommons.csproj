@@ -26,6 +26,11 @@
 	<PropertyGroup>
 		<DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
 	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
+        	<DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath>
+        	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    	</PropertyGroup>
 
 	<!--PropertyGroup>
 		<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
