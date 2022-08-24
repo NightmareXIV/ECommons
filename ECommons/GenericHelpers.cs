@@ -21,6 +21,16 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static bool IsAddonReady(AtkUnitBase* addon)
+        {
+            return addon->IsVisible && addon->UldManager.LoadedState == AtkLoadState.Loaded;
+        }
+
+        public static bool IsAddonReady(AtkComponentNode* addon)
+        {
+            return addon->AtkResNode.IsVisible && addon->Component->UldManager.LoadedState == AtkLoadState.Loaded;
+        }
+
         public static string ExtractText(this Lumina.Text.SeString s, bool onlyFirst = false)
         {
             return s.ToDalamudString().ExtractText(onlyFirst);
