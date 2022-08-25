@@ -50,6 +50,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="Dalamud.ContextMenu" Version="1.2.1" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Reference Include="Newtonsoft.Json">
 			<HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
 			<Private>False</Private>
