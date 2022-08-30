@@ -2,8 +2,10 @@
 using Dalamud.Plugin;
 using ECommons.DalamudServices;
 using ECommons.GameFunctions;
+using ECommons.ImGuiMethods;
 using ECommons.ObjectLifeTracker;
 using ECommons.Reflection;
+using ECommons.SimpleGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,6 +46,22 @@ namespace ECommons
             GenericHelpers.Safe(ImGuiMethods.ThreadLoadImageHandler.CachedTextures.Clear);
             GenericHelpers.Safe(ObjectLife.Dispose);
             GenericHelpers.Safe(DalamudReflector.Dispose);
+            if(ConfigGui.windowSystem != null)
+            {
+                Svc.PluginInterface.UiBuilder.OpenConfigUi -= ConfigGui.Open;
+                Svc.PluginInterface.UiBuilder.Draw -= ConfigGui.Draw;
+                if (ConfigGui.Config != null)
+                {
+                    Svc.PluginInterface.SavePluginConfig(ConfigGui.Config);
+                    Notify.Info("Configuration saved");
+                }
+                ConfigGui.windowSystem.RemoveAllWindows();
+                ConfigGui.windowSystem = null;
+            }
+            foreach(var x in EzCmd.RegisteredCommands)
+            {
+                Svc.Commands.RemoveHandler(x);
+            }
         }
     }
 }

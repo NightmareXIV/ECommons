@@ -3,6 +3,7 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Logging;
 using Dalamud.Utility;
+using ECommons.ChatMethods;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -21,6 +22,25 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static bool TryDecodeSender(SeString sender, out Sender senderStruct)
+        {
+            if (sender == null)
+            {
+                senderStruct = default;
+                return false;
+            }
+            foreach (var x in sender.Payloads)
+            {
+                if (x is PlayerPayload p)
+                {
+                    senderStruct = new(p.PlayerName, p.World.RowId);
+                    return true;
+                }
+            }
+            senderStruct = default;
+            return false;
+        }
+
         public static bool IsAddonReady(AtkUnitBase* addon)
         {
             return addon->IsVisible && addon->UldManager.LoadedState == AtkLoadState.Loaded;
