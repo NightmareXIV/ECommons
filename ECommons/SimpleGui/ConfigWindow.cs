@@ -38,7 +38,7 @@ namespace ECommons.SimpleGui
             if(ConfigGui.Config != null)
             {
                 Svc.PluginInterface.SavePluginConfig(ConfigGui.Config);
-                Notify.Info("Configuration saved");
+                Notify.Success("Configuration saved");
             }
             ConfigGui.OnClose?.Invoke();
         }
