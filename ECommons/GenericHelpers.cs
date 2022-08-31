@@ -428,7 +428,12 @@ namespace ECommons
         public static bool EqualsAny<T>(this T obj, params T[] values)
         {
             return values.Any(x => x.Equals(obj));
-}
+        }
+
+        public static bool EqualsAny<T>(this T obj, params object[] values)
+        {
+            return values.Any(x => x.Equals((T)obj));
+        }
 
         public static bool EqualsIgnoreCaseAny(this string obj, params string[] values)
         {
