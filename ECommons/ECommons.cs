@@ -46,17 +46,17 @@ namespace ECommons
             GenericHelpers.Safe(ImGuiMethods.ThreadLoadImageHandler.CachedTextures.Clear);
             GenericHelpers.Safe(ObjectLife.Dispose);
             GenericHelpers.Safe(DalamudReflector.Dispose);
-            if(ConfigGui.windowSystem != null)
+            if(EzConfigGui.windowSystem != null)
             {
-                Svc.PluginInterface.UiBuilder.OpenConfigUi -= ConfigGui.Open;
-                Svc.PluginInterface.UiBuilder.Draw -= ConfigGui.Draw;
-                if (ConfigGui.Config != null)
+                Svc.PluginInterface.UiBuilder.OpenConfigUi -= EzConfigGui.Open;
+                Svc.PluginInterface.UiBuilder.Draw -= EzConfigGui.Draw;
+                if (EzConfigGui.Config != null)
                 {
-                    Svc.PluginInterface.SavePluginConfig(ConfigGui.Config);
+                    Svc.PluginInterface.SavePluginConfig(EzConfigGui.Config);
                     Notify.Info("Configuration saved");
                 }
-                ConfigGui.windowSystem.RemoveAllWindows();
-                ConfigGui.windowSystem = null;
+                EzConfigGui.windowSystem.RemoveAllWindows();
+                EzConfigGui.windowSystem = null;
             }
             foreach(var x in EzCmd.RegisteredCommands)
             {

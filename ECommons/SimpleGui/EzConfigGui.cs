@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ECommons.SimpleGui
 {
-    public static class ConfigGui
+    public static class EzConfigGui
     {
         internal static WindowSystem windowSystem;
         internal static Action Draw = null;
