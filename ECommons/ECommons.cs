@@ -6,6 +6,8 @@ using ECommons.ImGuiMethods;
 using ECommons.ObjectLifeTracker;
 using ECommons.Reflection;
 using ECommons.SimpleGui;
+using ECommons.SplatoonAPI;
+using Microsoft.Win32.SafeHandles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +37,11 @@ namespace ECommons
                 PluginLog.Information("Object life module has been requested");
                 GenericHelpers.Safe(ObjectLife.Init);
             }
+            if(modules.ContainsAny(Module.All, Module.SplatoonAPI))
+            {
+                PluginLog.Information("Splatoon API module has been requested");
+                GenericHelpers.Safe(Splatoon.Init);
+            }
         }
 
         public static void Dispose()
@@ -61,6 +68,10 @@ namespace ECommons
             foreach(var x in EzCmd.RegisteredCommands)
             {
                 Svc.Commands.RemoveHandler(x);
+            }
+            if(Splatoon.Instance != null)
+            {
+                GenericHelpers.Safe(Splatoon.Reset);
             }
         }
     }
