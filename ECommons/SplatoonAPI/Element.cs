@@ -12,10 +12,10 @@ namespace ECommons.SplatoonAPI
     {
         int Version;
         internal object Instance;
-        public Element(int type)
+        public Element(ElementType type)
         {
             Version = Splatoon.Version;
-            Instance = Splatoon.Instance.GetType().Assembly.CreateInstance("Splatoon.Element", false, BindingFlags.Default, null, new object[] { type }, null, null);
+            Instance = Splatoon.Instance.GetType().Assembly.CreateInstance("Splatoon.Element", false, BindingFlags.Default, null, new object[] { (int)type }, null, null);
         }
 
         public bool IsValid()
@@ -23,6 +23,11 @@ namespace ECommons.SplatoonAPI
             return Version == Splatoon.Version;
         }
 
+        public ElementType type
+        {
+            get => (ElementType)Instance.GetType().GetField("type").GetValue(Instance);
+            set => Instance.GetType().GetField("type").SetValue(Instance, (int)value);
+        }
         public bool Enabled
         {
             get => (bool)Instance.GetType().GetField("Enabled").GetValue(Instance);
@@ -243,15 +248,15 @@ namespace ECommons.SplatoonAPI
             get => (float)Instance.GetType().GetField("FillStep").GetValue(Instance);
             set => Instance.GetType().GetField("FillStep").SetValue(Instance, value);
         }
-        public int refActorComparisonType
+        public RefActorComparisonType refActorComparisonType
         {
-            get => (int)Instance.GetType().GetField("refActorComparisonType").GetValue(Instance);
-            set => Instance.GetType().GetField("refActorComparisonType").SetValue(Instance, value);
+            get => (RefActorComparisonType)Instance.GetType().GetField("refActorComparisonType").GetValue(Instance);
+            set => Instance.GetType().GetField("refActorComparisonType").SetValue(Instance, (int)value);
         }
-        public int refActorType
+        public RefActorType refActorType
         {
-            get => (int)Instance.GetType().GetField("refActorType").GetValue(Instance);
-            set => Instance.GetType().GetField("refActorType").SetValue(Instance, value);
+            get => (RefActorType)Instance.GetType().GetField("refActorType").GetValue(Instance);
+            set => Instance.GetType().GetField("refActorType").SetValue(Instance, (int)value);
         }
         public bool includeHitbox
         {
