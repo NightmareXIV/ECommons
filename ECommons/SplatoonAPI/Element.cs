@@ -198,5 +198,17 @@ namespace ECommons.SplatoonAPI
                 Instance.GetType().GetField("Filled").SetValue(Instance, value);
             }
         }
+
+        public bool includeRotation
+        {
+            get
+            {
+                return (bool)Instance.GetType().GetField("includeRotation").GetValue(Instance);
+            }
+            set
+            {
+                Instance.GetType().GetField("includeRotation").SetValue(Instance, value);
+            }
+        }
     }
 }

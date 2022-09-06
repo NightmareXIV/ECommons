@@ -73,6 +73,21 @@ namespace ECommons.SplatoonAPI
             return Instance != null;
         }
 
+        public static bool AddDynamicElement(string name, Element e, long[] DestroyCondition)
+        {
+            return AddDynamicElements(name, new Element[] { e }, DestroyCondition);
+        }
+
+        public static bool AddDynamicElement(string name, Element e, long DestroyCondition)
+        {
+            return AddDynamicElements(name, new Element[] { e }, new long[] { DestroyCondition });
+        }
+
+        public static bool AddDynamicElements(string name, Element[] e, long DestroyCondition)
+        {
+            return AddDynamicElements(name, e, new long[] { DestroyCondition });
+        }
+
         public static bool AddDynamicElements(string name, Element[] e, long[] DestroyCondition)
         {
             if (!IsConnected())
@@ -83,6 +98,11 @@ namespace ECommons.SplatoonAPI
             if (!e.All(x => x.IsValid()))
             {
                 PluginLog.Warning("Elements are no longer valid");
+                return false;
+            }
+            if (e.Length == 0)
+            {
+                PluginLog.Warning("There are no elements");
                 return false;
             }
             try
@@ -96,6 +116,25 @@ namespace ECommons.SplatoonAPI
                 return true;
             }
             catch(Exception ex)
+            {
+                ex.Log();
+                return false;
+            }
+        }
+
+        public static bool RemoveDynamicElements(string name)
+        {
+            if (!IsConnected())
+            {
+                PluginLog.Warning("Not connected to Splatoon");
+                return false;
+            }
+            try
+            {
+                Instance.GetType().GetMethod("RemoveDynamicElements").Invoke(Instance, new object[] { name });
+                return true;
+            }
+            catch (Exception ex)
             {
                 ex.Log();
                 return false;
