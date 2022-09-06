@@ -79,9 +79,9 @@ namespace ECommons.Reflection
                     GetMethod("Get").Invoke(null, BindingFlags.Default, null, Array.Empty<object>(), null);
         }
 
-        public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false)
+        public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false, bool ignoreCache = false)
         {
-            if(pluginCache.TryGetValue(internalName, out instance) && instance != null)
+            if(!ignoreCache && pluginCache.TryGetValue(internalName, out instance) && instance != null)
             {
                 return true;
             }

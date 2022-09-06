@@ -27,7 +27,7 @@ namespace ECommons
                 PluginLog.Information("Object functions module has been requested");
                 GenericHelpers.Safe(ObjectFunctions.Init);
             }
-            if (modules.ContainsAny(Module.All, Module.DalamudReflector))
+            if (modules.ContainsAny(Module.All, Module.DalamudReflector, Module.SplatoonAPI))
             {
                 PluginLog.Information("Advanced Dalamud reflection module has been requested");
                 GenericHelpers.Safe(DalamudReflector.Init);
@@ -73,6 +73,7 @@ namespace ECommons
             {
                 GenericHelpers.Safe(Splatoon.Reset);
             }
+            GenericHelpers.Safe(Splatoon.Shutdown);
         }
     }
 }

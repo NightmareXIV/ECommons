@@ -11,7 +11,7 @@ namespace ECommons.SplatoonAPI
     public class Element
     {
         int Version;
-        object Instance;
+        internal object Instance;
         public Element(int type)
         {
             Version = Splatoon.Version;
