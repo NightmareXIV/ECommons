@@ -27,7 +27,7 @@ namespace ECommons.SplatoonAPI
             }
             catch (Exception e)
             {
-                e.Log();
+                //e.Log();
             }
             Svc.PluginInterface.GetIpcSubscriber<bool>("Splatoon.Loaded").Subscribe(Connect);
             Svc.PluginInterface.GetIpcSubscriber<bool>("Splatoon.Unloaded").Subscribe(Reset);
