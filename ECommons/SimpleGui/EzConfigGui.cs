@@ -1,5 +1,6 @@
 ﻿using Dalamud.Configuration;
 using Dalamud.Interface.Windowing;
+using Dalamud.Plugin;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using System;
@@ -18,6 +19,7 @@ namespace ECommons.SimpleGui
         internal static Action OnOpen = null;
         internal static IPluginConfiguration Config;
         static ConfigWindow configWindow;
+        static string Ver = string.Empty;
 
         public static void Init(string name, Action draw, IPluginConfiguration config = null)
         {
@@ -28,7 +30,8 @@ namespace ECommons.SimpleGui
             windowSystem = new($"ECommons@{DalamudReflector.GetPluginName()}");
             Draw = draw;
             Config = config;
-            configWindow = new(name);
+            Ver = ECommons.Instance.GetType().Assembly.GetName().Version.ToString();
+            configWindow = new($"{name} v{Ver}###{name}");
             windowSystem.AddWindow(configWindow);
             Svc.PluginInterface.UiBuilder.Draw += windowSystem.Draw;
             Svc.PluginInterface.UiBuilder.OpenConfigUi += Open;

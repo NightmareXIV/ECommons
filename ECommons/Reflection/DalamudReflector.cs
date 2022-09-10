@@ -135,14 +135,9 @@ namespace ECommons.Reflection
             }
         }
 
-        static string pluginName = null;
         public static string GetPluginName()
         {
-            GenericHelpers.Safe(delegate
-            {
-                pluginName ??= (string)Svc.PluginInterface.GetType().GetField("pluginName", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Svc.PluginInterface);
-            });
-            return pluginName;
+            return ECommons.Instance.Name ?? "n/a";
         }
 
         internal static void OnInstalledPluginsChanged()

@@ -18,9 +18,11 @@ namespace ECommons
 {
     public static class ECommons
     {
+        internal static IDalamudPlugin Instance = null;
         //test
-        public static void Init(DalamudPluginInterface pluginInterface, params Module[] modules)
+        public static void Init(DalamudPluginInterface pluginInterface, IDalamudPlugin instance, params Module[] modules)
         {
+            Instance = instance;
             GenericHelpers.Safe(() => Svc.Init(pluginInterface));
             if (modules.ContainsAny(Module.All, Module.ObjectFunctions))
             {
@@ -74,6 +76,7 @@ namespace ECommons
                 GenericHelpers.Safe(Splatoon.Reset);
             }
             GenericHelpers.Safe(Splatoon.Shutdown);
+            Instance = null;
         }
     }
 }
