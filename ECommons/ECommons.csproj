@@ -49,10 +49,6 @@
 	  <LangVersion>preview</LangVersion>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-	  <Optimize>False</Optimize>
-	</PropertyGroup>
-
 	<ItemGroup>
 		<Reference Include="Newtonsoft.Json">
 			<HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
