@@ -28,23 +28,20 @@ namespace ECommons
 
         public void Push(T value)
         {
-            Svc.Framework.RunOnFrameworkThread(() =>
+            for (var i = 0; i < isFilled.Length; i++)
             {
-                for (var i = 0; i < isFilled.Length; i++)
+                if (!isFilled[i])
                 {
-                    if (!isFilled[i])
-                    {
-                        isFilled[i] = true;
-                        values[i] = value;
-                        return;
-                    }
+                    isFilled[i] = true;
+                    values[i] = value;
+                    return;
                 }
-                for (var i = 1; i < values.Length; i++)
-                {
-                    values[i - 1] = values[i];
-                }
-                values[^1] = value;
-            });
+            }
+            for (var i = 1; i < values.Length; i++)
+            {
+                values[i - 1] = values[i];
+            }
+            values[^1] = value;
         }
 
         public T this[int index]

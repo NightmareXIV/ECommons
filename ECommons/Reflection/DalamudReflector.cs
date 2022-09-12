@@ -144,7 +144,7 @@ namespace ECommons.Reflection
 
         public static string GetPluginName()
         {
-            return ECommons.Instance?.Name ?? "n/a";
+            return ECommons.Instance?.Name ?? "Not initializes";
         }
 
         internal static void OnInstalledPluginsChanged()

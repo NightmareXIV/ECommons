@@ -1,4 +1,5 @@
-﻿using ECommons.Reflection;
+﻿using ECommons.DalamudServices;
+using ECommons.Reflection;
 using Serilog.Events;
 using System;
 using System.Collections.Generic;
@@ -14,32 +15,50 @@ namespace ECommons.Logging
         public static void Information(string s)
         {
             Dalamud.Logging.PluginLog.Information($"[{DalamudReflector.GetPluginName()}] {s}");
-            InternalLog.Messages.Push(new(s, LogEventLevel.Information));
+            Svc.Framework?.RunOnFrameworkThread(delegate
+            {
+                InternalLog.Messages.Push(new(s, LogEventLevel.Information));
+            });
         }
         public static void Error(string s)
         {
             Dalamud.Logging.PluginLog.Error($"[{DalamudReflector.GetPluginName()}] {s}");
-            InternalLog.Messages.Push(new(s, LogEventLevel.Error));
+            Svc.Framework?.RunOnFrameworkThread(delegate
+            {
+                InternalLog.Messages.Push(new(s, LogEventLevel.Error));
+            });
         }
         public static void Fatal(string s)
         {
             Dalamud.Logging.PluginLog.Fatal($"[{DalamudReflector.GetPluginName()}] {s}");
-            InternalLog.Messages.Push(new(s, LogEventLevel.Fatal));
+            Svc.Framework?.RunOnFrameworkThread(delegate
+            {
+                InternalLog.Messages.Push(new(s, LogEventLevel.Fatal));
+            });
         }
         public static void Debug(string s)
         {
             Dalamud.Logging.PluginLog.Debug($"[{DalamudReflector.GetPluginName()}] {s}");
-            InternalLog.Messages.Push(new(s, LogEventLevel.Debug));
+            Svc.Framework?.RunOnFrameworkThread(delegate
+            {
+                InternalLog.Messages.Push(new(s, LogEventLevel.Debug));
+            });
         }
         public static void Verbose(string s)
         {
             Dalamud.Logging.PluginLog.Verbose($"[{DalamudReflector.GetPluginName()}] {s}");
-            InternalLog.Messages.Push(new(s, LogEventLevel.Verbose));
+            Svc.Framework?.RunOnFrameworkThread(delegate
+            {
+                InternalLog.Messages.Push(new(s, LogEventLevel.Verbose));
+            });
         }
         public static void Warning(string s)
         {
             Dalamud.Logging.PluginLog.Warning($"[{DalamudReflector.GetPluginName()}] {s}");
-            InternalLog.Messages.Push(new(s, LogEventLevel.Warning));
+            Svc.Framework?.RunOnFrameworkThread(delegate
+            {
+                InternalLog.Messages.Push(new(s, LogEventLevel.Warning));
+            });
         }
         public static void LogInformation(string s)
         {

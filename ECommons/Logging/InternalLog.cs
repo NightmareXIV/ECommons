@@ -13,7 +13,7 @@ namespace ECommons.Logging
 {
     public class InternalLog
     {
-        public static readonly CircularArray<LogMessage> Messages = new(1000);
+        public static readonly CircularArray<InternalLogMessage> Messages = new(1000);
         public static void Information(string s)
         {
             Messages.Push(new(s, LogEventLevel.Information));
