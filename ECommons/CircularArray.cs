@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ECommons.DalamudServices;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,20 +28,23 @@ namespace ECommons
 
         public void Push(T value)
         {
-            for (var i = 0; i < isFilled.Length; i++)
+            Svc.Framework.RunOnFrameworkThread(() =>
             {
-                if (!isFilled[i])
+                for (var i = 0; i < isFilled.Length; i++)
                 {
-                    isFilled[i] = true;
-                    values[i] = value;
-                    return;
+                    if (!isFilled[i])
+                    {
+                        isFilled[i] = true;
+                        values[i] = value;
+                        return;
+                    }
                 }
-            }
-            for (var i = 1; i < values.Length; i++)
-            {
-                values[i - 1] = values[i];
-            }
-            values[^1] = value;
+                for (var i = 1; i < values.Length; i++)
+                {
+                    values[i - 1] = values[i];
+                }
+                values[^1] = value;
+            });
         }
 
         public T this[int index]

@@ -1,6 +1,6 @@
 ﻿using Dalamud;
 using Dalamud.Game.ClientState.Keys;
-using Dalamud.Logging;
+using ECommons.Logging;
 using Dalamud.Plugin;
 using ECommons.DalamudServices;
 using ECommons.Schedulers;
@@ -42,8 +42,8 @@ namespace ECommons.Reflection
         {
             if (pluginCache != null)
             {
-                pluginCache?.Clear();
-                onPluginsChangedActions?.Clear();
+                pluginCache = null;
+                onPluginsChangedActions = null;
                 GenericHelpers.Safe(delegate
                 {
                     var pm = GetPluginManager();
@@ -96,9 +96,16 @@ namespace ECommons.Reflection
                     {
                         var type = t.GetType().Name == "LocalDevPlugin" ? t.GetType().BaseType : t.GetType();
                         var plugin = (IDalamudPlugin)type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t);
-                        instance = plugin;
-                        pluginCache[internalName] = plugin;
-                        return true;
+                        if (plugin == null)
+                        {
+                            PluginLog.Warning($"Found requested plugin {internalName} but it was null");
+                        }
+                        else
+                        {
+                            instance = plugin;
+                            pluginCache[internalName] = plugin;
+                            return true;
+                        }
                     }
                 }
                 instance = null;
@@ -137,7 +144,7 @@ namespace ECommons.Reflection
 
         public static string GetPluginName()
         {
-            return ECommons.Instance.Name ?? "n/a";
+            return ECommons.Instance?.Name ?? "n/a";
         }
 
         internal static void OnInstalledPluginsChanged()

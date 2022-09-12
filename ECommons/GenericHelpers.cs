@@ -1,11 +1,12 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Logging;
+using ECommons.Logging;
 using Dalamud.Utility;
 using ECommons.ChatMethods;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
+using ECommons.Logging;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
@@ -111,7 +112,7 @@ namespace ECommons
         public static string GetTerritoryName(this uint terr)
         {
             var t = Svc.Data.GetExcelSheet<TerritoryType>().GetRow(terr);
-            return $"{terr} | {t.ContentFinderCondition.Value.Name.ToString().Default(t.PlaceName.Value.Name.ToString())}";
+            return $"{terr} | {t?.ContentFinderCondition.Value?.Name.ToString().Default(t?.PlaceName.Value?.Name.ToString())}";
         }
 
         public static T FirstOr0<T>(this IEnumerable<T> collection, Func<T, bool> predicate)

@@ -1,4 +1,4 @@
-﻿using Dalamud.Logging;
+﻿using ECommons.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.IO;

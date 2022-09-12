@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>Eternita</Authors>
-		<Version>1.0.0.0</Version>
+		<Version>1.0.0.1</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -49,6 +49,10 @@
 	  <LangVersion>preview</LangVersion>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+	  <Optimize>False</Optimize>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<Reference Include="Newtonsoft.Json">
 			<HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
@@ -92,6 +96,10 @@
 		</Reference>
 		<Reference Include="Reloaded.Hooks.Definitions">
 			<HintPath>$(DalamudLibPath)Reloaded.Hooks.Definitions.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Serilog">
+			<HintPath>$(DalamudLibPath)Serilog.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
