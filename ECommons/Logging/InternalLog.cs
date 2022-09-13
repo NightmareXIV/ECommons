@@ -13,30 +13,30 @@ namespace ECommons.Logging
 {
     public class InternalLog
     {
-        public static readonly CircularArray<InternalLogMessage> Messages = new(1000);
+        public static readonly CircularBuffer<InternalLogMessage> Messages = new(1000);
         public static void Information(string s)
         {
-            Messages.Push(new(s, LogEventLevel.Information));
+            Messages.PushBack(new(s, LogEventLevel.Information));
         }
         public static void Error(string s)
         {
-            Messages.Push(new(s, LogEventLevel.Error));
+            Messages.PushBack(new(s, LogEventLevel.Error));
         }
         public static void Fatal(string s)
         {
-            Messages.Push(new(s, LogEventLevel.Fatal));
+            Messages.PushBack(new(s, LogEventLevel.Fatal));
         }
         public static void Debug(string s)
         {
-            Messages.Push(new(s, LogEventLevel.Debug));
+            Messages.PushBack(new(s, LogEventLevel.Debug));
         }
         public static void Verbose(string s)
         {
-            Messages.Push(new(s, LogEventLevel.Verbose));
+            Messages.PushBack(new(s, LogEventLevel.Verbose));
         }
         public static void Warning(string s)
         {
-            Messages.Push(new(s, LogEventLevel.Warning));
+            Messages.PushBack(new(s, LogEventLevel.Warning));
         }
         public static void LogInformation(string s)
         {

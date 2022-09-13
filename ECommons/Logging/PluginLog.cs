@@ -17,7 +17,7 @@ namespace ECommons.Logging
             Dalamud.Logging.PluginLog.Information($"[{DalamudReflector.GetPluginName()}] {s}");
             Svc.Framework?.RunOnFrameworkThread(delegate
             {
-                InternalLog.Messages.Push(new(s, LogEventLevel.Information));
+                InternalLog.Messages.PushBack(new(s, LogEventLevel.Information));
             });
         }
         public static void Error(string s)
@@ -25,7 +25,7 @@ namespace ECommons.Logging
             Dalamud.Logging.PluginLog.Error($"[{DalamudReflector.GetPluginName()}] {s}");
             Svc.Framework?.RunOnFrameworkThread(delegate
             {
-                InternalLog.Messages.Push(new(s, LogEventLevel.Error));
+                InternalLog.Messages.PushBack(new(s, LogEventLevel.Error));
             });
         }
         public static void Fatal(string s)
@@ -33,7 +33,7 @@ namespace ECommons.Logging
             Dalamud.Logging.PluginLog.Fatal($"[{DalamudReflector.GetPluginName()}] {s}");
             Svc.Framework?.RunOnFrameworkThread(delegate
             {
-                InternalLog.Messages.Push(new(s, LogEventLevel.Fatal));
+                InternalLog.Messages.PushBack(new(s, LogEventLevel.Fatal));
             });
         }
         public static void Debug(string s)
@@ -41,7 +41,7 @@ namespace ECommons.Logging
             Dalamud.Logging.PluginLog.Debug($"[{DalamudReflector.GetPluginName()}] {s}");
             Svc.Framework?.RunOnFrameworkThread(delegate
             {
-                InternalLog.Messages.Push(new(s, LogEventLevel.Debug));
+                InternalLog.Messages.PushBack(new(s, LogEventLevel.Debug));
             });
         }
         public static void Verbose(string s)
@@ -49,7 +49,7 @@ namespace ECommons.Logging
             Dalamud.Logging.PluginLog.Verbose($"[{DalamudReflector.GetPluginName()}] {s}");
             Svc.Framework?.RunOnFrameworkThread(delegate
             {
-                InternalLog.Messages.Push(new(s, LogEventLevel.Verbose));
+                InternalLog.Messages.PushBack(new(s, LogEventLevel.Verbose));
             });
         }
         public static void Warning(string s)
@@ -57,7 +57,7 @@ namespace ECommons.Logging
             Dalamud.Logging.PluginLog.Warning($"[{DalamudReflector.GetPluginName()}] {s}");
             Svc.Framework?.RunOnFrameworkThread(delegate
             {
-                InternalLog.Messages.Push(new(s, LogEventLevel.Warning));
+                InternalLog.Messages.PushBack(new(s, LogEventLevel.Warning));
             });
         }
         public static void LogInformation(string s)
