@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommons
+namespace ECommons.CircularBuffers
 {
     /// <inheritdoc/>
     /// <summary>
@@ -237,7 +237,7 @@ namespace ECommons
         {
             ThrowIfEmpty("Cannot take elements from an empty buffer.");
             Decrement(ref _end);
-            _buffer[_end] = default(T);
+            _buffer[_end] = default;
             --_size;
         }
 
@@ -248,7 +248,7 @@ namespace ECommons
         public void PopFront()
         {
             ThrowIfEmpty("Cannot take elements from an empty buffer.");
-            _buffer[_start] = default(T);
+            _buffer[_start] = default;
             Increment(ref _start);
             --_size;
         }
@@ -322,7 +322,7 @@ namespace ECommons
         #region IEnumerable implementation
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (IEnumerator)GetEnumerator();
+            return GetEnumerator();
         }
         #endregion
 
@@ -372,7 +372,7 @@ namespace ECommons
         /// </param>
         private int InternalIndex(int index)
         {
-            return _start + (index < (Capacity - _start) ? index : index - Capacity);
+            return _start + (index < Capacity - _start ? index : index - Capacity);
         }
 
         // doing ArrayOne and ArrayTwo methods returning ArraySegment<T> as seen here: 

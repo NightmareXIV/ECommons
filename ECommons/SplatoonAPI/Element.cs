@@ -430,8 +430,8 @@ namespace ECommons.SplatoonAPI
         }
         public float RotationMin
         {
-            get => (float)Instance.GetType().GetField("RotationMin ").GetValue(Instance);
-            set => Instance.GetType().GetField("RotationMin ").SetValue(Instance, value);
+            get => (float)Instance.GetType().GetField("RotationMin").GetValue(Instance);
+            set => Instance.GetType().GetField("RotationMin").SetValue(Instance, value);
         }
     }
 }

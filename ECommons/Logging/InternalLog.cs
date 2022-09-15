@@ -1,4 +1,5 @@
 ﻿using Dalamud.Interface.Colors;
+using ECommons.CircularBuffers;
 using ECommons.ImGuiMethods;
 using ECommons.Reflection;
 using ImGuiNET;
@@ -67,11 +68,24 @@ namespace ECommons.Logging
             Information(s);
         }
 
+
+        static string Search = "";
+        static bool Autoscroll = true;
         public static void PrintImgui()
         {
+            ImGui.Checkbox("Autoscroll", ref Autoscroll);
+            ImGui.SameLine();
+            if(ImGui.Button("Copy all"))
+            {
+                ImGui.SetClipboardText(Messages.Select(x => $"[{x.Level}] {x.Message}").Join("\n"));
+            }
+            ImGui.SameLine();
+            ImGuiEx.SetNextItemFullWidth();
+            ImGui.InputTextWithHint("##Filter", "Filter...", ref Search, 100);
             ImGui.BeginChild($"Plugin_log{DalamudReflector.GetPluginName()}");
             foreach(var x in Messages)
             {
+                if(Search == String.Empty || x.Level.ToString().EqualsIgnoreCase(Search) || x.Message.Contains(Search, StringComparison.OrdinalIgnoreCase))
                 ImGuiEx.TextWrappedCopy(x.Level == LogEventLevel.Fatal?ImGuiColors.DPSRed
                     :x.Level == LogEventLevel.Error?ImGuiColors.DalamudRed
                     :x.Level == LogEventLevel.Warning?ImGuiColors.DalamudOrange
@@ -79,6 +93,10 @@ namespace ECommons.Logging
                     :x.Level == LogEventLevel.Debug?ImGuiColors.DalamudGrey
                     :x.Level == LogEventLevel.Verbose?ImGuiColors.DalamudGrey2
                     :ImGuiColors.DalamudWhite2, x.Message);
+            }
+            if (Autoscroll)
+            {
+                ImGui.SetScrollHereY();
             }
             ImGui.EndChild();
         }
