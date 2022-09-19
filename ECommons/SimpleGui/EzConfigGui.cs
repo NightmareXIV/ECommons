@@ -20,6 +20,7 @@ namespace ECommons.SimpleGui
         internal static IPluginConfiguration Config;
         static ConfigWindow configWindow;
         static string Ver = string.Empty;
+        public static Window Window { get { return configWindow; } }
 
         public static void Init(string name, Action draw, IPluginConfiguration config = null)
         {
