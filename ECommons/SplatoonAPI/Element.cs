@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,20 @@ namespace ECommons.SplatoonAPI
         public bool IsValid()
         {
             return Version == Splatoon.Version;
+        }
+
+        public void SetRefCoord(Vector3 v)
+        {
+            this.refX = v.X;
+            this.refY = v.Z;
+            this.refZ = v.Y;
+        }
+
+        public void SetOffCoord(Vector3 v)
+        {
+            this.offX = v.X;
+            this.offY = v.Z;
+            this.offZ = v.Y;
         }
 
         public ElementType type

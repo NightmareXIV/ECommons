@@ -108,14 +108,38 @@ namespace ECommons.SplatoonAPI
             try
             {
                 var array = Array.CreateInstance(e[0].Instance.GetType(), e.Length);
-                for(var i = 0;i< e.Length; i++)
+                for (var i = 0; i < e.Length; i++)
                 {
                     array.SetValue(e[i].Instance, i);
                 }
                 Instance.GetType().GetMethod("AddDynamicElements").Invoke(Instance, new object[] { name, array, DestroyCondition });
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
+            {
+                ex.Log();
+                return false;
+            }
+        }
+
+        public static bool DisplayOnce(Element e)
+        {
+            if (!IsConnected())
+            {
+                PluginLog.Warning("Not connected to Splatoon");
+                return false;
+            }
+            if (!e.IsValid())
+            {
+                PluginLog.Warning("Elements are no longer valid");
+                return false;
+            }
+            try
+            {
+                Instance.GetType().GetMethod("InjectElement").Invoke(Instance, new object[] { e.Instance });
+                return true;
+            }
+            catch (Exception ex)
             {
                 ex.Log();
                 return false;
