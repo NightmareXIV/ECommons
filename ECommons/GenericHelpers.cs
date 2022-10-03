@@ -6,7 +6,6 @@ using Dalamud.Utility;
 using ECommons.ChatMethods;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
-using ECommons.Logging;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
