@@ -1,5 +1,5 @@
 ﻿using Dalamud;
-using Dalamud.Logging;
+using ECommons.Logging;
 using ECommons.DalamudServices;
 using System;
 using System.Collections.Generic;
@@ -24,9 +24,10 @@ namespace ECommons.LanguageHelpers
             if (File.Exists(file))
             {
                 var text = File.ReadAllText(file, Encoding.UTF8);
-                var list = text.ReplaceLineEndings().Split(Environment.NewLine);
-                foreach(var x in list)
+                var list = text.Replace("\r\n", "\n").Replace("\r", "").Split("\n");
+                for(var i = 0;i<list.Length;i++)
                 {
+                    var x = list[i].Replace("\\n", "\n");
                     var e = x.Split(Separator);
                     if(e.Length == 2)
                     {
@@ -41,7 +42,7 @@ namespace ECommons.LanguageHelpers
                         PluginLog.Warning($"[Localization] Invalid entry {x} found in localization file {file}");
                     }
                 }
-                PluginLog.Information($"[Localization] Loaded {CurrentLocalization} entries");
+                PluginLog.Information($"[Localization] Loaded {CurrentLocalization.Count} entries");
             }
             else
             {
@@ -52,7 +53,7 @@ namespace ECommons.LanguageHelpers
         public static void Save(ClientLanguage? lang = null)
         {
             var file = GetLocFileLocation(lang);
-            File.WriteAllText(file, CurrentLocalization.Select(x => $"{x.Key}{Separator}{x.Value}").Join(Environment.NewLine));
+            File.WriteAllText(file, CurrentLocalization.Select(x => $"{x.Key.Replace("\n", "\\n")}{Separator}{x.Value.Replace("\n", "\\n")}").Join("\n"));
         }
 
         public static string GetLocFileLocation(ClientLanguage? lang = null)
@@ -62,34 +63,14 @@ namespace ECommons.LanguageHelpers
                 :Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName, $"Language{(int)lang.Value}.ini");
         }
 
-        public static string Loc(this string s)
+        public static string Loc(string s)
         {
-            if (CurrentLocalization.TryGetValue(s, out var locs) && locs != "" && locs != null)
-            {
-                return locs;
-            }
-            else if (Logging)
-            {
-                CurrentLocalization[s] = "";
-            }
-            return s;
+            return s.Loc();
         }
 
-        public static string Loc(this string s, params object[] values)
+        public static string Loc(string s, params object[] values)
         {
-            if (CurrentLocalization.TryGetValue(s, out var locs) && locs != "" && locs != null)
-            {
-                foreach(var x in values)
-                {
-                    locs = locs.ReplaceFirst(PararmeterSymbol, x.ToString());
-                }
-                return locs;
-            }
-            else if (Logging)
-            {
-                CurrentLocalization[s] = "";
-            }
-            return s;
+            return s.Loc(values);
         }
     }
 }
