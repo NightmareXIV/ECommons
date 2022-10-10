@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<Authors>Eternita</Authors>
+		<Authors>NightmareXIV</Authors>
 		<Version>1.0.0.2</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>net6.0-windows</TargetFramework>
+		<TargetFramework>net5.0-windows</TargetFramework>
 		<Platforms>x64</Platforms>
 		<LangVersion>latest</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -24,27 +24,9 @@
 	</PropertyGroup>
 	
 	<PropertyGroup>
-		<DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+		<DalamudLibPath>C:\DalamudCN\addon\Hooks\dev\</DalamudLibPath>
 	</PropertyGroup>
 	
-	<PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
-        	<DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath>
-        	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    	</PropertyGroup>
-
-	<!--PropertyGroup>
-		<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
-		<SignAssembly>False</SignAssembly>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Description>A library of convenient functions to use with Dalamud</Description>
-		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
-		<RepositoryUrl></RepositoryUrl>
-		<NeutralLanguage>en</NeutralLanguage>
-		<PackageTags>Final Fantasy XIV, FFXIV Quick Launcher, Dalamud</PackageTags>
-		<PackageProjectUrl>https://github.com/Eternita-S/ECommons</PackageProjectUrl>
-	</PropertyGroup-->
-
 	<PropertyGroup>
 	  <LangVersion>preview</LangVersion>
 	</PropertyGroup>
