@@ -65,14 +65,14 @@ namespace ECommons.LanguageHelpers
         {
             if(AvailableLanguages == null || rescan)
             {
-                AvailableLanguages = new();
+                AvailableLanguages = new() { "English" };
                 foreach (var x in Directory.GetFiles(Svc.PluginInterface.AssemblyLocation.DirectoryName))
                 {
                     var name = Path.GetFileName(x);
                     if (name.StartsWith("Language") && name.EndsWith(".ini"))
                     {
                         var lang = name[8..^4];
-                        AvailableLanguages.Add(lang);
+                        if(!AvailableLanguages.Contains(lang)) AvailableLanguages.Add(lang);
                         PluginLog.Information($"[Localization] Found language data {lang}");
                     }
                 }
@@ -85,7 +85,7 @@ namespace ECommons.LanguageHelpers
             ClientLanguage.Japanese => "Japanese",
             ClientLanguage.French => "French",
             ClientLanguage.German => "German",
-            (ClientLanguage)5 => "Chinese",
+            ClientLanguage.ChineseSimplified => "Chinese",
             _ => "English"
         };
 
