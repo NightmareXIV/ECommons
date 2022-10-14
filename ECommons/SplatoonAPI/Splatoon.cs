@@ -14,7 +14,8 @@ namespace ECommons.SplatoonAPI
     {
         internal static IDalamudPlugin Instance;
         internal static int Version;
-        public static Action OnConnect = null;
+
+        internal static Action OnConnect;
 
         internal static void Init()
         {
@@ -25,12 +26,22 @@ namespace ECommons.SplatoonAPI
                     Connect();
                 }
             }
-            catch (Exception e)
-            {
-                //e.Log();
-            }
+            catch { }
             Svc.PluginInterface.GetIpcSubscriber<bool>("Splatoon.Loaded").Subscribe(Connect);
             Svc.PluginInterface.GetIpcSubscriber<bool>("Splatoon.Unloaded").Subscribe(Reset);
+        }
+
+        public static void SetOnConnect(Action action)
+        {
+            OnConnect = action;
+            try
+            {
+                if (Svc.PluginInterface.GetIpcSubscriber<bool>("Splatoon.IsLoaded").InvokeFunc())
+                {
+                    OnConnect();
+                }
+            }
+            catch { }
         }
 
         internal static void Shutdown()
