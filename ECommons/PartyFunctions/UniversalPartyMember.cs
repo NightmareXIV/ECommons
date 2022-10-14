@@ -13,7 +13,7 @@ namespace ECommons.PartyFunctions
 {
     public class UniversalPartyMember
     {
-        public SeString Name { get; init; }
+        public String Name { get; init; }
         public ExcelResolver<World> HomeWorld { get; init; }
         public ExcelResolver<World> CurrentWorld { get; init; }
 
@@ -24,7 +24,7 @@ namespace ECommons.PartyFunctions
             {
                 if (UniversalParty.IsCrossWorldParty)
                 {
-                    return Svc.Objects.FirstOrDefault(x => x is PlayerCharacter pc && pc.HomeWorld.Id == this.HomeWorld.Id && x.Name == this.Name);
+                    return Svc.Objects.FirstOrDefault(x => x is PlayerCharacter pc && pc.HomeWorld.Id == this.HomeWorld.Id && x.Name.ToString() == this.Name);
                 }
                 else
                 {

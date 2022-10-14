@@ -35,7 +35,7 @@ namespace ECommons.PartyFunctions
                     {
                         span.Add(new()
                         {
-                            Name = MemoryHelper.ReadSeStringNullTerminated((IntPtr)x.Name),
+                            Name = MemoryHelper.ReadStringNullTerminated((IntPtr)x.Name),
                             HomeWorld = new((uint)x.HomeWorld),
                             CurrentWorld = new((uint)x.CurrentWorld),
                         });
@@ -47,7 +47,7 @@ namespace ECommons.PartyFunctions
                     {
                         span.Add(new()
                         {
-                            Name = x.Name,
+                            Name = x.Name.ToString(),
                             HomeWorld = new(x.World),
                             CurrentWorld = new(Svc.ClientState.LocalPlayer.CurrentWorld),
                             GameObjectInternal = x.GameObject
