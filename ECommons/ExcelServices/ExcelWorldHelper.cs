@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ECommons.ExcelServices
 {
-    public static class ExcelHelper
+    public static class ExcelWorldHelper
     {
         public static World GetWorldByName(string name)
         {
@@ -28,6 +28,16 @@ namespace ECommons.ExcelServices
         public static string[] GetPublicWorlds(Region? region)
         {
             return Svc.Data.GetExcelSheet<World>().Where(x => (region == null && x.Region.EqualsAny(Enum.GetValues<Region>().Select(z => (byte)z).ToArray())) || (region.HasValue && x.Region == (byte)region.Value)).Select(x => x.Name.ToString()).ToArray();
+        }
+
+        public static World GetWorldById(uint id)
+        {
+            return Svc.Data.GetExcelSheet<World>().GetRow(id);
+        }
+
+        public static string GetWorldNameById(uint id)
+        {
+            return GetWorldById(id)?.Name.ToString();
         }
     }
 }
