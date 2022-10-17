@@ -458,6 +458,13 @@ namespace ECommons.ImGuiMethods
             }
         }
 
+        public static void TextCopy(Vector4 col, string text)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, col);
+            TextCopy(text);
+            ImGui.PopStyleColor();
+        }
+
         public static void TextCopy(string text)
         {
             ImGui.TextUnformatted(text);
