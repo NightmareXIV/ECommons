@@ -1,4 +1,5 @@
-﻿using Dalamud.Game.ClientState.Resolvers;
+﻿using Dalamud.Game.ClientState.Objects.SubKinds;
+using Dalamud.Game.ClientState.Resolvers;
 using Dalamud.Game.Text.SeStringHandling;
 using ECommons.DalamudServices;
 using Lumina.Excel.GeneratedSheets;
@@ -25,6 +26,21 @@ namespace ECommons.ChatMethods
         public Sender(SeString Name, uint HomeWorld)
         {
             this = new(Name.ToString(), HomeWorld);
+        }
+
+        public Sender(SeString Name, Dalamud.Game.ClientState.Resolvers.ExcelResolver<World> HomeWorld)
+        {
+            this = new(Name.ToString(), HomeWorld.Id);
+        }
+
+        public Sender(string Name, Dalamud.Game.ClientState.Resolvers.ExcelResolver<World> HomeWorld)
+        {
+            this = new(Name, HomeWorld.Id);
+        }
+
+        public Sender(PlayerCharacter pc)
+        {
+            this = new(pc.Name, pc.HomeWorld);
         }
 
         public override bool Equals(object obj)
