@@ -42,6 +42,17 @@ namespace ECommons.Automation
         private delegate void ProcessChatBoxDelegate(IntPtr uiModule, IntPtr message, IntPtr unused, byte a4);
         private ProcessChatBoxDelegate ProcessChatBox { get; }
         private readonly unsafe delegate* unmanaged<Utf8String*, int, IntPtr, void> _sanitiseString = null!;
+
+        static Chat instance;
+        public static Chat Instance
+        {
+            get
+            {
+                instance ??= new();
+                return instance;
+            }
+        }
+
         public Chat()
         {
             if (Svc.SigScanner.TryScanText(Signatures.SendChat, out var processChatBoxPtr))
