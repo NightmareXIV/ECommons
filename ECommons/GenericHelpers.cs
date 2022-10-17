@@ -1,8 +1,9 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Logging;
+using ECommons.Logging;
 using Dalamud.Utility;
+using ECommons.ChatMethods;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -21,6 +22,45 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static string ReplaceFirst(this string text, string search, string replace)
+        {
+            int pos = text.IndexOf(search);
+            if (pos < 0)
+            {
+                return text;
+            }
+            return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
+        }
+
+        public static bool TryDecodeSender(SeString sender, out Sender senderStruct)
+        {
+            if (sender == null)
+            {
+                senderStruct = default;
+                return false;
+            }
+            foreach (var x in sender.Payloads)
+            {
+                if (x is PlayerPayload p)
+                {
+                    senderStruct = new(p.PlayerName, p.World.RowId);
+                    return true;
+                }
+            }
+            senderStruct = default;
+            return false;
+        }
+
+        public static bool IsAddonReady(AtkUnitBase* addon)
+        {
+            return addon->IsVisible && addon->UldManager.LoadedState == AtkLoadState.Loaded;
+        }
+
+        public static bool IsAddonReady(AtkComponentNode* addon)
+        {
+            return addon->AtkResNode.IsVisible && addon->Component->UldManager.LoadedState == AtkLoadState.Loaded;
+        }
+
         public static string ExtractText(this Lumina.Text.SeString s, bool onlyFirst = false)
         {
             return s.ToDalamudString().ExtractText(onlyFirst);
@@ -81,7 +121,7 @@ namespace ECommons
         public static string GetTerritoryName(this uint terr)
         {
             var t = Svc.Data.GetExcelSheet<TerritoryType>().GetRow(terr);
-            return $"{terr} | {t.ContentFinderCondition.Value.Name.ToString().Default(t.PlaceName.Value.Name.ToString())}";
+            return $"{terr} | {t?.ContentFinderCondition.Value?.Name.ToString().Default(t?.PlaceName.Value?.Name.ToString())}";
         }
 
         public static T FirstOr0<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
@@ -398,7 +438,8 @@ namespace ECommons
         public static bool EqualsAny<T>(this T obj, params T[] values)
         {
             return values.Any(x => x.Equals(obj));
-}
+        }
+
 
         public static bool EqualsIgnoreCaseAny(this string obj, params string[] values)
         {
