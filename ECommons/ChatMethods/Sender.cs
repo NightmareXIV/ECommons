@@ -1,4 +1,6 @@
-﻿using ECommons.DalamudServices;
+﻿using Dalamud.Game.ClientState.Resolvers;
+using Dalamud.Game.Text.SeStringHandling;
+using ECommons.DalamudServices;
 using Lumina.Excel.GeneratedSheets;
 using Newtonsoft.Json.Linq;
 using System;
@@ -18,6 +20,11 @@ namespace ECommons.ChatMethods
         {
             this.Name = Name;
             this.HomeWorld = HomeWorld;
+        }
+
+        public Sender(SeString Name, uint HomeWorld)
+        {
+            this = new(Name.ToString(), HomeWorld);
         }
 
         public override bool Equals(object obj)
