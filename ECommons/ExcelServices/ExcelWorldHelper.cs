@@ -19,15 +19,15 @@ namespace ECommons.ExcelServices
             return null;
         }
 
-        public static bool TryGetWorldByName(string name, out World result)
+        public static bool? TryGetWorldByName(string name, out World result)
         {
             result = GetWorldByName(name);
             return result != null;
         }
 
-        public static string[] GetPublicWorlds(Region? region)
+        public static World[] GetPublicWorlds(Region? region)
         {
-            return Svc.Data.GetExcelSheet<World>().Where(x => (region == null && x.Region.EqualsAny(Enum.GetValues<Region>().Select(z => (byte)z).ToArray())) || (region.HasValue && x.Region == (byte)region.Value)).Select(x => x.Name.ToString()).ToArray();
+            return Svc.Data.GetExcelSheet<World>().Where(x => ((region == null && x.Region.EqualsAny(Enum.GetValues<Region>().Select(z => (byte)z).ToArray())) || (region.HasValue && x.Region == (byte)region.Value)) && x.IsPublic).ToArray();
         }
 
         public static World GetWorldById(uint id)
@@ -38,6 +38,22 @@ namespace ECommons.ExcelServices
         public static string GetWorldNameById(uint id)
         {
             return GetWorldById(id)?.Name.ToString();
+        }
+
+        public static World GetPublicWorldById(uint id)
+        {
+            var data = Svc.Data.GetExcelSheet<World>().GetRow(id);
+            if (data.Region.EqualsAny(Enum.GetValues<Region>().Select(z => (byte)z).ToArray()))
+            {
+                return data;
+            }
+            return null;
+        }
+
+
+        public static string GetPublicWorldNameById(uint id)
+        {
+            return GetPublicWorldById(id)?.Name.ToString();
         }
     }
 }
