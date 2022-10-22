@@ -11,6 +11,7 @@ namespace ECommons
     public static class TerritoryName
     {
         static Dictionary<uint, string> Cache = new();
+
         public static string GetTerritoryName(uint id)
         {
             if(Cache.TryGetValue(id, out var val))
