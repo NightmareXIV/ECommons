@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace ECommons
 {
-    public static class ECommons
+    public static class ECommonsMain
     {
         internal static IDalamudPlugin Instance = null;
         //test
