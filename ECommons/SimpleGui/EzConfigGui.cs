@@ -31,7 +31,7 @@ namespace ECommons.SimpleGui
             windowSystem = new($"ECommons@{DalamudReflector.GetPluginName()}");
             Draw = draw;
             Config = config;
-            Ver = ECommons.Instance.GetType().Assembly.GetName().Version.ToString();
+            Ver = ECommonsMain.Instance.GetType().Assembly.GetName().Version.ToString();
             configWindow = new($"{name} v{Ver}###{name}");
             windowSystem.AddWindow(configWindow);
             Svc.PluginInterface.UiBuilder.Draw += windowSystem.Draw;
