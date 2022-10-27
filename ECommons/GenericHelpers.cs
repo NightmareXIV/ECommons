@@ -17,11 +17,20 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static void Each<T>(this IEnumerable<T> collection, Action<T> function)
+        {
+            foreach(var x in collection)
+            {
+                function(x);
+            }
+        }
+
         public static bool IsOccupied()
         {
             return Svc.Condition[ConditionFlag.Occupied] || Svc.Condition[ConditionFlag.Occupied30] || Svc.Condition[ConditionFlag.Occupied33] || Svc.Condition[ConditionFlag.Occupied38] || Svc.Condition[ConditionFlag.Occupied39] || Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent] || Svc.Condition[ConditionFlag.OccupiedInEvent] || Svc.Condition[ConditionFlag.OccupiedInQuestEvent] || Svc.Condition[ConditionFlag.OccupiedSummoningBell] || Svc.Condition[ConditionFlag.WatchingCutscene] || Svc.Condition[ConditionFlag.WatchingCutscene78] || Svc.Condition[ConditionFlag.BetweenAreas] || Svc.Condition[ConditionFlag.BetweenAreas51] || Svc.Condition[ConditionFlag.InThatPosition];

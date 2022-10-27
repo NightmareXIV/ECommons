@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ECommons.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -13,13 +14,13 @@ namespace ECommons.ImGuiMethods
         {
             var delta = (end - start) / (int)Miliseconds;
             var time = Environment.TickCount % (Miliseconds * 2);
-            if (Environment.TickCount % (Miliseconds * 2) < Miliseconds)
+            if (time < Miliseconds)
             {
-                return start + delta * (float)(time / 2);
+                return start + delta * (float)(time % 1000);
             }
             else
             {
-                return end - delta * ((float)((time) / 2));
+                return end - delta * ((float)(time % 1000));
             }
         }
     }
