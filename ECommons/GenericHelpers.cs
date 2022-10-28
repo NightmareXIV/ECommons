@@ -22,6 +22,17 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static bool If<T>(this T obj, Func<T, bool> func)
+        {
+            return func(obj);
+        }
+
+        public static bool NotNull<T>(this T obj, out T outobj)
+        {
+            outobj = obj;
+            return obj != null;
+        }
+
         public static bool IsOccupied()
         {
             return Svc.Condition[ConditionFlag.Occupied] || Svc.Condition[ConditionFlag.Occupied30] || Svc.Condition[ConditionFlag.Occupied33] || Svc.Condition[ConditionFlag.Occupied38] || Svc.Condition[ConditionFlag.Occupied39] || Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent] || Svc.Condition[ConditionFlag.OccupiedInEvent] || Svc.Condition[ConditionFlag.OccupiedInQuestEvent] || Svc.Condition[ConditionFlag.OccupiedSummoningBell] || Svc.Condition[ConditionFlag.WatchingCutscene] || Svc.Condition[ConditionFlag.WatchingCutscene78] || Svc.Condition[ConditionFlag.BetweenAreas] || Svc.Condition[ConditionFlag.BetweenAreas51] || Svc.Condition[ConditionFlag.InThatPosition];
