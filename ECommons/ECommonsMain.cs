@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ECommons.Events;
 
 namespace ECommons
 {
@@ -76,6 +77,7 @@ namespace ECommons
                 GenericHelpers.Safe(Splatoon.Reset);
             }
             GenericHelpers.Safe(Splatoon.Shutdown);
+            GenericHelpers.Safe(ProperOnLogin.Dispose);
             Instance = null;
         }
     }
