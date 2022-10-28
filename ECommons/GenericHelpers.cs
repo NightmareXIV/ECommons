@@ -206,10 +206,11 @@ namespace ECommons
             return ImGui.ColorConvertU32ToFloat4(color);
         }
 
-        public static void ValidateRange(this ref int i, int min, int max)
+        public static ref int ValidateRange(this ref int i, int min, int max)
         {
             if (i > max) i = max;
             if (i < min) i = min;
+            return ref i;
         }
 
         public static void ValidateRange(this ref float i, float min, float max)
