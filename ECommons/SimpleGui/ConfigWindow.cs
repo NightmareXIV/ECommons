@@ -1,4 +1,5 @@
 ﻿using Dalamud.Interface.Windowing;
+using ECommons.Configuration;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using ImGuiNET;
@@ -38,6 +39,11 @@ namespace ECommons.SimpleGui
             if(EzConfigGui.Config != null)
             {
                 Svc.PluginInterface.SavePluginConfig(EzConfigGui.Config);
+                Notify.Success("Configuration saved");
+            }
+            if(EzConfig.Config != null)
+            {
+                EzConfig.Save();
                 Notify.Success("Configuration saved");
             }
             EzConfigGui.OnClose?.Invoke();

@@ -13,7 +13,7 @@ namespace ECommons.SimpleGui
 {
     public static class EzConfigGui
     {
-        internal static WindowSystem windowSystem;
+        public static WindowSystem WindowSystem { get; internal set; }
         internal static Action Draw = null;
         internal static Action OnClose = null;
         internal static Action OnOpen = null;
@@ -22,19 +22,19 @@ namespace ECommons.SimpleGui
         static string Ver = string.Empty;
         public static Window Window { get { return configWindow; } }
 
-        public static void Init(string name, Action draw, IPluginConfiguration config = null)
+        public static void Init(Action draw, IPluginConfiguration config = null)
         {
-            if(windowSystem != null)
+            if(WindowSystem != null)
             {
                 throw new Exception("ConfigGui already initialized");
             }
-            windowSystem = new($"ECommons@{DalamudReflector.GetPluginName()}");
+            WindowSystem = new($"ECommons@{DalamudReflector.GetPluginName()}");
             Draw = draw;
             Config = config;
             Ver = ECommonsMain.Instance.GetType().Assembly.GetName().Version.ToString();
-            configWindow = new($"{name} v{Ver}###{name}");
-            windowSystem.AddWindow(configWindow);
-            Svc.PluginInterface.UiBuilder.Draw += windowSystem.Draw;
+            configWindow = new($"{DalamudReflector.GetPluginName()} v{Ver}###{DalamudReflector.GetPluginName()}");
+            WindowSystem.AddWindow(configWindow);
+            Svc.PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
             Svc.PluginInterface.UiBuilder.OpenConfigUi += Open;
         }
 

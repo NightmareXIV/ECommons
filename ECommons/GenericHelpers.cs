@@ -23,6 +23,17 @@ namespace ECommons
 {
     public static unsafe class GenericHelpers
     {
+        public static V GetOrCreate<K, V>(this IDictionary<K, V> dictionary, K key) where V:new()
+        {
+            if (dictionary.TryGetValue(key, out var result))
+            {
+                return result;
+            }
+            var newValue = new V();
+            dictionary.Add(key, newValue);
+            return newValue;
+        }
+
         public static void Each<T>(this IEnumerable<T> collection, Action<T> function)
         {
             foreach(var x in collection)

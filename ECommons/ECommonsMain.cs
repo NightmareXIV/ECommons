@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ECommons.Events;
+using ECommons.Configuration;
 
 namespace ECommons
 {
@@ -49,6 +50,10 @@ namespace ECommons
 
         public static void Dispose()
         {
+            if(EzConfig.Config != null)
+            {
+                GenericHelpers.Safe(EzConfig.Save);
+            }
             foreach(var x in ImGuiMethods.ThreadLoadImageHandler.CachedTextures)
             {
                 GenericHelpers.Safe(x.Value.texture.Dispose);
@@ -56,7 +61,7 @@ namespace ECommons
             GenericHelpers.Safe(ImGuiMethods.ThreadLoadImageHandler.CachedTextures.Clear);
             GenericHelpers.Safe(ObjectLife.Dispose);
             GenericHelpers.Safe(DalamudReflector.Dispose);
-            if(EzConfigGui.windowSystem != null)
+            if(EzConfigGui.WindowSystem != null)
             {
                 Svc.PluginInterface.UiBuilder.OpenConfigUi -= EzConfigGui.Open;
                 Svc.PluginInterface.UiBuilder.Draw -= EzConfigGui.Draw;
@@ -65,8 +70,8 @@ namespace ECommons
                     Svc.PluginInterface.SavePluginConfig(EzConfigGui.Config);
                     Notify.Info("Configuration saved");
                 }
-                EzConfigGui.windowSystem.RemoveAllWindows();
-                EzConfigGui.windowSystem = null;
+                EzConfigGui.WindowSystem.RemoveAllWindows();
+                EzConfigGui.WindowSystem = null;
             }
             foreach(var x in EzCmd.RegisteredCommands)
             {
