@@ -1,27 +1,21 @@
-﻿using ECommons.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ECommons.ImGuiMethods
+namespace ECommons.ImGuiMethods;
+
+public static class GradientColor
 {
-    public static class GradientColor
+    public static Vector4 Get(Vector4 start, Vector4 end, int Miliseconds = 1000)
     {
-        public static Vector4 Get(Vector4 start, Vector4 end, int Miliseconds = 1000)
+        var delta = (end - start) / (int)Miliseconds;
+        var time = Environment.TickCount % (Miliseconds * 2);
+        if (time < Miliseconds)
         {
-            var delta = (end - start) / (int)Miliseconds;
-            var time = Environment.TickCount % (Miliseconds * 2);
-            if (time < Miliseconds)
-            {
-                return start + delta * (float)(time % 1000);
-            }
-            else
-            {
-                return end - delta * ((float)(time % 1000));
-            }
+            return start + delta * (float)(time % 1000);
+        }
+        else
+        {
+            return end - delta * ((float)(time % 1000));
         }
     }
 }

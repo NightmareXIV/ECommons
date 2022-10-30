@@ -1,38 +1,31 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.SubKinds;
-using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.DalamudServices;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ECommons.GameFunctions
+namespace ECommons.GameFunctions;
+
+public static class FakeParty
 {
-    public static class FakeParty
+    public static IEnumerator<PlayerCharacter> Get()
     {
-        public static IEnumerator<PlayerCharacter> Get()
+        if (Svc.Condition[ConditionFlag.DutyRecorderPlayback])
         {
-            if (Svc.Condition[ConditionFlag.DutyRecorderPlayback])
+            foreach (var x in Svc.Objects)
             {
-                foreach (var x in Svc.Objects)
+                if (x is PlayerCharacter pc)
                 {
-                    if (x is PlayerCharacter pc)
-                    {
-                        yield return pc;
-                    }
+                    yield return pc;
                 }
             }
-            else
+        }
+        else
+        {
+            foreach(var x in Svc.Party)
             {
-                foreach(var x in Svc.Party)
+                if(x.GameObject is PlayerCharacter pc)
                 {
-                    if(x.GameObject is PlayerCharacter pc)
-                    {
-                        yield return pc;
-                    }
+                    yield return pc;
                 }
             }
         }

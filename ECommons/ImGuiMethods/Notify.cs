@@ -2,55 +2,48 @@
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using ECommons.Schedulers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ECommons.ImGuiMethods
+namespace ECommons.ImGuiMethods;
+
+public static class Notify
 {
-    public static class Notify
+    public static void Success(string s)
     {
-        public static void Success(string s)
+        _ = new TickScheduler(delegate
         {
-            _ = new TickScheduler(delegate
-            {
-                Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Success);
-            });
-        }
+            Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Success);
+        });
+    }
 
-        public static void Info(string s)
+    public static void Info(string s)
+    {
+        _ = new TickScheduler(delegate
         {
-            _ = new TickScheduler(delegate
-            {
-                Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Info);
-            });
-        }
+            Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Info);
+        });
+    }
 
-        public static void Error(string s)
+    public static void Error(string s)
+    {
+        _ = new TickScheduler(delegate
         {
-            _ = new TickScheduler(delegate
-            {
-                Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Error);
-            });
-        }
+            Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Error);
+        });
+    }
 
-        public static void Warning(string s)
+    public static void Warning(string s)
+    {
+        _ = new TickScheduler(delegate
         {
-            _ = new TickScheduler(delegate
-            {
-                Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Warning);
-            });
-        }
+            Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Warning);
+        });
+    }
 
-        public static void Plain(string s)
+    public static void Plain(string s)
+    {
+        _ = new TickScheduler(delegate
         {
-            _ = new TickScheduler(delegate
-            {
-                Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.None);
-            });
-        }
+            Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.None);
+        });
     }
 }
