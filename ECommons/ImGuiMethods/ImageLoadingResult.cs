@@ -1,15 +1,9 @@
 ﻿using ImGuiScene;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ECommons.ImGuiMethods
+namespace ECommons.ImGuiMethods;
+
+internal class ImageLoadingResult
 {
-    internal class ImageLoadingResult
-    {
-        internal TextureWrap texture = null;
-        internal bool isCompleted = false;
-    }
+    internal TextureWrap texture = null;
+    internal bool isCompleted = false;
 }

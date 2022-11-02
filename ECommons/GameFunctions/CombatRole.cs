@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ECommons.GameFunctions;
 
-namespace ECommons.GameFunctions
+public enum CombatRole
 {
-    public enum CombatRole
-    {
-        NonCombat, Tank, Healer, DPS
-    }
+    NonCombat, Tank, Healer, DPS
 }

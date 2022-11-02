@@ -1,50 +1,44 @@
-﻿using Dalamud.Game;
-using ECommons.Logging;
+﻿using ECommons.Logging;
 using ECommons.DalamudServices;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ECommons.Schedulers
+namespace ECommons.Schedulers;
+
+public class ExecuteForScheduler : IScheduler
 {
-    public class ExecuteForScheduler : IScheduler
+    long stopExecAt;
+    Action function;
+    bool disposed = false;
+
+    public ExecuteForScheduler(Action function, long executeForMS)
     {
-        long stopExecAt;
-        Action function;
-        bool disposed = false;
+        stopExecAt = Environment.TickCount64 + executeForMS;
+        this.function = function;
+        Svc.Framework.Update += Execute;
+    }
 
-        public ExecuteForScheduler(Action function, long executeForMS)
+    public void Dispose()
+    {
+        if (!disposed)
         {
-            stopExecAt = Environment.TickCount64 + executeForMS;
-            this.function = function;
-            Svc.Framework.Update += Execute;
+            Svc.Framework.Update -= Execute;
         }
+        disposed = true;
+    }
 
-        public void Dispose()
+    void Execute(object _)
+    {
+        try
         {
-            if (!disposed)
-            {
-                Svc.Framework.Update -= Execute;
-            }
-            disposed = true;
+            function();
         }
-
-        void Execute(object _)
+        catch (Exception e)
         {
-            try
-            {
-                function();
-            }
-            catch (Exception e)
-            {
-                PluginLog.Error(e.Message + "\n" + e.StackTrace ?? "");
-            }
-            if (Environment.TickCount64 > stopExecAt)
-            {
-                Dispose();
-            }
+            PluginLog.Error(e.Message + "\n" + e.StackTrace ?? "");
+        }
+        if (Environment.TickCount64 > stopExecAt)
+        {
+            Dispose();
         }
     }
 }
