@@ -213,10 +213,11 @@ namespace ECommons
             return ref i;
         }
 
-        public static void ValidateRange(this ref float i, float min, float max)
+        public static ref float ValidateRange(this ref float i, float min, float max)
         {
             if (i > max) i = max;
             if (i < min) i = min;
+            return ref i;
         }
 
         public static void Log(this Exception e)
