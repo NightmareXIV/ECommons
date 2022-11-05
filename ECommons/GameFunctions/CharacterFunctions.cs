@@ -23,6 +23,21 @@ public static unsafe class CharacterFunctions
         return (FFXIVClientStructs.FFXIV.Client.Game.Character.BattleChara*)o.Address;
     }
 
+    public static FFXIVClientStructs.FFXIV.Client.Game.Character.Character* Character(this BattleChara o)
+    {
+        return (FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)o.Address;
+    }
+
+    public static FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject* GameObject(this BattleChara o)
+    {
+        return (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)o.Address;
+    }
+
+    public static FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject* GameObject(this Character o)
+    {
+        return (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)o.Address;
+    }
+
     public static bool IsCharacterVisible(this Character chr)
     {
         var v = (IntPtr)(((FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)chr.Address)->GameObject.DrawObject);

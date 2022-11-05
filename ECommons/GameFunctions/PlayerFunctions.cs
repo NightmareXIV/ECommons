@@ -1,4 +1,5 @@
-﻿using Dalamud.Game.ClientState.Objects.Types;
+﻿using Dalamud.Game.ClientState.Objects.SubKinds;
+using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.Logging;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using System;
@@ -21,5 +22,20 @@ public unsafe static class PlayerFunctions
         }
         number = default;
         return false;
+    }
+
+    public static FFXIVClientStructs.FFXIV.Client.Game.Character.BattleChara* BattleChara(this PlayerCharacter o)
+    {
+        return (FFXIVClientStructs.FFXIV.Client.Game.Character.BattleChara*)o.Address;
+    }
+
+    public static FFXIVClientStructs.FFXIV.Client.Game.Character.Character* Character(this PlayerCharacter o)
+    {
+        return (FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)o.Address;
+    }
+
+    public static FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject* GameObject(this PlayerCharacter o)
+    {
+        return (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)o.Address;
     }
 }
