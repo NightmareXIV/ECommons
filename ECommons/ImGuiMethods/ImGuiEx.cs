@@ -323,9 +323,9 @@ public static class ImGuiEx
     }
 
     public static Dictionary<string, Box<string>> EnumComboSearch = new();
-    public static void EnumCombo<T>(string name, ref T refConfigField, Dictionary<T, string> names) where T:IConvertible
+    public static bool EnumCombo<T>(string name, ref T refConfigField, Dictionary<T, string> names) where T:IConvertible
     {
-        EnumCombo(name, ref refConfigField, null, names);
+        return EnumCombo(name, ref refConfigField, null, names);
     }
 
     public static bool EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, Dictionary<T, string> names = null) where T : IConvertible
