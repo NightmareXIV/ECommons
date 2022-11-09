@@ -9,6 +9,9 @@ public static class ProperOnLogin
 {
     static HashSet<Action> RegisteredActions = new();
     static bool EventRegistered = false;
+
+    public static bool PlayerPresent => Svc.ClientState.LocalPlayer != null && Svc.ClientState.LocalContentId != 0;
+
     public static void Register(Action action)
     {
         if (RegisteredActions.Contains(action))
@@ -50,7 +53,7 @@ public static class ProperOnLogin
 
     static void OnUpdate(object _)
     {
-        if(Svc.ClientState.LocalPlayer != null && Svc.ClientState.LocalContentId != 0)
+        if(PlayerPresent)
         {
             PluginLog.Debug("Firing ProperOnLogin event and unregistering framework update");
             Svc.Framework.Update -= OnUpdate;
