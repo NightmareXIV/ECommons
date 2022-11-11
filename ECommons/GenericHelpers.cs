@@ -20,6 +20,15 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static V GetSafe<K, V>(this IDictionary<K, V> dic, K key, V Default = default)
+    {
+        if(dic?.TryGetValue(key, out var value) == true)
+        {
+            return value;
+        }
+        return Default;
+    }
+
     public static V GetOrCreate<K, V>(this IDictionary<K, V> dictionary, K key) where V:new()
     {
         if (dictionary.TryGetValue(key, out var result))
