@@ -237,7 +237,12 @@ public static unsafe class GenericHelpers
             if (i > max) i = max;
             if (i < min) i = min;
             return ref i;
-        }
+    }
+
+    public static void LogWarning(this Exception e)
+    {
+        PluginLog.Warning($"{e.Message}\n{e.StackTrace ?? ""}");
+    }
 
     public static void Log(this Exception e)
     {
