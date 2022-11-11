@@ -511,6 +511,20 @@ public static unsafe class GenericHelpers
         }
     }
 
+    public static bool TryGetFirst<K>(this IEnumerable<K> enumerable, out K value)
+    {
+        try
+        {
+            value = enumerable.First();
+            return true;
+        }
+        catch (Exception)
+        {
+            value = default;
+            return false;
+        }
+    }
+
     public static bool TryGetFirst<K>(this IEnumerable<K> enumerable, Func<K, bool> predicate, out K value)
     {
         try
