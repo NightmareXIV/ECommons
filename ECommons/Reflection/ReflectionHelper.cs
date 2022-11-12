@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Linq;
+using System.Reflection;
 
 namespace ECommons.Reflection;
 
@@ -53,11 +54,11 @@ public static class ReflectionHelper
         {
             obj.GetType().Assembly.GetType(type).GetProperty(name, AllFlags).SetValue(null, value);
         }
+    }
 
-        public static object Call(this object obj, string name, params object[] values)
-        {
-            var info = obj.GetType().GetMethod(name, AllFlags, values.Select(x => x.GetType()).ToArray());
-            return info.Invoke(obj, values);
-        }
+    public static object Call(this object obj, string name, params object[] values)
+    {
+        var info = obj.GetType().GetMethod(name, AllFlags, values.Select(x => x.GetType()).ToArray());
+        return info.Invoke(obj, values);
     }
 }
