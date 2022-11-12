@@ -1,21 +1,15 @@
 ﻿using Serilog.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ECommons.Logging
+namespace ECommons.Logging;
+
+public record struct InternalLogMessage
 {
-    public record struct InternalLogMessage
-    {
-        public string Message;
-        public LogEventLevel Level;
+    public string Message;
+    public LogEventLevel Level;
 
-        public InternalLogMessage(string Message, LogEventLevel Level = LogEventLevel.Information)
-        {
-            this.Message = Message;
-            this.Level = Level;
-        }
+    public InternalLogMessage(string Message, LogEventLevel Level = LogEventLevel.Information)
+    {
+        this.Message = Message;
+        this.Level = Level;
     }
 }
