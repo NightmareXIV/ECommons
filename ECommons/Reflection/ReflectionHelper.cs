@@ -34,8 +34,8 @@ public static class ReflectionHelper
 
     public static object GetStaticFoP(this object obj, string type, string name)
     {
-        return obj.GetType().Assembly.GetType(type).GetField(name, AllFlags)?.GetValue(null)
-            ?? obj.GetType().Assembly.GetType(type).GetProperty(name, AllFlags)?.GetValue(null);
+        return obj.GetType().Assembly.GetType(type).GetField(name, StaticFlags)?.GetValue(null)
+            ?? obj.GetType().Assembly.GetType(type).GetProperty(name, StaticFlags)?.GetValue(null);
     }
 
     public static T GetStaticFoP<T>(this object obj, string type, string name)
@@ -45,14 +45,14 @@ public static class ReflectionHelper
 
     public static void SetStaticFoP(this object obj, string type, string name, object value)
     {
-        var field = obj.GetType().Assembly.GetType(type).GetField(name, AllFlags);
+        var field = obj.GetType().Assembly.GetType(type).GetField(name, StaticFlags);
         if (field != null)
         {
             field.SetValue(null, value);
         }
         else
         {
-            obj.GetType().Assembly.GetType(type).GetProperty(name, AllFlags).SetValue(null, value);
+            obj.GetType().Assembly.GetType(type).GetProperty(name, StaticFlags).SetValue(null, value);
         }
     }
 
