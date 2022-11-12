@@ -29,5 +29,11 @@ namespace ECommons.Reflection
                 obj.GetType().GetProperty(name, AllFlags).SetValue(obj, value);
             }
         }
+
+        public static object Call(this object obj, string name, params object[] values)
+        {
+            var info = obj.GetType().GetMethod(name, AllFlags, values.Select(x => x.GetType()).ToArray());
+            return info.Invoke(obj, values);
+        }
     }
 }
