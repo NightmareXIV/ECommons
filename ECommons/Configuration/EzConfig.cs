@@ -19,16 +19,16 @@ public static class EzConfig
     {
         if (Config != null)
         {
-            SaveConfiguration(Config, "DefaultConfig.json");
+            SaveConfiguration(Config, "DefaultConfig.json", true);
         }
     }
 
-    public static void SaveConfiguration(this IEzConfig Configuration, string path, bool appendConfigDirectory = true)
+    public static void SaveConfiguration(this IEzConfig Configuration, string path, bool indented = false, bool appendConfigDirectory = true)
     {
         if (appendConfigDirectory) path = Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), path);
         File.WriteAllText(path, JsonConvert.SerializeObject(Configuration, new JsonSerializerSettings()
         {
-            Formatting = Formatting.Indented,
+            Formatting = indented?Formatting.Indented:Formatting.None,
         }), Encoding.UTF8);
     }
 
