@@ -11,7 +11,7 @@ public static class EzConfig
 
     public static T Init<T>() where T : IEzConfig, new()
     {
-        Config = LoadConfiguration<T>(Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), "DefaultConfig.json"));
+        Config = LoadConfiguration<T>("DefaultConfig.json");
         return (T)Config;
     }
 
@@ -19,25 +19,27 @@ public static class EzConfig
     {
         if (Config != null)
         {
-            SaveConfiguration(Config, Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), "DefaultConfig.json"));
+            SaveConfiguration(Config, "DefaultConfig.json", true);
         }
     }
 
-    public static void SaveConfiguration(this IEzConfig Configuration, string Path)
+    public static void SaveConfiguration(this IEzConfig Configuration, string path, bool indented = false, bool appendConfigDirectory = true)
     {
-        File.WriteAllText(Path, JsonConvert.SerializeObject(Configuration, new JsonSerializerSettings()
+        if (appendConfigDirectory) path = Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), path);
+        File.WriteAllText(path, JsonConvert.SerializeObject(Configuration, new JsonSerializerSettings()
         {
-            Formatting = Formatting.Indented,
+            Formatting = indented?Formatting.Indented:Formatting.None,
         }), Encoding.UTF8);
     }
 
-    public static T LoadConfiguration<T>(string Path) where T : IEzConfig, new()
+    public static T LoadConfiguration<T>(string path, bool appendConfigDirectory = true) where T : IEzConfig, new()
     {
-        if (!File.Exists(Path))
+        if (appendConfigDirectory) path = Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), path);
+        if (!File.Exists(path))
         {
             return new T();
         }
-        return JsonConvert.DeserializeObject<T>(File.ReadAllText(Path, Encoding.UTF8), new JsonSerializerSettings()
+        return JsonConvert.DeserializeObject<T>(File.ReadAllText(path, Encoding.UTF8), new JsonSerializerSettings()
         {
             ObjectCreationHandling = ObjectCreationHandling.Replace,
         }) ?? new T();

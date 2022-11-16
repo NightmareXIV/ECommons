@@ -20,6 +20,15 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static V GetSafe<K, V>(this IDictionary<K, V> dic, K key, V Default = default)
+    {
+        if(dic?.TryGetValue(key, out var value) == true)
+        {
+            return value;
+        }
+        return Default;
+    }
+
     public static V GetOrCreate<K, V>(this IDictionary<K, V> dictionary, K key) where V:new()
     {
         if (dictionary.TryGetValue(key, out var result))
@@ -512,6 +521,20 @@ public static unsafe class GenericHelpers
         catch(Exception)
         {
             keyValuePair = default;
+            return false;
+        }
+    }
+
+    public static bool TryGetFirst<K>(this IEnumerable<K> enumerable, out K value)
+    {
+        try
+        {
+            value = enumerable.First();
+            return true;
+        }
+        catch (Exception)
+        {
+            value = default;
             return false;
         }
     }
