@@ -14,7 +14,7 @@ namespace ECommons;
 
 public static class ECommonsMain
 {
-    internal static IDalamudPlugin Instance = null;
+    public static IDalamudPlugin Instance = null;
     //test
     public static void Init(DalamudPluginInterface pluginInterface, IDalamudPlugin instance, params Module[] modules)
     {
