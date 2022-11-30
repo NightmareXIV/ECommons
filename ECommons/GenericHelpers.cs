@@ -20,6 +20,23 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static string Print<T>(this IEnumerable<T> x)
+    {
+        return x.Select(x => x.ToString()).Join(", ");
+    }
+
+    public static void DeleteFileToRecycleBin(string path)
+    {
+        try
+        {
+            Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(path, Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs, Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+        }
+        catch(Exception e)
+        {
+            e.LogWarning();
+        }
+    }
+
     public static V GetSafe<K, V>(this IDictionary<K, V> dic, K key, V Default = default)
     {
         if(dic?.TryGetValue(key, out var value) == true)

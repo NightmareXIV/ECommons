@@ -20,17 +20,19 @@ public static class GradientColor
         }
     }
 
-    public static Vector4Double GetPrecise(Vector4Double start, Vector4Double end, int Miliseconds = 1000)
+    public static Vector4 GetPrecise(Vector4 startf, Vector4 endf, int Miliseconds = 1000)
     {
+        var start = startf.ToVector4Double();
+        var end = endf.ToVector4Double();
         var delta = (end - start) / (int)Miliseconds;
         var time = Environment.TickCount % (Miliseconds * 2);
         if (time < Miliseconds)
         {
-            return start + delta * (double)(time % Miliseconds);
+            return (start + delta * (double)(time % Miliseconds)).ToVector4();
         }
         else
         {
-            return end - delta * ((double)(time % Miliseconds));
+            return (end - delta * ((double)(time % Miliseconds))).ToVector4();
         }
     }
 }
