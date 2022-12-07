@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ECommons;
 
@@ -70,7 +71,7 @@ public static unsafe class GenericHelpers
         return func(obj);
     }
 
-    public static bool NotNull<T>(this T obj, out T outobj)
+    public static bool NotNull<T>(this T obj, [NotNullWhen(true)]out T outobj)
     {
         outobj = obj;
         return obj != null;
