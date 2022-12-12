@@ -122,6 +122,16 @@ public static unsafe class GenericHelpers
         return sb.ToString();
     }
 
+    public static bool StartsWithAny(this string source, params string[] values)
+    {
+        return source.StartsWithAny(values, StringComparison.Ordinal);
+    }
+
+    public static bool StartsWithAny(this string source, StringComparison stringComparison = StringComparison.Ordinal, params string[] values)
+    {
+        return source.StartsWithAny(values, stringComparison);
+    }
+
     public static bool StartsWithAny(this string source, IEnumerable<string> compareTo, StringComparison stringComparison = StringComparison.Ordinal)
     {
         foreach(var x in compareTo)

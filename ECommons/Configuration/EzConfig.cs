@@ -1,5 +1,6 @@
 ﻿using ECommons.DalamudServices;
 using Newtonsoft.Json;
+using System;
 using System.IO;
 using System.Text;
 
@@ -28,8 +29,9 @@ public static class EzConfig
         if (appendConfigDirectory) path = Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), path);
         File.WriteAllText(path, JsonConvert.SerializeObject(Configuration, new JsonSerializerSettings()
         {
-            Formatting = indented?Formatting.Indented:Formatting.None,
-        }), Encoding.UTF8);
+            Formatting = indented ? Formatting.Indented : Formatting.None,
+            DefaultValueHandling = Configuration.GetType().IsDefined(typeof(IgnoreDefaultValueAttribute), false) ?DefaultValueHandling.Ignore:DefaultValueHandling.Include
+        }), Encoding.UTF8) ;
     }
 
     public static T LoadConfiguration<T>(string path, bool appendConfigDirectory = true) where T : IEzConfig, new()
