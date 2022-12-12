@@ -196,6 +196,13 @@ public static class ImGuiEx
         }
     }
 
+    public static void TextV(Vector4 col, string s)
+    {
+        ImGui.PushStyleColor(ImGuiCol.Text, col);
+        ImGuiEx.TextV(s);
+        ImGui.PopStyleColor();
+    }
+
     public static void TextV(string s)
     {
         var cur = ImGui.GetCursorPos();

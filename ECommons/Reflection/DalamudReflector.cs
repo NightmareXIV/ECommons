@@ -76,6 +76,36 @@ public static class DalamudReflector
                 GetMethod("Get").Invoke(null, BindingFlags.Default, null, Array.Empty<object>(), null);
     }
 
+    public static bool TryGetLocalPlugin(out object localPlugin, out Type type)
+    {
+        try
+        {
+            var pluginManager = GetPluginManager();
+            var installedPlugins = (System.Collections.IList)pluginManager.GetType().GetProperty("InstalledPlugins").GetValue(pluginManager);
+
+            foreach (var t in installedPlugins)
+            {
+                if (t != null)
+                {
+                    type = t.GetType().Name == "LocalDevPlugin" ? t.GetType().BaseType : t.GetType();
+                    if (object.ReferenceEquals(type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t), ECommonsMain.Instance))
+                    {
+                        localPlugin = t;
+                        return true;
+                    }
+                }
+            }
+            localPlugin = type = null;
+            return false;
+        }
+        catch(Exception e)
+        {
+            e.Log();
+            localPlugin = type = null;
+            return false;
+        }
+    }
+
     public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false, bool ignoreCache = false)
     {
         if(!ignoreCache && pluginCache.TryGetValue(internalName, out instance) && instance != null)

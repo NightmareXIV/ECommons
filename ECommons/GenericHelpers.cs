@@ -15,11 +15,29 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static string Print<T>(this IEnumerable<T> x)
+    {
+        return x.Select(x => x.ToString()).Join(", ");
+    }
+
+    public static void DeleteFileToRecycleBin(string path)
+    {
+        try
+        {
+            Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(path, Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs, Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+        }
+        catch(Exception e)
+        {
+            e.LogWarning();
+        }
+    }
+
     public static V GetSafe<K, V>(this IDictionary<K, V> dic, K key, V Default = default)
     {
         if(dic?.TryGetValue(key, out var value) == true)
@@ -53,7 +71,7 @@ public static unsafe class GenericHelpers
         return func(obj);
     }
 
-    public static bool NotNull<T>(this T obj, out T outobj)
+    public static bool NotNull<T>(this T obj, [NotNullWhen(true)]out T outobj)
     {
         outobj = obj;
         return obj != null;
