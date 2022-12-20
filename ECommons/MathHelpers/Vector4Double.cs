@@ -10,6 +10,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 using System.Text;
+#nullable enable
+#pragma warning disable CS0419
 
 namespace ECommons.MathHelpers
 {
