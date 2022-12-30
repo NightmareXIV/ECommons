@@ -21,6 +21,15 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static int? ParseInt(this string number)
+    {
+        if(int.TryParse(number, out var result))
+        {
+            return result;
+        }
+        return null;
+    }
+    
     public static string Print<T>(this IEnumerable<T> x)
     {
         return x.Select(x => x.ToString()).Join(", ");
