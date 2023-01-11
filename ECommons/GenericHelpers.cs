@@ -626,6 +626,8 @@ public static unsafe class GenericHelpers
         return (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5)
             //7D523BFF
             || (col.A == 0xFF && col.R == 0x7D && col.G == 0x52 && col.B == 0x3B)
-            || (col.A == 0xFF && col.R == 0xFF && col.G == 0xFF && col.B == 0xFF);
+            || (col.A == 0xFF && col.R == 0xFF && col.G == 0xFF && col.B == 0xFF)
+            // EEE1C5FF
+            || (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5);
     }
 }
