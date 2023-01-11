@@ -200,7 +200,7 @@ public static unsafe class GenericHelpers
     public static string GetTerritoryName(this uint terr)
     {
         var t = Svc.Data.GetExcelSheet<TerritoryType>().GetRow(terr);
-        return $"{terr} | {t?.ContentFinderCondition.Value?.Name.ToString().Default(t?.PlaceName.Value?.Name.ToString())}";
+        return $"{terr} | {t?.ContentFinderCondition?.Value?.Name?.ToString().Default(t?.PlaceName.Value?.Name?.ToString())}";
     }
 
     public static T FirstOr0<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
