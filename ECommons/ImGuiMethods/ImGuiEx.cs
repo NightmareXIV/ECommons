@@ -14,6 +14,17 @@ namespace ECommons.ImGuiMethods;
 
 public static class ImGuiEx
 {
+    public static bool SliderIntAsFloat(string id, ref int value, int min, int max, float divider = 1000)
+    {
+        var f = (float)value / divider;
+        var ret = ImGui.SliderFloat(id, ref f, (float)min/divider, (float)max / divider);
+        if (ret)
+        {
+            value = (int)(f * divider);
+        }
+        return ret;
+    }
+
     public static bool IsKeyPressed(int key, bool repeat)
     {
         byte repeat2 = (byte)(repeat ? 1 : 0);
