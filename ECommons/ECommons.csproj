@@ -32,19 +32,6 @@
         	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     	</PropertyGroup>
 
-	<!--PropertyGroup>
-		<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
-		<SignAssembly>False</SignAssembly>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Description>A library of convenient functions to use with Dalamud</Description>
-		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
-		<RepositoryUrl></RepositoryUrl>
-		<NeutralLanguage>en</NeutralLanguage>
-		<PackageTags>Final Fantasy XIV, FFXIV Quick Launcher, Dalamud</PackageTags>
-		<PackageProjectUrl>https://github.com/Eternita-S/ECommons</PackageProjectUrl>
-	</PropertyGroup-->
-
 	<PropertyGroup>
 	  <LangVersion>preview</LangVersion>
 	</PropertyGroup>
