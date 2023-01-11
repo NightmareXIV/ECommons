@@ -9,6 +9,7 @@ using ECommons.SimpleGui;
 using ECommons.SplatoonAPI;
 using ECommons.Events;
 using ECommons.Configuration;
+using ECommons.Hooks;
 
 namespace ECommons;
 
@@ -77,6 +78,7 @@ public static class ECommonsMain
         }
         GenericHelpers.Safe(Splatoon.Shutdown);
         GenericHelpers.Safe(ProperOnLogin.Dispose);
+        GenericHelpers.Safe(DirectorUpdate.Dispose);
         Instance = null;
     }
 }
