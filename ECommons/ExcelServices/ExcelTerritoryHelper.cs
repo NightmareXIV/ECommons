@@ -23,7 +23,7 @@ namespace ECommons.ExcelServices
                     .Union(typeof(Inns).GetFields(f))
                     .Union(typeof(ResidentalAreas).GetFields(f))
                     .Union(typeof(Houses).GetFields(f))
-                    .Where(fi => fi.IsLiteral && !fi.IsInitOnly).Each(x =>
+                    .Each(x =>
                 {
                     var v = (ushort)x.GetValue(null);
                     s.Add(v);
