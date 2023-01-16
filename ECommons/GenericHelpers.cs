@@ -16,11 +16,41 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Diagnostics.CodeAnalysis;
+using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
+using ECommons.ExcelServices.TerritoryEnumeration;
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static void Callback(AtkUnitBase* Base, params object[] args)
+    {
+        var stk = stackalloc AtkValue[args.Length];
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (args[i] is int v)
+            {
+                stk[i] = new() { Type = ValueType.Int, Int = v };
+            }
+            else if (args[i] is uint u)
+            {
+                stk[i] = new() { Type = ValueType.UInt, UInt = u };
+            }
+            else if (args[i] is bool b)
+            {
+                stk[i] = new() { Type = ValueType.Bool, Byte = (byte)(b ? 1 : 0) };
+            }
+            else if (args[i] is AtkValue av)
+            {
+                stk[i] = av;
+            }
+            else
+            {
+                throw new Exception("Unsupported arguments");
+            }
+        }
+    }
+
     public static int? ParseInt(this string number)
     {
         if(int.TryParse(number, out var result))
@@ -626,6 +656,8 @@ public static unsafe class GenericHelpers
         return (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5)
             //7D523BFF
             || (col.A == 0xFF && col.R == 0x7D && col.G == 0x52 && col.B == 0x3B)
-            || (col.A == 0xFF && col.R == 0xFF && col.G == 0xFF && col.B == 0xFF);
+            || (col.A == 0xFF && col.R == 0xFF && col.G == 0xFF && col.B == 0xFF)
+            // EEE1C5FF
+            || (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5);
     }
 }
