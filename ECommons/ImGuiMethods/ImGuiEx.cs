@@ -14,6 +14,11 @@ namespace ECommons.ImGuiMethods;
 
 public static class ImGuiEx
 {
+    public static Vector4 MutateColor(ImGuiCol col, byte r, byte g, byte b)
+    {
+        return ImGui.GetStyle().Colors[(int)col] with { X = (float)r / 255f, Y = (float)g / 255f, Z = (float)b / 255f };
+    }
+
     public static bool SliderIntAsFloat(string id, ref int value, int min, int max, float divider = 1000)
     {
         var f = (float)value / divider;
