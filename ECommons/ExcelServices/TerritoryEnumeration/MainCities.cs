@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,5 +27,20 @@ namespace ECommons.ExcelServices.TerritoryEnumeration
         public const ushort Eulmore = 820;
         public const ushort Old_Sharlayan = 962;
         public const ushort Radz_at_Han = 963;
+
+        static ushort[] list = null;
+        public static ushort[] List
+        {
+            get
+            {
+                if (list == null)
+                {
+                    var s = new List<ushort>();
+                    typeof(MainCities).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).Each(x => s.Add((ushort)x.GetValue(null)));
+                    list = s.ToArray();
+                }
+                return list;
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -120,5 +121,19 @@ namespace ECommons.ExcelServices.TerritoryEnumeration
         public const ushort Abyssos_The_Eighth_Circle = 1087;
         public const ushort Abyssos_The_Eighth_Circle_Savage = 1088;
 
+        static ushort[] list = null;
+        public static ushort[] List
+        {
+            get
+            {
+                if (list == null)
+                {
+                    var s = new List<ushort>();
+                    typeof(Raids).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).Each(x => s.Add((ushort)x.GetValue(null)));
+                    list = s.ToArray();
+                }
+                return list;
+            }
+        }
     }
 }
