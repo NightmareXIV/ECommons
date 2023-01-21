@@ -49,9 +49,9 @@ public static class ECommonsMain
         {
             GenericHelpers.Safe(EzConfig.Save);
         }
-        foreach(var x in ImGuiMethods.ThreadLoadImageHandler.CachedTextures)
+        foreach (var x in ImGuiMethods.ThreadLoadImageHandler.CachedTextures)
         {
-            GenericHelpers.Safe(x.Value.texture.Dispose);
+            GenericHelpers.Safe(() => { x.Value.texture?.Dispose(); });
         }
         GenericHelpers.Safe(ImGuiMethods.ThreadLoadImageHandler.CachedTextures.Clear);
         GenericHelpers.Safe(ObjectLife.Dispose);
