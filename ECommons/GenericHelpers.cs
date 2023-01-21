@@ -49,6 +49,7 @@ public static unsafe class GenericHelpers
                 throw new Exception("Unsupported arguments");
             }
         }
+        Base->FireCallback(args.Length, stk);
     }
 
     public static int? ParseInt(this string number)
