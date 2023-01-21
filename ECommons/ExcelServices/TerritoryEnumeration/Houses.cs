@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,5 +45,19 @@ namespace ECommons.ExcelServices.TerritoryEnumeration
         public const ushort Ingleside_Apartment_Lobby = 985;
         public const ushort Ingleside_Apartment = 999;
 
+        static ushort[] list = null;
+        public static ushort[] List
+        {
+            get
+            {
+                if (list == null)
+                {
+                    var s = new List<ushort>();
+                    typeof(Houses).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).Each(x => s.Add((ushort)x.GetValue(null)));
+                    list = s.ToArray();
+                }
+                return list;
+            }
+        }
     }
 }
