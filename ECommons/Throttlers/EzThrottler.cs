@@ -12,7 +12,7 @@ namespace ECommons.Throttlers
 
         public static IReadOnlyCollection<string> ThrottleNames => throttlers.Keys;
 
-        public static bool Throttle(string name, int miliseconds, bool rethrottle = false)
+        public static bool Throttle(string name, int miliseconds = 500, bool rethrottle = false)
         {
             if (!throttlers.ContainsKey(name))
             {
