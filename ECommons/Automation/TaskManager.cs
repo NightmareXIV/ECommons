@@ -3,6 +3,7 @@ using ECommons.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,9 +14,9 @@ namespace ECommons.Automation
         public int TimeLimitMS = 10000;
         public bool AbortOnTimeout = false;
         public long AbortAt { get; private set; } = 0;
-        Func<bool> CurrentTask = null;
+        TaskManagerTask CurrentTask = null;
 
-        Queue<Func<bool>> Tasks = new();
+        Queue<TaskManagerTask> Tasks = new();
 
         public TaskManager()
         {
@@ -29,9 +30,24 @@ namespace ECommons.Automation
 
         public bool IsBusy => CurrentTask != null || Tasks.Count > 0;
 
-        public void Enqueue(Func<bool> task)
+        public void Enqueue(Func<bool?> task)
         {
-            Tasks.Enqueue(task);
+            Tasks.Enqueue(new(task, TimeLimitMS, AbortOnTimeout));
+        }
+
+        public void Enqueue(Func<bool?> task, int timeLimitMs)
+        {
+            Tasks.Enqueue(new(task, timeLimitMs, AbortOnTimeout));
+        }
+
+        public void Enqueue(Func<bool?> task, bool abortOnTimeout)
+        {
+            Tasks.Enqueue(new(task, TimeLimitMS, abortOnTimeout));
+        }
+
+        public void Enqueue(Func<bool?> task, int timeLimitMs, bool abortOnTimeout)
+        {
+            Tasks.Enqueue(new(task, timeLimitMs, abortOnTimeout));
         }
 
         void Tick(object _)
@@ -40,30 +56,37 @@ namespace ECommons.Automation
             {
                 if (Tasks.TryDequeue(out CurrentTask))
                 {
-                    PluginLog.Debug($"Starting to execute new task");
-                    AbortAt = Environment.TickCount64 + TimeLimitMS;
+                    PluginLog.Debug($"Starting to execute task: {CurrentTask.Action.GetMethodInfo()?.Name}");
+                    AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
                 }
             }
             else
             {
                 try
                 {
-                    if (CurrentTask())
+                    var result = CurrentTask.Action();
+                    if (result == true)
                     {
-                        CurrentTask = null;
-                        PluginLog.Debug($"Task completed successfully");
+                        PluginLog.Debug($"Task {CurrentTask.Action.GetMethodInfo()?.Name} completed successfully");
+                        CurrentTask = null; 
                     }
-                    else
+                    else if(result == false)
                     {
                         if (Environment.TickCount64 > AbortAt)
                         {
-                            if (AbortOnTimeout)
+                            if (CurrentTask.AbortOnTimeout)
                             {
                                 PluginLog.Warning($"Clearing {Tasks.Count} remaining tasks because of timeout");
                                 Tasks.Clear();
                             }
-                            throw new TimeoutException("Task took too long to execute");
+                            throw new TimeoutException($"Task {CurrentTask.Action.GetMethodInfo()?.Name} took too long to execute");
                         }
+                    }
+                    else
+                    {
+                        PluginLog.Warning($"Clearing {Tasks.Count} remaining tasks because there was a signal from task {CurrentTask.Action.GetMethodInfo()?.Name} to abort");
+                        Tasks.Clear();
+                        CurrentTask = null;
                     }
                 }
                 catch (Exception e)
