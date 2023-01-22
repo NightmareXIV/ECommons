@@ -11,6 +11,7 @@ namespace ECommons.Automation
     public class TaskManager : IDisposable
     {
         public int TimeLimitMS = 10000;
+        public bool AbortOnTimeout = false;
         public long AbortAt { get; private set; } = 0;
         Func<bool> CurrentTask = null;
 
@@ -56,6 +57,11 @@ namespace ECommons.Automation
                     {
                         if (Environment.TickCount64 > AbortAt)
                         {
+                            if (AbortOnTimeout)
+                            {
+                                PluginLog.Warning($"Clearing {Tasks.Count} remaining tasks because of timeout");
+                                Tasks.Clear();
+                            }
                             throw new TimeoutException("Task took too long to execute");
                         }
                     }
