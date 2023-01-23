@@ -13,19 +13,28 @@ namespace ECommons.ImGuiMethods
     public static class KoFiButton
     {
         public static bool IsOfficialPlugin = false;
-        internal const string Text = "Donate (Ko-fi)";
+        public const string Text = "Support on Ko-fi";
+        public static string DonateLink => "https://nightmarexiv.github.io/donate.html" + (IsOfficialPlugin ? "?official" : "");
         public static void DrawRaw()
         {
-            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.DalamudOrange);
-            if(ImGui.Button(Text))
+            DrawButton();
+        }
+
+        public static void DrawButton()
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, 0xFF942502);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, 0xFF942502);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, 0xFF942502);
+            ImGui.PushStyleColor(ImGuiCol.Text, 0xFFFFFFFF);
+            if (ImGui.Button(Text))
             {
-                GenericHelpers.ShellStart("https://nightmarexiv.github.io/donate.html" + (IsOfficialPlugin ? "?official" : ""));
+                GenericHelpers.ShellStart(DonateLink);
             }
             if (ImGui.IsItemHovered())
             {
                 ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
             }
-            ImGui.PopStyleColor();
+            ImGui.PopStyleColor(4);
         }
 
         public static void DrawRight()
