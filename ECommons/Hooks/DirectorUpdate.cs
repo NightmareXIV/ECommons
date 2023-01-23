@@ -1,5 +1,5 @@
 ﻿using Dalamud.Hooking;
-using Dalamud.Logging;
+using ECommons.Logging;
 using Dalamud.Utility.Signatures;
 using ECommons.DalamudServices;
 using Serilog.Core;
