@@ -12,6 +12,7 @@ public static class ObjectLife
     delegate IntPtr GameObject_ctor(IntPtr obj);
     static Hook<GameObject_ctor> GameObject_ctor_hook = null;
     static Dictionary<IntPtr, long> GameObjectLifeTime = null;
+    public static Action<nint> OnObjectCreation = null;
 
     internal static void Init()
     {
@@ -40,6 +41,17 @@ public static class ObjectLife
     static IntPtr GameObject_ctor_detour(IntPtr ptr)
     {
         GameObjectLifeTime[ptr] = Environment.TickCount64;
+        if(OnObjectCreation != null)
+        {
+            try
+            {
+                OnObjectCreation(ptr);
+            }
+            catch(Exception e)
+            {
+                e.Log($"Exception in GameObject_ctor_detour");
+            }
+        }
         return GameObject_ctor_hook.Original(ptr);
     }
 
