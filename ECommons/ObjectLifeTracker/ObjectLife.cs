@@ -41,18 +41,20 @@ public static class ObjectLife
     static IntPtr GameObject_ctor_detour(IntPtr ptr)
     {
         GameObjectLifeTime[ptr] = Environment.TickCount64;
-        if(OnObjectCreation != null)
+        var ret = GameObject_ctor_hook.Original(ptr);
+
+        if (OnObjectCreation != null)
         {
             try
             {
                 OnObjectCreation(ptr);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 e.Log($"Exception in GameObject_ctor_detour");
             }
         }
-        return GameObject_ctor_hook.Original(ptr);
+        return ret;
     }
 
     public static long GetLifeTime(this GameObject o)

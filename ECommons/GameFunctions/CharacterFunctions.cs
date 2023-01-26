@@ -45,6 +45,11 @@ public static unsafe class CharacterFunctions
         return Bitmask.IsBitSet(*(byte*)(v + 136), 0);
     }
 
+    public static byte GetTransformationID(this Character chr)
+    {
+        return *(byte*)(chr.Address + 6922);
+    }
+
     public static CombatRole GetRole(this Character c)
     {
         if (c.ClassJob.GameData.Role == 1) return CombatRole.Tank;
