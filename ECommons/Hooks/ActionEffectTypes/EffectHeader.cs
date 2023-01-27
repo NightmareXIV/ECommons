@@ -10,7 +10,7 @@ namespace ECommons.Hooks.ActionEffectTypes
     [StructLayout(LayoutKind.Explicit)]
     public struct EffectHeader
     {
-        [FieldOffset(8)] public uint ActionId;
+        [FieldOffset(8)] public uint ActionID;
         [FieldOffset(28)] public ushort AnimationId;
         [FieldOffset(33)] public byte TargetCount;
     }

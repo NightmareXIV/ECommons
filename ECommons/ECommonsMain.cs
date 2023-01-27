@@ -79,6 +79,7 @@ public static class ECommonsMain
         GenericHelpers.Safe(Splatoon.Shutdown);
         GenericHelpers.Safe(ProperOnLogin.Dispose);
         GenericHelpers.Safe(DirectorUpdate.Dispose);
+        GenericHelpers.Safe(ActionEffect.Dispose);
         Instance = null;
     }
 }
