@@ -1,9 +1,11 @@
-﻿using Dalamud.Logging;
+﻿using ECommons.Logging;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace ECommons.Configuration;
@@ -32,13 +34,13 @@ public static class EzConfig
         var antiCorruptionPath = $"{path}.new";
         if (File.Exists(antiCorruptionPath))
         {
-            var saveTo = $"antiCorruptionPath.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
+            var saveTo = $"{antiCorruptionPath}.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
             PluginLog.Warning($"Detected unsuccessfully saved file {antiCorruptionPath}: moving to {saveTo}");
             Notify.Warning("Detected unsuccessfully saved configuration file.");
             File.Move(antiCorruptionPath, saveTo);
             PluginLog.Warning($"Success. Please manually check {saveTo} file contents.");
         }
-        PluginLog.Debug($"Engaging anti-corruption mechanism, writing file to {antiCorruptionPath}");
+        PluginLog.Debug($"From caller {new StackTrace().GetFrames().Select(x => x.GetMethod()?.Name ?? "<unknown>").Join(" <- ")} engaging anti-corruption mechanism, writing file to {antiCorruptionPath}");
         File.WriteAllText(antiCorruptionPath, JsonConvert.SerializeObject(Configuration, new JsonSerializerSettings()
         {
             Formatting = indented ? Formatting.Indented : Formatting.None,
