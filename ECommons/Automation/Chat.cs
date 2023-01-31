@@ -78,6 +78,7 @@ public class Chat
     /// </summary>
     /// <param name="message">Message to send</param>
     /// <exception cref="InvalidOperationException">If the signature for this function could not be found</exception>
+    [Obsolete("Use safe message sending")]
     public unsafe void SendMessageUnsafe(byte[] message)
     {
         if (ProcessChatBox == null)
@@ -119,7 +120,9 @@ public class Chat
         {
             throw new ArgumentException("message contained invalid characters", nameof(message));
         }
+#pragma warning disable CS0618 // Type or member is obsolete
         SendMessageUnsafe(bytes);
+#pragma warning restore CS0618 // Type or member is obsolete
     }
     /// <summary>
     /// <para>
