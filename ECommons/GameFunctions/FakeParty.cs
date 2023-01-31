@@ -7,7 +7,7 @@ namespace ECommons.GameFunctions;
 
 public static class FakeParty
 {
-    public static IEnumerator<PlayerCharacter> Get()
+    public static IEnumerable<PlayerCharacter> Get()
     {
         if (Svc.Condition[ConditionFlag.DutyRecorderPlayback])
         {

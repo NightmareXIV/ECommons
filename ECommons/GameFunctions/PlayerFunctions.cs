@@ -8,12 +8,12 @@ namespace ECommons.GameFunctions;
 
 public unsafe static class PlayerFunctions
 {
-    public static bool TryGetPlaceholder(this GameObject pc, out int number)
+    public static bool TryGetPlaceholder(this GameObject pc, out int number, bool verbose = false)
     {
         for(var i = 1; i <= 8; i++)
         {
             var optr = Framework.Instance()->GetUiModule()->GetPronounModule()->ResolvePlaceholder($"<{i}>", 0, 0);
-            PluginLog.Debug($"Placeholder {i} value {(optr == null ? "null" : optr->ObjectID)}");
+            if(verbose) PluginLog.Debug($"Placeholder {i} value {(optr == null ? "null" : optr->ObjectID)}");
             if (pc.Address == (IntPtr)optr)
             {
                 number = i;

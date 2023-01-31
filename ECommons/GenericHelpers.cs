@@ -326,6 +326,11 @@ public static unsafe class GenericHelpers
         PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
     }
 
+    public static void Log(this Exception e, string ErrorMessage)
+    {
+        PluginLog.Error($"{ErrorMessage}\n{e.Message}\n{e.StackTrace ?? ""}");
+    }
+
     public static void LogDuo(this Exception e)
     {
         DuoLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
