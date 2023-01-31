@@ -1,4 +1,6 @@
-﻿using ECommons.DalamudServices;
+﻿using Dalamud.Logging;
+using ECommons.DalamudServices;
+using ECommons.ImGuiMethods;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -27,11 +29,24 @@ public static class EzConfig
     public static void SaveConfiguration(this IEzConfig Configuration, string path, bool indented = false, bool appendConfigDirectory = true)
     {
         if (appendConfigDirectory) path = Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), path);
-        File.WriteAllText(path, JsonConvert.SerializeObject(Configuration, new JsonSerializerSettings()
+        var antiCorruptionPath = $"{path}.new";
+        if (File.Exists(antiCorruptionPath))
+        {
+            var saveTo = $"antiCorruptionPath.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
+            PluginLog.Warning($"Detected unsuccessfully saved file {antiCorruptionPath}: moving to {saveTo}");
+            Notify.Warning("Detected unsuccessfully saved configuration file.");
+            File.Move(antiCorruptionPath, saveTo);
+            PluginLog.Warning($"Success. Please manually check {saveTo} file contents.");
+        }
+        PluginLog.Debug($"Engaging anti-corruption mechanism, writing file to {antiCorruptionPath}");
+        File.WriteAllText(antiCorruptionPath, JsonConvert.SerializeObject(Configuration, new JsonSerializerSettings()
         {
             Formatting = indented ? Formatting.Indented : Formatting.None,
             DefaultValueHandling = Configuration.GetType().IsDefined(typeof(IgnoreDefaultValueAttribute), false) ?DefaultValueHandling.Ignore:DefaultValueHandling.Include
-        }), Encoding.UTF8) ;
+        }), Encoding.UTF8);
+        PluginLog.Debug($"Now moving {antiCorruptionPath} to {path}");
+        File.Move(antiCorruptionPath, path, true);
+        PluginLog.Debug($"Configuration successfully saved.");
     }
 
     public static T LoadConfiguration<T>(string path, bool appendConfigDirectory = true) where T : IEzConfig, new()
