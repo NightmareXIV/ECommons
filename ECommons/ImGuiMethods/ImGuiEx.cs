@@ -536,4 +536,20 @@ public static class ImGuiEx
             Svc.PluginInterface.UiBuilder.AddNotification("Text copied to clipboard", null, NotificationType.Success);
         }
     }
+
+    public static void CenterColumnText(string text, bool underlined = false)
+    {
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (ImGui.GetColumnWidth() * 0.5f) - (ImGui.CalcTextSize(text).X * 0.5f));
+        if (underlined)
+            TextUnderlined(text);
+        else
+            Text(text);
+    }
+
+    public static void CenterColumnText(Vector4 colour, string text, bool underlined = false)
+    {
+        ImGui.PushStyleColor(ImGuiCol.Text, colour);
+        CenterColumnText(text, underlined);
+        ImGui.PopStyleColor();
+    }
 }
