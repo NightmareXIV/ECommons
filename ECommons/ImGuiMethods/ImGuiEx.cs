@@ -443,6 +443,14 @@ public static class ImGuiEx
         return result;
     }
 
+    public static bool IconButton(string icon, string id = "ECommonsButton")
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        var result = ImGui.Button($"{icon}##{icon}-{id}");
+        ImGui.PopFont();
+        return result;
+    }
+
     public static Vector2 CalcIconSize(FontAwesomeIcon icon)
     {
         ImGui.PushFont(UiBuilder.IconFont);

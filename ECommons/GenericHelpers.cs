@@ -18,11 +18,17 @@ using System.Text;
 using System.Diagnostics.CodeAnalysis;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 using ECommons.ExcelServices.TerritoryEnumeration;
+using Newtonsoft.Json;
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static T JSONClone<T>(this T obj)
+    {
+        return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj));
+    }
+
     public static void Callback(AtkUnitBase* Base, params object[] args)
     {
         var stk = stackalloc AtkValue[args.Length];
