@@ -14,6 +14,24 @@ namespace ECommons.ImGuiMethods;
 
 public static class ImGuiEx
 {
+    public static bool HashSetCheckbox<T>(string label, T value, HashSet<T> collection)
+    {
+        var x = collection.Contains(value);
+        if(ImGui.Checkbox(label, ref x))
+        {
+            if (x)
+            {
+                collection.Add(value);
+            }
+            else
+            {
+                collection.Remove(value);
+            }
+            return true;
+        }
+        return false;
+    }
+
     public static Vector4 MutateColor(ImGuiCol col, byte r, byte g, byte b)
     {
         return ImGui.GetStyle().Colors[(int)col] with { X = (float)r / 255f, Y = (float)g / 255f, Z = (float)b / 255f };
@@ -425,6 +443,14 @@ public static class ImGuiEx
         return result;
     }
 
+    public static bool IconButton(string icon, string id = "ECommonsButton")
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        var result = ImGui.Button($"{icon}##{icon}-{id}");
+        ImGui.PopFont();
+        return result;
+    }
+
     public static Vector2 CalcIconSize(FontAwesomeIcon icon)
     {
         ImGui.PushFont(UiBuilder.IconFont);
@@ -535,5 +561,21 @@ public static class ImGuiEx
             ImGui.SetClipboardText(copy);
             Svc.PluginInterface.UiBuilder.AddNotification("Text copied to clipboard", null, NotificationType.Success);
         }
+    }
+
+    public static void CenterColumnText(string text, bool underlined = false)
+    {
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (ImGui.GetColumnWidth() * 0.5f) - (ImGui.CalcTextSize(text).X * 0.5f));
+        if (underlined)
+            TextUnderlined(text);
+        else
+            Text(text);
+    }
+
+    public static void CenterColumnText(Vector4 colour, string text, bool underlined = false)
+    {
+        ImGui.PushStyleColor(ImGuiCol.Text, colour);
+        CenterColumnText(text, underlined);
+        ImGui.PopStyleColor();
     }
 }
