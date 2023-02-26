@@ -59,7 +59,20 @@ public class ThreadLoadImageHandler
                             }
                             else
                             {
-                                keyValuePair.Value.texture = Svc.PluginInterface.UiBuilder.LoadImage(keyValuePair.Key);
+                                TextureWrap icon = null;
+                                try
+                                {
+                                    icon = Svc.Data.GetImGuiTexture(keyValuePair.Key);
+                                }
+                                catch (Exception) { }
+                                if (icon != null)
+                                {
+                                    keyValuePair.Value.texture = icon;
+                                }
+                                else
+                                {
+                                    keyValuePair.Value.texture = Svc.PluginInterface.UiBuilder.LoadImage(keyValuePair.Key);
+                                }
                             }
                         }
                     });
