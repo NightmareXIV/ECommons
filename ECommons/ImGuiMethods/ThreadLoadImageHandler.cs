@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Threading;
 using static ECommons.GenericHelpers;
+using System.IO;
 
 namespace ECommons.ImGuiMethods;
 
@@ -59,7 +60,14 @@ public class ThreadLoadImageHandler
                             }
                             else
                             {
-                                keyValuePair.Value.texture = Svc.PluginInterface.UiBuilder.LoadImage(keyValuePair.Key);
+                                if (File.Exists(keyValuePair.Key))
+                                {
+                                    keyValuePair.Value.texture = Svc.PluginInterface.UiBuilder.LoadImage(keyValuePair.Key);
+                                }
+                                else
+                                {
+                                    keyValuePair.Value.texture = Svc.Data.GetImGuiTexture(keyValuePair.Key);
+                                }
                             }
                         }
                     });

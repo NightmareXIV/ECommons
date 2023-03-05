@@ -14,6 +14,24 @@ namespace ECommons.ImGuiMethods;
 
 public static class ImGuiEx
 {
+    public static bool HashSetCheckbox<T>(string label, T value, HashSet<T> collection)
+    {
+        var x = collection.Contains(value);
+        if(ImGui.Checkbox(label, ref x))
+        {
+            if (x)
+            {
+                collection.Add(value);
+            }
+            else
+            {
+                collection.Remove(value);
+            }
+            return true;
+        }
+        return false;
+    }
+
     public static Vector4 MutateColor(ImGuiCol col, byte r, byte g, byte b)
     {
         return ImGui.GetStyle().Colors[(int)col] with { X = (float)r / 255f, Y = (float)g / 255f, Z = (float)b / 255f };
@@ -421,6 +439,14 @@ public static class ImGuiEx
     {
         ImGui.PushFont(UiBuilder.IconFont);
         var result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{id}");
+        ImGui.PopFont();
+        return result;
+    }
+
+    public static bool IconButton(string icon, string id = "ECommonsButton")
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        var result = ImGui.Button($"{icon}##{icon}-{id}");
         ImGui.PopFont();
         return result;
     }
