@@ -55,10 +55,10 @@ public static class ImGuiEx
         var size = ImGui.CalcTextSize(text);
         var cur = ImGui.GetCursorScreenPos();
         cur.Y += size.Y;
-        ImGui.GetForegroundDrawList().PathLineTo(cur);
+        ImGui.GetWindowDrawList().PathLineTo(cur);
         cur.X += size.X;
-        ImGui.GetForegroundDrawList().PathLineTo(cur);
-        ImGui.GetForegroundDrawList().PathStroke(ImGuiColors.DalamudWhite.ToUint());
+        ImGui.GetWindowDrawList().PathLineTo(cur);
+        ImGui.GetWindowDrawList().PathStroke(ImGuiColors.DalamudWhite.ToUint());
         ImGuiEx.Text(text);
     }
 
