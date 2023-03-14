@@ -13,11 +13,40 @@ namespace ECommons.ImGuiMethods;
 public class ThreadLoadImageHandler
 {
     internal static ConcurrentDictionary<string, ImageLoadingResult> CachedTextures = new();
+    internal static ConcurrentDictionary<(uint ID, bool HQ), ImageLoadingResult> CachedIcons = new();
+
     static volatile bool ThreadRunning = false;
     static HttpClient httpClient = new()
     {
         Timeout = TimeSpan.FromSeconds(10),
     };
+
+    internal static void Dispose()
+    {
+        foreach (var x in CachedTextures)
+        {
+            Safe(() => { x.Value.texture?.Dispose(); });
+        }
+        Safe(CachedTextures.Clear);
+        foreach (var x in CachedIcons)
+        {
+            Safe(() => { x.Value.texture?.Dispose(); });
+        }
+        Safe(CachedIcons.Clear);
+    }
+
+    public static bool TryGetIconTextureWrap(uint icon, bool hq, out TextureWrap textureWrap)
+    {
+        ImageLoadingResult result;
+        if (!CachedIcons.TryGetValue((icon, hq), out result))
+        {
+            result = new();
+            CachedIcons[(icon, hq)] = result;
+            BeginThreadIfNotRunning();
+        }
+        textureWrap = result.texture;
+        return result.texture != null;
+    }
 
     public static bool TryGetTextureWrap(string url, out TextureWrap textureWrap)
     {
@@ -46,28 +75,39 @@ public class ThreadLoadImageHandler
                 {
                     Safe(delegate
                     {
-                        if (CachedTextures.TryGetFirst(x => x.Value.isCompleted == false, out var keyValuePair))
                         {
-                            idleTicks = 0;
-                            keyValuePair.Value.isCompleted = true;
-                            PluginLog.Information("Loading image " + keyValuePair.Key);
-                            if (keyValuePair.Key.StartsWith("http:", StringComparison.OrdinalIgnoreCase) || keyValuePair.Key.StartsWith("https:", StringComparison.OrdinalIgnoreCase))
+                            if (CachedTextures.TryGetFirst(x => x.Value.isCompleted == false, out var keyValuePair))
                             {
-                                var result = httpClient.GetAsync(keyValuePair.Key).Result;
-                                result.EnsureSuccessStatusCode();
-                                var content = result.Content.ReadAsByteArrayAsync().Result;
-                                keyValuePair.Value.texture = Svc.PluginInterface.UiBuilder.LoadImage(content);
-                            }
-                            else
-                            {
-                                if (File.Exists(keyValuePair.Key))
+                                idleTicks = 0;
+                                keyValuePair.Value.isCompleted = true;
+                                PluginLog.Information("Loading image " + keyValuePair.Key);
+                                if (keyValuePair.Key.StartsWith("http:", StringComparison.OrdinalIgnoreCase) || keyValuePair.Key.StartsWith("https:", StringComparison.OrdinalIgnoreCase))
                                 {
-                                    keyValuePair.Value.texture = Svc.PluginInterface.UiBuilder.LoadImage(keyValuePair.Key);
+                                    var result = httpClient.GetAsync(keyValuePair.Key).Result;
+                                    result.EnsureSuccessStatusCode();
+                                    var content = result.Content.ReadAsByteArrayAsync().Result;
+                                    keyValuePair.Value.texture = Svc.PluginInterface.UiBuilder.LoadImage(content);
                                 }
                                 else
                                 {
-                                    keyValuePair.Value.texture = Svc.Data.GetImGuiTexture(keyValuePair.Key);
+                                    if (File.Exists(keyValuePair.Key))
+                                    {
+                                        keyValuePair.Value.texture = Svc.PluginInterface.UiBuilder.LoadImage(keyValuePair.Key);
+                                    }
+                                    else
+                                    {
+                                        keyValuePair.Value.texture = Svc.Data.GetImGuiTexture(keyValuePair.Key);
+                                    }
                                 }
+                            }
+                        }
+                        {
+                            if (CachedIcons.TryGetFirst(x => x.Value.isCompleted == false, out var keyValuePair))
+                            {
+                                idleTicks = 0;
+                                keyValuePair.Value.isCompleted = true;
+                                PluginLog.Information($"Loading icon {keyValuePair.Key.ID}, hq={keyValuePair.Key.HQ}");
+                                keyValuePair.Value.texture = Svc.Data.GetImGuiTextureIcon(keyValuePair.Key.HQ, keyValuePair.Key.ID);
                             }
                         }
                     });

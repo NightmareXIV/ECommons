@@ -24,6 +24,32 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static string RemoveOtherChars(this string s, string charsToKeep)
+    {
+        return new string(s.ToArray().Where(charsToKeep.Contains).ToArray());
+    }
+
+    public static string ReplaceByChar(this string s, string replaceWhat, string replaceWith, bool replaceWithWhole = false)
+    {
+        if(replaceWhat.Length != replaceWith.Length && !replaceWithWhole)
+        {
+            PluginLog.Error($"{nameof(replaceWhat)} and {nameof(replaceWith)} must be same length");
+            return s;
+        }
+        for (int i = 0; i < replaceWhat.Length; i++)
+        {
+            if (replaceWithWhole)
+            {
+                s = s.Replace(replaceWhat[i].ToString(), replaceWith);
+            }
+            else
+            {
+                s = s.Replace(replaceWhat[i], replaceWith[i]);
+            }
+        }
+        return s;
+    }
+
     public static T JSONClone<T>(this T obj)
     {
         return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj));

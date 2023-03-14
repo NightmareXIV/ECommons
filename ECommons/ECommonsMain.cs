@@ -53,11 +53,7 @@ public static class ECommonsMain
         {
             GenericHelpers.Safe(EzConfig.Save);
         }
-        foreach (var x in ImGuiMethods.ThreadLoadImageHandler.CachedTextures)
-        {
-            GenericHelpers.Safe(() => { x.Value.texture?.Dispose(); });
-        }
-        GenericHelpers.Safe(ImGuiMethods.ThreadLoadImageHandler.CachedTextures.Clear);
+        GenericHelpers.Safe(ThreadLoadImageHandler.Dispose);
         GenericHelpers.Safe(ObjectLife.Dispose);
         GenericHelpers.Safe(DalamudReflector.Dispose);
         if (EzConfigGui.WindowSystem != null)
