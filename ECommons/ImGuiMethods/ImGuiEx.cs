@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Internal.Notifications;
@@ -12,8 +13,80 @@ using ImGuiNET;
 
 namespace ECommons.ImGuiMethods;
 
-public static class ImGuiEx
+public static partial class ImGuiEx
 {
+    public record HeaderIconOptions
+    {
+        public Vector2 Offset { get; init; } = Vector2.Zero;
+        public ImGuiMouseButton MouseButton { get; init; } = ImGuiMouseButton.Left;
+        public string Tooltip { get; init; } = string.Empty;
+        public uint Color { get; init; } = 0xFFFFFFFF;
+        public bool ToastTooltipOnClick { get; init; } = false;
+        public ImGuiMouseButton ToastTooltipOnClickButton { get; init; } = ImGuiMouseButton.Left;
+    }
+
+    private static uint headerLastWindowID = 0;
+    private static ulong headerLastFrame = 0;
+    private static float headerCurrentPos = 0;
+    private static float headerImGuiButtonWidth = 0;
+
+    public static bool AddHeaderIcon(string id, FontAwesomeIcon icon, HeaderIconOptions options = null)
+    {
+        if (ImGui.IsWindowCollapsed()) return false;
+
+        var scale = ImGuiHelpers.GlobalScale;
+        var currentID = ImGui.GetID(0);
+        if (currentID != headerLastWindowID || headerLastFrame != Svc.PluginInterface.UiBuilder.FrameCount)
+        {
+            headerLastWindowID = currentID;
+            headerLastFrame = Svc.PluginInterface.UiBuilder.FrameCount;
+            headerCurrentPos = 0.25f;
+            if (!GetCurrentWindowFlags().HasFlag(ImGuiWindowFlags.NoTitleBar))
+                headerCurrentPos = 1;
+            headerImGuiButtonWidth = 0f;
+            if (CurrentWindowHasCloseButton())
+                headerImGuiButtonWidth += 17 * scale;
+            if (!GetCurrentWindowFlags().HasFlag(ImGuiWindowFlags.NoCollapse))
+                headerImGuiButtonWidth += 17 * scale;
+        }
+
+        options ??= new();
+        var prevCursorPos = ImGui.GetCursorPos();
+        var buttonSize = new Vector2(20 * scale);
+        var buttonPos = new Vector2((ImGui.GetWindowWidth() - buttonSize.X - headerImGuiButtonWidth * scale * headerCurrentPos) - (ImGui.GetStyle().FramePadding.X * scale), ImGui.GetScrollY() + 1);
+        ImGui.SetCursorPos(buttonPos);
+        var drawList = ImGui.GetWindowDrawList();
+        drawList.PushClipRectFullScreen();
+
+        var pressed = false;
+        ImGui.InvisibleButton(id, buttonSize);
+        var itemMin = ImGui.GetItemRectMin();
+        var itemMax = ImGui.GetItemRectMax();
+        var halfSize = ImGui.GetItemRectSize() / 2;
+        var center = itemMin + halfSize;
+        if (ImGui.IsWindowHovered() && ImGui.IsMouseHoveringRect(itemMin, itemMax, false))
+        {
+            if (!string.IsNullOrEmpty(options.Tooltip))
+                ImGui.SetTooltip(options.Tooltip);
+            ImGui.GetWindowDrawList().AddCircleFilled(center, halfSize.X, ImGui.GetColorU32(ImGui.IsMouseDown(ImGuiMouseButton.Left) ? ImGuiCol.ButtonActive : ImGuiCol.ButtonHovered));
+            if (ImGui.IsMouseReleased(options.MouseButton))
+                pressed = true;
+            if (options.ToastTooltipOnClick && ImGui.IsMouseReleased(options.ToastTooltipOnClickButton))
+                Svc.PluginInterface.UiBuilder.AddNotification(options.Tooltip!, null, NotificationType.Info);
+        }
+
+        ImGui.SetCursorPos(buttonPos);
+        ImGui.PushFont(UiBuilder.IconFont);
+        var iconString = icon.ToIconString();
+        drawList.AddText(UiBuilder.IconFont, ImGui.GetFontSize(), itemMin + halfSize - ImGui.CalcTextSize(iconString) / 2 + options.Offset, options.Color, iconString);
+        ImGui.PopFont();
+
+        ImGui.PopClipRect();
+        ImGui.SetCursorPos(prevCursorPos);
+
+        return pressed;
+    }
+
     public static bool HashSetCheckbox<T>(string label, T value, HashSet<T> collection)
     {
         var x = collection.Contains(value);
@@ -435,10 +508,10 @@ public static class ImGuiEx
         return ret;
     }
 
-    public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton")
+    public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default)
     {
         ImGui.PushFont(UiBuilder.IconFont);
-        var result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{id}");
+        var result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{id}", size);
         ImGui.PopFont();
         return result;
     }
@@ -579,3 +652,26 @@ public static class ImGuiEx
         ImGui.PopStyleColor();
     }
 }
+
+[StructLayout(LayoutKind.Explicit)]
+public struct ImGuiWindow
+{
+    [FieldOffset(0xC)] public ImGuiWindowFlags Flags;
+
+    [FieldOffset(0xD5)] public byte HasCloseButton;
+
+    // 0x118 is the start of ImGuiWindowTempData
+    [FieldOffset(0x130)] public Vector2 CursorMaxPos;
+}
+
+public static partial class ImGuiEx
+{
+    [LibraryImport("cimgui")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    private static partial nint igGetCurrentWindow();
+    public static unsafe ImGuiWindow* GetCurrentWindow() => (ImGuiWindow*)igGetCurrentWindow();
+    public static unsafe ImGuiWindowFlags GetCurrentWindowFlags() => GetCurrentWindow()->Flags;
+    public static unsafe bool CurrentWindowHasCloseButton() => GetCurrentWindow()->HasCloseButton != 0;
+
+}
+
