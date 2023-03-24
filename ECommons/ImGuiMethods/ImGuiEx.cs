@@ -14,6 +14,15 @@ namespace ECommons.ImGuiMethods;
 
 public static class ImGuiEx
 {
+    public static bool BeginPopupNextToElement(string popupId)
+    {
+        ImGui.SameLine(0,0);
+        var pos = ImGui.GetCursorScreenPos();
+        ImGui.Dummy(Vector2.Zero);
+        ImGui.SetNextWindowPos(pos, ImGuiCond.Appearing);
+        return ImGui.BeginPopup(popupId);
+    }
+
     public static bool HashSetCheckbox<T>(string label, T value, HashSet<T> collection)
     {
         var x = collection.Contains(value);
