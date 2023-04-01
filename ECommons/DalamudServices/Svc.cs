@@ -9,6 +9,7 @@ using Dalamud.Game.ClientState.Keys;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.ClientState.Party;
 using Dalamud.Game.Command;
+using Dalamud.Game.Config;
 using Dalamud.Game.Gui;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Game.Gui.PartyFinder;
@@ -47,6 +48,7 @@ public class Svc
     public static SigScanner SigScanner { get; private set; }
     public static TargetManager Targets { get; private set; }
     public static ToastGui Toasts { get; private set; }
+    public static GameConfig GameConfig { get; private set; }
 
     internal static bool IsInitialized = false;
     public static void Init(DalamudPluginInterface pi)
@@ -123,6 +125,9 @@ public class Svc
 
             pi.Create<SToastGui>();
             Toasts = SToastGui.Toasts;
+
+            pi.Create<SGameConfig>();
+            GameConfig = SGameConfig.GameConfig;
         }
         catch(Exception ex)
         {
