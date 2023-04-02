@@ -24,6 +24,25 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static V GetOrDefault<K, V>(this IDictionary<K, V> dic, K key)
+    {
+        if(dic.TryGetValue(key, out V value)) return value;
+        return default;
+    }
+
+    public static int IncrementOrSet<K>(this IDictionary<K, int> dic, K key, int increment = 1)
+    {
+        if(dic.ContainsKey(key))
+        {
+            dic[key] += increment;
+        }
+        else
+        {
+            dic[key] = increment;
+        }
+        return dic[key];
+    }
+
     public static string RemoveOtherChars(this string s, string charsToKeep)
     {
         return new string(s.ToArray().Where(charsToKeep.Contains).ToArray());

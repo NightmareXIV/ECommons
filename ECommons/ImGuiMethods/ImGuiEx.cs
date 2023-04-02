@@ -23,10 +23,13 @@ public static class ImGuiEx
         return ImGui.BeginPopup(popupId);
     }
 
-    public static bool HashSetCheckbox<T>(string label, T value, HashSet<T> collection)
+    [Obsolete("Please switch to CollectionCheckbox")]
+    public static bool HashSetCheckbox<T>(string label, T value, HashSet<T> collection) => CollectionCheckbox(label, value, collection);
+
+    public static bool CollectionCheckbox<T>(string label, T value, HashSet<T> collection)
     {
         var x = collection.Contains(value);
-        if(ImGui.Checkbox(label, ref x))
+        if (ImGui.Checkbox(label, ref x))
         {
             if (x)
             {
@@ -35,6 +38,24 @@ public static class ImGuiEx
             else
             {
                 collection.Remove(value);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public static bool CollectionCheckbox<T>(string label, T value, List<T> collection)
+    {
+        var x = collection.Contains(value);
+        if (ImGui.Checkbox(label, ref x))
+        {
+            if (x)
+            {
+                collection.Add(value);
+            }
+            else
+            {
+                collection.RemoveAll(x => x.Equals(value));
             }
             return true;
         }

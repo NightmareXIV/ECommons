@@ -47,6 +47,7 @@ public class Svc
     public static SigScanner SigScanner { get; private set; }
     public static TargetManager Targets { get; private set; }
     public static ToastGui Toasts { get; private set; }
+    
 
     internal static bool IsInitialized = false;
     public static void Init(DalamudPluginInterface pi)
