@@ -14,6 +14,36 @@ namespace ECommons.ImGuiMethods;
 
 public static class ImGuiEx
 {
+    public static bool ButtonCtrl(string text, string affix = " (Hold CTRL)")
+    {
+        var disabled = !ImGui.GetIO().KeyCtrl;
+        if (disabled)
+        {
+            ImGui.BeginDisabled();
+        }
+        var name = string.Empty;
+        if (text.Contains($"###"))
+        {
+            var p = text.Split($"###");
+            name = $"{p[0]}{affix}###{p[1]}";
+        }
+        else if (text.Contains($"##"))
+        {
+            var p = text.Split($"##");
+            name = $"{p[0]}{affix}##{p[1]}";
+        }
+        else
+        {
+            name = $"{text}{affix}";
+        }
+        var ret = ImGui.Button(name);
+        if (disabled)
+        {
+            ImGui.EndDisabled();
+        }
+        return ret;
+    }
+
     public static bool BeginPopupNextToElement(string popupId)
     {
         ImGui.SameLine(0,0);
