@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Text;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Internal.Notifications;
+using Dalamud.Utility;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using ImGuiNET;
@@ -637,5 +640,48 @@ public static class ImGuiEx
         ImGui.PushStyleColor(ImGuiCol.Text, colour);
         CenterColumnText(text, underlined);
         ImGui.PopStyleColor();
+    }
+
+    public unsafe static bool BeginTabItem(string label, ImGuiTabItemFlags flags)
+    {
+        int num = 0;
+        byte* ptr;
+        if (label != null)
+        {
+            num = Encoding.UTF8.GetByteCount(label);
+            ptr = Allocate(num + 1);
+            int utf =  GetUtf8(label, ptr, num);
+            ptr[utf] = 0;
+        }
+        else
+        {
+            ptr = null;
+        }
+
+        byte* p_open2 = null;
+        byte num2 = ImGuiNative.igBeginTabItem(ptr, p_open2, flags);
+        if (num > 2048)
+        {
+            Free(ptr);
+        }
+        return num2 != 0;
+    }
+
+    internal unsafe static byte* Allocate(int byteCount)
+    {
+        return (byte*)(void*)Marshal.AllocHGlobal(byteCount);
+    }
+
+    internal unsafe static void Free(byte* ptr)
+    {
+        Marshal.FreeHGlobal((IntPtr)ptr);
+    }
+
+    internal unsafe static int GetUtf8(string s, byte* utf8Bytes, int utf8ByteCount)
+    {
+        fixed (char* chars = s)
+        {
+            return Encoding.UTF8.GetBytes(chars, s.Length, utf8Bytes, utf8ByteCount);
+        }
     }
 }
