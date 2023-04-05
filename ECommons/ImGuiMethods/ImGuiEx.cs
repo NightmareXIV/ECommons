@@ -4,15 +4,63 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Runtime.InteropServices;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Internal.Notifications;
+using Dalamud.Utility;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using ImGuiNET;
 
 namespace ECommons.ImGuiMethods;
 
+public static class ImGuiEx
+{
+    public static bool ButtonCtrl(string text, string affix = " (Hold CTRL)")
+    {
+        var disabled = !ImGui.GetIO().KeyCtrl;
+        if (disabled)
+        {
+            ImGui.BeginDisabled();
+        }
+        var name = string.Empty;
+        if (text.Contains($"###"))
+        {
+            var p = text.Split($"###");
+            name = $"{p[0]}{affix}###{p[1]}";
+        }
+        else if (text.Contains($"##"))
+        {
+            var p = text.Split($"##");
+            name = $"{p[0]}{affix}##{p[1]}";
+        }
+        else
+        {
+            name = $"{text}{affix}";
+        }
+        var ret = ImGui.Button(name);
+        if (disabled)
+        {
+            ImGui.EndDisabled();
+        }
+        return ret;
+    }
+
+    public static bool BeginPopupNextToElement(string popupId)
+    {
+        ImGui.SameLine(0,0);
+        var pos = ImGui.GetCursorScreenPos();
+        ImGui.Dummy(Vector2.Zero);
+        ImGui.SetNextWindowPos(pos, ImGuiCond.Appearing);
+        return ImGui.BeginPopup(popupId);
+    }
+
+    [Obsolete("Please switch to CollectionCheckbox")]
+    public static bool HashSetCheckbox<T>(string label, T value, HashSet<T> collection) => CollectionCheckbox(label, value, collection);
+
+    public static bool CollectionCheckbox<T>(string label, T value, HashSet<T> collection)
 public static partial class ImGuiEx
 {
     public record HeaderIconOptions
@@ -90,7 +138,7 @@ public static partial class ImGuiEx
     public static bool HashSetCheckbox<T>(string label, T value, HashSet<T> collection)
     {
         var x = collection.Contains(value);
-        if(ImGui.Checkbox(label, ref x))
+        if (ImGui.Checkbox(label, ref x))
         {
             if (x)
             {
@@ -99,6 +147,24 @@ public static partial class ImGuiEx
             else
             {
                 collection.Remove(value);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public static bool CollectionCheckbox<T>(string label, T value, List<T> collection)
+    {
+        var x = collection.Contains(value);
+        if (ImGui.Checkbox(label, ref x))
+        {
+            if (x)
+            {
+                collection.Add(value);
+            }
+            else
+            {
+                collection.RemoveAll(x => x.Equals(value));
             }
             return true;
         }
@@ -650,6 +716,49 @@ public static partial class ImGuiEx
         ImGui.PushStyleColor(ImGuiCol.Text, colour);
         CenterColumnText(text, underlined);
         ImGui.PopStyleColor();
+    }
+
+    public unsafe static bool BeginTabItem(string label, ImGuiTabItemFlags flags)
+    {
+        int num = 0;
+        byte* ptr;
+        if (label != null)
+        {
+            num = Encoding.UTF8.GetByteCount(label);
+            ptr = Allocate(num + 1);
+            int utf =  GetUtf8(label, ptr, num);
+            ptr[utf] = 0;
+        }
+        else
+        {
+            ptr = null;
+        }
+
+        byte* p_open2 = null;
+        byte num2 = ImGuiNative.igBeginTabItem(ptr, p_open2, flags);
+        if (num > 2048)
+        {
+            Free(ptr);
+        }
+        return num2 != 0;
+    }
+
+    internal unsafe static byte* Allocate(int byteCount)
+    {
+        return (byte*)(void*)Marshal.AllocHGlobal(byteCount);
+    }
+
+    internal unsafe static void Free(byte* ptr)
+    {
+        Marshal.FreeHGlobal((IntPtr)ptr);
+    }
+
+    internal unsafe static int GetUtf8(string s, byte* utf8Bytes, int utf8ByteCount)
+    {
+        fixed (char* chars = s)
+        {
+            return Encoding.UTF8.GetBytes(chars, s.Length, utf8Bytes, utf8ByteCount);
+        }
     }
 }
 

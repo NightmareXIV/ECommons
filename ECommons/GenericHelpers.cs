@@ -26,6 +26,25 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static V GetOrDefault<K, V>(this IDictionary<K, V> dic, K key)
+    {
+        if(dic.TryGetValue(key, out V value)) return value;
+        return default;
+    }
+
+    public static int IncrementOrSet<K>(this IDictionary<K, int> dic, K key, int increment = 1)
+    {
+        if(dic.ContainsKey(key))
+        {
+            dic[key] += increment;
+        }
+        else
+        {
+            dic[key] = increment;
+        }
+        return dic[key];
+    }
+
     public static string RemoveOtherChars(this string s, string charsToKeep)
     {
         return new string(s.ToArray().Where(charsToKeep.Contains).ToArray());
@@ -153,7 +172,22 @@ public static unsafe class GenericHelpers
 
     public static bool IsOccupied()
     {
-        return Svc.Condition[ConditionFlag.Occupied] || Svc.Condition[ConditionFlag.Occupied30] || Svc.Condition[ConditionFlag.Occupied33] || Svc.Condition[ConditionFlag.Occupied38] || Svc.Condition[ConditionFlag.Occupied39] || Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent] || Svc.Condition[ConditionFlag.OccupiedInEvent] || Svc.Condition[ConditionFlag.OccupiedInQuestEvent] || Svc.Condition[ConditionFlag.OccupiedSummoningBell] || Svc.Condition[ConditionFlag.WatchingCutscene] || Svc.Condition[ConditionFlag.WatchingCutscene78] || Svc.Condition[ConditionFlag.BetweenAreas] || Svc.Condition[ConditionFlag.BetweenAreas51] || Svc.Condition[ConditionFlag.InThatPosition];
+        return Svc.Condition[ConditionFlag.Occupied]
+               || Svc.Condition[ConditionFlag.Occupied30]
+               || Svc.Condition[ConditionFlag.Occupied33]
+               || Svc.Condition[ConditionFlag.Occupied38]
+               || Svc.Condition[ConditionFlag.Occupied39]
+               || Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
+               || Svc.Condition[ConditionFlag.OccupiedInEvent]
+               || Svc.Condition[ConditionFlag.OccupiedInQuestEvent]
+               || Svc.Condition[ConditionFlag.OccupiedSummoningBell]
+               || Svc.Condition[ConditionFlag.WatchingCutscene]
+               || Svc.Condition[ConditionFlag.WatchingCutscene78]
+               || Svc.Condition[ConditionFlag.BetweenAreas]
+               || Svc.Condition[ConditionFlag.BetweenAreas51]
+               || Svc.Condition[ConditionFlag.InThatPosition]
+               || Svc.Condition[ConditionFlag.TradeOpen]
+               || Svc.Condition[ConditionFlag.Crafting];
     }
 
     public static string ReplaceFirst(this string text, string search, string replace)
