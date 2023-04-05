@@ -598,17 +598,4 @@ public static class ImGuiEx
             return Encoding.UTF8.GetBytes(chars, s.Length, utf8Bytes, utf8ByteCount);
         }
     }
-
-    internal unsafe static int GetUtf8(string s, int start, int length, byte* utf8Bytes, int utf8ByteCount)
-    {
-        if (start < 0 || length < 0 || start + length > s.Length)
-        {
-            throw new ArgumentOutOfRangeException();
-        }
-
-        fixed (char* ptr = s)
-        {
-            return Encoding.UTF8.GetBytes(ptr + start, length, utf8Bytes, utf8ByteCount);
-        }
-    }
 }
