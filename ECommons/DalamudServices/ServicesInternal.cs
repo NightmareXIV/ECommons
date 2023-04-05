@@ -135,3 +135,8 @@ internal class SGameConfig
 {
     [PluginService] internal static GameConfig GameConfig { get; private set;}
 }
+
+internal class sGameLifeCycle
+{
+    [PluginService] internal static GameLifecycle GameLifecycle { get; private set; }
+}
