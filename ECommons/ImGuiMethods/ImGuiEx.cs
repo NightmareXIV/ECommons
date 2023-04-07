@@ -1,22 +1,20 @@
-﻿using System;
+﻿using Dalamud.Interface;
+using Dalamud.Interface.Colors;
+using Dalamud.Interface.Internal.Notifications;
+using ECommons.DalamudServices;
+using ECommons.Reflection;
+using ImGuiNET;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Runtime.InteropServices;
-using Dalamud.Interface;
-using Dalamud.Interface.Colors;
-using Dalamud.Interface.Internal.Notifications;
-using Dalamud.Utility;
-using ECommons.DalamudServices;
-using ECommons.Reflection;
-using ImGuiNET;
 
 namespace ECommons.ImGuiMethods;
 
-public static class ImGuiEx
+public static partial class ImGuiEx
 {
     public static bool ButtonCtrl(string text, string affix = " (Hold CTRL)")
     {
@@ -50,7 +48,7 @@ public static class ImGuiEx
 
     public static bool BeginPopupNextToElement(string popupId)
     {
-        ImGui.SameLine(0,0);
+        ImGui.SameLine(0, 0);
         var pos = ImGui.GetCursorScreenPos();
         ImGui.Dummy(Vector2.Zero);
         ImGui.SetNextWindowPos(pos, ImGuiCond.Appearing);
@@ -61,8 +59,23 @@ public static class ImGuiEx
     public static bool HashSetCheckbox<T>(string label, T value, HashSet<T> collection) => CollectionCheckbox(label, value, collection);
 
     public static bool CollectionCheckbox<T>(string label, T value, HashSet<T> collection)
-public static partial class ImGuiEx
-{
+    {
+        var x = collection.Contains(value);
+        if (ImGui.Checkbox(label, ref x))
+        {
+            if (x)
+            {
+                collection.Add(value);
+            }
+            else
+            {
+                collection.Remove(value);
+            }
+            return true;
+        }
+        return false;
+    }
+
     public record HeaderIconOptions
     {
         public Vector2 Offset { get; init; } = Vector2.Zero;
@@ -135,24 +148,6 @@ public static partial class ImGuiEx
         return pressed;
     }
 
-    public static bool HashSetCheckbox<T>(string label, T value, HashSet<T> collection)
-    {
-        var x = collection.Contains(value);
-        if (ImGui.Checkbox(label, ref x))
-        {
-            if (x)
-            {
-                collection.Add(value);
-            }
-            else
-            {
-                collection.Remove(value);
-            }
-            return true;
-        }
-        return false;
-    }
-
     public static bool CollectionCheckbox<T>(string label, T value, List<T> collection)
     {
         var x = collection.Contains(value);
@@ -179,7 +174,7 @@ public static partial class ImGuiEx
     public static bool SliderIntAsFloat(string id, ref int value, int min, int max, float divider = 1000)
     {
         var f = (float)value / divider;
-        var ret = ImGui.SliderFloat(id, ref f, (float)min/divider, (float)max / divider);
+        var ret = ImGui.SliderFloat(id, ref f, (float)min / divider, (float)max / divider);
         if (ret)
         {
             value = (int)(f * divider);
@@ -265,7 +260,7 @@ public static partial class ImGuiEx
     {
         if (InputWithRightButtonsAreaValues.ContainsKey(id))
         {
-            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - InputWithRightButtonsAreaValues[id]); 
+            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - InputWithRightButtonsAreaValues[id]);
         }
         inputAction();
         ImGui.SameLine();
@@ -315,15 +310,15 @@ public static partial class ImGuiEx
     public static void InputList<T>(string name, List<T> list, Dictionary<T, string> overrideValues, Action addFunction)
     {
         var text = list.Count == 0 ? "- No values -" : (list.Count == 1 ? $"{(overrideValues != null && overrideValues.ContainsKey(list[0]) ? overrideValues[list[0]] : list[0])}" : $"- {list.Count} elements -");
-        if(ImGui.BeginCombo(name, text))
+        if (ImGui.BeginCombo(name, text))
         {
             addFunction();
             var rem = -1;
-            for (var i = 0;i<list.Count;i++)
+            for (var i = 0; i < list.Count; i++)
             {
                 var id = $"{name}ECommonsDeleItem{i}";
                 var x = list[i];
-                ImGui.Selectable($"{(overrideValues != null && overrideValues.ContainsKey(x) ? overrideValues[x]:x)}");
+                ImGui.Selectable($"{(overrideValues != null && overrideValues.ContainsKey(x) ? overrideValues[x] : x)}");
                 if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
                 {
                     ImGui.OpenPopup(id);
@@ -342,11 +337,11 @@ public static partial class ImGuiEx
                     ImGui.EndPopup();
                 }
             }
-            if(rem > -1)
+            if (rem > -1)
             {
                 list.RemoveAt(rem);
             }
-            if(rem == -2)
+            if (rem == -2)
             {
                 list.Clear();
             }
@@ -466,10 +461,10 @@ public static partial class ImGuiEx
     public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs)
     {
         ImGui.BeginTabBar(id);
-        foreach(var x in tabs)
+        foreach (var x in tabs)
         {
             if (x.name == null) continue;
-            if(x.color != null)
+            if (x.color != null)
             {
                 ImGui.PushStyleColor(ImGuiCol.Text, x.color.Value);
             }
@@ -479,9 +474,9 @@ public static partial class ImGuiEx
                 {
                     ImGui.PopStyleColor();
                 }
-                if(x.child) ImGui.BeginChild(x.name + "child");
+                if (x.child) ImGui.BeginChild(x.name + "child");
                 x.function();
-                if(x.child) ImGui.EndChild();
+                if (x.child) ImGui.EndChild();
                 ImGui.EndTabItem();
             }
             else
@@ -494,7 +489,7 @@ public static partial class ImGuiEx
         }
         ImGui.EndTabBar();
     }
-    
+
     public static void InvisibleButton(int width = 0)
     {
         ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0);
@@ -503,7 +498,7 @@ public static partial class ImGuiEx
     }
 
     public static Dictionary<string, Box<string>> EnumComboSearch = new();
-    public static bool EnumCombo<T>(string name, ref T refConfigField, Dictionary<T, string> names) where T:IConvertible
+    public static bool EnumCombo<T>(string name, ref T refConfigField, Dictionary<T, string> names) where T : IConvertible
     {
         return EnumCombo(name, ref refConfigField, null, names);
     }
@@ -522,7 +517,7 @@ public static partial class ImGuiEx
                 ImGuiEx.SetNextItemFullWidth();
                 ImGui.InputTextWithHint($"##{name.Replace("#", "_")}", "Filter...", ref fltr.Value, 50);
             }
-            foreach(var x in values)
+            foreach (var x in values)
             {
                 var equals = EqualityComparer<T>.Default.Equals((T)x, refConfigField);
                 var element = (names != null && names.TryGetValue((T)x, out n)) ? n : x.ToString().Replace("_", " ");
@@ -605,7 +600,7 @@ public static partial class ImGuiEx
         ImGui.SameLine(0, 0);
         var diff = ImGui.GetCursorPosX() - pos;
         ImGui.Dummy(Vector2.Zero);
-        return diff + (includeSpacing?ImGui.GetStyle().ItemSpacing.X:0);
+        return diff + (includeSpacing ? ImGui.GetStyle().ItemSpacing.X : 0);
     }
 
     public static void InputHex(string name, ref uint hexInt)
@@ -695,7 +690,7 @@ public static partial class ImGuiEx
 
     public static void ButtonCopy(string buttonText, string copy)
     {
-        if(ImGui.Button(buttonText.Replace("$COPY", copy)))
+        if (ImGui.Button(buttonText.Replace("$COPY", copy)))
         {
             ImGui.SetClipboardText(copy);
             Svc.PluginInterface.UiBuilder.AddNotification("Text copied to clipboard", null, NotificationType.Success);
@@ -726,7 +721,7 @@ public static partial class ImGuiEx
         {
             num = Encoding.UTF8.GetByteCount(label);
             ptr = Allocate(num + 1);
-            int utf =  GetUtf8(label, ptr, num);
+            int utf = GetUtf8(label, ptr, num);
             ptr[utf] = 0;
         }
         else
