@@ -10,12 +10,14 @@ using ECommons.SplatoonAPI;
 using ECommons.Events;
 using ECommons.Configuration;
 using ECommons.Hooks;
+using ECommons.Loader;
 
 namespace ECommons;
 
 public static class ECommonsMain
 {
     public static IDalamudPlugin Instance = null;
+    public static bool Disposed { get; private set; } = false;
     //test
     public static void Init(DalamudPluginInterface pluginInterface, IDalamudPlugin instance, params Module[] modules)
     {
@@ -45,18 +47,16 @@ public static class ECommonsMain
 
     public static void Dispose()
     {
-        if(EzConfig.Config != null)
+        Disposed = true;
+        GenericHelpers.Safe(PluginLoader.Dispose);
+        if (EzConfig.Config != null)
         {
             GenericHelpers.Safe(EzConfig.Save);
         }
-        foreach (var x in ImGuiMethods.ThreadLoadImageHandler.CachedTextures)
-        {
-            GenericHelpers.Safe(() => { x.Value.texture?.Dispose(); });
-        }
-        GenericHelpers.Safe(ImGuiMethods.ThreadLoadImageHandler.CachedTextures.Clear);
+        GenericHelpers.Safe(ThreadLoadImageHandler.Dispose);
         GenericHelpers.Safe(ObjectLife.Dispose);
         GenericHelpers.Safe(DalamudReflector.Dispose);
-        if(EzConfigGui.WindowSystem != null)
+        if (EzConfigGui.WindowSystem != null)
         {
             Svc.PluginInterface.UiBuilder.OpenConfigUi -= EzConfigGui.Open;
             Svc.PluginInterface.UiBuilder.Draw -= EzConfigGui.Draw;
@@ -68,11 +68,11 @@ public static class ECommonsMain
             EzConfigGui.WindowSystem.RemoveAllWindows();
             EzConfigGui.WindowSystem = null;
         }
-        foreach(var x in EzCmd.RegisteredCommands)
+        foreach (var x in EzCmd.RegisteredCommands)
         {
             Svc.Commands.RemoveHandler(x);
         }
-        if(Splatoon.Instance != null)
+        if (Splatoon.Instance != null)
         {
             GenericHelpers.Safe(Splatoon.Reset);
         }

@@ -9,6 +9,7 @@ using Dalamud.Game.ClientState.Keys;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.ClientState.Party;
 using Dalamud.Game.Command;
+using Dalamud.Game.Config;
 using Dalamud.Game.Gui;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Game.Gui.PartyFinder;
@@ -128,4 +129,14 @@ internal class STargetManager
 internal class SToastGui
 {
     [PluginService] internal static ToastGui Toasts { get; private set; }
+}
+
+internal class SGameConfig
+{
+    [PluginService] internal static GameConfig GameConfig { get; private set;}
+}
+
+internal class sGameLifeCycle
+{
+    [PluginService] internal static GameLifecycle GameLifecycle { get; private set; }
 }

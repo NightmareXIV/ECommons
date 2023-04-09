@@ -19,11 +19,58 @@ using System.Diagnostics.CodeAnalysis;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 using ECommons.ExcelServices.TerritoryEnumeration;
 using Newtonsoft.Json;
+using FFXIVClientStructs.FFXIV.Client.System.String;
+using System.Runtime.InteropServices;
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static V GetOrDefault<K, V>(this IDictionary<K, V> dic, K key)
+    {
+        if(dic.TryGetValue(key, out V value)) return value;
+        return default;
+    }
+
+    public static int IncrementOrSet<K>(this IDictionary<K, int> dic, K key, int increment = 1)
+    {
+        if(dic.ContainsKey(key))
+        {
+            dic[key] += increment;
+        }
+        else
+        {
+            dic[key] = increment;
+        }
+        return dic[key];
+    }
+
+    public static string RemoveOtherChars(this string s, string charsToKeep)
+    {
+        return new string(s.ToArray().Where(charsToKeep.Contains).ToArray());
+    }
+
+    public static string ReplaceByChar(this string s, string replaceWhat, string replaceWith, bool replaceWithWhole = false)
+    {
+        if(replaceWhat.Length != replaceWith.Length && !replaceWithWhole)
+        {
+            PluginLog.Error($"{nameof(replaceWhat)} and {nameof(replaceWith)} must be same length");
+            return s;
+        }
+        for (int i = 0; i < replaceWhat.Length; i++)
+        {
+            if (replaceWithWhole)
+            {
+                s = s.Replace(replaceWhat[i].ToString(), replaceWith);
+            }
+            else
+            {
+                s = s.Replace(replaceWhat[i], replaceWith[i]);
+            }
+        }
+        return s;
+    }
+
     public static T JSONClone<T>(this T obj)
     {
         return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj));
@@ -125,7 +172,22 @@ public static unsafe class GenericHelpers
 
     public static bool IsOccupied()
     {
-        return Svc.Condition[ConditionFlag.Occupied] || Svc.Condition[ConditionFlag.Occupied30] || Svc.Condition[ConditionFlag.Occupied33] || Svc.Condition[ConditionFlag.Occupied38] || Svc.Condition[ConditionFlag.Occupied39] || Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent] || Svc.Condition[ConditionFlag.OccupiedInEvent] || Svc.Condition[ConditionFlag.OccupiedInQuestEvent] || Svc.Condition[ConditionFlag.OccupiedSummoningBell] || Svc.Condition[ConditionFlag.WatchingCutscene] || Svc.Condition[ConditionFlag.WatchingCutscene78] || Svc.Condition[ConditionFlag.BetweenAreas] || Svc.Condition[ConditionFlag.BetweenAreas51] || Svc.Condition[ConditionFlag.InThatPosition];
+        return Svc.Condition[ConditionFlag.Occupied]
+               || Svc.Condition[ConditionFlag.Occupied30]
+               || Svc.Condition[ConditionFlag.Occupied33]
+               || Svc.Condition[ConditionFlag.Occupied38]
+               || Svc.Condition[ConditionFlag.Occupied39]
+               || Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
+               || Svc.Condition[ConditionFlag.OccupiedInEvent]
+               || Svc.Condition[ConditionFlag.OccupiedInQuestEvent]
+               || Svc.Condition[ConditionFlag.OccupiedSummoningBell]
+               || Svc.Condition[ConditionFlag.WatchingCutscene]
+               || Svc.Condition[ConditionFlag.WatchingCutscene78]
+               || Svc.Condition[ConditionFlag.BetweenAreas]
+               || Svc.Condition[ConditionFlag.BetweenAreas51]
+               || Svc.Condition[ConditionFlag.InThatPosition]
+               || Svc.Condition[ConditionFlag.TradeOpen]
+               || Svc.Condition[ConditionFlag.Crafting];
     }
 
     public static string ReplaceFirst(this string text, string search, string replace)
@@ -170,6 +232,12 @@ public static unsafe class GenericHelpers
     public static string ExtractText(this Lumina.Text.SeString s, bool onlyFirst = false)
     {
         return s.ToDalamudString().ExtractText(onlyFirst);
+    }
+
+    public static string ExtractText(this Utf8String s, bool onlyFirst = false)
+    {
+        var str = ReadSeString(&s);
+        return str.ExtractText(false);
     }
 
     public static string ExtractText(this SeString seStr, bool onlyFirst = false)
@@ -671,5 +739,69 @@ public static unsafe class GenericHelpers
             || (col.A == 0xFF && col.R == 0xFF && col.G == 0xFF && col.B == 0xFF)
             // EEE1C5FF
             || (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5);
+    }
+
+    /// <summary>
+    /// Read an SeString from a specified Utf8String structure.
+    /// </summary>
+    /// <param name="utf8String">The memory address to read from.</param>
+    /// <returns>The read in string.</returns>
+    public static unsafe SeString ReadSeString(Utf8String* utf8String)
+    {
+        if (utf8String == null)
+            return string.Empty;
+
+        var ptr = utf8String->StringPtr;
+        if (ptr == null)
+            return string.Empty;
+
+        var len = Math.Max(utf8String->BufUsed, utf8String->StringLength);
+
+        return ReadSeString((IntPtr)ptr, (int)len);
+    }
+
+    /// <summary>
+    /// Read an SeString from a specified memory address.
+    /// </summary>
+    /// <param name="memoryAddress">The memory address to read from.</param>
+    /// <param name="maxLength">The maximum length of the string.</param>
+    /// <returns>The read in string.</returns>
+    public static SeString ReadSeString(IntPtr memoryAddress, int maxLength)
+    {
+        ReadRaw(memoryAddress, maxLength, out var buffer);
+
+        var eos = Array.IndexOf(buffer, (byte)0);
+        if (eos < 0)
+        {
+            return SeString.Parse(buffer);
+        }
+        else
+        {
+            var newBuffer = new byte[eos];
+            Buffer.BlockCopy(buffer, 0, newBuffer, 0, eos);
+            return SeString.Parse(newBuffer);
+        }
+    }
+
+    /// <summary>
+    /// Reads raw data from a specified memory address.
+    /// </summary>
+    /// <param name="memoryAddress">The memory address to read from.</param>
+    /// <param name="length">The amount of bytes to read starting from the memoryAddress.</param>
+    /// <param name="value">Local variable to receive the read in bytes.</param>
+    public static void ReadRaw(IntPtr memoryAddress, int length, out byte[] value)
+        => value = ReadRaw(memoryAddress, length);
+
+    /// <summary>
+    /// Reads a byte array from a specified memory address.
+    /// </summary>
+    /// <param name="memoryAddress">The memory address to read from.</param>
+    /// <param name="length">The amount of bytes to read starting from the memoryAddress.</param>
+    /// <returns>The read in byte array.</returns>
+    public static byte[] ReadRaw(IntPtr memoryAddress, int length)
+    {
+        var value = new byte[length];
+        Marshal.Copy(memoryAddress, value, 0, value.Length);
+        return value;
     }
 }

@@ -15,6 +15,7 @@ namespace ECommons.Automation
         public bool AbortOnTimeout = false;
         public long AbortAt { get; private set; } = 0;
         TaskManagerTask CurrentTask = null;
+        public int NumQueuedTasks => Tasks.Count + (CurrentTask == null ? 0 : 1);
 
         Queue<TaskManagerTask> Tasks = new();
         Queue<TaskManagerTask> ImmediateTasks = new();
@@ -49,6 +50,12 @@ namespace ECommons.Automation
         public void Enqueue(Func<bool?> task, int timeLimitMs, bool abortOnTimeout)
         {
             Tasks.Enqueue(new(task, timeLimitMs, abortOnTimeout));
+        }
+
+        public void Abort()
+        {
+            Tasks.Clear();
+            CurrentTask = null;
         }
 
         public void EnqueueImmediate(Func<bool?> task)
@@ -111,8 +118,7 @@ namespace ECommons.Automation
                     else
                     {
                         PluginLog.Warning($"Clearing {Tasks.Count} remaining tasks because there was a signal from task {CurrentTask.Action.GetMethodInfo()?.Name} to abort");
-                        Tasks.Clear();
-                        CurrentTask = null;
+                        Abort();
                     }
                 }
                 catch (Exception e)
