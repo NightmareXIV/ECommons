@@ -17,6 +17,7 @@ namespace ECommons.Automation
         TaskManagerTask CurrentTask = null;
 
         Queue<TaskManagerTask> Tasks = new();
+        Queue<TaskManagerTask> ImmediateTasks = new();
 
         public TaskManager()
         {
@@ -50,11 +51,36 @@ namespace ECommons.Automation
             Tasks.Enqueue(new(task, timeLimitMs, abortOnTimeout));
         }
 
+        public void EnqueueImmediate(Func<bool?> task)
+        {
+            ImmediateTasks.Enqueue(new(task, TimeLimitMS, AbortOnTimeout));
+        }
+
+        public void EnqueueImmediate(Func<bool?> task, int timeLimitMs)
+        {
+            ImmediateTasks.Enqueue(new(task, timeLimitMs, AbortOnTimeout));
+        }
+
+        public void EnqueueImmediate(Func<bool?> task, bool abortOnTimeout)
+        {
+            ImmediateTasks.Enqueue(new(task, TimeLimitMS, abortOnTimeout));
+        }
+
+        public void EnqueueImmediate(Func<bool?> task, int timeLimitMs, bool abortOnTimeout)
+        {
+            ImmediateTasks.Enqueue(new(task, timeLimitMs, abortOnTimeout));
+        }
+
         void Tick(object _)
         {
             if (CurrentTask == null)
             {
-                if (Tasks.TryDequeue(out CurrentTask))
+                if (ImmediateTasks.TryDequeue(out CurrentTask))
+                {
+                    PluginLog.Debug($"Starting to execute immediate task: {CurrentTask.Action.GetMethodInfo()?.Name}");
+                    AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
+                }
+                else if (Tasks.TryDequeue(out CurrentTask))
                 {
                     PluginLog.Debug($"Starting to execute task: {CurrentTask.Action.GetMethodInfo()?.Name}");
                     AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
