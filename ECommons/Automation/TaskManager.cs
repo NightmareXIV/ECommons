@@ -55,6 +55,7 @@ namespace ECommons.Automation
         public void Abort()
         {
             Tasks.Clear();
+            ImmediateTasks.Clear();
             CurrentTask = null;
         }
 
@@ -111,6 +112,7 @@ namespace ECommons.Automation
                             {
                                 PluginLog.Warning($"Clearing {Tasks.Count} remaining tasks because of timeout");
                                 Tasks.Clear();
+                                ImmediateTasks.Clear();
                             }
                             throw new TimeoutException($"Task {CurrentTask.Action.GetMethodInfo()?.Name} took too long to execute");
                         }
