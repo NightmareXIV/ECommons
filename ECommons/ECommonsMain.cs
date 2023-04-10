@@ -11,6 +11,7 @@ using ECommons.Events;
 using ECommons.Configuration;
 using ECommons.Hooks;
 using ECommons.Loader;
+using ECommons.Automation;
 
 namespace ECommons;
 
@@ -80,6 +81,7 @@ public static class ECommonsMain
         GenericHelpers.Safe(ProperOnLogin.Dispose);
         GenericHelpers.Safe(DirectorUpdate.Dispose);
         GenericHelpers.Safe(ActionEffect.Dispose);
+        GenericHelpers.Safe(TaskManager.DisposeAll);
         Instance = null;
     }
 }

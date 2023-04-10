@@ -11,6 +11,7 @@ namespace ECommons.Automation
 {
     public class TaskManager : IDisposable
     {
+        private static readonly List<TaskManager> Instances = new();
         public int TimeLimitMS = 10000;
         public bool AbortOnTimeout = false;
         public long AbortAt { get; private set; } = 0;
@@ -23,11 +24,29 @@ namespace ECommons.Automation
         public TaskManager()
         {
             Svc.Framework.Update += Tick;
+            Instances.Add(this);
         }
 
+        [Obsolete($"Task managers will be disposed automatically on {nameof(ECommonsMain.Dispose)} call. Use this if you need to dispose task manager before that.")]
         public void Dispose()
         {
             Svc.Framework.Update -= Tick;
+            Instances.Remove(this);
+        }
+
+        internal static void DisposeAll()
+        {
+            int i = 0;
+            foreach(var manager in Instances)
+            {
+                i++;
+                Svc.Framework.Update -= manager.Tick;
+            }
+            if(i>0)
+            {
+                PluginLog.Debug($"Auto-disposing {i} task managers");
+            }
+            Instances.Clear();
         }
 
         public bool IsBusy => CurrentTask != null || Tasks.Count > 0 || ImmediateTasks.Count > 0;
