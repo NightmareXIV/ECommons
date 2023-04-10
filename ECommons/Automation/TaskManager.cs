@@ -15,7 +15,7 @@ namespace ECommons.Automation
         public bool AbortOnTimeout = false;
         public long AbortAt { get; private set; } = 0;
         TaskManagerTask CurrentTask = null;
-        public int NumQueuedTasks => Tasks.Count + (CurrentTask == null ? 0 : 1);
+        public int NumQueuedTasks => Tasks.Count + ImmediateTasks.Count + (CurrentTask == null ? 0 : 1);
 
         Queue<TaskManagerTask> Tasks = new();
         Queue<TaskManagerTask> ImmediateTasks = new();
@@ -30,7 +30,7 @@ namespace ECommons.Automation
             Svc.Framework.Update -= Tick;
         }
 
-        public bool IsBusy => CurrentTask != null || Tasks.Count > 0;
+        public bool IsBusy => CurrentTask != null || Tasks.Count > 0 || ImmediateTasks.Count > 0;
 
         public void Enqueue(Func<bool?> task)
         {
