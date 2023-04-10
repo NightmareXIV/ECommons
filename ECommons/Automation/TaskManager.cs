@@ -18,6 +18,7 @@ namespace ECommons.Automation
         public int NumQueuedTasks => Tasks.Count + (CurrentTask == null ? 0 : 1);
 
         Queue<TaskManagerTask> Tasks = new();
+        Queue<TaskManagerTask> ImmediateTasks = new();
 
         public TaskManager()
         {
@@ -54,14 +55,40 @@ namespace ECommons.Automation
         public void Abort()
         {
             Tasks.Clear();
+            ImmediateTasks.Clear();
             CurrentTask = null;
+        }
+
+        public void EnqueueImmediate(Func<bool?> task)
+        {
+            ImmediateTasks.Enqueue(new(task, TimeLimitMS, AbortOnTimeout));
+        }
+
+        public void EnqueueImmediate(Func<bool?> task, int timeLimitMs)
+        {
+            ImmediateTasks.Enqueue(new(task, timeLimitMs, AbortOnTimeout));
+        }
+
+        public void EnqueueImmediate(Func<bool?> task, bool abortOnTimeout)
+        {
+            ImmediateTasks.Enqueue(new(task, TimeLimitMS, abortOnTimeout));
+        }
+
+        public void EnqueueImmediate(Func<bool?> task, int timeLimitMs, bool abortOnTimeout)
+        {
+            ImmediateTasks.Enqueue(new(task, timeLimitMs, abortOnTimeout));
         }
 
         void Tick(object _)
         {
             if (CurrentTask == null)
             {
-                if (Tasks.TryDequeue(out CurrentTask))
+                if (ImmediateTasks.TryDequeue(out CurrentTask))
+                {
+                    PluginLog.Debug($"Starting to execute immediate task: {CurrentTask.Action.GetMethodInfo()?.Name}");
+                    AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
+                }
+                else if (Tasks.TryDequeue(out CurrentTask))
                 {
                     PluginLog.Debug($"Starting to execute task: {CurrentTask.Action.GetMethodInfo()?.Name}");
                     AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
@@ -85,6 +112,7 @@ namespace ECommons.Automation
                             {
                                 PluginLog.Warning($"Clearing {Tasks.Count} remaining tasks because of timeout");
                                 Tasks.Clear();
+                                ImmediateTasks.Clear();
                             }
                             throw new TimeoutException($"Task {CurrentTask.Action.GetMethodInfo()?.Name} took too long to execute");
                         }
