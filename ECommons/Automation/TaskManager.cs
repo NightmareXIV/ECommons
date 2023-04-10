@@ -51,6 +51,25 @@ namespace ECommons.Automation
         {
             Tasks.Enqueue(new(task, timeLimitMs, abortOnTimeout));
         }
+        public void Enqueue(Action task)
+        {
+            Tasks.Enqueue(new(() => { task(); return true; }, TimeLimitMS, AbortOnTimeout));
+        }
+
+        public void Enqueue(Action task, int timeLimitMs)
+        {
+            Tasks.Enqueue(new(() => { task(); return true; }, timeLimitMs, AbortOnTimeout));
+        }
+
+        public void Enqueue(Action task, bool abortOnTimeout)
+        {
+            Tasks.Enqueue(new(() => { task(); return true; }, TimeLimitMS, abortOnTimeout));
+        }
+
+        public void Enqueue(Action task, int timeLimitMs, bool abortOnTimeout)
+        {
+            Tasks.Enqueue(new(() => { task(); return true; }, timeLimitMs, abortOnTimeout));
+        }
 
         public void Abort()
         {
@@ -77,6 +96,26 @@ namespace ECommons.Automation
         public void EnqueueImmediate(Func<bool?> task, int timeLimitMs, bool abortOnTimeout)
         {
             ImmediateTasks.Enqueue(new(task, timeLimitMs, abortOnTimeout));
+        }
+
+        public void EnqueueImmediate(Action task)
+        {
+            ImmediateTasks.Enqueue(new(() => { task(); return true; }, TimeLimitMS, AbortOnTimeout));
+        }
+
+        public void EnqueueImmediate(Action task, int timeLimitMs)
+        {
+            ImmediateTasks.Enqueue(new(() => { task(); return true; }, timeLimitMs, AbortOnTimeout));
+        }
+
+        public void EnqueueImmediate(Action task, bool abortOnTimeout)
+        {
+            ImmediateTasks.Enqueue(new(() => { task(); return true; }, TimeLimitMS, abortOnTimeout));
+        }
+
+        public void EnqueueImmediate(Action task, int timeLimitMs, bool abortOnTimeout)
+        {
+            ImmediateTasks.Enqueue(new(() => { task(); return true; }, timeLimitMs, abortOnTimeout));
         }
 
         void Tick(object _)
