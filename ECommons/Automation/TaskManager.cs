@@ -1,5 +1,6 @@
-﻿using ECommons.DalamudServices;
+using ECommons.DalamudServices;
 using ECommons.Logging;
+using ECommons.Throttlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,6 +89,12 @@ namespace ECommons.Automation
         public void Enqueue(Action task, int timeLimitMs, bool abortOnTimeout)
         {
             Tasks.Enqueue(new(() => { task(); return true; }, timeLimitMs, abortOnTimeout));
+        }
+
+        public void DelayNext(string uniqueName, int delayMS)
+        {
+            Enqueue(() => EzThrottler.Throttle(uniqueName, delayMS));
+            Enqueue(() => EzThrottler.Check(uniqueName));
         }
 
         public void Abort()
