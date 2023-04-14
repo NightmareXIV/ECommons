@@ -19,20 +19,4 @@ public static class GradientColor
             return end - delta * ((float)(time % Miliseconds));
         }
     }
-
-    public static Vector4 GetPrecise(Vector4 startf, Vector4 endf, int Miliseconds = 1000)
-    {
-        var start = startf.ToVector4Double();
-        var end = endf.ToVector4Double();
-        var delta = (end - start) / (int)Miliseconds;
-        var time = Environment.TickCount % (Miliseconds * 2);
-        if (time < Miliseconds)
-        {
-            return (start + delta * (double)(time % Miliseconds)).ToVector4();
-        }
-        else
-        {
-            return (end - delta * ((double)(time % Miliseconds))).ToVector4();
-        }
-    }
 }
