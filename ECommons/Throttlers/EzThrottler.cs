@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Dalamud.Interface.Colors;
+using ECommons.ImGuiMethods;
+using ImGuiNET;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,6 +51,14 @@ namespace ECommons.Throttlers
             else
             {
                 return ret > 0 ? ret : 0;
+            }
+        }
+
+        public static void ImGuiPrintDebugInfo()
+        {
+            foreach(var x in throttlers)
+            {
+                ImGuiEx.Text(Check(x.Key)?ImGuiColors.HealerGreen:ImGuiColors.DalamudRed, $"{x.Key}: [{GetRemainingTime(x.Key)}ms remains] ({x.Value})");
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Dalamud.Logging;
 using ECommons.DalamudServices;
+using Microsoft.Win32.SafeHandles;
 using System;
 using System.Collections.Generic;
 
@@ -12,7 +13,7 @@ public static class ProperOnLogin
 
     public static bool PlayerPresent => Svc.ClientState.LocalPlayer != null && Svc.ClientState.LocalContentId != 0;
 
-    public static void Register(Action action)
+    public static void Register(Action action, bool fireImmediately = false)
     {
         if (RegisteredActions.Contains(action))
         {
@@ -27,6 +28,10 @@ public static class ProperOnLogin
                 EventRegistered = true;
                 Svc.ClientState.Login += OnLogin;
                 PluginLog.Debug("ProperOnLogin master event registered");
+            }
+            if(fireImmediately && PlayerPresent)
+            {
+                GenericHelpers.Safe(action);
             }
         }
     }
