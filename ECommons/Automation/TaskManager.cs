@@ -2,6 +2,7 @@
 using ECommons.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -15,6 +16,9 @@ namespace ECommons.Automation
         public bool AbortOnTimeout = false;
         public long AbortAt { get; private set; } = 0;
         TaskManagerTask CurrentTask = null;
+        public bool TimeoutSilently = false;
+        Action<string> LogTimeout => TimeoutSilently ? PluginLog.Verbose : PluginLog.Warning;
+        string StackTrace => new StackTrace().GetFrames().Select(x => x.GetMethod()?.Name ?? "<unknown>").Join(" <- ");
 
         Queue<TaskManagerTask> Tasks = new();
 
@@ -56,7 +60,7 @@ namespace ECommons.Automation
             {
                 if (Tasks.TryDequeue(out CurrentTask))
                 {
-                    PluginLog.Debug($"Starting to execute task: {CurrentTask.Action.GetMethodInfo()?.Name}");
+                    PluginLog.Debug($"Starting to execute task: {StackTrace}");
                     AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
                 }
             }
@@ -67,7 +71,7 @@ namespace ECommons.Automation
                     var result = CurrentTask.Action();
                     if (result == true)
                     {
-                        PluginLog.Debug($"Task {CurrentTask.Action.GetMethodInfo()?.Name} completed successfully");
+                        PluginLog.Debug($"Task {StackTrace} completed successfully");
                         CurrentTask = null; 
                     }
                     else if(result == false)
@@ -76,18 +80,23 @@ namespace ECommons.Automation
                         {
                             if (CurrentTask.AbortOnTimeout)
                             {
-                                PluginLog.Warning($"Clearing {Tasks.Count} remaining tasks because of timeout");
+                                LogTimeout($"Clearing {Tasks.Count} remaining tasks because of timeout");
                                 Tasks.Clear();
                             }
-                            throw new TimeoutException($"Task {CurrentTask.Action.GetMethodInfo()?.Name} took too long to execute");
+                            throw new TimeoutException($"Task {StackTrace} took too long to execute");
                         }
                     }
                     else
                     {
-                        PluginLog.Warning($"Clearing {Tasks.Count} remaining tasks because there was a signal from task {CurrentTask.Action.GetMethodInfo()?.Name} to abort");
+                        PluginLog.Debug($"Clearing {Tasks.Count} remaining tasks because there was a signal from task {StackTrace} to abort");
                         Tasks.Clear();
                         CurrentTask = null;
                     }
+                }
+                catch (TimeoutException e)
+                {
+                    LogTimeout($"{e.Message}\n{e.StackTrace}");
+                    CurrentTask = null;
                 }
                 catch (Exception e)
                 {
