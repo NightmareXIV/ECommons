@@ -95,10 +95,34 @@ namespace ECommons.Automation
             Tasks.Enqueue(new(() => { task(); return true; }, timeLimitMs, abortOnTimeout, name));
         }
 
-        public void DelayNext(string uniqueName, int delayMS)
+        public void DelayNext(int delayMS, bool useFrameThrottler = false) => DelayNext(Guid.NewGuid().ToString(), delayMS, useFrameThrottler);
+        public void DelayNext(string uniqueName, int delayMS, bool useFrameThrottler = false)
         {
-            Enqueue(() => EzThrottler.Throttle(uniqueName, delayMS));
-            Enqueue(() => EzThrottler.Check(uniqueName));
+            if (useFrameThrottler)
+            {
+                Enqueue(() => FrameThrottler.Throttle(uniqueName, delayMS));
+                Enqueue(() => FrameThrottler.Check(uniqueName));
+            }
+            else
+            {
+                Enqueue(() => EzThrottler.Throttle(uniqueName, delayMS));
+                Enqueue(() => EzThrottler.Check(uniqueName));
+            }
+        }
+
+        public void DelayNextImmediate(int delayMS, bool useFrameThrottler = false) => DelayNext(Guid.NewGuid().ToString(), delayMS, useFrameThrottler);
+        public void DelayNextImmediate(string uniqueName, int delayMS, bool useFrameThrottler = false)
+        {
+            if (useFrameThrottler)
+            {
+                EnqueueImmediate(() => FrameThrottler.Throttle(uniqueName, delayMS));
+                EnqueueImmediate(() => FrameThrottler.Check(uniqueName));
+            }
+            else
+            {
+                EnqueueImmediate(() => EzThrottler.Throttle(uniqueName, delayMS));
+                EnqueueImmediate(() => EzThrottler.Check(uniqueName));
+            }
         }
 
         public void Abort()
