@@ -19,7 +19,7 @@ namespace ECommons.Automation
             Action = action;
             TimeLimitMS = timeLimitMS;
             AbortOnTimeout = abortOnTimeout;
-            Name = name ?? new StackTrace().GetFrames().Select(x => x.GetMethod()?.Name ?? "<unknown>").Join(" <- ");
+            Name = name;// ?? new StackTrace().GetFrames().Select(x => x.GetMethod()?.Name ?? "<unknown>").Join(" <- ");
         }
     }
 }
