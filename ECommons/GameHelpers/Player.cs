@@ -19,6 +19,7 @@ namespace ECommons.GameHelpers
         public static StatusList Status => Svc.ClientState.LocalPlayer.StatusList;
         public static string Name => Svc.ClientState.LocalPlayer?.Name.ToString();
         public static bool IsInHomeWorld => Svc.ClientState.LocalPlayer.HomeWorld == Svc.ClientState.LocalPlayer.CurrentWorld;
+        public static string HomeWorld => Svc.ClientState.LocalPlayer?.HomeWorld.GameData.Name.ToString();
         public static Character* Character => (Character*)Svc.ClientState.LocalPlayer.Address;
         public static BattleChara* BattleChara => (BattleChara*)Svc.ClientState.LocalPlayer.Address;
         public static GameObject* GameObject => (GameObject*)Svc.ClientState.LocalPlayer.Address;
