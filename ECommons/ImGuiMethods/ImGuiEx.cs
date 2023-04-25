@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -708,9 +709,41 @@ public static partial class ImGuiEx
         }
     }
 
-    public static void TextCentered(string text) 
+    public static void TextCentered(string text)
     {
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2);
+        Text(text);
+    }
+
+    public static void TextCentered(Vector4 col, string text)
+    {
+        ImGui.PushStyleColor(ImGuiCol.Text, col);
+        TextCentered(text);
+        ImGui.PopStyleColor();
+    }
+
+    public static void Text(Vector4? col, string text)
+    {
+        if(col == null)
+        {
+            Text(text);
+        }
+        else
+        {
+            Text(col.Value, text);
+        }
+    }
+
+    public static void TextCentered(Vector4? col, string text)
+    {
+        if (col == null) 
+        {
+            TextCentered(text);
+        }
+        else 
+        {
+            TextCentered(col.Value, text);
+        }
     }
 
     public static void ButtonCopy(string buttonText, string copy)
