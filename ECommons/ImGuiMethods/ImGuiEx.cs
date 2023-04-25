@@ -688,6 +688,11 @@ public static partial class ImGuiEx
         }
     }
 
+    public static void TextCentered(string text) 
+    {
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2);
+    }
+
     public static void ButtonCopy(string buttonText, string copy)
     {
         if (ImGui.Button(buttonText.Replace("$COPY", copy)))
