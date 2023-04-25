@@ -101,7 +101,7 @@ public static partial class ImGuiEx
         {
             headerLastWindowID = currentID;
             headerLastFrame = Svc.PluginInterface.UiBuilder.FrameCount;
-            headerCurrentPos = 0.25f;
+            headerCurrentPos = 0.25f * ImGui.GetStyle().FramePadding.Length();
             if (!GetCurrentWindowFlags().HasFlag(ImGuiWindowFlags.NoTitleBar))
                 headerCurrentPos = 1;
             headerImGuiButtonWidth = 0f;
