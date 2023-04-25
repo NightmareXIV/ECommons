@@ -16,6 +16,26 @@ namespace ECommons.ImGuiMethods;
 
 public static partial class ImGuiEx
 {
+    public static void EzTableColumns(string id, Action[] values)
+    {
+        if (values.Length == 1)
+        {
+            GenericHelpers.Safe(values[0]);
+        }
+        else
+        {
+            if (ImGui.BeginTable(id, values.Length, ImGuiTableFlags.SizingStretchSame))
+            {
+                foreach (Action action in values)
+                {
+                    ImGui.TableNextColumn();
+                    GenericHelpers.Safe(action);
+                }
+                ImGui.EndTable();
+            }
+        }
+    }
+
     public static bool ButtonCtrl(string text, string affix = " (Hold CTRL)")
     {
         var disabled = !ImGui.GetIO().KeyCtrl;
