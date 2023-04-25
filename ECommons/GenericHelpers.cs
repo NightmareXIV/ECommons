@@ -29,6 +29,12 @@ namespace ECommons;
 public static unsafe class GenericHelpers
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsNullOr<T>(this T source, Predicate<T> testFunction)
+    {
+        return source == null || testFunction(source);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static V GetOrDefault<K, V>(this IDictionary<K, V> dic, K key)
     {
         if(dic.TryGetValue(key, out V value)) return value;
