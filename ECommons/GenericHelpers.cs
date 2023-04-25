@@ -187,7 +187,28 @@ public static unsafe class GenericHelpers
                || Svc.Condition[ConditionFlag.BetweenAreas51]
                || Svc.Condition[ConditionFlag.InThatPosition]
                || Svc.Condition[ConditionFlag.TradeOpen]
-               || Svc.Condition[ConditionFlag.Crafting];
+               || Svc.Condition[ConditionFlag.Crafting]
+               || Svc.Condition[ConditionFlag.InThatPosition]
+               || Svc.Condition[ConditionFlag.Unconscious]
+               || Svc.Condition[ConditionFlag.MeldingMateria]
+               || Svc.Condition[ConditionFlag.Gathering]
+               || Svc.Condition[ConditionFlag.OperatingSiegeMachine]
+               || Svc.Condition[ConditionFlag.CarryingItem]
+               || Svc.Condition[ConditionFlag.CarryingObject]
+               || Svc.Condition[ConditionFlag.BeingMoved]
+               || Svc.Condition[ConditionFlag.Emoting]
+               || Svc.Condition[ConditionFlag.Mounted2]
+               || Svc.Condition[ConditionFlag.Mounting]
+               || Svc.Condition[ConditionFlag.Mounting71]
+               || Svc.Condition[ConditionFlag.ParticipatingInCustomMatch]
+               || Svc.Condition[ConditionFlag.PlayingLordOfVerminion]
+               || Svc.Condition[ConditionFlag.ChocoboRacing]
+               || Svc.Condition[ConditionFlag.PlayingMiniGame]
+               || Svc.Condition[ConditionFlag.Performing]
+               || Svc.Condition[ConditionFlag.PreparingToCraft]
+               || Svc.Condition[ConditionFlag.Fishing]
+               || Svc.Condition[ConditionFlag.Transformed]
+               || Svc.Condition[ConditionFlag.UsingHousingFunctions];
     }
 
     public static string ReplaceFirst(this string text, string search, string replace)
@@ -595,6 +616,18 @@ public static unsafe class GenericHelpers
     }
 
     public static bool ContainsAny<T>(this IEnumerable<T> obj, IEnumerable<T> values)
+    {
+        foreach (var x in values)
+        {
+            if (obj.Contains(x))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static bool ContainsAny(this string obj, IEnumerable<string> values)
     {
         foreach (var x in values)
         {
