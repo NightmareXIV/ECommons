@@ -23,11 +23,17 @@ using FFXIVClientStructs.FFXIV.Client.System.String;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using Dalamud.Memory;
+using Dalamud.Game.ClientState.Objects.Types;
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static bool IsTarget(this GameObject obj)
+    {
+        return Svc.Targets.Target != null && Svc.Targets.Target.Address == obj.Address;
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNullOr<T>(this T source, Predicate<T> testFunction)
     {
