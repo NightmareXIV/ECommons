@@ -178,12 +178,12 @@ namespace ECommons.Automation
             {
                 if (ImmediateTasks.TryDequeue(out CurrentTask))
                 {
-                    PluginLog.Debug($"Starting to execute immediate task: {CurrentTask.Action.GetMethodInfo()?.Name}");
+                    PluginLog.Debug($"Starting to execute immediate task: {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name}");
                     AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
                 }
                 else if (Tasks.TryDequeue(out CurrentTask))
                 {
-                    PluginLog.Debug($"Starting to execute task: {CurrentTask.Name}");
+                    PluginLog.Debug($"Starting to execute task: {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name}");
                     AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
                 }
             }
@@ -194,7 +194,7 @@ namespace ECommons.Automation
                     var result = CurrentTask.Action();
                     if (result == true)
                     {
-                        PluginLog.Debug($"Task {CurrentTask.Name} completed successfully");
+                        PluginLog.Debug($"Task {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name} completed successfully");
                         CurrentTask = null; 
                     }
                     else if(result == false)
@@ -207,12 +207,12 @@ namespace ECommons.Automation
                                 Tasks.Clear();
                                 ImmediateTasks.Clear();
                             }
-                            throw new TimeoutException($"Task {CurrentTask.Name} took too long to execute");
+                            throw new TimeoutException($"Task {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name} took too long to execute");
                         }
                     }
                     else
                     {
-                        PluginLog.Warning($"Clearing {Tasks.Count} remaining tasks because there was a signal from task {CurrentTask.Action.GetMethodInfo()?.Name} to abort");
+                        PluginLog.Warning($"Clearing {Tasks.Count} remaining tasks because there was a signal from task {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name} to abort");
                         Abort();
                     }
                 }
