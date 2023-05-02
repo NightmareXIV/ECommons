@@ -3,14 +3,7 @@ using ECommons.Logging;
 using ECommons.Throttlers;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace ECommons.Automation
 {
@@ -23,7 +16,7 @@ namespace ECommons.Automation
         TaskManagerTask CurrentTask = null;
         public int NumQueuedTasks => Tasks.Count + ImmediateTasks.Count + (CurrentTask == null ? 0 : 1);
         public bool TimeoutSilently = false;
-        public bool ShowDebug = false;
+        public bool ShowDebug = true;
         Action<string> LogTimeout => TimeoutSilently ? PluginLog.Verbose : PluginLog.Warning;
 
         Queue<TaskManagerTask> Tasks = new();
@@ -45,12 +38,12 @@ namespace ECommons.Automation
         internal static void DisposeAll()
         {
             int i = 0;
-            foreach(var manager in Instances)
+            foreach (var manager in Instances)
             {
                 i++;
                 Svc.Framework.Update -= manager.Tick;
             }
-            if(i>0)
+            if (i > 0)
             {
                 PluginLog.Debug($"Auto-disposing {i} task managers");
             }
@@ -181,12 +174,14 @@ namespace ECommons.Automation
             {
                 if (ImmediateTasks.TryDequeue(out CurrentTask))
                 {
-                    PluginLog.Debug($"Starting to execute immediate task: {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name}");
+                    if (ShowDebug)
+                        PluginLog.Debug($"Starting to execute immediate task: {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name}");
                     AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
                 }
                 else if (Tasks.TryDequeue(out CurrentTask))
                 {
-                    PluginLog.Debug($"Starting to execute task: {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name}");
+                    if (ShowDebug)
+                        PluginLog.Debug($"Starting to execute task: {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name}");
                     AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
                 }
             }
@@ -197,10 +192,11 @@ namespace ECommons.Automation
                     var result = CurrentTask.Action();
                     if (result == true)
                     {
-                        PluginLog.Debug($"Task {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name} completed successfully");
-                        CurrentTask = null; 
+                        if (ShowDebug)
+                            PluginLog.Debug($"Task {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name} completed successfully");
+                        CurrentTask = null;
                     }
-                    else if(result == false)
+                    else if (result == false)
                     {
                         if (Environment.TickCount64 > AbortAt)
                         {
