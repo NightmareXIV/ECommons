@@ -98,17 +98,33 @@ namespace ECommons.Automation
             Tasks.Enqueue(new(() => { task(); return true; }, timeLimitMs, abortOnTimeout, name));
         }
 
-        public void DelayNext(string uniqueName, int delayMS, bool immediately = false)
+        public void DelayNext(int delayMS, bool useFrameThrottler = false) => DelayNext("ECommonsGenericDelay", delayMS, useFrameThrottler);
+        public void DelayNext(string uniqueName, int delayMS, bool useFrameThrottler = false)
         {
-            if (immediately)
+            if (useFrameThrottler)
             {
-                EnqueueImmediate(() => EzThrottler.Throttle(uniqueName, delayMS), uniqueName);
-                EnqueueImmediate(() => EzThrottler.Check(uniqueName), uniqueName);
+                Enqueue(() => FrameThrottler.Throttle(uniqueName, delayMS), $"FrameThrottler.Throttle({uniqueName}, {delayMS})");
+                Enqueue(() => FrameThrottler.Check(uniqueName), $"FrameThrottler.Check({uniqueName})");
             }
             else
             {
-                Enqueue(() => EzThrottler.Throttle(uniqueName, delayMS), uniqueName);
-                Enqueue(() => EzThrottler.Check(uniqueName), uniqueName);
+                Enqueue(() => EzThrottler.Throttle(uniqueName, delayMS), $"EzThrottler.Throttle({uniqueName}, {delayMS})");
+                Enqueue(() => EzThrottler.Check(uniqueName), $"EzThrottler.Check({uniqueName})");
+            }
+        }
+
+        public void DelayNextImmediate(int delayMS, bool useFrameThrottler = false) => DelayNext("ECommonsGenericDelay", delayMS, useFrameThrottler);
+        public void DelayNextImmediate(string uniqueName, int delayMS, bool useFrameThrottler = false)
+        {
+            if (useFrameThrottler)
+            {
+                EnqueueImmediate(() => FrameThrottler.Throttle(uniqueName, delayMS), $"FrameThrottler.Throttle({uniqueName}, {delayMS})");
+                EnqueueImmediate(() => FrameThrottler.Check(uniqueName), $"FrameThrottler.Check({uniqueName})");
+            }
+            else
+            {
+                EnqueueImmediate(() => EzThrottler.Throttle(uniqueName, delayMS), $"EzThrottler.Throttle({uniqueName}, {delayMS})");
+                EnqueueImmediate(() => EzThrottler.Check(uniqueName), $"EzThrottler.Check({uniqueName})");
             }
         }
 
@@ -165,14 +181,12 @@ namespace ECommons.Automation
             {
                 if (ImmediateTasks.TryDequeue(out CurrentTask))
                 {
-                    if (ShowDebug)
-                    PluginLog.Debug($"Starting to execute immediate task: {CurrentTask.Action.GetMethodInfo()?.Name}");
+                    PluginLog.Debug($"Starting to execute immediate task: {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name}");
                     AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
                 }
                 else if (Tasks.TryDequeue(out CurrentTask))
                 {
-                    if (ShowDebug)
-                        PluginLog.Debug($"Starting to execute task: {CurrentTask.Name}");
+                    PluginLog.Debug($"Starting to execute task: {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name}");
                     AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
                 }
             }
@@ -183,8 +197,7 @@ namespace ECommons.Automation
                     var result = CurrentTask.Action();
                     if (result == true)
                     {
-                        if (ShowDebug)
-                            PluginLog.Debug($"Task {CurrentTask.Name} completed successfully");
+                        PluginLog.Debug($"Task {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name} completed successfully");
                         CurrentTask = null; 
                     }
                     else if(result == false)
@@ -197,12 +210,12 @@ namespace ECommons.Automation
                                 Tasks.Clear();
                                 ImmediateTasks.Clear();
                             }
-                            throw new TimeoutException($"Task {CurrentTask.Name} took too long to execute");
+                            throw new TimeoutException($"Task {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name} took too long to execute");
                         }
                     }
                     else
                     {
-                        PluginLog.Warning($"Clearing {Tasks.Count} remaining tasks because there was a signal from task {CurrentTask.Action.GetMethodInfo()?.Name} to abort");
+                        PluginLog.Warning($"Clearing {Tasks.Count} remaining tasks because there was a signal from task {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name} to abort");
                         Abort();
                     }
                 }
