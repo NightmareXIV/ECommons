@@ -3,9 +3,11 @@ using ECommons.Logging;
 using ECommons.Throttlers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -21,6 +23,7 @@ namespace ECommons.Automation
         TaskManagerTask CurrentTask = null;
         public int NumQueuedTasks => Tasks.Count + ImmediateTasks.Count + (CurrentTask == null ? 0 : 1);
         public bool TimeoutSilently = false;
+        public bool ShowDebug = false;
         Action<string> LogTimeout => TimeoutSilently ? PluginLog.Verbose : PluginLog.Warning;
 
         Queue<TaskManagerTask> Tasks = new();
@@ -95,10 +98,18 @@ namespace ECommons.Automation
             Tasks.Enqueue(new(() => { task(); return true; }, timeLimitMs, abortOnTimeout, name));
         }
 
-        public void DelayNext(string uniqueName, int delayMS)
+        public void DelayNext(string uniqueName, int delayMS, bool immediately = false)
         {
-            Enqueue(() => EzThrottler.Throttle(uniqueName, delayMS));
-            Enqueue(() => EzThrottler.Check(uniqueName));
+            if (immediately)
+            {
+                EnqueueImmediate(() => EzThrottler.Throttle(uniqueName, delayMS), uniqueName);
+                EnqueueImmediate(() => EzThrottler.Check(uniqueName), uniqueName);
+            }
+            else
+            {
+                Enqueue(() => EzThrottler.Throttle(uniqueName, delayMS), uniqueName);
+                Enqueue(() => EzThrottler.Check(uniqueName), uniqueName);
+            }
         }
 
         public void Abort()
@@ -154,12 +165,14 @@ namespace ECommons.Automation
             {
                 if (ImmediateTasks.TryDequeue(out CurrentTask))
                 {
+                    if (ShowDebug)
                     PluginLog.Debug($"Starting to execute immediate task: {CurrentTask.Action.GetMethodInfo()?.Name}");
                     AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
                 }
                 else if (Tasks.TryDequeue(out CurrentTask))
                 {
-                    PluginLog.Debug($"Starting to execute task: {CurrentTask.Name}");
+                    if (ShowDebug)
+                        PluginLog.Debug($"Starting to execute task: {CurrentTask.Name}");
                     AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
                 }
             }
@@ -170,7 +183,8 @@ namespace ECommons.Automation
                     var result = CurrentTask.Action();
                     if (result == true)
                     {
-                        PluginLog.Debug($"Task {CurrentTask.Name} completed successfully");
+                        if (ShowDebug)
+                            PluginLog.Debug($"Task {CurrentTask.Name} completed successfully");
                         CurrentTask = null; 
                     }
                     else if(result == false)
