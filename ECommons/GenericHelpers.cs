@@ -729,6 +729,12 @@ public static unsafe class GenericHelpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool EqualsIgnoreCaseAny(this string obj, IEnumerable<string> values)
+    {
+        return values.Any(x => x.Equals(obj, StringComparison.OrdinalIgnoreCase));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsAny<T>(this T obj, IEnumerable<T> values)
     {
         return values.Any(x => x.Equals(obj));
