@@ -443,4 +443,24 @@ public class Element
         get => (float)Instance.GetType().GetField("RotationMin").GetValue(Instance);
         set => Instance.GetType().GetField("RotationMin").SetValue(Instance, value);
     }
+    public uint refActorObjectEffectData1
+    {
+        get => (uint)Instance.GetType().GetField("refActorObjectEffectData1").GetValue(Instance);
+        set => Instance.GetType().GetField("refActorObjectEffectData1").SetValue(Instance, value);
+    }
+    public uint refActorObjectEffectData2
+    {
+        get => (uint)Instance.GetType().GetField("refActorObjectEffectData2").GetValue(Instance);
+        set => Instance.GetType().GetField("refActorObjectEffectData2").SetValue(Instance, value);
+    }
+    public int refActorObjectEffectMax
+    {
+        get => (int)Instance.GetType().GetField("refActorObjectEffectMax").GetValue(Instance);
+        set => Instance.GetType().GetField("refActorObjectEffectMax").SetValue(Instance, value);
+    }
+    public int refActorObjectEffectMin
+    {
+        get => (int)Instance.GetType().GetField("refActorObjectEffectMin").GetValue(Instance);
+        set => Instance.GetType().GetField("refActorObjectEffectMin").SetValue(Instance, value);
+    }
 }
