@@ -17,11 +17,12 @@ namespace ECommons.ImGuiMethods;
 
 public static partial class ImGuiEx
 {
-    public static void RadioButtonBool(string labelTrue, string labelFalse, ref bool value, Action prefix = null, Action suffix = null)
+    public static void RadioButtonBool(string labelTrue, string labelFalse, ref bool value, bool sameLine = false, Action prefix = null, Action suffix = null)
     {
         prefix?.Invoke();
         if (ImGui.RadioButton(labelTrue, value)) value = true;
         suffix?.Invoke();
+        if (sameLine) ImGui.SameLine();
         prefix?.Invoke();
         if (ImGui.RadioButton(labelFalse, !value)) value = false;
         suffix?.Invoke();
@@ -284,6 +285,11 @@ public static partial class ImGuiEx
     public static void SetNextItemFullWidth(int mod = 0)
     {
         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X + mod);
+    }
+
+    public static void SetNextItemWidth(float percent, int mod = 0)
+    {
+        ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X * percent + mod);
     }
 
     static Dictionary<string, float> InputWithRightButtonsAreaValues = new();
