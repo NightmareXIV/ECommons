@@ -80,6 +80,10 @@ public static class DalamudReflector
     {
         try
         {
+            if (ECommonsMain.Instance == null)
+            {
+                throw new Exception("PluginInterface is null. Did you initalise ECommons?");
+            }
             var pluginManager = GetPluginManager();
             var installedPlugins = (System.Collections.IList)pluginManager.GetType().GetProperty("InstalledPlugins").GetValue(pluginManager);
 
