@@ -18,6 +18,7 @@
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <Optimize>True</Optimize>
       <UseWindowsForms>true</UseWindowsForms>
+      <EnableWindowsTargeting>true</EnableWindowsTargeting>
 	</PropertyGroup>
 
 	<PropertyGroup Label="Documentation">
