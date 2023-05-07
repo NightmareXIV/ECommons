@@ -24,11 +24,20 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using Dalamud.Memory;
 using Dalamud.Game.ClientState.Objects.Types;
+using ECommons.MathHelpers;
+using PInvoke;
+using System.Windows.Forms;
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static bool IsKeyPressed(Keys key)
+    {
+        if (key == Keys.None) return false;
+        return Bitmask.IsBitSet(User32.GetKeyState((int)key), 15);
+    }
+
     public static bool IsTarget(this GameObject obj)
     {
         return Svc.Targets.Target != null && Svc.Targets.Target.Address == obj.Address;

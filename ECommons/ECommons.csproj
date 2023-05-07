@@ -17,6 +17,7 @@
 		<NoWarn>CS1591;CA1401</NoWarn>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <Optimize>True</Optimize>
+      <UseWindowsForms>true</UseWindowsForms>
 	</PropertyGroup>
 
 	<PropertyGroup Label="Documentation">
