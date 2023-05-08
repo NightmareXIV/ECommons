@@ -26,11 +26,10 @@ namespace ECommons.Gamepad
             { GamepadButtons.Start, "Options / Start" },
             { GamepadButtons.Select, "Share / Back" }
         };
-
+        public static bool IsControllerEnabled() { Svc.GameConfig.TryGet(Dalamud.Game.Config.SystemConfigOption.PadAvailable, out bool enabled); return enabled; }
         public static bool IsButtonPressed(GamepadButtons button) => Svc.GamepadState.Pressed(button) == 1;
-
-        public static bool IsButtonHeld(GamepadButtons button) => Svc.GamepadState.Repeat(button) == 1; 
-
+        public static bool IsButtonHeld(GamepadButtons button) => Svc.GamepadState.Repeat(button) == 1;
         public static bool IsButtonJustReleased(GamepadButtons button) => Svc.GamepadState.Released(button) == 1;
+
     }
 }
