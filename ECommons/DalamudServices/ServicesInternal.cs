@@ -4,6 +4,7 @@ using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Buddy;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Fates;
+using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Game.ClientState.JobGauge;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Game.ClientState.Objects;
@@ -139,4 +140,9 @@ internal class SGameConfig
 internal class sGameLifeCycle
 {
     [PluginService] internal static GameLifecycle GameLifecycle { get; private set; }
+}
+
+internal class sGamepadState
+{
+    [PluginService] internal static GamepadState GamepadState { get; private set; }
 }
