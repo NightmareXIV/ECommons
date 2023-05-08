@@ -40,6 +40,10 @@ public static class ObjectLife
 
     static IntPtr GameObject_ctor_detour(IntPtr ptr)
     {
+        if (GameObjectLifeTime == null)
+        {
+            throw new Exception("GameObjectLifeTime is null. Have you initialised the ObjectLife module on ECommons initialisation?");
+        }
         GameObjectLifeTime[ptr] = Environment.TickCount64;
         var ret = GameObject_ctor_hook.Original(ptr);
 
