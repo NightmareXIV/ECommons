@@ -1,4 +1,5 @@
 ﻿using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Logging;
 using ECommons.DalamudServices;
 using System;
 using System.Numerics;
@@ -29,6 +30,10 @@ public static unsafe class ObjectFunctions
 
     public static bool IsHostile(this GameObject a)
     {
+        if (GetNameplateColor == null)
+        {
+            throw new Exception("GetNameplateColor is null. Have you initialised the ObjectFunctions module on ECommons initialisation?");
+        }
         var plateType = GetNameplateColor(a.Address);
         //7: yellow, can be attacked, not engaged
         //8: dead
