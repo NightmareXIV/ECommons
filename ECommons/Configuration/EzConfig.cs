@@ -13,6 +13,7 @@ namespace ECommons.Configuration;
 public static class EzConfig
 {
     const string DefaultConfigurationName = "DefaultConfig.json";
+    public static string DefaultConfigurationFileName => Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), DefaultConfigurationName);
     public static IEzConfig Config { get; private set; }
 
     public static T Init<T>() where T : IEzConfig, new()
@@ -27,7 +28,7 @@ public static class EzConfig
         {
             throw new NullReferenceException("Migrate must be called instead of initialization");
         }
-        var path = Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), DefaultConfigurationName);
+        var path = DefaultConfigurationFileName;
         if(!File.Exists(path) && Svc.PluginInterface.ConfigFile.Exists)
         {
             PluginLog.Warning($"Migrating {Svc.PluginInterface.ConfigFile} into EzConfig system");
