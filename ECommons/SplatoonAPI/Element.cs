@@ -14,6 +14,12 @@ public class Element
         Instance = Splatoon.Instance.GetType().Assembly.CreateInstance("Splatoon.Element", false, BindingFlags.Default, null, new object[] { (int)type }, null, null);
     }
 
+    internal Element(object Instance)
+    {
+        Version = Splatoon.Version;
+        this.Instance = Instance;
+    }
+
     public bool IsValid()
     {
         return Version == Splatoon.Version;
