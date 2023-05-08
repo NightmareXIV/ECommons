@@ -28,5 +28,9 @@ namespace ECommons.Gamepad
         };
 
         public static bool IsButtonPressed(GamepadButtons button) => Svc.GamepadState.Pressed(button) == 1;
+
+        public static bool IsButtonHeld(GamepadButtons button) => Svc.GamepadState.Repeat(button) == 1; 
+
+        public static bool IsButtonJustReleased(GamepadButtons button) => Svc.GamepadState.Released(button) == 1;
     }
 }
