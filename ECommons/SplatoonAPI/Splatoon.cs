@@ -4,6 +4,7 @@ using ECommons.DalamudServices;
 using ECommons.Reflection;
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace ECommons.SplatoonAPI;
 
@@ -170,6 +171,37 @@ public static class Splatoon
         {
             ex.Log();
             return false;
+        }
+    }
+
+    public static Element DecodeElement(string input)
+    {
+        var method = Instance.GetType().Assembly.GetType("Splatoon.SplatoonScripting.ScriptingEngine", true).GetMethod("TryDecodeElement", BindingFlags.Public | BindingFlags.Static);
+        var parameters = new object[] { input, null };
+        var result = (bool)method.Invoke(null, parameters);
+        if (result)
+        {
+            return new Element(parameters[1]);
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    [Obsolete("Work in progress")]
+    public static object DecodeLayout(string input)
+    {
+        var method = Instance.GetType().Assembly.GetType("Splatoon.SplatoonScripting.ScriptingEngine", true).GetMethod("TryDecodeLayout", BindingFlags.Public | BindingFlags.Static);
+        var parameters = new object[] { input, null };
+        var result = (bool)method.Invoke(null, parameters);
+        if (result)
+        {
+            return parameters[1];
+        }
+        else
+        {
+            return null;
         }
     }
 }
