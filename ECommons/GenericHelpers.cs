@@ -105,36 +105,6 @@ public static unsafe class GenericHelpers
         return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj));
     }
 
-    [Obsolete($"Use {nameof(Automation.Callback.Fire)} instead", true)]
-    public static void Callback(AtkUnitBase* Base, params object[] args)
-    {
-        var stk = stackalloc AtkValue[args.Length];
-        for (int i = 0; i < args.Length; i++)
-        {
-            if (args[i] is int v)
-            {
-                stk[i] = new() { Type = ValueType.Int, Int = v };
-            }
-            else if (args[i] is uint u)
-            {
-                stk[i] = new() { Type = ValueType.UInt, UInt = u };
-            }
-            else if (args[i] is bool b)
-            {
-                stk[i] = new() { Type = ValueType.Bool, Byte = (byte)(b ? 1 : 0) };
-            }
-            else if (args[i] is AtkValue av)
-            {
-                stk[i] = av;
-            }
-            else
-            {
-                throw new Exception("Unsupported arguments");
-            }
-        }
-        Base->FireCallback(args.Length, stk);
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int? ParseInt(this string number)
     {
