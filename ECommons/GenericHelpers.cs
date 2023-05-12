@@ -27,6 +27,7 @@ using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.MathHelpers;
 using PInvoke;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace ECommons;
 
@@ -104,6 +105,7 @@ public static unsafe class GenericHelpers
         return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj));
     }
 
+    [Obsolete($"Use {nameof(Automation.Callback.Fire)} instead", true)]
     public static void Callback(AtkUnitBase* Base, params object[] args)
     {
         var stk = stackalloc AtkValue[args.Length];

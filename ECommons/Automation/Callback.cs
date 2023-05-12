@@ -21,7 +21,9 @@ namespace ECommons.Automation
 
         internal static void Initialize()
         {
-            FireCallback = Marshal.GetDelegateForFunctionPointer<AtkUnitBase_FireCallbackDelegate>(Svc.SigScanner.ScanText("E8 ?? ?? ?? ?? 8B 4C 24 20 0F B6 D8"));
+            var ptr = Svc.SigScanner.ScanText("E8 ?? ?? ?? ?? 8B 4C 24 20 0F B6 D8");
+            FireCallback = Marshal.GetDelegateForFunctionPointer<AtkUnitBase_FireCallbackDelegate>(ptr);
+            PluginLog.Information($"Initialized Callback module, FireCallback = 0x{ptr:X16}");
         }
 
         public static void FireRaw(AtkUnitBase* Base, int valueCount, AtkValue* values, byte updateState = 0)
@@ -29,10 +31,8 @@ namespace ECommons.Automation
             if (FireCallback == null) Initialize();
             FireCallback(Base, valueCount, values, updateState);
         }
-
-        public static void Fire(AtkUnitBase Base, params object[] values) => Fire(Base, 0, values);
         
-        public static void Fire(AtkUnitBase* Base, byte updateState, params object[] values)
+        public static void Fire(AtkUnitBase* Base, bool updateState, params object[] values)
         {
             if (Base == null) throw new Exception("Null UnitBase");
             var atkValues = (AtkValue*)Marshal.AllocHGlobal(values.Length * sizeof(AtkValue));
@@ -85,7 +85,7 @@ namespace ECommons.Automation
                     CallbackValues.Add($"    Value {i}: [input: {values[i]}/{values[i]?.GetType().Name}] -> {DecodeValue(atkValues[i])})");
                 }
                 PluginLog.Verbose($"Firing callback: {MemoryHelper.ReadStringNullTerminated((nint)Base->Name)}, valueCount = {values.Length}, updateStatte = {updateState}, values:\n");
-                FireRaw(Base, values.Length, atkValues, updateState);
+                FireRaw(Base, values.Length, atkValues, (byte)(updateState ?1:0));
             }
             finally
             {
