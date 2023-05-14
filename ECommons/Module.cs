@@ -2,5 +2,5 @@
 
 public enum Module
 {
-    All, DalamudReflector, ObjectFunctions, ObjectLife, SplatoonAPI, Localization
+    All, DalamudReflector, ObjectFunctions, ObjectLife, SplatoonAPI
 }

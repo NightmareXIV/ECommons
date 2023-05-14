@@ -21,11 +21,36 @@ using ECommons.ExcelServices.TerritoryEnumeration;
 using Newtonsoft.Json;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+using Dalamud.Memory;
+using Dalamud.Game.ClientState.Objects.Types;
+using ECommons.MathHelpers;
+using PInvoke;
+using System.Windows.Forms;
+using System.Threading;
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static bool IsKeyPressed(Keys key)
+    {
+        if (key == Keys.None) return false;
+        return Bitmask.IsBitSet(User32.GetKeyState((int)key), 15);
+    }
+
+    public static bool IsTarget(this GameObject obj)
+    {
+        return Svc.Targets.Target != null && Svc.Targets.Target.Address == obj.Address;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsNullOr<T>(this T source, Predicate<T> testFunction)
+    {
+        return source == null || testFunction(source);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T[] CreateArray<T>(this T o, uint num)
     {
         var arr = new T[num];
@@ -42,6 +67,7 @@ public static unsafe class GenericHelpers
         return default;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int IncrementOrSet<K>(this IDictionary<K, int> dic, K key, int increment = 1)
     {
         if(dic.ContainsKey(key))
@@ -55,11 +81,13 @@ public static unsafe class GenericHelpers
         return dic[key];
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string RemoveOtherChars(this string s, string charsToKeep)
     {
         return new string(s.ToArray().Where(charsToKeep.Contains).ToArray());
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ReplaceByChar(this string s, string replaceWhat, string replaceWith, bool replaceWithWhole = false)
     {
         if(replaceWhat.Length != replaceWith.Length && !replaceWithWhole)
@@ -81,40 +109,13 @@ public static unsafe class GenericHelpers
         return s;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T JSONClone<T>(this T obj)
     {
         return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj));
     }
 
-    public static void Callback(AtkUnitBase* Base, params object[] args)
-    {
-        var stk = stackalloc AtkValue[args.Length];
-        for (int i = 0; i < args.Length; i++)
-        {
-            if (args[i] is int v)
-            {
-                stk[i] = new() { Type = ValueType.Int, Int = v };
-            }
-            else if (args[i] is uint u)
-            {
-                stk[i] = new() { Type = ValueType.UInt, UInt = u };
-            }
-            else if (args[i] is bool b)
-            {
-                stk[i] = new() { Type = ValueType.Bool, Byte = (byte)(b ? 1 : 0) };
-            }
-            else if (args[i] is AtkValue av)
-            {
-                stk[i] = av;
-            }
-            else
-            {
-                throw new Exception("Unsupported arguments");
-            }
-        }
-        Base->FireCallback(args.Length, stk);
-    }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int? ParseInt(this string number)
     {
         if(int.TryParse(number, out var result))
@@ -123,7 +124,8 @@ public static unsafe class GenericHelpers
         }
         return null;
     }
-    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Print<T>(this IEnumerable<T> x)
     {
         return x.Select(x => x.ToString()).Join(", ");
@@ -141,6 +143,7 @@ public static unsafe class GenericHelpers
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static V GetSafe<K, V>(this IDictionary<K, V> dic, K key, V Default = default)
     {
         if(dic?.TryGetValue(key, out var value) == true)
@@ -150,6 +153,7 @@ public static unsafe class GenericHelpers
         return Default;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static V GetOrCreate<K, V>(this IDictionary<K, V> dictionary, K key) where V:new()
     {
         if (dictionary.TryGetValue(key, out var result))
@@ -161,6 +165,7 @@ public static unsafe class GenericHelpers
         return newValue;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Each<T>(this IEnumerable<T> collection, Action<T> function)
     {
         foreach(var x in collection)
@@ -169,11 +174,13 @@ public static unsafe class GenericHelpers
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool If<T>(this T obj, Func<T, bool> func)
     {
         return func(obj);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool NotNull<T>(this T obj, [NotNullWhen(true)]out T outobj)
     {
         outobj = obj;
@@ -250,24 +257,28 @@ public static unsafe class GenericHelpers
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAddonReady(AtkUnitBase* addon)
     {
         return addon->IsVisible && addon->UldManager.LoadedState == AtkLoadState.Loaded;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAddonReady(AtkComponentNode* addon)
     {
         return addon->AtkResNode.IsVisible && addon->Component->UldManager.LoadedState == AtkLoadState.Loaded;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ExtractText(this Lumina.Text.SeString s, bool onlyFirst = false)
     {
         return s.ToDalamudString().ExtractText(onlyFirst);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ExtractText(this Utf8String s, bool onlyFirst = false)
     {
-        var str = ReadSeString(&s);
+        var str = MemoryHelper.ReadSeString(&s);
         return str.ExtractText(false);
     }
 
@@ -285,11 +296,13 @@ public static unsafe class GenericHelpers
         return sb.ToString();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool StartsWithAny(this string source, params string[] values)
     {
         return source.StartsWithAny(values, StringComparison.Ordinal);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool StartsWithAny(this string source, StringComparison stringComparison = StringComparison.Ordinal, params string[] values)
     {
         return source.StartsWithAny(values, stringComparison);
@@ -327,6 +340,7 @@ public static unsafe class GenericHelpers
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IEnumerable<string> Split(this string str, int chunkSize)
     {
         return Enumerable.Range(0, str.Length / chunkSize)
@@ -351,22 +365,26 @@ public static unsafe class GenericHelpers
         return collection.First();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Default(this string s, string defaultValue)
     {
         if (string.IsNullOrEmpty(s)) return defaultValue;
         return s;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsIgnoreCase(this string s, string other)
     {
         return s.Equals(other, StringComparison.OrdinalIgnoreCase);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string NullWhenEmpty(this string s)
     {
         return s == string.Empty ? null : s;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNullOrEmpty(this string s)
     {
         return string.IsNullOrEmpty(s);
@@ -397,11 +415,13 @@ public static unsafe class GenericHelpers
         return v with { X = 1f - v.X, Y = 1f - v.Y, Z = 1f - v.Z };
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint ToUint(this Vector4 color)
     {
         return ImGui.ColorConvertFloat4ToU32(color);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector4 ToVector4(this uint color)
     {
         return ImGui.ColorConvertU32ToFloat4(color);
@@ -414,11 +434,11 @@ public static unsafe class GenericHelpers
         return ref i;
     }
 
-        public static ref float ValidateRange(this ref float i, float min, float max)
-        {
-            if (i > max) i = max;
-            if (i < min) i = min;
-            return ref i;
+    public static ref float ValidateRange(this ref float i, float min, float max)
+    {
+        if (i > max) i = max;
+        if (i < min) i = min;
+        return ref i;
     }
 
     public static void LogWarning(this Exception e)
@@ -452,11 +472,13 @@ public static unsafe class GenericHelpers
         return true;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Invert(this bool b, bool invert)
     {
         return invert ? !b : b;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ContainsAll<T>(this IEnumerable<T> source, IEnumerable<T> values)
     {
         foreach(var x in values)
@@ -481,12 +503,14 @@ public static unsafe class GenericHelpers
         });
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Cut(this string s, int num)
     {
         if (s.Length <= num) return s;
         return s[0..num] + "...";
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ushort GetParsedSeSetingColor(int percent)
     {
         if(percent < 25)
@@ -523,6 +547,7 @@ public static unsafe class GenericHelpers
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Repeat(this string s, int num)
     {
         StringBuilder str = new();
@@ -533,11 +558,13 @@ public static unsafe class GenericHelpers
         return str.ToString();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Join(this IEnumerable<string> e, string separator)
     {
         return string.Join(separator, e);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Safe(System.Action a, bool suppressErrors = false)
     {
         try
@@ -550,6 +577,7 @@ public static unsafe class GenericHelpers
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Safe(System.Action a, Action<string, object[]> logAction)
     {
         try
@@ -562,6 +590,7 @@ public static unsafe class GenericHelpers
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Safe(System.Action a, Action<string> fail, bool suppressErrors = false)
     {
         try
@@ -613,6 +642,7 @@ public static unsafe class GenericHelpers
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ContainsAny<T>(this IEnumerable<T> obj, params T[] values)
     {
         foreach (var x in values)
@@ -625,6 +655,7 @@ public static unsafe class GenericHelpers
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ContainsAny<T>(this IEnumerable<T> obj, IEnumerable<T> values)
     {
         foreach (var x in values)
@@ -637,6 +668,7 @@ public static unsafe class GenericHelpers
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ContainsAny(this string obj, IEnumerable<string> values)
     {
         foreach (var x in values)
@@ -649,6 +681,7 @@ public static unsafe class GenericHelpers
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ContainsAny(this string obj, params string[] values)
     {
         foreach (var x in values)
@@ -661,6 +694,7 @@ public static unsafe class GenericHelpers
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ContainsAny(this string obj, StringComparison comp, params string[] values)
     {
         foreach (var x in values)
@@ -673,18 +707,25 @@ public static unsafe class GenericHelpers
         return false;
     }
 
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsAny<T>(this T obj, params T[] values)
     {
         return values.Any(x => x.Equals(obj));
     }
 
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsIgnoreCaseAny(this string obj, params string[] values)
     {
         return values.Any(x => x.Equals(obj, StringComparison.OrdinalIgnoreCase));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool EqualsIgnoreCaseAny(this string obj, IEnumerable<string> values)
+    {
+        return values.Any(x => x.Equals(obj, StringComparison.OrdinalIgnoreCase));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsAny<T>(this T obj, IEnumerable<T> values)
     {
         return values.Any(x => x.Equals(obj));
@@ -784,67 +825,21 @@ public static unsafe class GenericHelpers
             || (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5);
     }
 
-    /// <summary>
-    /// Read an SeString from a specified Utf8String structure.
-    /// </summary>
-    /// <param name="utf8String">The memory address to read from.</param>
-    /// <returns>The read in string.</returns>
-    public static unsafe SeString ReadSeString(Utf8String* utf8String)
-    {
-        if (utf8String == null)
-            return string.Empty;
 
-        var ptr = utf8String->StringPtr;
-        if (ptr == null)
-            return string.Empty;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete($"Use MemoryHelper.ReadSeString")]
+    public static unsafe SeString ReadSeString(Utf8String* utf8String) => MemoryHelper.ReadSeString(utf8String);
 
-        var len = Math.Max(utf8String->BufUsed, utf8String->StringLength);
 
-        return ReadSeString((IntPtr)ptr, (int)len);
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete($"Use MemoryHelper.ReadSeString")]
+    public static SeString ReadSeString(IntPtr memoryAddress, int maxLength) => MemoryHelper.ReadSeString(memoryAddress, maxLength);
 
-    /// <summary>
-    /// Read an SeString from a specified memory address.
-    /// </summary>
-    /// <param name="memoryAddress">The memory address to read from.</param>
-    /// <param name="maxLength">The maximum length of the string.</param>
-    /// <returns>The read in string.</returns>
-    public static SeString ReadSeString(IntPtr memoryAddress, int maxLength)
-    {
-        ReadRaw(memoryAddress, maxLength, out var buffer);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete($"Use MemoryHelper.ReadRaw")]
+    public static void ReadRaw(IntPtr memoryAddress, int length, out byte[] value) => value = MemoryHelper.ReadRaw(memoryAddress, length);
 
-        var eos = Array.IndexOf(buffer, (byte)0);
-        if (eos < 0)
-        {
-            return SeString.Parse(buffer);
-        }
-        else
-        {
-            var newBuffer = new byte[eos];
-            Buffer.BlockCopy(buffer, 0, newBuffer, 0, eos);
-            return SeString.Parse(newBuffer);
-        }
-    }
-
-    /// <summary>
-    /// Reads raw data from a specified memory address.
-    /// </summary>
-    /// <param name="memoryAddress">The memory address to read from.</param>
-    /// <param name="length">The amount of bytes to read starting from the memoryAddress.</param>
-    /// <param name="value">Local variable to receive the read in bytes.</param>
-    public static void ReadRaw(IntPtr memoryAddress, int length, out byte[] value)
-        => value = ReadRaw(memoryAddress, length);
-
-    /// <summary>
-    /// Reads a byte array from a specified memory address.
-    /// </summary>
-    /// <param name="memoryAddress">The memory address to read from.</param>
-    /// <param name="length">The amount of bytes to read starting from the memoryAddress.</param>
-    /// <returns>The read in byte array.</returns>
-    public static byte[] ReadRaw(IntPtr memoryAddress, int length)
-    {
-        var value = new byte[length];
-        Marshal.Copy(memoryAddress, value, 0, value.Length);
-        return value;
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete($"Use MemoryHelper.ReadRaw")]
+    public static byte[] ReadRaw(IntPtr memoryAddress, int length) => MemoryHelper.ReadRaw(memoryAddress, length);
 }

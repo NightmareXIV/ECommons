@@ -80,6 +80,10 @@ public static class DalamudReflector
     {
         try
         {
+            if (ECommonsMain.Instance == null)
+            {
+                throw new Exception("PluginInterface is null. Did you initalise ECommons?");
+            }
             var pluginManager = GetPluginManager();
             var installedPlugins = (System.Collections.IList)pluginManager.GetType().GetProperty("InstalledPlugins").GetValue(pluginManager);
 
@@ -108,6 +112,11 @@ public static class DalamudReflector
 
     public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false, bool ignoreCache = false)
     {
+        if (pluginCache == null)
+        {
+            throw new Exception("PluginCache is null. Have you initialised the DalamudReflector module on ECommons initialisation?");
+        }
+
         if(!ignoreCache && pluginCache.TryGetValue(internalName, out instance) && instance != null)
         {
             return true;

@@ -4,6 +4,7 @@ using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Buddy;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Fates;
+using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Game.ClientState.JobGauge;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Game.ClientState.Objects;
@@ -50,6 +51,8 @@ public class Svc
     public static ToastGui Toasts { get; private set; }
     public static GameConfig GameConfig { get; private set; }
     public static GameLifecycle GameLifecycle { get; private set; }
+
+    public static GamepadState GamepadState { get; private set; } 
 
     internal static bool IsInitialized = false;
     public static void Init(DalamudPluginInterface pi)
@@ -132,6 +135,9 @@ public class Svc
 
             pi.Create<sGameLifeCycle>();
             GameLifecycle = sGameLifeCycle.GameLifecycle;
+
+            pi.Create<sGamepadState>();
+            GamepadState = sGamepadState.GamepadState;
         }
         catch(Exception ex)
         {
