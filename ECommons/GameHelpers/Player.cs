@@ -18,6 +18,7 @@ namespace ECommons.GameHelpers
         public static ulong CID => Svc.ClientState.LocalContentId;
         public static StatusList Status => Svc.ClientState.LocalPlayer.StatusList;
         public static string Name => Svc.ClientState.LocalPlayer?.Name.ToString();
+        public static int Level => Svc.ClientState.LocalPlayer?.Level ?? 0;
         public static bool IsInHomeWorld => Svc.ClientState.LocalPlayer.HomeWorld == Svc.ClientState.LocalPlayer.CurrentWorld;
         public static Character* Character => (Character*)Svc.ClientState.LocalPlayer.Address;
         public static BattleChara* BattleChara => (BattleChara*)Svc.ClientState.LocalPlayer.Address;
