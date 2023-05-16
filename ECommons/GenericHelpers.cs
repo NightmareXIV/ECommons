@@ -73,6 +73,16 @@ public static unsafe class GenericHelpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T[] CreateArray<T>(this T o, uint num)
+    {
+        var arr = new T[num];
+        for (int i = 0; i < arr.Length; i++)
+        {
+            arr[i] = o;
+        }
+        return arr;
+    }
+
     public static V GetOrDefault<K, V>(this IDictionary<K, V> dic, K key)
     {
         if(dic.TryGetValue(key, out V value)) return value;
