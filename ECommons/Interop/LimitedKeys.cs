@@ -17,11 +17,11 @@ namespace ECommons.Interop
         //
         // Summary:
         //     The left mouse button.
-        LButton = 1,
+        LeftMouseButton = 1,
         //
         // Summary:
         //     The right mouse button.
-        RButton = 2,
+        RightMouseButton = 2,
         //
         // Summary:
         //     The CANCEL key.
@@ -29,15 +29,15 @@ namespace ECommons.Interop
         //
         // Summary:
         //     The middle mouse button (three-button mouse).
-        MButton = 4,
+        MiddleMouseButton = 4,
         //
         // Summary:
         //     The first x mouse button (five-button mouse).
-        XButton1 = 5,
+        XMouseButton1 = 5,
         //
         // Summary:
         //     The second x mouse button (five-button mouse).
-        XButton2 = 6,
+        XMouseButton2 = 6,
         //
         // Summary:
         //     The BACKSPACE key.
@@ -316,11 +316,11 @@ namespace ECommons.Interop
         //
         // Summary:
         //     The left Windows logo key (Microsoft Natural Keyboard).
-        LWin = 91,
+        LeftWin = 91,
         //
         // Summary:
         //     The right Windows logo key (Microsoft Natural Keyboard).
-        RWin = 92,
+        RightWin = 92,
         //
         // Summary:
         //     The application key (Microsoft Natural Keyboard).
@@ -500,27 +500,27 @@ namespace ECommons.Interop
         //
         // Summary:
         //     The left SHIFT key.
-        LShiftKey = 160,
+        LeftShiftKey = 160,
         //
         // Summary:
         //     The right SHIFT key.
-        RShiftKey = 161,
+        RightShiftKey = 161,
         //
         // Summary:
         //     The left CTRL key.
-        LControlKey = 162,
+        LeftControlKey = 162,
         //
         // Summary:
         //     The right CTRL key.
-        RControlKey = 163,
+        RightControlKey = 163,
         //
         // Summary:
         //     The left ALT key.
-        LMenu = 164,
+        LeftAltKey = 164,
         //
         // Summary:
         //     The right ALT key.
-        RMenu = 165,
+        RightAltKey = 165,
         //
         // Summary:
         //     The browser back key.

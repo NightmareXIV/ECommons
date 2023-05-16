@@ -28,15 +28,37 @@ using ECommons.MathHelpers;
 using PInvoke;
 using System.Windows.Forms;
 using System.Threading;
+using ECommons.Interop;
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static bool UseAsyncKeyCheck = false;
     public static bool IsKeyPressed(Keys key)
     {
         if (key == Keys.None) return false;
-        return Bitmask.IsBitSet(User32.GetKeyState((int)key), 15);
+        if (UseAsyncKeyCheck)
+        {
+            return Bitmask.IsBitSet(User32.GetKeyState((int)key), 15);
+        }
+        else
+        {
+            return Bitmask.IsBitSet(User32.GetAsyncKeyState((int)key), 15);
+        }
+    }
+
+    public static bool IsKeyPressed(LimitedKeys key)
+    {
+        if (key == LimitedKeys.None) return false;
+        if (UseAsyncKeyCheck)
+        {
+            return Bitmask.IsBitSet(User32.GetKeyState((int)key), 15);
+        }
+        else
+        {
+            return Bitmask.IsBitSet(User32.GetAsyncKeyState((int)key), 15);
+        }
     }
 
     public static bool IsTarget(this GameObject obj)
