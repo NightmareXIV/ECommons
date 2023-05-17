@@ -82,21 +82,71 @@ public static class Splatoon
         return Instance != null;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="e"></param>
+    /// <param name="DestroyCondition">
+    /// How much milliseconds to remove passed element.
+    /// <br>0 = Don't auto-remove element.</br>
+    /// <br>-1 = remove when exiting combat.</br>
+    /// <br>-2 = remove when zone changes.</br>
+    /// <br>If any of the conditions are met, the element will be automatically deleted.</br>
+    /// </param>
+    /// <returns></returns>
     public static bool AddDynamicElement(string name, Element e, long[] DestroyCondition)
     {
         return AddDynamicElements(name, new Element[] { e }, DestroyCondition);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="e"></param>
+    /// <param name="DestroyCondition">
+    /// How much milliseconds to remove passed element.
+    /// <br>0 = Don't auto-remove element.</br>
+    /// <br>-1 = remove when exiting combat.</br>
+    /// <br>-2 = remove when zone changes.</br>
+    /// </param>
+    /// <returns></returns>
     public static bool AddDynamicElement(string name, Element e, long DestroyCondition)
     {
         return AddDynamicElements(name, new Element[] { e }, new long[] { DestroyCondition });
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="e"></param>
+    /// <param name="DestroyCondition">
+    /// How much milliseconds to remove passed element.
+    /// <br>0 = Don't auto-remove element.</br>
+    /// <br>-1 = remove when exiting combat.</br>
+    /// <br>-2 = remove when zone changes.</br>
+    /// </param>
+    /// <returns></returns>
     public static bool AddDynamicElements(string name, Element[] e, long DestroyCondition)
     {
         return AddDynamicElements(name, e, new long[] { DestroyCondition });
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="e"></param>
+    /// <param name="DestroyCondition">
+    /// How much milliseconds to remove passed element.
+    /// <br>0 = Don't auto-remove element.</br>
+    /// <br>-1 = remove when exiting combat.</br>
+    /// <br>-2 = remove when zone changes.</br>
+    /// <br>If any of the conditions are met, the elements will be automatically deleted.</br>
+    /// </param>
+    /// <returns></returns>
     public static bool AddDynamicElements(string name, Element[] e, long[] DestroyCondition)
     {
         if (!IsConnected())
