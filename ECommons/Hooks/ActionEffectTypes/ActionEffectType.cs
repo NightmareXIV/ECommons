@@ -1,5 +1,7 @@
 ﻿//This file is authored by lmcintyre and distributed under GNU GPL v3 license. https://github.com/lmcintyre/
 
+using System;
+
 namespace ECommons.Hooks.ActionEffectTypes;
 
 public enum ActionEffectType : byte
@@ -21,11 +23,26 @@ public enum ActionEffectType : byte
     GpGain = 14,
     ApplyStatusEffectTarget = 15,
     ApplyStatusEffectSource = 16,
+    LoseStatusEffectTarget = 17,
+    LoseStatusEffectSource = 18,
     StatusNoEffect = 20,
-    Unknown0 = 27,
+    ThreatPosition = 24,
+    EnmityAmountUp = 25,
+    EnmityAmountDown = 26,
+
+    [Obsolete("Please use StartActionCombo instead.")]
+    Unknown0 = StartActionCombo,
+    StartActionCombo = 27,
     Unknown1 = 28,
-    Knockback = 33,
+    Retaliation = 29,
+    Knockback = 32,
     Mount = 40,
+    FullResistStatus = 52,
     VFX = 59,
+    Gauge = 60,
     JobGauge = 61,
+    SetModelState = 72,
+    SetHP = 73,
+    PartialInvulnerable = 74,
+    Interrupt = 75,
 };
