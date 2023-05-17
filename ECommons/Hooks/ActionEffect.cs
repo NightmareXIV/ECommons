@@ -6,6 +6,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,9 +16,34 @@ namespace ECommons.Hooks
     {
         const string Sig = "4C 89 44 24 ?? 55 56 41 54 41 55 41 56";
 
-        public delegate void ProcessActionEffect(uint sourceId, Character* sourceCharacter, nint pos, EffectHeader* effectHeader, EffectEntry* effectArray, ulong* effectTail);
+        public delegate void ProcessActionEffect(uint sourceId, Character* sourceCharacter, Vector3* pos, EffectHeader* effectHeader, EffectEntry* effectArray, ulong* effectTail);
         internal static Hook<ProcessActionEffect> ProcessActionEffectHook = null;
         static Action<uint, ushort, ActionEffectType, uint, ulong, uint> Callback = null;
+
+        public delegate void ActionEffectCallback(EffectHeader header, EffectEntry entry, uint sourceId, ulong targetId, uint damage);
+
+        static event ActionEffectCallback _actionEffectEvent;
+        public static event ActionEffectCallback ActionEffectEvent
+        {
+            add
+            {
+                if (ProcessActionEffectHook == null)
+                {
+                    if (Svc.SigScanner.TryScanText(Sig, out var ptr))
+                    {
+                        ProcessActionEffectHook = Hook<ProcessActionEffect>.FromAddress(ptr, ProcessActionEffectDetour);
+                        Enable();
+                        PluginLog.Information($"Requested Action Effect hook and successfully initialized");
+                    }
+                    else
+                    {
+                        PluginLog.Error($"Could not find ActionEffect signature");
+                    }
+                }
+                _actionEffectEvent += value;
+            }
+            remove => _actionEffectEvent -= value;
+        }
 
         static bool doLogging = false;
 
@@ -27,6 +53,7 @@ namespace ECommons.Hooks
         /// <param name="fullParamsCallback">uint ActionID, ushort animationID, ActionEffectType type, uint sourceID, ulong targetOID, uint damage</param>
         /// <param name="logging"></param>
         /// <exception cref="Exception"></exception>
+        [Obsolete]
         public static void Init(Action<uint, ushort, ActionEffectType, uint, ulong, uint> fullParamsCallback, bool logging = false)
         {
             if (ProcessActionEffectHook != null)
@@ -67,7 +94,7 @@ namespace ECommons.Hooks
             }
         }
 
-        internal static void ProcessActionEffectDetour(uint sourceID, Character* sourceCharacter, IntPtr pos, EffectHeader* effectHeader, EffectEntry* effectArray, ulong* effectTail)
+        internal static void ProcessActionEffectDetour(uint sourceID, Character* sourceCharacter, Vector3* pos, EffectHeader* effectHeader, EffectEntry* effectArray, ulong* effectTail)
         {
             try
             {
@@ -106,6 +133,7 @@ namespace ECommons.Hooks
                         value = dmg,
                     };*/
 
+                    _actionEffectEvent?.Invoke(*effectHeader, effectArray[i], sourceID, targetID, dmg);
                     Callback(effectHeader->ActionID, effectHeader->AnimationId, effectArray[i].type, sourceID, targetID, dmg);
 
                 }
