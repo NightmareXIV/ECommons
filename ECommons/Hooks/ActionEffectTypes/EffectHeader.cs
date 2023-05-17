@@ -11,9 +11,9 @@ namespace ECommons.Hooks.ActionEffectTypes
         [FieldOffset(12)] public uint GlobalEffectCounter;
         [FieldOffset(16)] public float AnimationLockTime;
         [FieldOffset(20)] public uint SomeTargetID;
-        [FieldOffset(24)] public ushort AnimationId;
-        [FieldOffset(26)] public ushort SourceSequence;
-        [FieldOffset(28)] public ushort Rotation;
+        [FieldOffset(24)] public ushort SourceSequence;
+        [FieldOffset(26)] public ushort Rotation;
+        [FieldOffset(28)] public ushort AnimationId;
         [FieldOffset(30)] public byte Variation;
         [FieldOffset(31)] public ActionType ActionType;
         [FieldOffset(33)] public byte TargetCount;
