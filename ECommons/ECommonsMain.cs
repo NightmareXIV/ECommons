@@ -13,6 +13,7 @@ using ECommons.Hooks;
 using ECommons.Loader;
 using ECommons.Automation;
 using ECommons.StringHelpers;
+using Dalamud.Utility;
 
 namespace ECommons;
 
