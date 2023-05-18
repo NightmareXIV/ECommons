@@ -11,6 +11,7 @@ using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.ClientState.Party;
 using Dalamud.Game.Command;
 using Dalamud.Game.Config;
+using Dalamud.Game.DutyState;
 using Dalamud.Game.Gui;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Gui.FlyText;
@@ -153,3 +154,7 @@ internal class sDtrBar
     [PluginService] internal static DtrBar DtrBar { get; private set; }
 }
 
+internal class sDutyState
+{
+    [PluginService] internal static DutyState DutyState { get; private set; }
+}
