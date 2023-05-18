@@ -12,6 +12,7 @@ using Dalamud.Game.ClientState.Party;
 using Dalamud.Game.Command;
 using Dalamud.Game.Config;
 using Dalamud.Game.Gui;
+using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Game.Gui.PartyFinder;
 using Dalamud.Game.Gui.Toast;
@@ -146,3 +147,9 @@ internal class sGamepadState
 {
     [PluginService] internal static GamepadState GamepadState { get; private set; }
 }
+
+internal class sDtrBar
+{
+    [PluginService] internal static DtrBar DtrBar { get; private set; }
+}
+

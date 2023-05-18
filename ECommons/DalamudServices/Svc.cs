@@ -12,6 +12,7 @@ using Dalamud.Game.ClientState.Party;
 using Dalamud.Game.Command;
 using Dalamud.Game.Config;
 using Dalamud.Game.Gui;
+using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Game.Gui.PartyFinder;
 using Dalamud.Game.Gui.Toast;
@@ -51,8 +52,8 @@ public class Svc
     public static ToastGui Toasts { get; private set; }
     public static GameConfig GameConfig { get; private set; }
     public static GameLifecycle GameLifecycle { get; private set; }
-
     public static GamepadState GamepadState { get; private set; } 
+    public static DtrBar DtrBar { get; private set; }
 
     internal static bool IsInitialized = false;
     public static void Init(DalamudPluginInterface pi)
@@ -138,6 +139,9 @@ public class Svc
 
             pi.Create<sGamepadState>();
             GamepadState = sGamepadState.GamepadState;
+
+            pi.Create<sDtrBar>();
+            DtrBar = sDtrBar.DtrBar;
         }
         catch(Exception ex)
         {
