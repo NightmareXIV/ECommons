@@ -134,7 +134,7 @@ namespace ECommons.Hooks
                     };*/
 
                     _actionEffectEvent?.Invoke(*effectHeader, effectArray[i], sourceID, targetID, dmg);
-                    Callback(effectHeader->ActionID, effectHeader->AnimationId, effectArray[i].type, sourceID, targetID, dmg);
+                    Callback?.Invoke(effectHeader->ActionID, effectHeader->AnimationId, effectArray[i].type, sourceID, targetID, dmg);
 
                 }
             }
