@@ -34,7 +34,44 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    /// <summary>
+    /// Tries to add multiple items to collection
+    /// </summary>
+    /// <typeparam name="T">Collection type</typeparam>
+    /// <param name="collection">Collection</param>
+    /// <param name="values">Items</param>
+    public static void Add<T>(this ICollection<T> collection, params T[] values)
+    {
+        foreach (var x in values)
+        {
+            collection.Add(x);
+        }
+    }
+
+    /// <summary>
+    /// Tries to remove multiple items to collection. In case if few of the same values are present in the collection, only first will be removed.
+    /// </summary>
+    /// <typeparam name="T">Collection type</typeparam>
+    /// <param name="collection">Collection</param>
+    /// <param name="values">Items</param>
+    public static void Remove<T>(this ICollection<T> collection, params T[] values)
+    {
+        foreach (var x in values)
+        {
+            collection.Remove(x);
+        }
+    }
+
+    /// <summary>
+    /// Sets whether <see cref="User32.GetKeyState"/> or <see cref="User32.GetAsyncKeyState"/> will be used when calling <see cref="IsKeyPressed(Keys)"/> or <see cref="IsKeyPressed(LimitedKeys)"/>
+    /// </summary>
     public static bool UseAsyncKeyCheck = false;
+
+    /// <summary>
+    /// Checks if a key is pressed via winapi.
+    /// </summary>
+    /// <param name="key">Key</param>
+    /// <returns>Whether the key is currently pressed</returns>
     public static bool IsKeyPressed(Keys key)
     {
         if (key == Keys.None) return false;
@@ -48,6 +85,11 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Checks if a key is pressed via winapi.
+    /// </summary>
+    /// <param name="key">Key</param>
+    /// <returns>Whether the key is currently pressed</returns>
     public static bool IsKeyPressed(LimitedKeys key)
     {
         if (key == LimitedKeys.None) return false;
@@ -61,6 +103,11 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Checks if you are targeting object <paramref name="obj"/>.
+    /// </summary>
+    /// <param name="obj">Object to check</param>
+    /// <returns>Whether you are targeting object <paramref name="obj"/>; <see langword="false"/> if <paramref name="obj"/> is <see langword="null"/></returns>
     public static bool IsTarget(this GameObject obj)
     {
         return Svc.Targets.Target != null && Svc.Targets.Target.Address == obj.Address;
@@ -131,12 +178,23 @@ public static unsafe class GenericHelpers
         return s;
     }
 
+    /// <summary>
+    /// Serializes and then deserializes object, returning result of deserialization using <see cref="Newtonsoft.Json"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj"></param>
+    /// <returns>Deserialized copy of <paramref name="obj"/></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T JSONClone<T>(this T obj)
     {
         return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj));
     }
 
+    /// <summary>
+    /// Attempts to parse integer
+    /// </summary>
+    /// <param name="number">Input string</param>
+    /// <returns>Integer if parsing was successful, <see langword="null"/> if failed</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int? ParseInt(this string number)
     {
@@ -175,6 +233,14 @@ public static unsafe class GenericHelpers
         return Default;
     }
 
+    /// <summary>
+    /// Retrieves a value from dictionary, adding it first if it doesn't exists yet.
+    /// </summary>
+    /// <typeparam name="K"></typeparam>
+    /// <typeparam name="V"></typeparam>
+    /// <param name="dictionary"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static V GetOrCreate<K, V>(this IDictionary<K, V> dictionary, K key) where V:new()
     {
@@ -187,6 +253,12 @@ public static unsafe class GenericHelpers
         return newValue;
     }
 
+    /// <summary>
+    /// Executes action for each element of collection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <param name="function"></param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Each<T>(this IEnumerable<T> collection, Action<T> function)
     {
@@ -260,6 +332,12 @@ public static unsafe class GenericHelpers
         return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
     }
 
+    /// <summary>
+    /// Attempts to parse player in a <see cref="SeString"/>. 
+    /// </summary>
+    /// <param name="sender"><see cref="SeString"/> from which to read player</param>
+    /// <param name="senderStruct">Resulting player data</param>
+    /// <returns>Whether operation succeeded</returns>
     public static bool TryDecodeSender(SeString sender, out Sender senderStruct)
     {
         if (sender == null)
@@ -291,12 +369,24 @@ public static unsafe class GenericHelpers
         return addon->AtkResNode.IsVisible && addon->Component->UldManager.LoadedState == AtkLoadState.Loaded;
     }
 
+    /// <summary>
+    /// Discards any non-text payloads from <see cref="SeString"/>
+    /// </summary>
+    /// <param name="s"></param>
+    /// <param name="onlyFirst">Whether to find first text payload and only return it</param>
+    /// <returns>String that only includes text payloads</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ExtractText(this Lumina.Text.SeString s, bool onlyFirst = false)
     {
         return s.ToDalamudString().ExtractText(onlyFirst);
     }
 
+    /// <summary>
+    /// Reads SeString from unmanaged memory and discards any non-text payloads from <see cref="SeString"/>
+    /// </summary>
+    /// <param name="s"></param>
+    /// <param name="onlyFirst">Whether to find first text payload and only return it</param>
+    /// <returns>String that only includes text payloads</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ExtractText(this Utf8String s, bool onlyFirst = false)
     {
@@ -304,6 +394,12 @@ public static unsafe class GenericHelpers
         return str.ExtractText(false);
     }
 
+    /// <summary>
+    /// Discards any non-text payloads from <see cref="SeString"/>
+    /// </summary>
+    /// <param name="seStr"></param>
+    /// <param name="onlyFirst">Whether to find first text payload and only return it</param>
+    /// <returns>String that only includes text payloads</returns>
     public static string ExtractText(this SeString seStr, bool onlyFirst = false)
     {
         StringBuilder sb = new();
@@ -348,6 +444,13 @@ public static unsafe class GenericHelpers
         return b;
     }
 
+    /// <summary>
+    /// Adds <paramref name="value"/> into <see cref="HashSet"/> if it doesn't exists yet or removes if it exists.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="hashSet"></param>
+    /// <param name="value"></param>
+    /// <returns>Whether <paramref name="hashSet"/> contains <paramref name="value"/> after function has been executed.</returns>
     public static bool Toggle<T>(this HashSet<T> hashSet, T value)
     {
         if (hashSet.Contains(value))
