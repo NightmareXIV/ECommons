@@ -13,6 +13,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Xml.Linq;
 
 namespace ECommons.ImGuiMethods;
 
@@ -58,6 +59,34 @@ public static partial class ImGuiEx
         if (smallButton?ImGui.SmallButton(name):ImGui.Button(name))
         {
             value = !value;
+            ret = true;
+        }
+        if (col) ImGui.PopStyleColor(3);
+        return ret;
+    }
+
+    public static bool CollectionButtonCheckbox<T>(string name, T value, HashSet<T> collection, bool smallButton = false) => CollectionButtonCheckbox(name, value, collection, ImGuiColors.DalamudRed, smallButton);
+
+    public static bool CollectionButtonCheckbox<T>(string name, T value, HashSet<T> collection, Vector4 color, bool smallButton = false)
+    {
+        var col = collection.Contains(value);
+        var ret = false;
+        if (col)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, color);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, color);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, color);
+        }
+        if (smallButton ? ImGui.SmallButton(name) : ImGui.Button(name))
+        {
+            if (col)
+            {
+                collection.Remove(value);
+            }
+            else
+            {
+                collection.Add(value);
+            }
             ret = true;
         }
         if (col) ImGui.PopStyleColor(3);

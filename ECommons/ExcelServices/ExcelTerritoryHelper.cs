@@ -54,7 +54,7 @@ namespace ECommons.ExcelServices
             var data = Svc.Data.GetExcelSheet<TerritoryType>().GetRow(TerritoryType);
             string id = includeID?$"#{TerritoryType} | ":"";
             if (data == null) return $"#{TerritoryType}";
-            var tname = data.Name?.ToString();
+            var tname = data.PlaceName.Value?.Name?.ToString();
             var cfc = data.ContentFinderCondition.Value.Name?.ToString();
             if (cfc.IsNullOrEmpty())
             {
@@ -64,12 +64,12 @@ namespace ECommons.ExcelServices
                 }
                 else
                 {
-                    return $"{id}{cfc}";
+                    return $"{id}{tname}";
                 }
             }
             else
             {
-                return $"{id}{tname}";
+                return $"{id}{cfc}";
             }
         }
     }
