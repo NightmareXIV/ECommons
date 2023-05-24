@@ -47,7 +47,7 @@ public static unsafe class CharacterFunctions
 
     public static byte GetTransformationID(this Character chr)
     {
-        return *(byte*)(chr.Address + 6922);
+        return *(byte*)(chr.Address + 6956);
     }
 
     public static CombatRole GetRole(this Character c)
