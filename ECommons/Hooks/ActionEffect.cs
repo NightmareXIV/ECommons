@@ -18,34 +18,49 @@ namespace ECommons.Hooks
 
         public delegate void ProcessActionEffect(uint sourceId, Character* sourceCharacter, Vector3* pos, EffectHeader* effectHeader, EffectEntry* effectArray, ulong* effectTail);
         internal static Hook<ProcessActionEffect> ProcessActionEffectHook = null;
-        static Action<uint, ushort, ActionEffectType, uint, ulong, uint> Callback = null;
 
-        public delegate void ActionEffectCallback(EffectHeader header, EffectEntry entry, uint sourceId, ulong targetId, uint damage);
+        public delegate void ActionEffectCallback(ActionEffectSet set);
 
         static event ActionEffectCallback _actionEffectEvent;
         public static event ActionEffectCallback ActionEffectEvent
         {
             add
             {
-                if (ProcessActionEffectHook == null)
-                {
-                    if (Svc.SigScanner.TryScanText(Sig, out var ptr))
-                    {
-                        ProcessActionEffectHook = Hook<ProcessActionEffect>.FromAddress(ptr, ProcessActionEffectDetour);
-                        Enable();
-                        PluginLog.Information($"Requested Action Effect hook and successfully initialized");
-                    }
-                    else
-                    {
-                        PluginLog.Error($"Could not find ActionEffect signature");
-                    }
-                }
+                Hook();
                 _actionEffectEvent += value;
             }
             remove => _actionEffectEvent -= value;
         }
 
+        static event Action<uint, ushort, ActionEffectType, uint, ulong, uint> _actionEffectEntryEvent;
+        public static event Action<uint, ushort, ActionEffectType, uint, ulong, uint> ActionEffectEntrytEvent
+        {
+            add
+            {
+                Hook();
+                _actionEffectEntryEvent += value;
+            }
+            remove => _actionEffectEntryEvent -= value;
+        }
+
         static bool doLogging = false;
+
+        private static void Hook()
+        {
+            if (ProcessActionEffectHook == null)
+            {
+                if (Svc.SigScanner.TryScanText(Sig, out var ptr))
+                {
+                    ProcessActionEffectHook = Hook<ProcessActionEffect>.FromAddress(ptr, ProcessActionEffectDetour);
+                    Enable();
+                    PluginLog.Information($"Requested Action Effect hook and successfully initialized");
+                }
+                else
+                {
+                    PluginLog.Error($"Could not find ActionEffect signature");
+                }
+            }
+        }
 
         /// <summary>
         /// 
@@ -53,24 +68,10 @@ namespace ECommons.Hooks
         /// <param name="fullParamsCallback">uint ActionID, ushort animationID, ActionEffectType type, uint sourceID, ulong targetOID, uint damage</param>
         /// <param name="logging"></param>
         /// <exception cref="Exception"></exception>
-        [Obsolete]
+        [Obsolete("Please use ActionEffectEntrytEvent instead.")]
         public static void Init(Action<uint, ushort, ActionEffectType, uint, ulong, uint> fullParamsCallback, bool logging = false)
         {
-            if (ProcessActionEffectHook != null)
-            {
-                throw new Exception("Action Effect Hook is already initialized!");
-            }
-            if (Svc.SigScanner.TryScanText(Sig, out var ptr))
-            {
-                Callback = fullParamsCallback;
-                ProcessActionEffectHook = Hook<ProcessActionEffect>.FromAddress(ptr, ProcessActionEffectDetour);
-                Enable();
-                PluginLog.Information($"Requested Action Effect hook and successfully initialized");
-            }
-            else
-            {
-                PluginLog.Error($"Could not find ActionEffect signature");
-            }
+            ActionEffectEntrytEvent += fullParamsCallback;
         }
 
         public static void Enable()
@@ -104,38 +105,16 @@ namespace ECommons.Hooks
                 // ushort op = *((ushort*) effectHeader.ToPointer() - 0x7);
                 // DebugLog(Effect, $"--- source actor: {sourceId}, action id {id}, anim id {animId}, opcode: {op:X} numTargets: {targetCount} ---");
 
-                var entryCount = effectHeader->TargetCount switch
+                var set = new ActionEffectSet(sourceID, sourceCharacter, pos, effectHeader, effectArray, effectTail);
+                _actionEffectEvent?.Invoke(set);
+
+                foreach( var effect in set.TargetEffects)
                 {
-                    0 => 0,
-                    1 => 8,
-                    <= 8 => 64,
-                    <= 16 => 128,
-                    <= 24 => 192,
-                    <= 32 => 256,
-                    _ => 0
-                };
-
-                for (int i = 0; i < entryCount; i++)
-                {
-                    if (effectArray[i].type == ActionEffectType.Nothing) continue;
-
-                    var targetID = effectTail[i / 8];
-                    uint dmg = effectArray[i].value;
-                    if (effectArray[i].mult != 0)
-                        dmg += ((uint)ushort.MaxValue + 1) * effectArray[i].mult;
-
-                    /*var newEffect = new ActionEffectInfo
+                    effect.ForEach(entry =>
                     {
-                        actionId = effectHeader->ActionID,
-                        type = effectArray[i].type,
-                        sourceId = sourceID,
-                        targetId = targetID,
-                        value = dmg,
-                    };*/
-
-                    _actionEffectEvent?.Invoke(*effectHeader, effectArray[i], sourceID, targetID, dmg);
-                    Callback(effectHeader->ActionID, effectHeader->AnimationId, effectArray[i].type, sourceID, targetID, dmg);
-
+                        if (entry.type == ActionEffectType.Nothing) return;
+                        _actionEffectEntryEvent?.Invoke(effectHeader->ActionID, effectHeader->AnimationId, entry.type, sourceID, effect.TargetID, entry.Damage);
+                    });
                 }
             }
             catch (Exception e)
