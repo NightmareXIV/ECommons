@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ECommons.LanguageHelpers;
+using System;
 
 namespace ECommons.Commands;
 
@@ -20,7 +21,7 @@ public class CmdAttribute : Attribute
     public CmdAttribute(string command, string helpMessage = "", bool showInHelp = true, bool showInHelpPanel = true)
     {
         Command = command;
-        HelpMessage = helpMessage;
+        HelpMessage = helpMessage.Loc();
         ShowInHelp = showInHelp;
         ShowInHelpPanel = showInHelpPanel;
     }

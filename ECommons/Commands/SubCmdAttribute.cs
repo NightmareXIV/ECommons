@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ECommons.LanguageHelpers;
+using System;
 
 namespace ECommons.Commands;
 
@@ -10,7 +11,7 @@ public class SubCmdAttribute : Attribute
 
     public SubCmdAttribute(string subCommand, string helpMessage = "")
     {
-        this.SubCommand = subCommand;
-        this.HelpMessage = helpMessage;
+        SubCommand = subCommand;
+        HelpMessage = helpMessage.Loc();
     }
 }

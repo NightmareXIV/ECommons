@@ -1,4 +1,5 @@
 ﻿using ECommons.DalamudServices;
+using ECommons.LanguageHelpers;
 using ImGuiNET;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,7 +65,7 @@ internal static class CmdManager
         }
     }
 
-    private static void DisplayCommandHelp(string command, string extraCommand = "", string helpMessage = "", float indent = 0)
+    public static void DisplayCommandHelp(string command, string extraCommand = "", string helpMessage = "", float indent = 0)
     {
         if (string.IsNullOrEmpty(command)) return;
         if (!string.IsNullOrEmpty(extraCommand))
