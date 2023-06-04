@@ -14,6 +14,7 @@ using ECommons.Loader;
 using ECommons.Automation;
 using ECommons.StringHelpers;
 using Dalamud.Utility;
+using ECommons.Commands;
 
 namespace ECommons;
 
@@ -26,6 +27,7 @@ public static class ECommonsMain
     {
         Instance = instance;
         GenericHelpers.Safe(() => Svc.Init(pluginInterface));
+        GenericHelpers.Safe(CmdManager.Init);
         if (modules.ContainsAny(Module.All, Module.ObjectFunctions))
         {
             PluginLog.Information("Object functions module has been requested");
@@ -52,6 +54,7 @@ public static class ECommonsMain
     {
         Disposed = true;
         GenericHelpers.Safe(PluginLoader.Dispose);
+        GenericHelpers.Safe(CmdManager.Dispose);
         if (EzConfig.Config != null)
         {
             GenericHelpers.Safe(EzConfig.Save);
