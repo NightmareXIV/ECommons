@@ -11,7 +11,7 @@ public static class EzCmd
 {
     internal static List<string> RegisteredCommands = new();
 
-    [Obsolete("Please use Cmd Attribute to the method in IDalamudPlugin to Add your command.")]
+    //[Obsolete("Please use Cmd Attribute to the method in IDalamudPlugin to Add your command.")]
     public static void Add(string command, HandlerDelegate action, string helpMessage = null)
     {
         RegisteredCommands.Add(command);
