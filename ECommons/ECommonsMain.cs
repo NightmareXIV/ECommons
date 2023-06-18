@@ -89,6 +89,7 @@ public static class ECommonsMain
         GenericHelpers.Safe(TaskManager.DisposeAll);
         GenericHelpers.Safe(EqualStrings.Dispose);
         GenericHelpers.Safe(() => ThreadLoadImageHandler.httpClient?.Dispose());
+        Throttlers
         Instance = null;
     }
 }
