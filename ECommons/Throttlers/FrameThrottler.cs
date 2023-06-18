@@ -11,7 +11,7 @@ namespace ECommons.Throttlers
 {
     public static class FrameThrottler
     {
-        static FrameThrottler<string> Throttler = new();
+        internal static FrameThrottler<string> Throttler = new();
 
         public static IReadOnlyCollection<string> ThrottleNames => Throttler.ThrottleNames;
 

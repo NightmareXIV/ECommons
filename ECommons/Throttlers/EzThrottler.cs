@@ -11,7 +11,7 @@ namespace ECommons.Throttlers
 {
     public static class EzThrottler
     {
-        static EzThrottler<string> Throttler = new();
+        internal static EzThrottler<string> Throttler = new();
 
         public static IReadOnlyCollection<string> ThrottleNames => Throttler.ThrottleNames;
 

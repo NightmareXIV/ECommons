@@ -15,6 +15,7 @@ using ECommons.Automation;
 using ECommons.StringHelpers;
 using Dalamud.Utility;
 using ECommons.Commands;
+using ECommons.Throttlers;
 
 namespace ECommons;
 
@@ -89,7 +90,8 @@ public static class ECommonsMain
         GenericHelpers.Safe(TaskManager.DisposeAll);
         GenericHelpers.Safe(EqualStrings.Dispose);
         GenericHelpers.Safe(() => ThreadLoadImageHandler.httpClient?.Dispose());
-        Throttlers
+        EzThrottler.Throttler = null;
+        FrameThrottler.Throttler = null;
         Instance = null;
     }
 }
