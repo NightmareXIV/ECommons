@@ -92,6 +92,8 @@ public static class ECommonsMain
         GenericHelpers.Safe(() => ThreadLoadImageHandler.httpClient?.Dispose());
         EzThrottler.Throttler = null;
         FrameThrottler.Throttler = null;
+        GenericHelpers.Safe(Callback.Dispose);
+        Chat.instance = null;
         Instance = null;
     }
 }

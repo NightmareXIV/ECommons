@@ -152,5 +152,10 @@ namespace ECommons.Automation
             }
             return str.ToString();
         }
+
+        internal static void Dispose()
+        {
+            FireCallback = null;
+        }
     }
 }
