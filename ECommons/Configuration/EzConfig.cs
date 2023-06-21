@@ -40,15 +40,15 @@ public static class EzConfig
             File.Move(antiCorruptionPath, saveTo);
             PluginLog.Warning($"Success. Please manually check {saveTo} file contents.");
         }
-        PluginLog.Debug($"From caller {new StackTrace().GetFrames().Select(x => x.GetMethod()?.Name ?? "<unknown>").Join(" <- ")} engaging anti-corruption mechanism, writing file to {antiCorruptionPath}");
+        PluginLog.Verbose($"From caller {new StackTrace().GetFrames().Select(x => x.GetMethod()?.Name ?? "<unknown>").Join(" <- ")} engaging anti-corruption mechanism, writing file to {antiCorruptionPath}");
         File.WriteAllText(antiCorruptionPath, JsonConvert.SerializeObject(Configuration, new JsonSerializerSettings()
         {
             Formatting = indented ? Formatting.Indented : Formatting.None,
             DefaultValueHandling = Configuration.GetType().IsDefined(typeof(IgnoreDefaultValueAttribute), false) ?DefaultValueHandling.Ignore:DefaultValueHandling.Include
         }), Encoding.UTF8);
-        PluginLog.Debug($"Now moving {antiCorruptionPath} to {path}");
+        PluginLog.Verbose($"Now moving {antiCorruptionPath} to {path}");
         File.Move(antiCorruptionPath, path, true);
-        PluginLog.Debug($"Configuration successfully saved.");
+        PluginLog.Verbose($"Configuration successfully saved.");
     }
 
     public static T LoadConfiguration<T>(string path, bool appendConfigDirectory = true) where T : IEzConfig, new()
