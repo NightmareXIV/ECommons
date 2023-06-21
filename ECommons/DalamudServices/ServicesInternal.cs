@@ -4,12 +4,16 @@ using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Buddy;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Fates;
+using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Game.ClientState.JobGauge;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.ClientState.Party;
 using Dalamud.Game.Command;
+using Dalamud.Game.Config;
+using Dalamud.Game.DutyState;
 using Dalamud.Game.Gui;
+using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Game.Gui.PartyFinder;
 using Dalamud.Game.Gui.Toast;
@@ -128,4 +132,29 @@ internal class STargetManager
 internal class SToastGui
 {
     [PluginService] internal static ToastGui Toasts { get; private set; }
+}
+
+internal class SGameConfig
+{
+    [PluginService] internal static GameConfig GameConfig { get; private set;}
+}
+
+internal class sGameLifeCycle
+{
+    [PluginService] internal static GameLifecycle GameLifecycle { get; private set; }
+}
+
+internal class sGamepadState
+{
+    [PluginService] internal static GamepadState GamepadState { get; private set; }
+}
+
+internal class sDtrBar
+{
+    [PluginService] internal static DtrBar DtrBar { get; private set; }
+}
+
+internal class sDutyState
+{
+    [PluginService] internal static DutyState DutyState { get; private set; }
 }

@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>NightmareXIV</Authors>
-		<Version>2.0.0.4</Version>
+		<Version>2.0.0.7</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -17,6 +17,8 @@
 		<NoWarn>CS1591;CA1401</NoWarn>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <Optimize>True</Optimize>
+      <UseWindowsForms>true</UseWindowsForms>
+      <EnableWindowsTargeting>true</EnableWindowsTargeting>
 	</PropertyGroup>
 
 	<PropertyGroup Label="Documentation">

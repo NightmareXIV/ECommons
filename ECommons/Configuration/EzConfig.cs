@@ -12,19 +12,42 @@ namespace ECommons.Configuration;
 
 public static class EzConfig
 {
+    const string DefaultConfigurationName = "DefaultConfig.json";
+    public static string DefaultConfigurationFileName => Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), DefaultConfigurationName);
     public static IEzConfig Config { get; private set; }
 
     public static T Init<T>() where T : IEzConfig, new()
     {
-        Config = LoadConfiguration<T>("DefaultConfig.json");
+        Config = LoadConfiguration<T>(DefaultConfigurationName);
         return (T)Config;
+    }
+
+    public static void Migrate<T>() where T : IEzConfig, new()
+    {
+        if(Config != null)
+        {
+            throw new NullReferenceException("Migrate must be called instead of initialization");
+        }
+        var path = DefaultConfigurationFileName;
+        if(!File.Exists(path) && Svc.PluginInterface.ConfigFile.Exists)
+        {
+            PluginLog.Warning($"Migrating {Svc.PluginInterface.ConfigFile} into EzConfig system");
+            Config = LoadConfiguration<T>(Svc.PluginInterface.ConfigFile.FullName, false);
+            Save();
+            Config = null;
+            File.Move(Svc.PluginInterface.ConfigFile.FullName, $"{Svc.PluginInterface.ConfigFile}.old");
+        }
+        else
+        {
+            PluginLog.Information($"Migrating conditions are not met, skipping...");
+        }
     }
 
     public static void Save()
     {
         if (Config != null)
         {
-            SaveConfiguration(Config, "DefaultConfig.json", true);
+            SaveConfiguration(Config, DefaultConfigurationName, true);
         }
     }
 

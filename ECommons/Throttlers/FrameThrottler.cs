@@ -1,6 +1,6 @@
 ﻿using Dalamud.Interface.Colors;
+using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
-using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace ECommons.Throttlers
 {
-    public static class EzThrottler
+    public static class FrameThrottler
     {
-        internal static EzThrottler<string> Throttler = new();
+        internal static FrameThrottler<string> Throttler = new();
 
         public static IReadOnlyCollection<string> ThrottleNames => Throttler.ThrottleNames;
 
-        public static bool Throttle(string name, int miliseconds = 500, bool rethrottle = false) => Throttler.Throttle(name, miliseconds, rethrottle);
+        public static bool Throttle(string name, int frames = 60, bool rethrottle = false) => Throttler.Throttle(name, frames, rethrottle);
 
         public static bool Check(string name) => Throttler.Check(name);
 

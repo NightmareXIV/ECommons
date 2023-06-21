@@ -14,6 +14,8 @@ namespace ECommons.Hooks.ActionEffectTypes
 
         public byte AttackType => (byte)(param1 & 0xF);
 
+        public uint Damage => mult == 0 ? value : value + ((uint)ushort.MaxValue + 1) * mult;
+
         public override string ToString()
         {
             return

@@ -14,6 +14,12 @@ public class Element
         Instance = Splatoon.Instance.GetType().Assembly.CreateInstance("Splatoon.Element", false, BindingFlags.Default, null, new object[] { (int)type }, null, null);
     }
 
+    internal Element(object Instance)
+    {
+        Version = Splatoon.Version;
+        this.Instance = Instance;
+    }
+
     public bool IsValid()
     {
         return Version == Splatoon.Version;
@@ -43,31 +49,49 @@ public class Element
         get => (bool)Instance.GetType().GetField("Enabled").GetValue(Instance);
         set => Instance.GetType().GetField("Enabled").SetValue(Instance, value);
     }
+    /// <summary>
+    /// When type is fixed coordinate element: specifies coordinate of that element, otherwise has no effect
+    /// </summary>
     public float refX
     {
         get => (float)Instance.GetType().GetField("refX").GetValue(Instance);
         set => Instance.GetType().GetField("refX").SetValue(Instance, value);
     }
+    /// <summary>
+    /// When type is fixed coordinate element: specifies coordinate of that element, otherwise has no effect
+    /// </summary>
     public float refY
     {
         get => (float)Instance.GetType().GetField("refY").GetValue(Instance);
         set => Instance.GetType().GetField("refY").SetValue(Instance, value);
     }
+    /// <summary>
+    /// When type is fixed coordinate element: specifies coordinate of that element, otherwise has no effect
+    /// </summary>
     public float refZ
     {
         get => (float)Instance.GetType().GetField("refZ").GetValue(Instance);
         set => Instance.GetType().GetField("refZ").SetValue(Instance, value);
     }
+    /// <summary>
+    /// Specifies offset from targeted object or fixed coordinate
+    /// </summary>
     public float offX
     {
         get => (float)Instance.GetType().GetField("offX").GetValue(Instance);
         set => Instance.GetType().GetField("offX").SetValue(Instance, value);
     }
+    /// <summary>
+    /// Specifies offset from targeted object or fixed coordinate
+    /// </summary>
     public float offY
     {
         get => (float)Instance.GetType().GetField("offY").GetValue(Instance);
         set => Instance.GetType().GetField("offY").SetValue(Instance, value);
     }
+    /// <summary>
+    /// Specifies offset from targeted object or fixed coordinate
+    /// </summary>
     public float offZ
     {
         get => (float)Instance.GetType().GetField("offZ").GetValue(Instance);
@@ -442,5 +466,25 @@ public class Element
     {
         get => (float)Instance.GetType().GetField("RotationMin").GetValue(Instance);
         set => Instance.GetType().GetField("RotationMin").SetValue(Instance, value);
+    }
+    public uint refActorObjectEffectData1
+    {
+        get => (uint)Instance.GetType().GetField("refActorObjectEffectData1").GetValue(Instance);
+        set => Instance.GetType().GetField("refActorObjectEffectData1").SetValue(Instance, value);
+    }
+    public uint refActorObjectEffectData2
+    {
+        get => (uint)Instance.GetType().GetField("refActorObjectEffectData2").GetValue(Instance);
+        set => Instance.GetType().GetField("refActorObjectEffectData2").SetValue(Instance, value);
+    }
+    public int refActorObjectEffectMax
+    {
+        get => (int)Instance.GetType().GetField("refActorObjectEffectMax").GetValue(Instance);
+        set => Instance.GetType().GetField("refActorObjectEffectMax").SetValue(Instance, value);
+    }
+    public int refActorObjectEffectMin
+    {
+        get => (int)Instance.GetType().GetField("refActorObjectEffectMin").GetValue(Instance);
+        set => Instance.GetType().GetField("refActorObjectEffectMin").SetValue(Instance, value);
     }
 }

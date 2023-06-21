@@ -19,45 +19,183 @@ using System.Diagnostics.CodeAnalysis;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 using ECommons.ExcelServices.TerritoryEnumeration;
 using Newtonsoft.Json;
+using FFXIVClientStructs.FFXIV.Client.System.String;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+using Dalamud.Memory;
+using Dalamud.Game.ClientState.Objects.Types;
+using ECommons.MathHelpers;
+using PInvoke;
+using System.Windows.Forms;
+using System.Threading;
+using ECommons.Interop;
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    /// <summary>
+    /// Tries to add multiple items to collection
+    /// </summary>
+    /// <typeparam name="T">Collection type</typeparam>
+    /// <param name="collection">Collection</param>
+    /// <param name="values">Items</param>
+    public static void Add<T>(this ICollection<T> collection, params T[] values)
+    {
+        foreach (var x in values)
+        {
+            collection.Add(x);
+        }
+    }
+
+    /// <summary>
+    /// Tries to remove multiple items to collection. In case if few of the same values are present in the collection, only first will be removed.
+    /// </summary>
+    /// <typeparam name="T">Collection type</typeparam>
+    /// <param name="collection">Collection</param>
+    /// <param name="values">Items</param>
+    public static void Remove<T>(this ICollection<T> collection, params T[] values)
+    {
+        foreach (var x in values)
+        {
+            collection.Remove(x);
+        }
+    }
+
+    /// <summary>
+    /// Sets whether <see cref="User32.GetKeyState"/> or <see cref="User32.GetAsyncKeyState"/> will be used when calling <see cref="IsKeyPressed(Keys)"/> or <see cref="IsKeyPressed(LimitedKeys)"/>
+    /// </summary>
+    public static bool UseAsyncKeyCheck = false;
+
+    /// <summary>
+    /// Checks if a key is pressed via winapi.
+    /// </summary>
+    /// <param name="key">Key</param>
+    /// <returns>Whether the key is currently pressed</returns>
+    public static bool IsKeyPressed(Keys key)
+    {
+        if (key == Keys.None) return false;
+        if (UseAsyncKeyCheck)
+        {
+            return Bitmask.IsBitSet(User32.GetKeyState((int)key), 15);
+        }
+        else
+        {
+            return Bitmask.IsBitSet(User32.GetAsyncKeyState((int)key), 15);
+        }
+    }
+
+    /// <summary>
+    /// Checks if a key is pressed via winapi.
+    /// </summary>
+    /// <param name="key">Key</param>
+    /// <returns>Whether the key is currently pressed</returns>
+    public static bool IsKeyPressed(LimitedKeys key)
+    {
+        if (key == LimitedKeys.None) return false;
+        if (UseAsyncKeyCheck)
+        {
+            return Bitmask.IsBitSet(User32.GetKeyState((int)key), 15);
+        }
+        else
+        {
+            return Bitmask.IsBitSet(User32.GetAsyncKeyState((int)key), 15);
+        }
+    }
+
+    /// <summary>
+    /// Checks if you are targeting object <paramref name="obj"/>.
+    /// </summary>
+    /// <param name="obj">Object to check</param>
+    /// <returns>Whether you are targeting object <paramref name="obj"/>; <see langword="false"/> if <paramref name="obj"/> is <see langword="null"/></returns>
+    public static bool IsTarget(this GameObject obj)
+    {
+        return Svc.Targets.Target != null && Svc.Targets.Target.Address == obj.Address;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsNullOr<T>(this T source, Predicate<T> testFunction)
+    {
+        return source == null || testFunction(source);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T[] CreateArray<T>(this T o, uint num)
+    {
+        var arr = new T[num];
+        for (int i = 0; i < arr.Length; i++)
+        {
+            arr[i] = o;
+        }
+        return arr;
+    }
+
+    public static V GetOrDefault<K, V>(this IDictionary<K, V> dic, K key)
+    {
+        if(dic.TryGetValue(key, out V value)) return value;
+        return default;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int IncrementOrSet<K>(this IDictionary<K, int> dic, K key, int increment = 1)
+    {
+        if(dic.ContainsKey(key))
+        {
+            dic[key] += increment;
+        }
+        else
+        {
+            dic[key] = increment;
+        }
+        return dic[key];
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string RemoveOtherChars(this string s, string charsToKeep)
+    {
+        return new string(s.ToArray().Where(charsToKeep.Contains).ToArray());
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ReplaceByChar(this string s, string replaceWhat, string replaceWith, bool replaceWithWhole = false)
+    {
+        if(replaceWhat.Length != replaceWith.Length && !replaceWithWhole)
+        {
+            PluginLog.Error($"{nameof(replaceWhat)} and {nameof(replaceWith)} must be same length");
+            return s;
+        }
+        for (int i = 0; i < replaceWhat.Length; i++)
+        {
+            if (replaceWithWhole)
+            {
+                s = s.Replace(replaceWhat[i].ToString(), replaceWith);
+            }
+            else
+            {
+                s = s.Replace(replaceWhat[i], replaceWith[i]);
+            }
+        }
+        return s;
+    }
+
+    /// <summary>
+    /// Serializes and then deserializes object, returning result of deserialization using <see cref="Newtonsoft.Json"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj"></param>
+    /// <returns>Deserialized copy of <paramref name="obj"/></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T JSONClone<T>(this T obj)
     {
         return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj));
     }
 
-    public static void Callback(AtkUnitBase* Base, params object[] args)
-    {
-        var stk = stackalloc AtkValue[args.Length];
-        for (int i = 0; i < args.Length; i++)
-        {
-            if (args[i] is int v)
-            {
-                stk[i] = new() { Type = ValueType.Int, Int = v };
-            }
-            else if (args[i] is uint u)
-            {
-                stk[i] = new() { Type = ValueType.UInt, UInt = u };
-            }
-            else if (args[i] is bool b)
-            {
-                stk[i] = new() { Type = ValueType.Bool, Byte = (byte)(b ? 1 : 0) };
-            }
-            else if (args[i] is AtkValue av)
-            {
-                stk[i] = av;
-            }
-            else
-            {
-                throw new Exception("Unsupported arguments");
-            }
-        }
-        Base->FireCallback(args.Length, stk);
-    }
-
+    /// <summary>
+    /// Attempts to parse integer
+    /// </summary>
+    /// <param name="number">Input string</param>
+    /// <returns>Integer if parsing was successful, <see langword="null"/> if failed</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int? ParseInt(this string number)
     {
         if(int.TryParse(number, out var result))
@@ -66,7 +204,8 @@ public static unsafe class GenericHelpers
         }
         return null;
     }
-    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Print<T>(this IEnumerable<T> x)
     {
         return x.Select(x => x.ToString()).Join(", ");
@@ -84,6 +223,7 @@ public static unsafe class GenericHelpers
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static V GetSafe<K, V>(this IDictionary<K, V> dic, K key, V Default = default)
     {
         if(dic?.TryGetValue(key, out var value) == true)
@@ -93,6 +233,15 @@ public static unsafe class GenericHelpers
         return Default;
     }
 
+    /// <summary>
+    /// Retrieves a value from dictionary, adding it first if it doesn't exists yet.
+    /// </summary>
+    /// <typeparam name="K"></typeparam>
+    /// <typeparam name="V"></typeparam>
+    /// <param name="dictionary"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static V GetOrCreate<K, V>(this IDictionary<K, V> dictionary, K key) where V:new()
     {
         if (dictionary.TryGetValue(key, out var result))
@@ -104,6 +253,13 @@ public static unsafe class GenericHelpers
         return newValue;
     }
 
+    /// <summary>
+    /// Executes action for each element of collection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <param name="function"></param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Each<T>(this IEnumerable<T> collection, Action<T> function)
     {
         foreach(var x in collection)
@@ -112,11 +268,13 @@ public static unsafe class GenericHelpers
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool If<T>(this T obj, Func<T, bool> func)
     {
         return func(obj);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool NotNull<T>(this T obj, [NotNullWhen(true)]out T outobj)
     {
         outobj = obj;
@@ -125,7 +283,43 @@ public static unsafe class GenericHelpers
 
     public static bool IsOccupied()
     {
-        return Svc.Condition[ConditionFlag.Occupied] || Svc.Condition[ConditionFlag.Occupied30] || Svc.Condition[ConditionFlag.Occupied33] || Svc.Condition[ConditionFlag.Occupied38] || Svc.Condition[ConditionFlag.Occupied39] || Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent] || Svc.Condition[ConditionFlag.OccupiedInEvent] || Svc.Condition[ConditionFlag.OccupiedInQuestEvent] || Svc.Condition[ConditionFlag.OccupiedSummoningBell] || Svc.Condition[ConditionFlag.WatchingCutscene] || Svc.Condition[ConditionFlag.WatchingCutscene78] || Svc.Condition[ConditionFlag.BetweenAreas] || Svc.Condition[ConditionFlag.BetweenAreas51] || Svc.Condition[ConditionFlag.InThatPosition];
+        return Svc.Condition[ConditionFlag.Occupied]
+               || Svc.Condition[ConditionFlag.Occupied30]
+               || Svc.Condition[ConditionFlag.Occupied33]
+               || Svc.Condition[ConditionFlag.Occupied38]
+               || Svc.Condition[ConditionFlag.Occupied39]
+               || Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
+               || Svc.Condition[ConditionFlag.OccupiedInEvent]
+               || Svc.Condition[ConditionFlag.OccupiedInQuestEvent]
+               || Svc.Condition[ConditionFlag.OccupiedSummoningBell]
+               || Svc.Condition[ConditionFlag.WatchingCutscene]
+               || Svc.Condition[ConditionFlag.WatchingCutscene78]
+               || Svc.Condition[ConditionFlag.BetweenAreas]
+               || Svc.Condition[ConditionFlag.BetweenAreas51]
+               || Svc.Condition[ConditionFlag.InThatPosition]
+               || Svc.Condition[ConditionFlag.TradeOpen]
+               || Svc.Condition[ConditionFlag.Crafting]
+               || Svc.Condition[ConditionFlag.InThatPosition]
+               || Svc.Condition[ConditionFlag.Unconscious]
+               || Svc.Condition[ConditionFlag.MeldingMateria]
+               || Svc.Condition[ConditionFlag.Gathering]
+               || Svc.Condition[ConditionFlag.OperatingSiegeMachine]
+               || Svc.Condition[ConditionFlag.CarryingItem]
+               || Svc.Condition[ConditionFlag.CarryingObject]
+               || Svc.Condition[ConditionFlag.BeingMoved]
+               || Svc.Condition[ConditionFlag.Emoting]
+               || Svc.Condition[ConditionFlag.Mounted2]
+               || Svc.Condition[ConditionFlag.Mounting]
+               || Svc.Condition[ConditionFlag.Mounting71]
+               || Svc.Condition[ConditionFlag.ParticipatingInCustomMatch]
+               || Svc.Condition[ConditionFlag.PlayingLordOfVerminion]
+               || Svc.Condition[ConditionFlag.ChocoboRacing]
+               || Svc.Condition[ConditionFlag.PlayingMiniGame]
+               || Svc.Condition[ConditionFlag.Performing]
+               || Svc.Condition[ConditionFlag.PreparingToCraft]
+               || Svc.Condition[ConditionFlag.Fishing]
+               || Svc.Condition[ConditionFlag.Transformed]
+               || Svc.Condition[ConditionFlag.UsingHousingFunctions];
     }
 
     public static string ReplaceFirst(this string text, string search, string replace)
@@ -138,6 +332,12 @@ public static unsafe class GenericHelpers
         return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
     }
 
+    /// <summary>
+    /// Attempts to parse player in a <see cref="SeString"/>. 
+    /// </summary>
+    /// <param name="sender"><see cref="SeString"/> from which to read player</param>
+    /// <param name="senderStruct">Resulting player data</param>
+    /// <returns>Whether operation succeeded</returns>
     public static bool TryDecodeSender(SeString sender, out Sender senderStruct)
     {
         if (sender == null)
@@ -157,21 +357,49 @@ public static unsafe class GenericHelpers
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAddonReady(AtkUnitBase* addon)
     {
         return addon->IsVisible && addon->UldManager.LoadedState == AtkLoadState.Loaded;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAddonReady(AtkComponentNode* addon)
     {
         return addon->AtkResNode.IsVisible && addon->Component->UldManager.LoadedState == AtkLoadState.Loaded;
     }
 
+    /// <summary>
+    /// Discards any non-text payloads from <see cref="SeString"/>
+    /// </summary>
+    /// <param name="s"></param>
+    /// <param name="onlyFirst">Whether to find first text payload and only return it</param>
+    /// <returns>String that only includes text payloads</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ExtractText(this Lumina.Text.SeString s, bool onlyFirst = false)
     {
         return s.ToDalamudString().ExtractText(onlyFirst);
     }
 
+    /// <summary>
+    /// Reads SeString from unmanaged memory and discards any non-text payloads from <see cref="SeString"/>
+    /// </summary>
+    /// <param name="s"></param>
+    /// <param name="onlyFirst">Whether to find first text payload and only return it</param>
+    /// <returns>String that only includes text payloads</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ExtractText(this Utf8String s, bool onlyFirst = false)
+    {
+        var str = MemoryHelper.ReadSeString(&s);
+        return str.ExtractText(false);
+    }
+
+    /// <summary>
+    /// Discards any non-text payloads from <see cref="SeString"/>
+    /// </summary>
+    /// <param name="seStr"></param>
+    /// <param name="onlyFirst">Whether to find first text payload and only return it</param>
+    /// <returns>String that only includes text payloads</returns>
     public static string ExtractText(this SeString seStr, bool onlyFirst = false)
     {
         StringBuilder sb = new();
@@ -186,11 +414,13 @@ public static unsafe class GenericHelpers
         return sb.ToString();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool StartsWithAny(this string source, params string[] values)
     {
         return source.StartsWithAny(values, StringComparison.Ordinal);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool StartsWithAny(this string source, StringComparison stringComparison = StringComparison.Ordinal, params string[] values)
     {
         return source.StartsWithAny(values, stringComparison);
@@ -214,6 +444,13 @@ public static unsafe class GenericHelpers
         return b;
     }
 
+    /// <summary>
+    /// Adds <paramref name="value"/> into <see cref="HashSet"/> if it doesn't exists yet or removes if it exists.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="hashSet"></param>
+    /// <param name="value"></param>
+    /// <returns>Whether <paramref name="hashSet"/> contains <paramref name="value"/> after function has been executed.</returns>
     public static bool Toggle<T>(this HashSet<T> hashSet, T value)
     {
         if (hashSet.Contains(value))
@@ -228,6 +465,7 @@ public static unsafe class GenericHelpers
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IEnumerable<string> Split(this string str, int chunkSize)
     {
         return Enumerable.Range(0, str.Length / chunkSize)
@@ -252,22 +490,26 @@ public static unsafe class GenericHelpers
         return collection.First();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Default(this string s, string defaultValue)
     {
         if (string.IsNullOrEmpty(s)) return defaultValue;
         return s;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsIgnoreCase(this string s, string other)
     {
         return s.Equals(other, StringComparison.OrdinalIgnoreCase);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string NullWhenEmpty(this string s)
     {
         return s == string.Empty ? null : s;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNullOrEmpty(this string s)
     {
         return string.IsNullOrEmpty(s);
@@ -298,11 +540,13 @@ public static unsafe class GenericHelpers
         return v with { X = 1f - v.X, Y = 1f - v.Y, Z = 1f - v.Z };
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint ToUint(this Vector4 color)
     {
         return ImGui.ColorConvertFloat4ToU32(color);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector4 ToVector4(this uint color)
     {
         return ImGui.ColorConvertU32ToFloat4(color);
@@ -315,11 +559,11 @@ public static unsafe class GenericHelpers
         return ref i;
     }
 
-        public static ref float ValidateRange(this ref float i, float min, float max)
-        {
-            if (i > max) i = max;
-            if (i < min) i = min;
-            return ref i;
+    public static ref float ValidateRange(this ref float i, float min, float max)
+    {
+        if (i > max) i = max;
+        if (i < min) i = min;
+        return ref i;
     }
 
     public static void LogWarning(this Exception e)
@@ -353,11 +597,13 @@ public static unsafe class GenericHelpers
         return true;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Invert(this bool b, bool invert)
     {
         return invert ? !b : b;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ContainsAll<T>(this IEnumerable<T> source, IEnumerable<T> values)
     {
         foreach(var x in values)
@@ -382,12 +628,14 @@ public static unsafe class GenericHelpers
         });
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Cut(this string s, int num)
     {
         if (s.Length <= num) return s;
         return s[0..num] + "...";
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ushort GetParsedSeSetingColor(int percent)
     {
         if(percent < 25)
@@ -424,6 +672,7 @@ public static unsafe class GenericHelpers
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Repeat(this string s, int num)
     {
         StringBuilder str = new();
@@ -434,11 +683,13 @@ public static unsafe class GenericHelpers
         return str.ToString();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Join(this IEnumerable<string> e, string separator)
     {
         return string.Join(separator, e);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Safe(System.Action a, bool suppressErrors = false)
     {
         try
@@ -451,6 +702,7 @@ public static unsafe class GenericHelpers
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Safe(System.Action a, Action<string, object[]> logAction)
     {
         try
@@ -463,6 +715,7 @@ public static unsafe class GenericHelpers
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Safe(System.Action a, Action<string> fail, bool suppressErrors = false)
     {
         try
@@ -514,6 +767,7 @@ public static unsafe class GenericHelpers
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ContainsAny<T>(this IEnumerable<T> obj, params T[] values)
     {
         foreach (var x in values)
@@ -526,6 +780,7 @@ public static unsafe class GenericHelpers
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ContainsAny<T>(this IEnumerable<T> obj, IEnumerable<T> values)
     {
         foreach (var x in values)
@@ -538,6 +793,20 @@ public static unsafe class GenericHelpers
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ContainsAny(this string obj, IEnumerable<string> values)
+    {
+        foreach (var x in values)
+        {
+            if (obj.Contains(x))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ContainsAny(this string obj, params string[] values)
     {
         foreach (var x in values)
@@ -550,6 +819,7 @@ public static unsafe class GenericHelpers
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ContainsAny(this string obj, StringComparison comp, params string[] values)
     {
         foreach (var x in values)
@@ -562,18 +832,25 @@ public static unsafe class GenericHelpers
         return false;
     }
 
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsAny<T>(this T obj, params T[] values)
     {
         return values.Any(x => x.Equals(obj));
     }
 
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsIgnoreCaseAny(this string obj, params string[] values)
     {
         return values.Any(x => x.Equals(obj, StringComparison.OrdinalIgnoreCase));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool EqualsIgnoreCaseAny(this string obj, IEnumerable<string> values)
+    {
+        return values.Any(x => x.Equals(obj, StringComparison.OrdinalIgnoreCase));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsAny<T>(this T obj, IEnumerable<T> values)
     {
         return values.Any(x => x.Equals(obj));
@@ -672,4 +949,22 @@ public static unsafe class GenericHelpers
             // EEE1C5FF
             || (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5);
     }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete($"Use MemoryHelper.ReadSeString")]
+    public static unsafe SeString ReadSeString(Utf8String* utf8String) => MemoryHelper.ReadSeString(utf8String);
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete($"Use MemoryHelper.ReadSeString")]
+    public static SeString ReadSeString(IntPtr memoryAddress, int maxLength) => MemoryHelper.ReadSeString(memoryAddress, maxLength);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete($"Use MemoryHelper.ReadRaw")]
+    public static void ReadRaw(IntPtr memoryAddress, int length, out byte[] value) => value = MemoryHelper.ReadRaw(memoryAddress, length);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete($"Use MemoryHelper.ReadRaw")]
+    public static byte[] ReadRaw(IntPtr memoryAddress, int length) => MemoryHelper.ReadRaw(memoryAddress, length);
 }
