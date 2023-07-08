@@ -19,6 +19,8 @@ namespace ECommons.Automation
         internal delegate byte AtkUnitBase_FireCallbackDelegate(AtkUnitBase* Base, int valueCount, AtkValue* values, byte updateState);
         internal static AtkUnitBase_FireCallbackDelegate FireCallback = null;
 
+        public static readonly AtkValue ZeroAtkValue = new() { Type = 0, Int = 0 };
+
         internal static void Initialize()
         {
             var ptr = Svc.SigScanner.ScanText("E8 ?? ?? ?? ?? 8B 4C 24 20 0F B6 D8");
@@ -149,6 +151,11 @@ namespace ECommons.Automation
                     }
             }
             return str.ToString();
+        }
+
+        internal static void Dispose()
+        {
+            FireCallback = null;
         }
     }
 }

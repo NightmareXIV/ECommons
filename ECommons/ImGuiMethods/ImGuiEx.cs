@@ -1,6 +1,8 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Internal.Notifications;
+using Dalamud.Interface.Style;
+using Dalamud.Logging;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using ImGuiNET;
@@ -12,11 +14,175 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Xml.Linq;
 
 namespace ECommons.ImGuiMethods;
 
-public static partial class ImGuiEx
+public static unsafe partial class ImGuiEx
 {
+
+    /// <summary>
+    /// Provides a button that can be used to switch <see langword="bool"/>? variables. Left click - to toggle between <see langword="true"/> and <see langword="null"/>, right click - to toggle between <see langword="false"/> and <see langword="null"/>.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="value"></param>
+    /// <param name="TrueColor">Color when <paramref name="value"/> is true</param>
+    /// <param name="FalseColor">Color when <paramref name="value"/> is false</param>
+    /// <param name="smallButton">Whether a button should be small</param>
+    /// <returns></returns>
+    public static bool ButtonCheckbox(string name, ref bool? value, Vector4? TrueColor = null, Vector4? FalseColor = null, bool smallButton = false)
+    {
+        TrueColor ??= Colors.Green;
+        FalseColor ??= Colors.Red;
+        var col = value;
+        var ret = false;
+        if (col == true)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, TrueColor.Value);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, TrueColor.Value);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, TrueColor.Value);
+        }
+        else if(col == false)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, FalseColor.Value);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, FalseColor.Value);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, FalseColor.Value);
+        }
+        if (smallButton ? ImGui.SmallButton(name) : ImGui.Button(name))
+        {
+            if (value == null || value == false)
+            {
+                value = true;
+            }
+            else
+            {
+                value = false;
+            }
+            ret = true;
+        }
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+        {
+            if (value == null || value == true)
+            {
+                value = false;
+            }
+            else
+            {
+                value = true;
+            }
+            ret = true;
+        }
+        if (col != null) ImGui.PopStyleColor(3);
+        return ret;
+    }
+    
+    /// <summary>
+    /// Converts RGB color to <see cref="Vector4"/> for ImGui
+    /// </summary>
+    /// <param name="col">Color in format 0xRRGGBB</param>
+    /// <param name="alpha">Optional transparency value between 0 and 1</param>
+    /// <returns>Color in <see cref="Vector4"/> format ready to be used with <see cref="ImGui"/> functions</returns>
+    public static Vector4 Vector4FromRGB(uint col, float alpha = 1.0f)
+    {
+        byte* bytes = (byte*)&col;
+        return new Vector4((float)bytes[2] / 255f, (float)bytes[1] / 255f, (float)bytes[0] / 255f, alpha);
+    }
+
+
+    /// <summary>
+    /// Converts RGBA color to <see cref="Vector4"/> for ImGui
+    /// </summary>
+    /// <param name="col">Color in format 0xRRGGBBAA</param>
+    /// <returns>Color in <see cref="Vector4"/> format ready to be used with <see cref="ImGui"/> functions</returns>
+    public static Vector4 Vector4FromRGBA(uint col)
+    {
+        byte* bytes = (byte*)&col;
+        return new Vector4((float)bytes[3] / 255f, (float)bytes[2] / 255f, (float)bytes[1] / 255f, (float)bytes[0] / 255f);
+    }
+
+    /// <summary>
+    /// Draws a button that acts like a checkbox.
+    /// </summary>
+    /// <param name="name">Button text</param>
+    /// <param name="value">Value</param>
+    /// <param name="smallButton">Whether button should be small</param>
+    /// <returns>true when clicked, otherwise false</returns>
+    public static bool ButtonCheckbox(string name, ref bool value, bool smallButton = false) => ButtonCheckbox(name, ref value, Colors.Red, smallButton);
+
+    /// <summary>
+    /// Draws a button that acts like a checkbox.
+    /// </summary>
+    /// <param name="name">Button text</param>
+    /// <param name="value">Value</param>
+    /// <param name="color">Active button color</param>
+    /// <param name="smallButton">Whether button should be small</param>
+    /// <returns>true when clicked, otherwise false</returns>
+    public static bool ButtonCheckbox(string name, ref bool value, uint color, bool smallButton = false) => ButtonCheckbox(name, ref value, color.ToVector4(), smallButton);
+
+    /// <summary>
+    /// Draws a button that acts like a checkbox.
+    /// </summary>
+    /// <param name="name">Button text</param>
+    /// <param name="value">Value</param>
+    /// <param name="color">Active button color</param>
+    /// <param name="smallButton">Whether button should be small</param>
+    /// <returns>true when clicked, otherwise false</returns>
+    public static bool ButtonCheckbox(string name, ref bool value, Vector4 color, bool smallButton = false)
+    {
+        var col = value;
+        var ret = false;
+        if (col)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, color);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, color);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, color);
+        }
+        if (smallButton?ImGui.SmallButton(name):ImGui.Button(name))
+        {
+            value = !value;
+            ret = true;
+        }
+        if (col) ImGui.PopStyleColor(3);
+        return ret;
+    }
+
+    public static bool CollectionButtonCheckbox<T>(string name, T value, HashSet<T> collection, bool smallButton = false) => CollectionButtonCheckbox(name, value, collection, Colors.Red, smallButton);
+
+    public static bool CollectionButtonCheckbox<T>(string name, T value, HashSet<T> collection, Vector4 color, bool smallButton = false)
+    {
+        var col = collection.Contains(value);
+        var ret = false;
+        if (col)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, color);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, color);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, color);
+        }
+        if (smallButton ? ImGui.SmallButton(name) : ImGui.Button(name))
+        {
+            if (col)
+            {
+                collection.Remove(value);
+            }
+            else
+            {
+                collection.Add(value);
+            }
+            ret = true;
+        }
+        if (col) ImGui.PopStyleColor(3);
+        return ret;
+    }
+
+    /// <summary>
+    /// Draws two radio buttons for a boolean value.
+    /// </summary>
+    /// <param name="labelTrue">True choice radio button text</param>
+    /// <param name="labelFalse">False choice radio button text</param>
+    /// <param name="value">Value</param>
+    /// <param name="sameLine">Whether to draw radio buttons on the same line</param>
+    /// <param name="prefix">Will be invoked before each radio button draw</param>
+    /// <param name="suffix">Will be invoked after each radio button draw</param>
     public static void RadioButtonBool(string labelTrue, string labelFalse, ref bool value, bool sameLine = false, Action prefix = null, Action suffix = null)
     {
         prefix?.Invoke();
@@ -28,6 +194,11 @@ public static partial class ImGuiEx
         suffix?.Invoke();
     }
 
+    /// <summary>
+    /// Draws equally sized columns without ability to resize
+    /// </summary>
+    /// <param name="id">Unique ImGui ID</param>
+    /// <param name="values">List of actions for each column</param>
     public static void EzTableColumns(string id, Action[] values)
     {
         if (values.Length == 1)
@@ -48,6 +219,12 @@ public static partial class ImGuiEx
         }
     }
 
+    /// <summary>
+    /// Button that is disabled unless CTRL key is held
+    /// </summary>
+    /// <param name="text">Button ID</param>
+    /// <param name="affix">Button affix</param>
+    /// <returns></returns>
     public static bool ButtonCtrl(string text, string affix = " (Hold CTRL)")
     {
         var disabled = !ImGui.GetIO().KeyCtrl;
@@ -203,6 +380,15 @@ public static partial class ImGuiEx
         return ImGui.GetStyle().Colors[(int)col] with { X = (float)r / 255f, Y = (float)g / 255f, Z = (float)b / 255f };
     }
 
+    /// <summary>
+    /// Displays ImGui.SliderFloat for internal int value.
+    /// </summary>
+    /// <param name="id">ImGui ID</param>
+    /// <param name="value">Integer value</param>
+    /// <param name="min">Minimal value</param>
+    /// <param name="max">Maximum value</param>
+    /// <param name="divider">Value is divided by divider before being presented to user</param>
+    /// <returns></returns>
     public static bool SliderIntAsFloat(string id, ref int value, int min, int max, float divider = 1000)
     {
         var f = (float)value / divider;
@@ -293,6 +479,12 @@ public static partial class ImGuiEx
     }
 
     static Dictionary<string, float> InputWithRightButtonsAreaValues = new();
+    /// <summary>
+    /// Convenient way to display stretched input with button or other elements on it's right side.
+    /// </summary>
+    /// <param name="id">Unique ID</param>
+    /// <param name="inputAction">A single element that accepts transformation by ImGui.SetNextItemWidth method</param>
+    /// <param name="rightAction">A line of elements on the right side. Can contain multiple elements but only one line.</param>
     public static void InputWithRightButtonsArea(string id, Action inputAction, Action rightAction)
     {
         if (InputWithRightButtonsAreaValues.ContainsKey(id))
@@ -401,6 +593,11 @@ public static partial class ImGuiEx
         }
     }
 
+    /// <summary>
+    /// Aligns text vertically to a standard size button.
+    /// </summary>
+    /// <param name="col">Color</param>
+    /// <param name="s">Text</param>
     public static void TextV(Vector4 col, string s)
     {
         ImGui.PushStyleColor(ImGuiCol.Text, col);
@@ -408,6 +605,10 @@ public static partial class ImGuiEx
         ImGui.PopStyleColor();
     }
 
+    /// <summary>
+    /// Aligns text vertically to a standard size button.
+    /// </summary>
+    /// <param name="s">Text</param>
     public static void TextV(string s)
     {
         var cur = ImGui.GetCursorPos();
@@ -535,11 +736,27 @@ public static partial class ImGuiEx
     }
 
     public static Dictionary<string, Box<string>> EnumComboSearch = new();
+    /// <summary>
+    /// Draws an easy combo selector for an enum with a search field for long lists.
+    /// </summary>
+    /// <typeparam name="T">Enum</typeparam>
+    /// <param name="name">ImGui ID</param>
+    /// <param name="refConfigField">Value</param>
+    /// <param name="names">Optional Name overrides</param>
     public static bool EnumCombo<T>(string name, ref T refConfigField, Dictionary<T, string> names) where T : IConvertible
     {
         return EnumCombo(name, ref refConfigField, null, names);
     }
 
+    /// <summary>
+    /// Draws an easy combo selector for an enum with a search field for long lists.
+    /// </summary>
+    /// <typeparam name="T">Enum</typeparam>
+    /// <param name="name">ImGui ID</param>
+    /// <param name="refConfigField">Value</param>
+    /// <param name="filter">Optional filter</param>
+    /// <param name="names">Optional Name overrides</param>
+    /// <returns></returns>
     public static bool EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, Dictionary<T, string> names = null) where T : IConvertible
     {
         var ret = false;

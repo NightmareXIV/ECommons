@@ -16,7 +16,7 @@ public class ThreadLoadImageHandler
     internal static ConcurrentDictionary<(uint ID, bool HQ), ImageLoadingResult> CachedIcons = new();
 
     static volatile bool ThreadRunning = false;
-    static HttpClient httpClient = new()
+    internal static HttpClient httpClient = new()
     {
         Timeout = TimeSpan.FromSeconds(10),
     };

@@ -134,7 +134,7 @@ public static class DalamudReflector
                     var plugin = (IDalamudPlugin)type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t);
                     if (plugin == null)
                     {
-                        //PluginLog.Warning($"Found requested plugin {internalName} but it was null");
+                        InternalLog.Warning($"Found requested plugin {internalName} but it was null");
                     }
                     else
                     {

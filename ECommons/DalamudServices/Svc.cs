@@ -11,6 +11,7 @@ using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.ClientState.Party;
 using Dalamud.Game.Command;
 using Dalamud.Game.Config;
+using Dalamud.Game.DutyState;
 using Dalamud.Game.Gui;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Gui.FlyText;
@@ -54,6 +55,7 @@ public class Svc
     public static GameLifecycle GameLifecycle { get; private set; }
     public static GamepadState GamepadState { get; private set; } 
     public static DtrBar DtrBar { get; private set; }
+    public static DutyState DutyState { get; private set; }
 
     internal static bool IsInitialized = false;
     public static void Init(DalamudPluginInterface pi)
@@ -142,6 +144,9 @@ public class Svc
 
             pi.Create<sDtrBar>();
             DtrBar = sDtrBar.DtrBar;
+
+            pi.Create<sDutyState>();
+            DutyState = sDutyState.DutyState;
         }
         catch(Exception ex)
         {

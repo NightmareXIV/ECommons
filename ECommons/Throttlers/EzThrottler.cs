@@ -11,55 +11,16 @@ namespace ECommons.Throttlers
 {
     public static class EzThrottler
     {
-        static Dictionary<string, long> throttlers = new();
+        internal static EzThrottler<string> Throttler = new();
 
-        public static IReadOnlyCollection<string> ThrottleNames => throttlers.Keys;
+        public static IReadOnlyCollection<string> ThrottleNames => Throttler.ThrottleNames;
 
-        public static bool Throttle(string name, int miliseconds = 500, bool rethrottle = false)
-        {
-            if (!throttlers.ContainsKey(name))
-            {
-                throttlers[name] = Environment.TickCount64 + miliseconds;
-                return true;
-            }
-            if (Environment.TickCount64 > throttlers[name])
-            {
-                throttlers[name] = Environment.TickCount64 + miliseconds;
-                return true;
-            }
-            else
-            {
-                if(rethrottle) throttlers[name] = Environment.TickCount64 + miliseconds;
-                return false;
-            }
-        }
+        public static bool Throttle(string name, int miliseconds = 500, bool rethrottle = false) => Throttler.Throttle(name, miliseconds, rethrottle);
 
-        public static bool Check(string name)
-        {
-            if (!throttlers.ContainsKey(name)) return true;
-            return Environment.TickCount64 > throttlers[name];
-        }
+        public static bool Check(string name) => Throttler.Check(name);
 
-        public static long GetRemainingTime(string name, bool allowNegative = false)
-        {
-            if (!throttlers.ContainsKey(name)) return allowNegative?-Environment.TickCount64:0;
-            var ret = throttlers[name] - Environment.TickCount64;
-            if (allowNegative)
-            {
-                return ret;
-            }
-            else
-            {
-                return ret > 0 ? ret : 0;
-            }
-        }
+        public static long GetRemainingTime(string name, bool allowNegative = false) => Throttler.GetRemainingTime(name, allowNegative);
 
-        public static void ImGuiPrintDebugInfo()
-        {
-            foreach(var x in throttlers)
-            {
-                ImGuiEx.Text(Check(x.Key)?ImGuiColors.HealerGreen:ImGuiColors.DalamudRed, $"{x.Key}: [{GetRemainingTime(x.Key)}ms remains] ({x.Value})");
-            }
-        }
+        public static void ImGuiPrintDebugInfo() => Throttler.ImGuiPrintDebugInfo();
     }
 }
