@@ -35,6 +35,17 @@ namespace ECommons;
 public static unsafe class GenericHelpers
 {
     /// <summary>
+    /// Returns <paramref name="s"/> when <paramref name="b"/> is <see langword="true"/>, <see langword="null"/> otherwise
+    /// </summary>
+    /// <param name="s"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static string NullWhenFalse(this string s, bool b)
+    {
+        return b?s:null;
+    }
+
+    /// <summary>
     /// Returns <see cref="UInt32"/> representation of <see cref="Single"/>.
     /// </summary>
     /// <param name="f"></param>

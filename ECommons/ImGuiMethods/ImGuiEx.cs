@@ -2,6 +2,7 @@
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Style;
+using Dalamud.Logging;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using ImGuiNET;
@@ -17,8 +18,88 @@ using System.Xml.Linq;
 
 namespace ECommons.ImGuiMethods;
 
-public static partial class ImGuiEx
+public static unsafe partial class ImGuiEx
 {
+
+    /// <summary>
+    /// Provides a button that can be used to switch <see langword="bool"/>? variables. Left click - to toggle between <see langword="true"/> and <see langword="null"/>, right click - to toggle between <see langword="false"/> and <see langword="null"/>.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="value"></param>
+    /// <param name="TrueColor">Color when <paramref name="value"/> is true</param>
+    /// <param name="FalseColor">Color when <paramref name="value"/> is false</param>
+    /// <param name="smallButton">Whether a button should be small</param>
+    /// <returns></returns>
+    public static bool ButtonCheckbox(string name, ref bool? value, Vector4? TrueColor = null, Vector4? FalseColor = null, bool smallButton = false)
+    {
+        TrueColor ??= Colors.Green;
+        FalseColor ??= Colors.Red;
+        var col = value;
+        var ret = false;
+        if (col == true)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, TrueColor.Value);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, TrueColor.Value);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, TrueColor.Value);
+        }
+        else if(col == false)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, FalseColor.Value);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, FalseColor.Value);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, FalseColor.Value);
+        }
+        if (smallButton ? ImGui.SmallButton(name) : ImGui.Button(name))
+        {
+            if (value == null || value == false)
+            {
+                value = true;
+            }
+            else
+            {
+                value = false;
+            }
+            ret = true;
+        }
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+        {
+            if (value == null || value == true)
+            {
+                value = false;
+            }
+            else
+            {
+                value = true;
+            }
+            ret = true;
+        }
+        if (col != null) ImGui.PopStyleColor(3);
+        return ret;
+    }
+    
+    /// <summary>
+    /// Converts RGB color to <see cref="Vector4"/> for ImGui
+    /// </summary>
+    /// <param name="col">Color in format 0xRRGGBB</param>
+    /// <param name="alpha">Optional transparency value between 0 and 1</param>
+    /// <returns>Color in <see cref="Vector4"/> format ready to be used with <see cref="ImGui"/> functions</returns>
+    public static Vector4 Vector4FromRGB(uint col, float alpha = 1.0f)
+    {
+        byte* bytes = (byte*)&col;
+        return new Vector4((float)bytes[2] / 255f, (float)bytes[1] / 255f, (float)bytes[0] / 255f, alpha);
+    }
+
+
+    /// <summary>
+    /// Converts RGBA color to <see cref="Vector4"/> for ImGui
+    /// </summary>
+    /// <param name="col">Color in format 0xRRGGBBAA</param>
+    /// <returns>Color in <see cref="Vector4"/> format ready to be used with <see cref="ImGui"/> functions</returns>
+    public static Vector4 Vector4FromRGBA(uint col)
+    {
+        byte* bytes = (byte*)&col;
+        return new Vector4((float)bytes[3] / 255f, (float)bytes[2] / 255f, (float)bytes[1] / 255f, (float)bytes[0] / 255f);
+    }
+
     /// <summary>
     /// Draws a button that acts like a checkbox.
     /// </summary>
@@ -26,7 +107,7 @@ public static partial class ImGuiEx
     /// <param name="value">Value</param>
     /// <param name="smallButton">Whether button should be small</param>
     /// <returns>true when clicked, otherwise false</returns>
-    public static bool ButtonCheckbox(string name, ref bool value, bool smallButton = false) => ButtonCheckbox(name, ref value, ImGuiColors.DalamudRed, smallButton);
+    public static bool ButtonCheckbox(string name, ref bool value, bool smallButton = false) => ButtonCheckbox(name, ref value, Colors.Red, smallButton);
 
     /// <summary>
     /// Draws a button that acts like a checkbox.
@@ -65,7 +146,7 @@ public static partial class ImGuiEx
         return ret;
     }
 
-    public static bool CollectionButtonCheckbox<T>(string name, T value, HashSet<T> collection, bool smallButton = false) => CollectionButtonCheckbox(name, value, collection, ImGuiColors.DalamudRed, smallButton);
+    public static bool CollectionButtonCheckbox<T>(string name, T value, HashSet<T> collection, bool smallButton = false) => CollectionButtonCheckbox(name, value, collection, Colors.Red, smallButton);
 
     public static bool CollectionButtonCheckbox<T>(string name, T value, HashSet<T> collection, Vector4 color, bool smallButton = false)
     {

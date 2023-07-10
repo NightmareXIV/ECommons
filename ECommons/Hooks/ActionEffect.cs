@@ -33,7 +33,7 @@ namespace ECommons.Hooks
         }
 
         static event Action<uint, ushort, ActionEffectType, uint, ulong, uint> _actionEffectEntryEvent;
-        public static event Action<uint, ushort, ActionEffectType, uint, ulong, uint> ActionEffectEntrytEvent
+        public static event Action<uint, ushort, ActionEffectType, uint, ulong, uint> ActionEffectEntryEvent
         {
             add
             {
@@ -68,10 +68,10 @@ namespace ECommons.Hooks
         /// <param name="fullParamsCallback">uint ActionID, ushort animationID, ActionEffectType type, uint sourceID, ulong targetOID, uint damage</param>
         /// <param name="logging"></param>
         /// <exception cref="Exception"></exception>
-        [Obsolete("Please use ActionEffectEntrytEvent instead.")]
+        [Obsolete($"Please use {nameof(ActionEffectEntryEvent)} instead.")]
         public static void Init(Action<uint, ushort, ActionEffectType, uint, ulong, uint> fullParamsCallback, bool logging = false)
         {
-            ActionEffectEntrytEvent += fullParamsCallback;
+            ActionEffectEntryEvent += fullParamsCallback;
         }
 
         public static void Enable()
