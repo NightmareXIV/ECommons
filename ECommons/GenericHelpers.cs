@@ -35,6 +35,26 @@ namespace ECommons;
 public static unsafe class GenericHelpers
 {
     /// <summary>
+    /// Returns <see cref="UInt32"/> representation of <see cref="Single"/>.
+    /// </summary>
+    /// <param name="f"></param>
+    /// <returns></returns>
+    public static uint AsUInt32(this float f)
+    {
+        return *(uint*)&f;
+    }
+
+    /// <summary>
+    /// Converts <see cref="UInt32"/> representation of <see cref="Single"/> into <see cref="Single"/>.
+    /// </summary>
+    /// <param name="u"></param>
+    /// <returns></returns>
+    public static float AsFloat(this uint u)
+    {
+        return *(float*)&u;
+    }
+
+    /// <summary>
     /// Tries to add multiple items to collection
     /// </summary>
     /// <typeparam name="T">Collection type</typeparam>
