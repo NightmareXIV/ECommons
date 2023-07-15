@@ -26,8 +26,6 @@ internal static class CmdManager
             var cmdAttr = m.GetCustomAttribute<CmdAttribute>();
             if (cmdAttr == null) continue;
 
-            Svc.Chat.Print("Find One!");
-
             Svc.Commands.AddHandler(cmdAttr.Command, new Dalamud.Game.Command.CommandInfo((string command, string arguments) =>
             {
                 m.Invoke(plugin, new object[] { command, arguments });
