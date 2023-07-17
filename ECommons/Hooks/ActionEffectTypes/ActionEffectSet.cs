@@ -38,20 +38,21 @@ public unsafe struct ActionEffectSet
         switch (effectHeader->ActionType)
         {
             case ActionType.Item:
-                Item = Svc.Data.GetExcelSheet<Item>().GetRow(effectHeader->ActionID);
-                Name = Item?.Name;
+                var id = effectHeader->ActionID > 1000000 ? effectHeader->ActionID - 1000000 : effectHeader->ActionID;
+                Item = Svc.Data.GetExcelSheet<Item>().GetRow(id);
+                Name = Item?.Name ?? string.Empty;
                 IconId = Item?.Icon ?? 0;
                 break;
 
             case ActionType.Mount:
                 Mount = Svc.Data.GetExcelSheet<Mount>().GetRow(effectHeader->ActionID);
-                Name = Mount?.Singular;
+                Name = Mount?.Singular ?? string.Empty;
                 IconId = Mount?.Icon ?? 0;
                 break;
 
             default:
                 Action = Svc.Data.GetExcelSheet<Action>().GetRow(effectHeader->ActionID);
-                Name = Action?.Name;
+                Name = Action?.Name ?? string.Empty; ;
 
                 var actionCate = Action?.ActionCategory.Value?.RowId ?? 0;
 
