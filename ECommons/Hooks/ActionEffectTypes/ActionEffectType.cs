@@ -43,6 +43,7 @@ public enum ActionEffectType : byte
     Attract2 = 34,
     Mount = 40,
     FullResistStatus = 52,
+    FullResistStatus2 = 55,
     VFX = 59,
     Gauge = 60,
     JobGauge = 61,
