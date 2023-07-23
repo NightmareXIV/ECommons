@@ -53,6 +53,25 @@ namespace ECommons.Automation
             Instances.Add(this);
         }
 
+
+        /// <summary>
+        /// Sets step mode, when enabled task manager won't execute tasks automatically and will wait for Step command from you.
+        /// </summary>
+        /// <param name="enabled"></param>
+        public void SetStepMode(bool enabled)
+        {
+            Svc.Framework.Update -= Tick;
+            if (!enabled)
+            {
+                Svc.Framework.Update += Tick;
+            }
+        }
+
+        /// <summary>
+        /// Manually execute task manager cycle.
+        /// </summary>
+        public void Step() => Tick(null);
+
         /// <summary>
         /// Disposes task manager, stopping all tasks immediately.
         /// </summary>
