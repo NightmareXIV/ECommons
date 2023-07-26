@@ -15,6 +15,8 @@ public unsafe struct ActionEffectSet
 
     public Item Item { get; }
 
+    public EventItem EventItem { get; }
+
     public Mount Mount { get; }
 
     public ushort IconId { get; }
@@ -37,6 +39,12 @@ public unsafe struct ActionEffectSet
     {
         switch (effectHeader->ActionType)
         {
+            case ActionType.KeyItem:
+                EventItem = Svc.Data.GetExcelSheet<EventItem>().GetRow(effectHeader->ActionID);
+                Name = EventItem?.Singular ?? string.Empty;
+                IconId = EventItem?.Icon ?? 0;
+                break;
+
             case ActionType.Item:
                 var id = effectHeader->ActionID > 1000000 ? effectHeader->ActionID - 1000000 : effectHeader->ActionID;
                 Item = Svc.Data.GetExcelSheet<Item>().GetRow(id);
