@@ -41,7 +41,7 @@ public class Chat
     private ProcessChatBoxDelegate ProcessChatBox { get; }
     private readonly unsafe delegate* unmanaged<Utf8String*, int, IntPtr, void> _sanitiseString = null!;
 
-    static Chat instance;
+    internal static Chat instance;
     public static Chat Instance
     {
         get

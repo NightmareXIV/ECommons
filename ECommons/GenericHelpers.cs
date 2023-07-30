@@ -40,6 +40,37 @@ public static unsafe class GenericHelpers
     }
 
     /// <summary>
+    /// Returns <paramref name="s"/> when <paramref name="b"/> is <see langword="true"/>, <see langword="null"/> otherwise
+    /// </summary>
+    /// <param name="s"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static string NullWhenFalse(this string s, bool b)
+    {
+        return b?s:null;
+    }
+
+    /// <summary>
+    /// Returns <see cref="UInt32"/> representation of <see cref="Single"/>.
+    /// </summary>
+    /// <param name="f"></param>
+    /// <returns></returns>
+    public static uint AsUInt32(this float f)
+    {
+        return *(uint*)&f;
+    }
+
+    /// <summary>
+    /// Converts <see cref="UInt32"/> representation of <see cref="Single"/> into <see cref="Single"/>.
+    /// </summary>
+    /// <param name="u"></param>
+    /// <returns></returns>
+    public static float AsFloat(this uint u)
+    {
+        return *(float*)&u;
+    }
+
+    /// <summary>
     /// Tries to add multiple items to collection
     /// </summary>
     /// <typeparam name="T">Collection type</typeparam>

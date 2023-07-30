@@ -11,7 +11,7 @@ namespace ECommons.ImGuiMethods
     /// <summary>
     /// A set of fancy color for use in plugins. You can redefine them to match necessary style!
     /// </summary>
-    public static class Colors
+    public static class EColor
     {
         public static Vector4 RedBright = ImGuiEx.Vector4FromRGB(0xFF0000);
         public static Vector4 Red = ImGuiEx.Vector4FromRGB(0xAA0000);

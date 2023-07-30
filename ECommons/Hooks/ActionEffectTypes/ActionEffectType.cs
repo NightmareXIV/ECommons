@@ -20,9 +20,13 @@ public enum ActionEffectType : byte
     MpGain = 11,
     TpLoss = 12,
     TpGain = 13,
-    GpGain = 14,
-    ApplyStatusEffectTarget = 15,
-    ApplyStatusEffectSource = 16,
+
+    [Obsolete("Please use ApplyStatusEffectTarget instead.")]
+    GpGain = ApplyStatusEffectTarget,
+    ApplyStatusEffectTarget = 14,
+
+    ApplyStatusEffectSource = 15,
+    RecoveredFromStatusEffect = 16,
     LoseStatusEffectTarget = 17,
     LoseStatusEffectSource = 18,
     StatusNoEffect = 20,
@@ -33,11 +37,18 @@ public enum ActionEffectType : byte
     [Obsolete("Please use StartActionCombo instead.")]
     Unknown0 = StartActionCombo,
     StartActionCombo = 27,
-    Unknown1 = 28,
+
+    [Obsolete("Please use ComboSucceed instead.")]
+    Unknown1 = ComboSucceed,
+    ComboSucceed = 28,
+
     Retaliation = 29,
     Knockback = 32,
+    Attract1 = 33, //Here is an issue bout knockback. some is 32 some is 33.
+    Attract2 = 34,
     Mount = 40,
     FullResistStatus = 52,
+    FullResistStatus2 = 55,
     VFX = 59,
     Gauge = 60,
     JobGauge = 61,

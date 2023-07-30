@@ -1,5 +1,4 @@
 ﻿using ECommons.DalamudServices;
-using ECommons.LanguageHelpers;
 using ImGuiNET;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +6,7 @@ using System.Reflection;
 
 namespace ECommons.Commands;
 
-internal static class CmdManager
+public static class CmdManager
 {
     static Dictionary<CmdAttribute, SubCmdAttribute[]> _commandsAttribute = new Dictionary<CmdAttribute, SubCmdAttribute[]>();
 
@@ -25,8 +24,6 @@ internal static class CmdManager
 
             var cmdAttr = m.GetCustomAttribute<CmdAttribute>();
             if (cmdAttr == null) continue;
-
-            Svc.Chat.Print("Find One!");
 
             Svc.Commands.AddHandler(cmdAttr.Command, new Dalamud.Game.Command.CommandInfo((string command, string arguments) =>
             {

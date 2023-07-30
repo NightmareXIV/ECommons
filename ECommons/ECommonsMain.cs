@@ -15,6 +15,7 @@ using ECommons.Automation;
 using ECommons.StringHelpers;
 using Dalamud.Utility;
 using ECommons.Commands;
+using ECommons.Throttlers;
 
 namespace ECommons;
 
@@ -86,9 +87,15 @@ public static class ECommonsMain
         GenericHelpers.Safe(ProperOnLogin.Dispose);
         GenericHelpers.Safe(DirectorUpdate.Dispose);
         GenericHelpers.Safe(ActionEffect.Dispose);
+        GenericHelpers.Safe(MapEffect.Dispose);
+        GenericHelpers.Safe(SendAction.Dispose);
         GenericHelpers.Safe(TaskManager.DisposeAll);
         GenericHelpers.Safe(EqualStrings.Dispose);
         GenericHelpers.Safe(() => ThreadLoadImageHandler.httpClient?.Dispose());
+        EzThrottler.Throttler = null;
+        FrameThrottler.Throttler = null;
+        GenericHelpers.Safe(Callback.Dispose);
+        Chat.instance = null;
         Instance = null;
     }
 }
