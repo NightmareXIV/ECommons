@@ -94,7 +94,7 @@ namespace ECommons.Hooks
             if (ProcessDirectorUpdateHook?.IsEnabled == true) ProcessDirectorUpdateHook?.Disable();
         }
 
-        internal static void Dispose()
+        public static void Dispose()
         {
             if(ProcessDirectorUpdateHook != null)
             {

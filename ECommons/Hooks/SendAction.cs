@@ -60,7 +60,7 @@ namespace ECommons.Hooks
             if (SendActionHook?.IsEnabled == true) SendActionHook?.Disable();
         }
 
-        internal static void Dispose()
+        public static void Dispose()
         {
             if (SendActionHook != null)
             {

@@ -59,7 +59,7 @@ namespace ECommons.Hooks
             if (ProcessMapEffectHook?.IsEnabled == true) ProcessMapEffectHook?.Disable();
         }
 
-        internal static void Dispose()
+        public static void Dispose()
         {
             if (ProcessMapEffectHook != null)
             {
