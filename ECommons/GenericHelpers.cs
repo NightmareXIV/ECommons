@@ -34,6 +34,11 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static T[] Together<T>(this T[] array, params T[] additionalValues)
+    {
+        return array.Union(additionalValues).ToArray();
+    }
+
     /// <summary>
     /// Tries to add multiple items to collection
     /// </summary>
