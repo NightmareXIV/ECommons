@@ -1,12 +1,14 @@
-﻿using ECommons.Logging;
-using ECommons.DalamudServices;
+﻿using ECommons.DalamudServices;
+using ECommons.Logging;
 using ImGuiScene;
+using Svg;
 using System;
 using System.Collections.Concurrent;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Net.Http;
 using System.Threading;
 using static ECommons.GenericHelpers;
-using System.IO;
 
 namespace ECommons.ImGuiMethods;
 
@@ -86,7 +88,28 @@ public class ThreadLoadImageHandler
                                     var result = httpClient.GetAsync(keyValuePair.Key).Result;
                                     result.EnsureSuccessStatusCode();
                                     var content = result.Content.ReadAsByteArrayAsync().Result;
-                                    keyValuePair.Value.texture = Svc.PluginInterface.UiBuilder.LoadImage(content);
+                                    try
+                                    {
+                                        keyValuePair.Value.texture = Svc.PluginInterface.UiBuilder.LoadImage(content);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        try
+                                        {
+                                            using var stream = new MemoryStream(content);
+                                            using var outStream = new MemoryStream();
+                                            var svgDocument = SvgDocument.Open<SvgDocument>(stream);
+                                            var bitmap = svgDocument.Draw();
+                                            bitmap.Save(outStream, ImageFormat.Png);
+                                            content = outStream.ToArray();
+                                            keyValuePair.Value.texture = Svc.PluginInterface.UiBuilder.LoadImage(content);
+                                        }
+                                        catch
+                                        {
+                                            throw ex;
+                                            throw;
+                                        }
+                                    }
                                 }
                                 else
                                 {
