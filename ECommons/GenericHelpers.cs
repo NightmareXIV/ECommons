@@ -29,6 +29,8 @@ using PInvoke;
 using System.Windows.Forms;
 using System.Threading;
 using ECommons.Interop;
+using System.Drawing;
+using ImGuiScene;
 
 namespace ECommons;
 
