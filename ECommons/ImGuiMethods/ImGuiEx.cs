@@ -1,8 +1,6 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Internal.Notifications;
-using Dalamud.Interface.Style;
-using Dalamud.Logging;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using ImGuiNET;
@@ -11,10 +9,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Xml.Linq;
 
 namespace ECommons.ImGuiMethods;
 
@@ -42,7 +38,7 @@ public static unsafe partial class ImGuiEx
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, TrueColor.Value);
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, TrueColor.Value);
         }
-        else if(col == false)
+        else if (col == false)
         {
             ImGui.PushStyleColor(ImGuiCol.Button, FalseColor.Value);
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, FalseColor.Value);
@@ -75,7 +71,7 @@ public static unsafe partial class ImGuiEx
         if (col != null) ImGui.PopStyleColor(3);
         return ret;
     }
-    
+
     /// <summary>
     /// Converts RGB color to <see cref="Vector4"/> for ImGui
     /// </summary>
@@ -137,7 +133,7 @@ public static unsafe partial class ImGuiEx
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, color);
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, color);
         }
-        if (smallButton?ImGui.SmallButton(name):ImGui.Button(name))
+        if (smallButton ? ImGui.SmallButton(name) : ImGui.Button(name))
         {
             value = !value;
             ret = true;
@@ -310,14 +306,13 @@ public static unsafe partial class ImGuiEx
         {
             headerLastWindowID = currentID;
             headerLastFrame = Svc.PluginInterface.UiBuilder.FrameCount;
-            headerCurrentPos = 0.25f * ImGui.GetStyle().FramePadding.Length();
-            if (!GetCurrentWindowFlags().HasFlag(ImGuiWindowFlags.NoTitleBar))
-                headerCurrentPos = 1;
-            headerImGuiButtonWidth = 0f;
-            if (CurrentWindowHasCloseButton())
-                headerImGuiButtonWidth += 17 * scale;
+            headerCurrentPos = 2.1f * scale;
+            headerImGuiButtonWidth = 2.1f * scale;
+            
             if (!GetCurrentWindowFlags().HasFlag(ImGuiWindowFlags.NoCollapse))
-                headerImGuiButtonWidth += 17 * scale;
+            {
+                headerCurrentPos += 5f * scale;
+            }
         }
 
         options ??= new();
@@ -957,7 +952,7 @@ public static unsafe partial class ImGuiEx
 
     public static void Text(Vector4? col, string text)
     {
-        if(col == null)
+        if (col == null)
         {
             Text(text);
         }
@@ -969,11 +964,11 @@ public static unsafe partial class ImGuiEx
 
     public static void TextCentered(Vector4? col, string text)
     {
-        if (col == null) 
+        if (col == null)
         {
             TextCentered(text);
         }
-        else 
+        else
         {
             TextCentered(col.Value, text);
         }

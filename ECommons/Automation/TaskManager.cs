@@ -26,7 +26,7 @@ namespace ECommons.Automation
         /// Tick count (<see cref="Environment.TickCount64"/>) at which current task will be aborted
         /// </summary>
         public long AbortAt { get; private set; } = 0;
-        TaskManagerTask CurrentTask = null;
+        TaskManagerTask? CurrentTask = null;
         /// <summary>
         /// Amount of currently queued tasks, including one that is currently being executed
         /// </summary>
@@ -246,7 +246,7 @@ namespace ECommons.Automation
                     if (result == true)
                     {
                         if (ShowDebug)
-                            PluginLog.Debug($"Task {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name} completed successfully");
+                            PluginLog.Debug($"Task {CurrentTask?.Name ?? "<NULL TASK>"} completed successfully");
                         CurrentTask = null;
                     }
                     else if (result == false)
