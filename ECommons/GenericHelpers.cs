@@ -29,11 +29,18 @@ using PInvoke;
 using System.Windows.Forms;
 using System.Threading;
 using ECommons.Interop;
+using System.Drawing;
+using ImGuiScene;
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static T[] Together<T>(this T[] array, params T[] additionalValues)
+    {
+        return array.Union(additionalValues).ToArray();
+    }
+
     /// <summary>
     /// Returns <paramref name="s"/> when <paramref name="b"/> is <see langword="true"/>, <see langword="null"/> otherwise
     /// </summary>
