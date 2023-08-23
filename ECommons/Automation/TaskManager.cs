@@ -27,6 +27,7 @@ namespace ECommons.Automation
         /// </summary>
         public long AbortAt { get; private set; } = 0;
         TaskManagerTask CurrentTask = null;
+        public string CurrentTaskName => CurrentTask.Name;
         /// <summary>
         /// Amount of currently queued tasks, including one that is currently being executed
         /// </summary>

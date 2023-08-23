@@ -357,7 +357,8 @@ public static unsafe class GenericHelpers
                || Svc.Condition[ConditionFlag.PreparingToCraft]
                || Svc.Condition[ConditionFlag.Fishing]
                || Svc.Condition[ConditionFlag.Transformed]
-               || Svc.Condition[ConditionFlag.UsingHousingFunctions];
+               || Svc.Condition[ConditionFlag.UsingHousingFunctions]
+               || Svc.ClientState.LocalPlayer?.IsTargetable != true;
     }
 
     public static string ReplaceFirst(this string text, string search, string replace)
