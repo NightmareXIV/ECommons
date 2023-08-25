@@ -84,6 +84,11 @@ internal class SGameGui
     [PluginService] internal static GameGui GameGui { get; private set; }
 }
 
+internal class SGameConfig
+{
+    [PluginService] internal static GameConfig GameConfig { get; private set; }
+}
+
 internal class SGameNetwork
 {
     [PluginService] internal static GameNetwork GameNetwork { get; private set; }

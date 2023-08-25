@@ -41,6 +41,7 @@ public class Svc
     public static FlyTextGui FlyText { get; private set; }
     public static Framework Framework { get; private set; }
     public static GameGui GameGui { get; private set; }
+    public static GameConfig GameConfig { get; private set; }
     public static GameNetwork GameNetwork { get; private set; }
     public static JobGauges Gauges { get; private set; }
     public static KeyState KeyState { get; private set; }
@@ -102,6 +103,9 @@ public class Svc
 
             pi.Create<SGameGui>();
             GameGui = SGameGui.GameGui;
+
+            pi.Create<SGameConfig>();
+            GameConfig = SGameConfig.GameConfig;
 
             pi.Create<SGameNetwork>();
             GameNetwork = SGameNetwork.GameNetwork;
