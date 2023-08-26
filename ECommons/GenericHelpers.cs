@@ -397,15 +397,15 @@ public static unsafe class GenericHelpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAddonReady(AtkUnitBase* addon)
+    public static bool IsAddonReady(AtkUnitBase* Addon)
     {
-        return addon->IsVisible && addon->UldManager.LoadedState == AtkLoadState.Loaded;
+        return Addon->IsVisible && Addon->UldManager.LoadedState == AtkLoadState.Loaded;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAddonReady(AtkComponentNode* addon)
+    public static bool IsAddonReady(AtkComponentNode* Addon)
     {
-        return addon->AtkResNode.IsVisible && addon->Component->UldManager.LoadedState == AtkLoadState.Loaded;
+        return Addon->AtkResNode.IsVisible && Addon->Component->UldManager.LoadedState == AtkLoadState.Loaded;
     }
 
     /// <summary>
