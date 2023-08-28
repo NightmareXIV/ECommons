@@ -168,7 +168,7 @@ namespace ECommons.Automation
             MaxTasks += 2;
         }
 
-        public void DelayNextImmediate(int delayMS, bool useFrameThrottler = false) => DelayNext("ECommonsGenericDelay", delayMS, useFrameThrottler);
+        public void DelayNextImmediate(int delayMS, bool useFrameThrottler = false) => DelayNextImmediate("ECommonsGenericDelay", delayMS, useFrameThrottler);
         public void DelayNextImmediate(string uniqueName, int delayMS, bool useFrameThrottler = false)
         {
             if (useFrameThrottler)
