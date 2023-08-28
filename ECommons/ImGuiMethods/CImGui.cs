@@ -1,16 +1,24 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace ECommons.ImGuiMethods;
 
-public class CImGui
+public partial class CImGui
 {
-    [DllImport("cimgui", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void igBringWindowToDisplayFront(IntPtr ptr);
+    [LibraryImport("cimgui")]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(CallConvCdecl) })]
+    public static partial void igBringWindowToDisplayFront(nint ptr);
 
-    [DllImport("cimgui", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void igBringWindowToDisplayBack(IntPtr ptr);
+    [LibraryImport("cimgui")]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(CallConvCdecl) })]
+    public static partial void igBringWindowToDisplayBack(nint ptr);
 
-    [DllImport("cimgui", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr igGetCurrentWindow();
+    [LibraryImport("cimgui")]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(CallConvCdecl) })]
+    public static partial nint igGetCurrentWindow();
+
+    [LibraryImport("cimgui")]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(CallConvCdecl) })]
+    public static partial int igFindWindowDisplayIndex(nint ptr);
 }

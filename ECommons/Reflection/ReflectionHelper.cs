@@ -61,4 +61,9 @@ public static class ReflectionHelper
         var info = obj.GetType().GetMethod(name, AllFlags, values.Select(x => x.GetType()).ToArray());
         return info.Invoke(obj, values);
     }
+
+    public static T Call<T>(this object obj, string name, params object[] values)
+    {
+        return (T)Call(obj, name, values);
+    }
 }

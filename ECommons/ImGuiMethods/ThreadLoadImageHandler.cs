@@ -1,12 +1,13 @@
-﻿using ECommons.Logging;
-using ECommons.DalamudServices;
+﻿using ECommons.DalamudServices;
+using ECommons.Logging;
 using ImGuiScene;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Threading;
 using static ECommons.GenericHelpers;
-using System.IO;
 
 namespace ECommons.ImGuiMethods;
 
@@ -14,6 +15,8 @@ public class ThreadLoadImageHandler
 {
     internal static ConcurrentDictionary<string, ImageLoadingResult> CachedTextures = new();
     internal static ConcurrentDictionary<(uint ID, bool HQ), ImageLoadingResult> CachedIcons = new();
+
+    private static readonly List<Func<byte[], byte[]>> _conversionsToBitmap = new() { b => b, };
 
     static volatile bool ThreadRunning = false;
     internal static HttpClient httpClient = new()
@@ -51,7 +54,7 @@ public class ThreadLoadImageHandler
     public static bool TryGetTextureWrap(string url, out TextureWrap textureWrap)
     {
         ImageLoadingResult result;
-        if(!CachedTextures.TryGetValue(url, out result))
+        if (!CachedTextures.TryGetValue(url, out result))
         {
             result = new();
             CachedTextures[url] = result;
@@ -71,7 +74,7 @@ public class ThreadLoadImageHandler
             int idleTicks = 0;
             Safe(delegate
             {
-                while(idleTicks < 100)
+                while (idleTicks < 100)
                 {
                     Safe(delegate
                     {
@@ -86,7 +89,23 @@ public class ThreadLoadImageHandler
                                     var result = httpClient.GetAsync(keyValuePair.Key).Result;
                                     result.EnsureSuccessStatusCode();
                                     var content = result.Content.ReadAsByteArrayAsync().Result;
-                                    keyValuePair.Value.texture = Svc.PluginInterface.UiBuilder.LoadImage(content);
+
+                                    TextureWrap texture = null;
+                                    foreach (var conversion in _conversionsToBitmap)
+                                    {
+                                        if (conversion == null) continue;
+
+                                        try
+                                        {
+                                            texture = Svc.PluginInterface.UiBuilder.LoadImage(conversion(content));
+                                            if (texture != null) break;
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            //TODO: I don't know how to log exception in ECommons.
+                                        }
+                                    }
+                                    keyValuePair.Value.texture = texture;
                                 }
                                 else
                                 {
@@ -118,5 +137,15 @@ public class ThreadLoadImageHandler
             PluginLog.Information($"Stopping ThreadLoadImageHandler, ticks={idleTicks}");
             ThreadRunning = false;
         }).Start();
+    }
+
+    public static void AddConversionToBitmap(Func<byte[], byte[]> conversion)
+    {
+        _conversionsToBitmap.Add(conversion);
+    }
+
+    public static void RemoveConversionToBitmap(Func<byte[], byte[]> conversion)
+    {
+        _conversionsToBitmap.Remove(conversion);
     }
 }
