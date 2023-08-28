@@ -86,7 +86,7 @@ namespace ECommons.UIHelpers
             {
                 return null;
             }
-            if (value.Type != ValueType.String) throw new InvalidCastException($"Value {num} from Addon {MemoryHelper.ReadStringNullTerminated((nint)UnitBase->Name)} was requested as SeString but it was {value.Type}");
+            if (!value.Type.EqualsAny(ValueType.String, ValueType.AllocatedString)) throw new InvalidCastException($"Value {num} from Addon {MemoryHelper.ReadStringNullTerminated((nint)UnitBase->Name)} was requested as SeString but it was {value.Type}");
             return MemoryHelper.ReadSeStringNullTerminated((nint)value.String);
         }
 
@@ -100,7 +100,7 @@ namespace ECommons.UIHelpers
             {
                 return null;
             }
-            if (value.Type != ValueType.String) throw new InvalidCastException($"Value {num} from Addon {MemoryHelper.ReadStringNullTerminated((nint)UnitBase->Name)} was requested as String but it was {value.Type}");
+            if (!value.Type.EqualsAny(ValueType.String, ValueType.AllocatedString)) throw new InvalidCastException($"Value {num} from Addon {MemoryHelper.ReadStringNullTerminated((nint)UnitBase->Name)} was requested as String but it was {value.Type}");
             return MemoryHelper.ReadStringNullTerminated((nint)value.String);
         }
 
