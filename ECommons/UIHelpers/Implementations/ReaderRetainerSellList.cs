@@ -14,7 +14,7 @@ namespace ECommons.UIHelpers.Implementations
 
         public unsafe class Entry(nint UnitBasePtr, int BeginOffset = 0) : AtkReader(UnitBasePtr, BeginOffset)
         {
-            public int Id => ReadInt(0) ?? 0;
+            public int IconId => ReadInt(0) ?? 0;
             public string Name => ReadSeString(1).ExtractText(true);
             public int Amount => ReadInt(2) ?? 0;
             public int PricePerUnit => int.TryParse(ReadString(3).RemoveOtherChars("0123456789"), out var ret) ? ret : 0;
