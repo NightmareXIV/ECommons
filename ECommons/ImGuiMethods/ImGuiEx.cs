@@ -1042,7 +1042,7 @@ public static unsafe partial class ImGuiEx
         }
     }
 
-    public static void InputIntBounded(string label, ref int value, int minValue, int maxValue)
+    public static bool InputIntBounded(string label, ref int value, int minValue, int maxValue)
     {
         if (ImGui.InputInt(label, ref value))
         {
@@ -1051,7 +1051,11 @@ public static unsafe partial class ImGuiEx
 
             if (value < minValue)
                 value = minValue;
+
+            return true;
         }
+
+        return false;
     }
 }
 
