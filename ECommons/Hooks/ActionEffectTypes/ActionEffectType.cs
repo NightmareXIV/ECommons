@@ -21,9 +21,9 @@ public enum ActionEffectType : byte
     TpLoss = 12,
     TpGain = 13,
 
+    ApplyStatusEffectTarget = 14,
     [Obsolete("Please use ApplyStatusEffectTarget instead.")]
     GpGain = ApplyStatusEffectTarget,
-    ApplyStatusEffectTarget = 14,
 
     ApplyStatusEffectSource = 15,
     RecoveredFromStatusEffect = 16,
@@ -34,13 +34,13 @@ public enum ActionEffectType : byte
     EnmityAmountUp = 25,
     EnmityAmountDown = 26,
 
+    StartActionCombo = 27,
     [Obsolete("Please use StartActionCombo instead.")]
     Unknown0 = StartActionCombo,
-    StartActionCombo = 27,
 
+    ComboSucceed = 28,
     [Obsolete("Please use ComboSucceed instead.")]
     Unknown1 = ComboSucceed,
-    ComboSucceed = 28,
 
     Retaliation = 29,
     Knockback = 32,
