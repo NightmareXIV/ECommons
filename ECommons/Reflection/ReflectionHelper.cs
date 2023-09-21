@@ -69,8 +69,6 @@ public static class ReflectionHelper
         return (T)Call(obj, name, values);
     }
 
-    public static object Call<T>(this object obj, string name, params object[] values) => (T)Call(obj, name, values);
-
     public static object CallStatic(this object obj, string type, string name, params object[] values)
     {
         var info = obj.GetType().Assembly.GetType(type).GetMethod(name, AllFlags, values.Select(x => x.GetType()).ToArray());
