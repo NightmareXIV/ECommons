@@ -34,7 +34,7 @@ namespace ECommons.Hooks
         {
             if (ProcessMapEffectHook != null)
             {
-                throw new Exception("Director Update Hook is already initialized!");
+                throw new Exception("MapEffect is already initialized!");
             }
             if (Svc.SigScanner.TryScanText(Sig, out var ptr))
             {
@@ -59,7 +59,7 @@ namespace ECommons.Hooks
             if (ProcessMapEffectHook?.IsEnabled == true) ProcessMapEffectHook?.Disable();
         }
 
-        internal static void Dispose()
+        public static void Dispose()
         {
             if (ProcessMapEffectHook != null)
             {

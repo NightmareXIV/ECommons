@@ -23,6 +23,7 @@ public static unsafe class ObjectFunctions
         GetNameplateColor = Marshal.GetDelegateForFunctionPointer<GetNameplateColorDelegate>(Svc.SigScanner.ScanText("48 89 74 24 ?? 57 48 83 EC 20 48 8B 35 ?? ?? ?? ?? 48 8B F9 48 85 F6 75 0D"));
     }
 
+    [Obsolete($"Use {nameof(GameObject.IsTargetable)}")]
     public static bool IsTargetable(this GameObject o)
     {
         return o.Struct()->GetIsTargetable();

@@ -3,6 +3,7 @@ using ECommons.Logging;
 using ECommons.Throttlers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace ECommons.Automation
@@ -27,6 +28,8 @@ namespace ECommons.Automation
         /// </summary>
         public long AbortAt { get; private set; } = 0;
         TaskManagerTask CurrentTask = null;
+        public string? CurrentTaskName => CurrentTask?.Name;
+        public List<string> TaskStack => ImmediateTasks.Select(x => x.Name).Union(Tasks.Select(x => x.Name)).ToList();
         /// <summary>
         /// Amount of currently queued tasks, including one that is currently being executed
         /// </summary>
@@ -52,6 +55,25 @@ namespace ECommons.Automation
             Svc.Framework.Update += Tick;
             Instances.Add(this);
         }
+
+
+        /// <summary>
+        /// Sets step mode, when enabled task manager won't execute tasks automatically and will wait for Step command from you.
+        /// </summary>
+        /// <param name="enabled"></param>
+        public void SetStepMode(bool enabled)
+        {
+            Svc.Framework.Update -= Tick;
+            if (!enabled)
+            {
+                Svc.Framework.Update += Tick;
+            }
+        }
+
+        /// <summary>
+        /// Manually execute task manager cycle.
+        /// </summary>
+        public void Step() => Tick(null);
 
         /// <summary>
         /// Disposes task manager, stopping all tasks immediately.
@@ -146,7 +168,7 @@ namespace ECommons.Automation
             MaxTasks += 2;
         }
 
-        public void DelayNextImmediate(int delayMS, bool useFrameThrottler = false) => DelayNext("ECommonsGenericDelay", delayMS, useFrameThrottler);
+        public void DelayNextImmediate(int delayMS, bool useFrameThrottler = false) => DelayNextImmediate("ECommonsGenericDelay", delayMS, useFrameThrottler);
         public void DelayNextImmediate(string uniqueName, int delayMS, bool useFrameThrottler = false)
         {
             if (useFrameThrottler)

@@ -8,6 +8,7 @@ using ECommons.Reflection;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -20,6 +21,14 @@ namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
+    public static bool CollapsingHeader(string text, Vector4? col = null)
+    {
+        if (col != null) ImGui.PushStyleColor(ImGuiCol.Text, col.Value);
+        var ret = ImGui.CollapsingHeader(text);
+        if (col != null) ImGui.PopStyleColor();
+        return ret;
+    }
+
 
     /// <summary>
     /// Provides a button that can be used to switch <see langword="bool"/>? variables. Left click - to toggle between <see langword="true"/> and <see langword="null"/>, right click - to toggle between <see langword="false"/> and <see langword="null"/>.
