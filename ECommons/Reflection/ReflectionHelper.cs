@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using Dalamud.Logging;
+using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 
 namespace ECommons.Reflection;
 
@@ -61,4 +63,14 @@ public static class ReflectionHelper
         var info = obj.GetType().GetMethod(name, AllFlags, values.Select(x => x.GetType()).ToArray());
         return info.Invoke(obj, values);
     }
+
+    public static object Call<T>(this object obj, string name, params object[] values) => (T)Call(obj, name, values);
+
+    public static object CallStatic(this object obj, string type, string name, params object[] values)
+    {
+        var info = obj.GetType().Assembly.GetType(type).GetMethod(name, AllFlags, values.Select(x => x.GetType()).ToArray());
+        return info.Invoke(obj, values);
+    }
+
+    public static object CallStatic<T>(this object obj, string type, string name, params object[] values) => CallStatic(obj, type, name, values);
 }
