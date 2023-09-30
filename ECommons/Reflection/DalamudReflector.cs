@@ -180,8 +180,7 @@ public static class DalamudReflector
 
     public static string GetPluginName()
     {
-        return "wip";
-        //return ECommonsMain.Instance?.Name ?? "Not initialized";
+        return Svc.PluginInterface?.InternalName ?? "Not initialized";
     }
 
     internal static void OnInstalledPluginsChanged()

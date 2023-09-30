@@ -57,8 +57,9 @@ public class Svc
     [PluginService] public static IGamepadState GamepadState { get; private set; }
     [PluginService] public static IDtrBar DtrBar { get; private set; }
     [PluginService] public static IDutyState DutyState { get; private set; }
-    [PluginService] public static IGameInteropProvider Interop { get; private set; }
+    [PluginService] public static IGameInteropProvider Hook { get; private set; }
     [PluginService] public static ITextureProvider Texture { get; private set; }
+    [PluginService] public static IPluginLog Log { get; private set; }
 
     internal static bool IsInitialized = false;
     public static void Init(DalamudPluginInterface pi)

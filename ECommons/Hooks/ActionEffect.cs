@@ -51,7 +51,7 @@ namespace ECommons.Hooks
             {
                 if (Svc.SigScanner.TryScanText(Sig, out var ptr))
                 {
-                    ProcessActionEffectHook = Svc.Interop.HookFromAddress<ProcessActionEffect>(ptr, ProcessActionEffectDetour);
+                    ProcessActionEffectHook = Svc.Hook.HookFromAddress<ProcessActionEffect>(ptr, ProcessActionEffectDetour);
                     Enable();
                     PluginLog.Information($"Requested Action Effect hook and successfully initialized");
                 }

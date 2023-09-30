@@ -31,11 +31,17 @@ using System.Threading;
 using ECommons.Interop;
 using System.Drawing;
 using ImGuiScene;
+using Dalamud.Game.ClientState.Objects;
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static void SetTarget(this ITargetManager targetManager, GameObject obj)
+    {
+        targetManager.Target = obj;
+    }
+
     public static T[] Together<T>(this T[] array, params T[] additionalValues)
     {
         return array.Union(additionalValues).ToArray();
