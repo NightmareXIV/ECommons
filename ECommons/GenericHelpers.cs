@@ -504,6 +504,20 @@ public static unsafe class GenericHelpers
         }
     }
 
+    public static bool Toggle<T>(this List<T> list, T value)
+    {
+        if (list.Contains(value))
+        {
+            list.RemoveAll(x => x.Equals(value));
+            return false;
+        }
+        else
+        {
+            list.Add(value);
+            return true;
+        }
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IEnumerable<string> Split(this string str, int chunkSize)
     {
