@@ -19,7 +19,9 @@ using Dalamud.Game.Gui.PartyFinder;
 using Dalamud.Game.Gui.Toast;
 using Dalamud.Game.Libc;
 using Dalamud.Game.Network;
+using Dalamud.IoC;
 using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using ECommons.Logging;
 using System;
 
@@ -29,33 +31,34 @@ namespace ECommons.DalamudServices;
 //This is inconvenient. Let's bypass it.
 public class Svc
 {
-    public static DalamudPluginInterface PluginInterface { get; private set; }
-    public static BuddyList Buddies { get; private set; }
-    public static ChatGui Chat { get; private set; }
-    public static ChatHandlers ChatHandlers { get; private set; }
-    public static ClientState ClientState { get; private set; }
-    public static CommandManager Commands { get; private set; }
-    public static Condition Condition { get; private set; }
-    public static DataManager Data { get; private set; }
-    public static FateTable Fates { get; private set; }
-    public static FlyTextGui FlyText { get; private set; }
-    public static Framework Framework { get; private set; }
-    public static GameGui GameGui { get; private set; }
-    public static GameNetwork GameNetwork { get; private set; }
-    public static JobGauges Gauges { get; private set; }
-    public static KeyState KeyState { get; private set; }
-    public static LibcFunction LibcFunction { get; private set; }
-    public static ObjectTable Objects { get; private set; }
-    public static PartyFinderGui PfGui { get; private set; }
-    public static PartyList Party { get; private set; }
-    public static SigScanner SigScanner { get; private set; }
-    public static TargetManager Targets { get; private set; }
-    public static ToastGui Toasts { get; private set; }
-    public static GameConfig GameConfig { get; private set; }
-    public static GameLifecycle GameLifecycle { get; private set; }
-    public static GamepadState GamepadState { get; private set; } 
-    public static DtrBar DtrBar { get; private set; }
-    public static DutyState DutyState { get; private set; }
+    [PluginService] public static DalamudPluginInterface PluginInterface { get; private set; }
+    [PluginService] public static IBuddyList Buddies { get; private set; }
+    [PluginService] public static IChatGui Chat { get; private set; }
+    [PluginService] public static IClientState ClientState { get; private set; }
+    [PluginService] public static ICommandManager Commands { get; private set; }
+    [PluginService] public static ICondition Condition { get; private set; }
+    [PluginService] public static IDataManager Data { get; private set; }
+    [PluginService] public static IFateTable Fates { get; private set; }
+    [PluginService] public static IFlyTextGui FlyText { get; private set; }
+    [PluginService] public static IFramework Framework { get; private set; }
+    [PluginService] public static IGameGui GameGui { get; private set; }
+    [PluginService] public static IGameNetwork GameNetwork { get; private set; }
+    [PluginService] public static IJobGauges Gauges { get; private set; }
+    [PluginService] public static IKeyState KeyState { get; private set; }
+    [PluginService] public static ILibcFunction LibcFunction { get; private set; }
+    [PluginService] public static IObjectTable Objects { get; private set; }
+    [PluginService] public static IPartyFinderGui PfGui { get; private set; }
+    [PluginService] public static IPartyList Party { get; private set; }
+    [PluginService] public static ISigScanner SigScanner { get; private set; }
+    [PluginService] public static ITargetManager Targets { get; private set; }
+    [PluginService] public static IToastGui Toasts { get; private set; }
+    [PluginService] public static IGameConfig GameConfig { get; private set; }
+    [PluginService] public static IGameLifecycle GameLifecycle { get; private set; }
+    [PluginService] public static IGamepadState GamepadState { get; private set; }
+    [PluginService] public static IDtrBar DtrBar { get; private set; }
+    [PluginService] public static IDutyState DutyState { get; private set; }
+    [PluginService] public static IGameInteropProvider Interop { get; private set; }
+    [PluginService] public static ITextureProvider Texture { get; private set; }
 
     internal static bool IsInitialized = false;
     public static void Init(DalamudPluginInterface pi)
@@ -67,86 +70,7 @@ public class Svc
         IsInitialized = true;
         try
         {
-            pi.Create<SDalamudPluginInterface>();
-            PluginInterface = SDalamudPluginInterface.PluginInterface;
-
-            pi.Create<SBuddyList>();
-            Buddies = SBuddyList.Buddies;
-
-            pi.Create<SChatGui>();
-            Chat = SChatGui.Chat;
-
-            pi.Create<SChatHandlers>();
-            ChatHandlers = SChatHandlers.ChatHandlers;
-
-            pi.Create<SClientState>();
-            ClientState = SClientState.ClientState;
-
-            pi.Create<SCommandManager>();
-            Commands = SCommandManager.Commands;
-
-            pi.Create<SCondition>();
-            Condition = SCondition.Condition;
-
-            pi.Create<SDataManager>();
-            Data = SDataManager.Data;
-
-            pi.Create<SFateTable>();
-            Fates = SFateTable.Fates;
-
-            pi.Create<SFlyTextGui>();
-            FlyText = SFlyTextGui.FlyText;
-
-            pi.Create<SFramework>();
-            Framework = SFramework.Framework;
-
-            pi.Create<SGameGui>();
-            GameGui = SGameGui.GameGui;
-
-            pi.Create<SGameNetwork>();
-            GameNetwork = SGameNetwork.GameNetwork;
-
-            pi.Create<SJobGauges>();
-            Gauges = SJobGauges.Gauges;
-
-            pi.Create<SKeyState>();
-            KeyState = SKeyState.KeyState;
-
-            pi.Create<SLibcFunction>();
-            LibcFunction = SLibcFunction.LibcFunction;
-
-            pi.Create<SObjectTable>();
-            Objects = SObjectTable.Objects;
-
-            pi.Create<SPartyFinderGui>();
-            PfGui = SPartyFinderGui.PfGui;
-
-            pi.Create<SPartyList>();
-            Party = SPartyList.Party;
-
-            pi.Create<SSigScanner>();
-            SigScanner = SSigScanner.SigScanner;
-
-            pi.Create<STargetManager>();
-            Targets = STargetManager.Targets;
-
-            pi.Create<SToastGui>();
-            Toasts = SToastGui.Toasts;
-
-            pi.Create<SGameConfig>();
-            GameConfig = SGameConfig.GameConfig;
-
-            pi.Create<sGameLifeCycle>();
-            GameLifecycle = sGameLifeCycle.GameLifecycle;
-
-            pi.Create<sGamepadState>();
-            GamepadState = sGamepadState.GamepadState;
-
-            pi.Create<sDtrBar>();
-            DtrBar = sDtrBar.DtrBar;
-
-            pi.Create<sDutyState>();
-            DutyState = sDutyState.DutyState;
+            pi.Create<Svc>();
         }
         catch(Exception ex)
         {

@@ -17,7 +17,7 @@ namespace ECommons.ChatMethods
 
         public static void PrintColored(UIColor col, string text)
         {
-            Svc.Chat.PrintChat(new()
+            Svc.Chat.Print(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(text, (ushort)col).Build()
             });

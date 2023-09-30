@@ -158,7 +158,7 @@ public static class DalamudReflector
             return false;
         }
     }
-
+    /*
     public static bool TryGetDalamudStartInfo(out DalamudStartInfo dalamudStartInfo, DalamudPluginInterface pluginInterface = null)
     {
         try
@@ -176,11 +176,12 @@ public static class DalamudReflector
             dalamudStartInfo = default;
             return false;
         }
-    }
+    }*/
 
     public static string GetPluginName()
     {
-        return ECommonsMain.Instance?.Name ?? "Not initialized";
+        return "wip";
+        //return ECommonsMain.Instance?.Name ?? "Not initialized";
     }
 
     internal static void OnInstalledPluginsChanged()

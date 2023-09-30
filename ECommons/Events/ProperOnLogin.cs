@@ -1,6 +1,5 @@
-﻿using Dalamud.Logging;
+﻿using ECommons.Logging;
 using ECommons.DalamudServices;
-using Microsoft.Win32.SafeHandles;
 using System;
 using System.Collections.Generic;
 
@@ -50,7 +49,7 @@ public static class ProperOnLogin
         }
     }
 
-    static void OnLogin(object _, object __)
+    static void OnLogin()
     {
         Svc.Framework.Update += OnUpdate;
         PluginLog.Debug("Registering ProperOnLogin event's framework update");
