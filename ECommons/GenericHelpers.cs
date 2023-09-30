@@ -244,9 +244,9 @@ public static unsafe class GenericHelpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string Print<T>(this IEnumerable<T> x)
+    public static string Print<T>(this IEnumerable<T> x, string separator = ", ")
     {
-        return x.Select(x => x.ToString()).Join(", ");
+        return x.Select(x => x.ToString()).Join(separator);
     }
 
     public static void DeleteFileToRecycleBin(string path)
