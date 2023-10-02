@@ -708,7 +708,9 @@ public static unsafe partial class ImGuiEx
         }
     }
 
-    public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs)
+    public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, false, tabs);
+
+    public static void EzTabBar(string id, bool KoFiTransparent, params (string name, Action function, Vector4? color, bool child)[] tabs)
     {
         ImGui.BeginTabBar(id);
         foreach (var x in tabs)
@@ -737,6 +739,7 @@ public static unsafe partial class ImGuiEx
                 }
             }
         }
+        if (KoFiTransparent) KoFiButton.RightTransparentTab();
         ImGui.EndTabBar();
     }
 
