@@ -1,4 +1,4 @@
-﻿using Dalamud.Logging;
+﻿using ECommons.Logging;
 using Dalamud.Memory;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Component.GUI;
