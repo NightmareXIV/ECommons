@@ -93,4 +93,8 @@
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="UIHelpers\" />
+	</ItemGroup>
 </Project>
