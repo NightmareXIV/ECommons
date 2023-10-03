@@ -87,6 +87,8 @@ public static class ECommonsMain
         GenericHelpers.Safe(ProperOnLogin.Dispose);
         GenericHelpers.Safe(DirectorUpdate.Dispose);
         GenericHelpers.Safe(ActionEffect.Dispose);
+        GenericHelpers.Safe(MapEffect.Dispose);
+        GenericHelpers.Safe(SendAction.Dispose);
         GenericHelpers.Safe(TaskManager.DisposeAll);
         GenericHelpers.Safe(EqualStrings.Dispose);
         GenericHelpers.Safe(() => ThreadLoadImageHandler.httpClient?.Dispose());

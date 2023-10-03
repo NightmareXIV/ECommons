@@ -6,6 +6,7 @@ using ECommons.Reflection;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -16,6 +17,14 @@ namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
+    public static bool CollapsingHeader(string text, Vector4? col = null)
+    {
+        if (col != null) ImGui.PushStyleColor(ImGuiCol.Text, col.Value);
+        var ret = ImGui.CollapsingHeader(text);
+        if (col != null) ImGui.PopStyleColor();
+        return ret;
+    }
+
 
     /// <summary>
     /// Provides a button that can be used to switch <see langword="bool"/>? variables. Left click - to toggle between <see langword="true"/> and <see langword="null"/>, right click - to toggle between <see langword="false"/> and <see langword="null"/>.
@@ -28,8 +37,8 @@ public static unsafe partial class ImGuiEx
     /// <returns></returns>
     public static bool ButtonCheckbox(string name, ref bool? value, Vector4? TrueColor = null, Vector4? FalseColor = null, bool smallButton = false)
     {
-        TrueColor ??= Colors.Green;
-        FalseColor ??= Colors.Red;
+        TrueColor ??= EColor.Green;
+        FalseColor ??= EColor.Red;
         var col = value;
         var ret = false;
         if (col == true)
@@ -103,7 +112,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="value">Value</param>
     /// <param name="smallButton">Whether button should be small</param>
     /// <returns>true when clicked, otherwise false</returns>
-    public static bool ButtonCheckbox(string name, ref bool value, bool smallButton = false) => ButtonCheckbox(name, ref value, Colors.Red, smallButton);
+    public static bool ButtonCheckbox(string name, ref bool value, bool smallButton = false) => ButtonCheckbox(name, ref value, EColor.Red, smallButton);
 
     /// <summary>
     /// Draws a button that acts like a checkbox.
@@ -142,7 +151,7 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
-    public static bool CollectionButtonCheckbox<T>(string name, T value, HashSet<T> collection, bool smallButton = false) => CollectionButtonCheckbox(name, value, collection, Colors.Red, smallButton);
+    public static bool CollectionButtonCheckbox<T>(string name, T value, HashSet<T> collection, bool smallButton = false) => CollectionButtonCheckbox(name, value, collection, EColor.Red, smallButton);
 
     public static bool CollectionButtonCheckbox<T>(string name, T value, HashSet<T> collection, Vector4 color, bool smallButton = false)
     {
@@ -1042,7 +1051,7 @@ public static unsafe partial class ImGuiEx
         }
     }
 
-    public static void InputIntBounded(string label, ref int value, int minValue, int maxValue)
+    public static bool InputIntBounded(string label, ref int value, int minValue, int maxValue)
     {
         if (ImGui.InputInt(label, ref value))
         {
@@ -1051,7 +1060,11 @@ public static unsafe partial class ImGuiEx
 
             if (value < minValue)
                 value = minValue;
+
+            return true;
         }
+
+        return false;
     }
 }
 
