@@ -159,7 +159,7 @@ public static class DalamudReflector
             if (pluginInterface == null) pluginInterface = Svc.PluginInterface;
             var info = pluginInterface.GetType().Assembly.
                     GetType("Dalamud.Service`1", true).MakeGenericType(Svc.PluginInterface.GetType().Assembly.GetType("Dalamud.Dalamud", true)).
-                    GetMethod("Get").Invoke(null, BindingFlags.Default, null, [], null);
+                    GetMethod("Get").Invoke(null, BindingFlags.Default, null, Array.Empty<object>(), null);
             dalamudStartInfo = info.GetFoP<DalamudStartInfo>("StartInfo");
             return true;
         }
