@@ -1,6 +1,9 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Internal.Notifications;
+using Dalamud.Interface.Style;
+using Dalamud.Interface.Utility;
+using Dalamud.Logging;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using ImGuiNET;
@@ -361,11 +364,13 @@ public static unsafe partial class ImGuiEx
         return pressed;
     }
 
-    public static bool CollectionCheckbox<T>(string label, T value, List<T> collection)
+    public static bool CollectionCheckbox<T>(string label, T value, List<T> collection, bool inverted = false)
     {
         var x = collection.Contains(value);
+        if (inverted) x = !x;
         if (ImGui.Checkbox(label, ref x))
         {
+            if (inverted) x = !x;
             if (x)
             {
                 collection.Add(value);
@@ -602,11 +607,11 @@ public static unsafe partial class ImGuiEx
     /// </summary>
     /// <param name="col">Color</param>
     /// <param name="s">Text</param>
-    public static void TextV(Vector4 col, string s)
+    public static void TextV(Vector4? col, string s)
     {
-        ImGui.PushStyleColor(ImGuiCol.Text, col);
+        if(col != null) ImGui.PushStyleColor(ImGuiCol.Text, col.Value);
         ImGuiEx.TextV(s);
-        ImGui.PopStyleColor();
+        if(col != null) ImGui.PopStyleColor();
     }
 
     /// <summary>
@@ -700,7 +705,9 @@ public static unsafe partial class ImGuiEx
         }
     }
 
-    public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs)
+    public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, false, tabs);
+
+    public static void EzTabBar(string id, bool KoFiTransparent, params (string name, Action function, Vector4? color, bool child)[] tabs)
     {
         ImGui.BeginTabBar(id);
         foreach (var x in tabs)
@@ -729,6 +736,7 @@ public static unsafe partial class ImGuiEx
                 }
             }
         }
+        if (KoFiTransparent) KoFiButton.RightTransparentTab();
         ImGui.EndTabBar();
     }
 
@@ -747,7 +755,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="name">ImGui ID</param>
     /// <param name="refConfigField">Value</param>
     /// <param name="names">Optional Name overrides</param>
-    public static bool EnumCombo<T>(string name, ref T refConfigField, Dictionary<T, string> names) where T : IConvertible
+    public static bool EnumCombo<T>(string name, ref T refConfigField, IDictionary<T, string> names) where T : IConvertible
     {
         return EnumCombo(name, ref refConfigField, null, names);
     }
@@ -761,7 +769,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="filter">Optional filter</param>
     /// <param name="names">Optional Name overrides</param>
     /// <returns></returns>
-    public static bool EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, Dictionary<T, string> names = null) where T : IConvertible
+    public static bool EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : IConvertible
     {
         var ret = false;
         if (ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString().Replace("_", " ")))

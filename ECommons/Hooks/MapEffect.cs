@@ -39,7 +39,7 @@ namespace ECommons.Hooks
             if (Svc.SigScanner.TryScanText(Sig, out var ptr))
             {
                 Callback = fullParamsCallback;
-                ProcessMapEffectHook = Hook<ProcessMapEffect>.FromAddress(ptr, ProcessMapEffectDetour);
+                ProcessMapEffectHook = Svc.Hook.HookFromAddress<ProcessMapEffect>(ptr, ProcessMapEffectDetour);
                 Enable();
                 PluginLog.Information($"Requested MapEffect hook and successfully initialized");
             }

@@ -13,7 +13,7 @@ public static class DuoLog
         PluginLog.Information(str);
         _ = new TickScheduler(delegate
         {
-            Svc.Chat.PrintChat(new()
+            Svc.Chat.Print(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(str, 3).Build()
             });
@@ -26,7 +26,7 @@ public static class DuoLog
         PluginLog.Debug(str);
         _ = new TickScheduler(delegate
         {
-            Svc.Chat.PrintChat(new()
+            Svc.Chat.Print(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(str, 4).Build()
             });
@@ -39,7 +39,7 @@ public static class DuoLog
         PluginLog.Verbose(str);
         _ = new TickScheduler(delegate
         {
-            Svc.Chat.PrintChat(new()
+            Svc.Chat.Print(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(str, 5).Build()
             });
@@ -52,7 +52,7 @@ public static class DuoLog
         PluginLog.Warning(str);
         _ = new TickScheduler(delegate
         {
-            Svc.Chat.PrintChat(new()
+            Svc.Chat.Print(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(str, 540).Build()
             });
@@ -65,7 +65,7 @@ public static class DuoLog
         PluginLog.Error(str);
         _ = new TickScheduler(delegate
         {
-            Svc.Chat.PrintChat(new()
+            Svc.Chat.Print(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(str, 17).Build()
             });
@@ -78,7 +78,7 @@ public static class DuoLog
         PluginLog.Fatal(str);
         _ = new TickScheduler(delegate
         {
-            Svc.Chat.PrintChat(new()
+            Svc.Chat.Print(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(str, 19).Build()
             });

@@ -1,4 +1,5 @@
-﻿using ECommons.DalamudServices;
+﻿using Dalamud.Interface.Internal;
+using ECommons.DalamudServices;
 using ECommons.Logging;
 using ImGuiScene;
 using System;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
+using static Dalamud.Plugin.Services.ITextureProvider;
 using static ECommons.GenericHelpers;
 
 namespace ECommons.ImGuiMethods;
@@ -38,7 +40,7 @@ public class ThreadLoadImageHandler
         Safe(CachedIcons.Clear);
     }
 
-    public static bool TryGetIconTextureWrap(uint icon, bool hq, out TextureWrap textureWrap)
+    public static bool TryGetIconTextureWrap(uint icon, bool hq, out IDalamudTextureWrap textureWrap)
     {
         ImageLoadingResult result;
         if (!CachedIcons.TryGetValue((icon, hq), out result))
@@ -51,7 +53,7 @@ public class ThreadLoadImageHandler
         return result.texture != null;
     }
 
-    public static bool TryGetTextureWrap(string url, out TextureWrap textureWrap)
+    public static bool TryGetTextureWrap(string url, out IDalamudTextureWrap textureWrap)
     {
         ImageLoadingResult result;
         if (!CachedTextures.TryGetValue(url, out result))
@@ -90,7 +92,7 @@ public class ThreadLoadImageHandler
                                     result.EnsureSuccessStatusCode();
                                     var content = result.Content.ReadAsByteArrayAsync().Result;
 
-                                    TextureWrap texture = null;
+                                    IDalamudTextureWrap texture = null;
                                     foreach (var conversion in _conversionsToBitmap)
                                     {
                                         if (conversion == null) continue;
@@ -115,7 +117,7 @@ public class ThreadLoadImageHandler
                                     }
                                     else
                                     {
-                                        keyValuePair.Value.texture = Svc.Data.GetImGuiTexture(keyValuePair.Key);
+                                        keyValuePair.Value.texture = Svc.Texture.GetTextureFromGame(keyValuePair.Key);
                                     }
                                 }
                             }
@@ -126,7 +128,7 @@ public class ThreadLoadImageHandler
                                 idleTicks = 0;
                                 keyValuePair.Value.isCompleted = true;
                                 PluginLog.Information($"Loading icon {keyValuePair.Key.ID}, hq={keyValuePair.Key.HQ}");
-                                keyValuePair.Value.texture = Svc.Data.GetImGuiTextureIcon(keyValuePair.Key.HQ, keyValuePair.Key.ID);
+                                keyValuePair.Value.texture = Svc.Texture.GetIcon(keyValuePair.Key.ID, keyValuePair.Key.HQ?IconFlags.HiRes:IconFlags.None);
                             }
                         }
                     });
