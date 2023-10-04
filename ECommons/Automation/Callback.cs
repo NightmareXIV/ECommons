@@ -204,7 +204,7 @@ namespace ECommons.Automation
 
         internal static void Dispose()
         {
-            AtkUnitBase_FireCallbackHook.Dispose();
+            AtkUnitBase_FireCallbackHook?.Dispose();
             AtkUnitBase_FireCallbackHook = null;
             FireCallback = null;
         }
