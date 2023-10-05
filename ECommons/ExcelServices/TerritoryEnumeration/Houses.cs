@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace ECommons.ExcelServices.TerritoryEnumeration
 {
+    [Obfuscation(Exclude = true, ApplyToMembers = true)]
     public static class Houses
     {
         public const ushort Private_Cottage_Mist = 282;
