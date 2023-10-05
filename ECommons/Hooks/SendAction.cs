@@ -40,7 +40,7 @@ namespace ECommons.Hooks
             if (Svc.SigScanner.TryScanText(Sig, out var ptr))
             {
                 Callback = fullParamsCallback;
-                SendActionHook = Hook<SendActionDelegate>.FromAddress(ptr, SendActionDetour);
+                SendActionHook = Svc.Hook.HookFromAddress<SendActionDelegate>(ptr, SendActionDetour);
                 Enable();
                 PluginLog.Information($"Requested SendAction hook and successfully initialized");
             }

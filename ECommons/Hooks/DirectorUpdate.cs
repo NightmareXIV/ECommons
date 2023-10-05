@@ -55,7 +55,7 @@ namespace ECommons.Hooks
             if (Svc.SigScanner.TryScanText(Sig, out var ptr))
             {
                 FullParamsCallback = fullParamsCallback;
-                ProcessDirectorUpdateHook = Hook<ProcessDirectorUpdate>.FromAddress(ptr, ProcessDirectorUpdateDetour_Full);
+                ProcessDirectorUpdateHook = Svc.Hook.HookFromAddress<ProcessDirectorUpdate>(ptr, ProcessDirectorUpdateDetour_Full);
                 Enable();
                 PluginLog.Information($"Requested Director Update hook and successfully initialized with FULL data");
             }
@@ -74,7 +74,7 @@ namespace ECommons.Hooks
             if (Svc.SigScanner.TryScanText(Sig, out var ptr))
             {
                 CategoryOnlyCallback = categoryOnlyCallback;
-                ProcessDirectorUpdateHook = Hook<ProcessDirectorUpdate>.FromAddress(ptr, ProcessDirectorUpdateDetour_Category);
+                ProcessDirectorUpdateHook = Svc.Hook.HookFromAddress<ProcessDirectorUpdate>(ptr, ProcessDirectorUpdateDetour_Category);
                 Enable();
                 PluginLog.Information($"Requested Director Update hook and successfully initialized with CATEGORY ONLY data");
             }

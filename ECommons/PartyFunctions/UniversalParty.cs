@@ -15,7 +15,7 @@ public unsafe static class UniversalParty
     {
         get 
         {
-            var cnt = IsCrossWorldParty ? InfoProxyCrossRealm.Instance()->CrossRealmGroupSpan.Length : Svc.Party.Length;
+            var cnt = IsCrossWorldParty ? InfoProxyCrossRealm.Instance()->CrossRealmGroupArraySpan.Length : Svc.Party.Length;
             return cnt > 1?cnt:0;
         }
     }
@@ -28,8 +28,9 @@ public unsafe static class UniversalParty
             var span = new List<UniversalPartyMember>();
             if (IsCrossWorldParty)
             {
-                foreach (var x in InfoProxyCrossRealm.Instance()->CrossRealmGroupSpan[0].GroupMemberSpan)
+                for (int i = 0; i < InfoProxyCrossRealm.Instance()->CrossRealmGroupArraySpan[0].GroupMemberCount; i++)
                 {
+                    var x = InfoProxyCrossRealm.Instance()->CrossRealmGroupArraySpan[0].GroupMembersSpan[i];
                     span.Add(new()
                     {
                         Name = MemoryHelper.ReadStringNullTerminated((IntPtr)x.Name),

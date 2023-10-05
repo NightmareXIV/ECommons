@@ -29,11 +29,7 @@ public static class DalamudReflector
                         BindingFlags.NonPublic | BindingFlags.Instance,
                         null, new Type[] { typeof(int) }, null));
         });
-        GenericHelpers.Safe(delegate
-        {
-            var pm = GetPluginManager();
-            pm.GetType().GetEvent("OnInstalledPluginsChanged").AddEventHandler(pm, OnInstalledPluginsChanged);
-        });
+        Svc.PluginInterface.ActivePluginsChanged += OnInstalledPluginsChanged;
     }
 
     internal static void Dispose()
@@ -42,12 +38,8 @@ public static class DalamudReflector
         {
             pluginCache = null;
             onPluginsChangedActions = null;
-            GenericHelpers.Safe(delegate
-            {
-                var pm = GetPluginManager();
-                pm.GetType().GetEvent("OnInstalledPluginsChanged").RemoveEventHandler(pm, OnInstalledPluginsChanged);
-            });
         }
+        Svc.PluginInterface.ActivePluginsChanged -= OnInstalledPluginsChanged;
     }
 
     public static void RegisterOnInstalledPluginsChangedEvents(params Action[] actions)
@@ -159,7 +151,7 @@ public static class DalamudReflector
             return false;
         }
     }
-
+    
     public static bool TryGetDalamudStartInfo(out DalamudStartInfo dalamudStartInfo, DalamudPluginInterface pluginInterface = null)
     {
         try
@@ -181,10 +173,10 @@ public static class DalamudReflector
 
     public static string GetPluginName()
     {
-        return ECommonsMain.Instance?.Name ?? "Not initialized";
+        return Svc.PluginInterface?.InternalName ?? "Not initialized";
     }
 
-    internal static void OnInstalledPluginsChanged()
+    internal static void OnInstalledPluginsChanged(PluginListInvalidationKind kind, bool affectedThisPlugin)
     {
         PluginLog.Verbose("Installed plugins changed event fired");
         _ = new TickScheduler(delegate

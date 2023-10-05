@@ -1,5 +1,5 @@
 ﻿using Dalamud.Hooking;
-using Dalamud.Logging;
+using ECommons.Logging;
 using ECommons.DalamudServices;
 using ECommons.Hooks.ActionEffectTypes;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
@@ -51,7 +51,7 @@ namespace ECommons.Hooks
             {
                 if (Svc.SigScanner.TryScanText(Sig, out var ptr))
                 {
-                    ProcessActionEffectHook = Hook<ProcessActionEffect>.FromAddress(ptr, ProcessActionEffectDetour);
+                    ProcessActionEffectHook = Svc.Hook.HookFromAddress<ProcessActionEffect>(ptr, ProcessActionEffectDetour);
                     Enable();
                     PluginLog.Information($"Requested Action Effect hook and successfully initialized");
                 }
@@ -119,7 +119,7 @@ namespace ECommons.Hooks
             }
             catch (Exception e)
             {
-                PluginLog.Error(e, "An error has occurred in Action Effect hook.");
+                PluginLog.Error($"An error has occurred in Action Effect hook.\n{e}");
             }
 
             ProcessActionEffectHook.Original(sourceID, sourceCharacter, pos, effectHeader, effectArray, effectTail);
