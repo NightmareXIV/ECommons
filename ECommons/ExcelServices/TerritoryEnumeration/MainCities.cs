@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace ECommons.ExcelServices.TerritoryEnumeration
 {
+    [Obfuscation(Exclude = true, ApplyToMembers = true)]
     //intended use 0
     public static class MainCities 
     {

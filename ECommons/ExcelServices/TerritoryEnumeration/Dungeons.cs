@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace ECommons.ExcelServices.TerritoryEnumeration
 {
+    [Obfuscation(Exclude = true, ApplyToMembers = true)]
     public static class Dungeons
     {
         public const ushort the_Wanderers_Palace = 159;
