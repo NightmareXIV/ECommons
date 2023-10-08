@@ -323,14 +323,14 @@ public static unsafe partial class ImGuiEx
             
             if (!GetCurrentWindowFlags().HasFlag(ImGuiWindowFlags.NoCollapse))
             {
-                headerCurrentPos += 5f * scale;
+                headerCurrentPos += 3f * scale;
             }
         }
 
         options ??= new();
         var prevCursorPos = ImGui.GetCursorPos();
         var buttonSize = new Vector2(20 * scale);
-        var buttonPos = new Vector2((ImGui.GetWindowWidth() - buttonSize.X - headerImGuiButtonWidth * scale * headerCurrentPos) - (ImGui.GetStyle().FramePadding.X * scale), ImGui.GetScrollY() + 1);
+        var buttonPos = new Vector2((ImGui.GetWindowWidth() - buttonSize.X - headerImGuiButtonWidth * scale * headerCurrentPos) - (ImGui.GetStyle().FramePadding.X * scale) - (ImGui.GetStyle().WindowPadding.X * scale), ImGui.GetScrollY() + 1);
         ImGui.SetCursorPos(buttonPos);
         var drawList = ImGui.GetWindowDrawList();
         drawList.PushClipRectFullScreen();
