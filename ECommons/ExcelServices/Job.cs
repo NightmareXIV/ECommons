@@ -1,5 +1,8 @@
-﻿namespace ECommons.ExcelServices;
+﻿using System.Reflection;
 
+namespace ECommons.ExcelServices;
+
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
 public enum Job : uint
 {
     /// <summary>

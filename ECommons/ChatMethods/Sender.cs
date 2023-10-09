@@ -3,9 +3,11 @@ using Dalamud.Game.Text.SeStringHandling;
 using ECommons.DalamudServices;
 using Lumina.Excel.GeneratedSheets;
 using System;
+using System.Reflection;
 
 namespace ECommons.ChatMethods;
 
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
 public struct Sender : IEquatable<Sender>
 {
     public string Name;
