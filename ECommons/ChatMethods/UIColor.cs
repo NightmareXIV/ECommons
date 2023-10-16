@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.ChatMethods
 {
     //https://i.imgur.com/cZceCI3.png
+    [Obfuscation(Exclude = true, ApplyToMembers = true)]
     public enum UIColor : short
     {
         WhiteNormal = 0,

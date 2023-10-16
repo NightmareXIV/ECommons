@@ -11,21 +11,70 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Markup;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
+using Dalamud.Hooking;
 
 namespace ECommons.Automation
 {
     public unsafe static class Callback
     {
+        const string Sig = "E8 ?? ?? ?? ?? 8B 4C 24 20 0F B6 D8";
         internal delegate byte AtkUnitBase_FireCallbackDelegate(AtkUnitBase* Base, int valueCount, AtkValue* values, byte updateState);
         internal static AtkUnitBase_FireCallbackDelegate FireCallback = null;
+        static Hook<AtkUnitBase_FireCallbackDelegate> AtkUnitBase_FireCallbackHook;
 
         public static readonly AtkValue ZeroAtkValue = new() { Type = 0, Int = 0 };
 
         internal static void Initialize()
         {
-            var ptr = Svc.SigScanner.ScanText("E8 ?? ?? ?? ?? 8B 4C 24 20 0F B6 D8");
+            var ptr = Svc.SigScanner.ScanText(Sig);
             FireCallback = Marshal.GetDelegateForFunctionPointer<AtkUnitBase_FireCallbackDelegate>(ptr);
             PluginLog.Information($"Initialized Callback module, FireCallback = 0x{ptr:X16}");
+        }
+
+        public static void InstallHook()
+        {
+            if (FireCallback == null) Initialize();
+            AtkUnitBase_FireCallbackHook ??= Svc.Hook.HookFromSignature<AtkUnitBase_FireCallbackDelegate>(Sig, AtkUnitBase_FireCallbackDetour);
+            if (AtkUnitBase_FireCallbackHook.IsEnabled)
+            {
+                PluginLog.Error("AtkUnitBase_FireCallbackHook is already enabled");
+            }
+            else
+            {
+                AtkUnitBase_FireCallbackHook.Enable();
+                PluginLog.Information("AtkUnitBase_FireCallbackHook enabled");
+            }
+        }
+
+        public static void UninstallHook()
+        {
+            if (FireCallback == null)
+            {
+                PluginLog.Error("AtkUnitBase_FireCallbackHook not initialized yet");
+            }
+            if (!AtkUnitBase_FireCallbackHook.IsEnabled)
+            {
+                PluginLog.Error("AtkUnitBase_FireCallbackHook is already disabled");
+            }
+            else
+            {
+                AtkUnitBase_FireCallbackHook.Disable();
+                PluginLog.Information("AtkUnitBase_FireCallbackHook disabled");
+            }
+        }
+
+        static byte AtkUnitBase_FireCallbackDetour(AtkUnitBase* Base, int valueCount, AtkValue* values, byte updateState)
+        {
+            var ret = AtkUnitBase_FireCallbackHook?.Original(Base, valueCount, values, updateState);
+            try
+            {
+                PluginLog.Debug($"Callback on {MemoryHelper.ReadStringNullTerminated((nint)Base->Name)}, valueCount={valueCount}, updateState={updateState}\n{DecodeValues(valueCount, values).Select(x => $"    {x}").Join("\n")}");
+            }
+            catch(Exception e)
+            {
+                e.Log();
+            }
+            return ret ?? 0;
         }
 
         public static void FireRaw(AtkUnitBase* Base, int valueCount, AtkValue* values, byte updateState = 0)
@@ -102,7 +151,7 @@ namespace ECommons.Automation
             }
         }
 
-        public static string DecodeValues(int cnt, AtkValue* values)
+        public static List<string> DecodeValues(int cnt, AtkValue* values)
         {
             var atkValueList = new List<string>();
             try
@@ -116,7 +165,7 @@ namespace ECommons.Automation
             {
                 e.Log();
             }
-            return atkValueList.Join("\n");
+            return atkValueList;
         }
 
         public static string DecodeValue(AtkValue a)
@@ -155,6 +204,8 @@ namespace ECommons.Automation
 
         internal static void Dispose()
         {
+            AtkUnitBase_FireCallbackHook?.Dispose();
+            AtkUnitBase_FireCallbackHook = null;
             FireCallback = null;
         }
     }

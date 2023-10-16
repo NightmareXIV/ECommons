@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace ECommons.ExcelServices.TerritoryEnumeration
 {
+    [Obfuscation(Exclude = true, ApplyToMembers = true)]
     public static class Inns
     {
         public const ushort Mizzenmast_Inn = 177;
