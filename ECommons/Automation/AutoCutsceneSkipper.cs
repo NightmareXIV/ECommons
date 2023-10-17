@@ -29,14 +29,14 @@ namespace ECommons.Automation
         /// <summary>
         /// Condition which will be checked to determine if the cutscene should be skipped. Can be null to skip everything unconditionally.
         /// </summary>
-        public static Func<bool> Condition;
+        public static Func<nint, bool> Condition;
 
         /// <summary>
         /// Initializes cutscene skipper trigger. 
         /// </summary>
         /// <param name="cutsceneSkipCondition">Condition which will be checked to determine if the cutscene should be skipped. Can be null to skip everything unconditionally.</param>
         /// <exception cref="Exception">If already initialized</exception>
-        public static void Init(Func<bool> cutsceneSkipCondition)
+        public static void Init(Func<nint, bool> cutsceneSkipCondition)
         {
             if (CutsceneHandleInputHook != null) throw new Exception($"{nameof(AutoCutsceneSkipper)} module is already initialized!");
             PluginLog.Information($"AutoCutsceneSkipper requested");
@@ -67,7 +67,7 @@ namespace ECommons.Automation
             var called = false;
             try
             {
-                if (Condition?.Invoke() != false)
+                if (Condition?.Invoke(a1) != false)
                 {
                     var skippable = *(nint*)(a1 + 56) != 0;
                     if (skippable)
