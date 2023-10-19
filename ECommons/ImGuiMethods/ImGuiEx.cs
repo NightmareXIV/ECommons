@@ -3,6 +3,7 @@ using Dalamud.Interface.Colors;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Style;
 using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
 using Dalamud.Logging;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
@@ -22,6 +23,23 @@ namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
+    public static bool ButtonCond(string name, Func<bool> condition)
+    {
+        var dis = !condition();
+        if (dis) ImGui.BeginDisabled();
+        var ret = ImGui.Button(name);
+        if (dis) ImGui.EndDisabled();
+        return ret;
+    }
+
+    public static bool InputLong(string id, ref long num)
+    {
+        var txt = num.ToString();
+        var ret = ImGui.InputText(id, ref txt, 50);
+        long.TryParse(txt, out num);
+        return ret;
+    }
+
     public static bool CollapsingHeader(string text, Vector4? col = null)
     {
         if (col != null) ImGui.PushStyleColor(ImGuiCol.Text, col.Value);
@@ -842,6 +860,14 @@ public static unsafe partial class ImGuiEx
     {
         ImGui.PushFont(UiBuilder.IconFont);
         var result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{id}", size);
+        ImGui.PopFont();
+        return result;
+    }
+
+    public static bool SmallIconButton(string icon, string id = "ECommonsButton")
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        var result = ImGui.SmallButton($"{icon}##{icon}-{id}");
         ImGui.PopFont();
         return result;
     }
