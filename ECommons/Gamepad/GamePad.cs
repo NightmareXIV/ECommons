@@ -1,4 +1,4 @@
-﻿using Dalamud.Game.ClientState.GamePad;
+using Dalamud.Game.ClientState.GamePad;
 using ECommons.DalamudServices;
 using System.Collections.Generic;
 
@@ -47,7 +47,7 @@ namespace ECommons.Gamepad
         /// </summary>
         /// <param name="button">Button to check.</param>
         /// <returns>Button is being held down.</returns>
-        public static bool IsButtonHeld(GamepadButtons button) => Svc.GamepadState.Repeat(button) == 1;
+        public static bool IsButtonHeld(GamepadButtons button) => Svc.GamepadState.Raw(button) == 1;
 
         /// <summary>
         /// Checks if a controller button has just been released. Only true on the first frame after releasing.
