@@ -92,7 +92,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="col">Color in format 0xRRGGBB</param>
     /// <param name="alpha">Optional transparency value between 0 and 1</param>
     /// <returns>Color in <see cref="Vector4"/> format ready to be used with <see cref="ImGui"/> functions</returns>
-    public static Vector4 Vector4FromRGB(uint col, float alpha = 1.0f)
+    public static Vector4 Vector4FromRGB(this uint col, float alpha = 1.0f)
     {
         byte* bytes = (byte*)&col;
         return new Vector4((float)bytes[2] / 255f, (float)bytes[1] / 255f, (float)bytes[0] / 255f, alpha);
@@ -104,7 +104,7 @@ public static unsafe partial class ImGuiEx
     /// </summary>
     /// <param name="col">Color in format 0xRRGGBBAA</param>
     /// <returns>Color in <see cref="Vector4"/> format ready to be used with <see cref="ImGui"/> functions</returns>
-    public static Vector4 Vector4FromRGBA(uint col)
+    public static Vector4 Vector4FromRGBA(this uint col)
     {
         byte* bytes = (byte*)&col;
         return new Vector4((float)bytes[3] / 255f, (float)bytes[2] / 255f, (float)bytes[1] / 255f, (float)bytes[0] / 255f);
