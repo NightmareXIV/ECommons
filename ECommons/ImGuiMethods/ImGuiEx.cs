@@ -247,13 +247,15 @@ public static unsafe partial class ImGuiEx
         }
     }
 
+    public static bool ButtonCtrl(string text, string affix = " (Hold CTRL)") => ButtonCtrl(text, null, affix);
+
     /// <summary>
     /// Button that is disabled unless CTRL key is held
     /// </summary>
     /// <param name="text">Button ID</param>
     /// <param name="affix">Button affix</param>
     /// <returns></returns>
-    public static bool ButtonCtrl(string text, string affix = " (Hold CTRL)")
+    public static bool ButtonCtrl(string text, Vector2? size, string affix = " (Hold CTRL)")
     {
         var disabled = !ImGui.GetIO().KeyCtrl;
         if (disabled)
@@ -275,7 +277,7 @@ public static unsafe partial class ImGuiEx
         {
             name = $"{text}{affix}";
         }
-        var ret = ImGui.Button(name);
+        var ret = size == null?ImGui.Button(name):ImGui.Button(name, size.Value);
         if (disabled)
         {
             ImGui.EndDisabled();
