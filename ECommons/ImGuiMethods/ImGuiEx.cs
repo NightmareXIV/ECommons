@@ -23,6 +23,16 @@ namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
+    public static bool HoveredAndClicked(ImGuiMouseButton btn = ImGuiMouseButton.Left)
+    {
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+            return ImGui.IsItemClicked(btn);
+        }
+        return false;
+    }
+
     public static bool ButtonCond(string name, Func<bool> condition)
     {
         var dis = !condition();
