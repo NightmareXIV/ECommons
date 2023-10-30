@@ -39,6 +39,14 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static bool ContainsIgnoreCase(this IEnumerable<string> haystack, string needle)
+    {
+        foreach(var x in haystack)
+        {
+            if (x.EqualsIgnoreCase(needle)) return true;
+        }
+        return false;
+    }
 
     public static T[] Together<T>(this T[] array, params T[] additionalValues)
     {
