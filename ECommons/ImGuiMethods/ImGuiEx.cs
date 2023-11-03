@@ -23,12 +23,16 @@ namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
-    public static bool HoveredAndClicked(ImGuiMouseButton btn = ImGuiMouseButton.Left)
+    public static bool HoveredAndClicked(string tooltip = null, ImGuiMouseButton btn = ImGuiMouseButton.Left, bool requireCtrl = false)
     {
         if (ImGui.IsItemHovered())
         {
+            if (tooltip != null)
+            {
+                SetTooltip(tooltip);
+            }
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-            return ImGui.IsItemClicked(btn);
+            return (!requireCtrl || ImGui.GetIO().KeyCtrl) && ImGui.IsItemClicked(btn);
         }
         return false;
     }
