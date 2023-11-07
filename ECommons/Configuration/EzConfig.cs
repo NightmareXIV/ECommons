@@ -26,7 +26,7 @@ public static class EzConfig
     {
         if(Config != null)
         {
-            throw new NullReferenceException("Migrate must be called instead of initialization");
+            throw new NullReferenceException("Migrate must be called before initialization");
         }
         var path = DefaultConfigurationFileName;
         if(!File.Exists(path) && Svc.PluginInterface.ConfigFile.Exists)
