@@ -97,4 +97,8 @@
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="ExcelServices\Sheets\" />
+	</ItemGroup>
 </Project>
