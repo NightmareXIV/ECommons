@@ -9,9 +9,9 @@ namespace ECommons.ExcelServices
 {
     public static class ExcelItemHelper
     {
-        public static IEnumerable<Job> GetSuitableJobsForItem(this Item item)
+        /*public static IEnumerable<Job> GetSuitableJobsForItem(this Item item)
         {
             var param = item.
-        }
+        }*/
     }
 }
