@@ -4,8 +4,8 @@ using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Style;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Logging;
 using ECommons.DalamudServices;
+using ECommons.Logging;
 using ECommons.Reflection;
 using ImGuiNET;
 using System;
@@ -23,12 +23,51 @@ namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
-    public static bool HoveredAndClicked(ImGuiMouseButton btn = ImGuiMouseButton.Left)
+    public static bool EnumOrderer<T>(string id, List<T> order) where T : IConvertible
+    {
+        var ret = false;
+        var enumValues = Enum.GetValues(typeof(T)).Cast<T>().ToArray();
+        foreach (var x in enumValues) if (!order.Contains(x)) order.Add(x);
+        if(order.Count > enumValues.Length)
+        {
+            PluginLog.Warning($"EnumOrderer: duplicates or non-existing items found, enum {enumValues.Print()}, list {order.Print()}, cleaning up.");
+            order.RemoveAll(x => !enumValues.Contains(x));
+            var set = order.ToHashSet();
+            order.Clear();
+            order.AddRange(set);
+        }
+        for (int i = 0; i < order.Count; i++)
+        {
+            var e = order[i];
+            ImGui.PushID($"ECommonsEnumOrderer{id}{e}");
+            if (ImGui.ArrowButton("up", ImGuiDir.Up) && i > 0)
+            {
+                (order[i - 1], order[i]) = (order[i], order[i - 1]);
+                ret = true;
+            }
+            ImGui.SameLine();
+            if (ImGui.ArrowButton("down", ImGuiDir.Down) && i < order.Count - 1)
+            {
+                (order[i + 1], order[i]) = (order[i], order[i + 1]);
+                ret = true;
+            }
+            ImGui.SameLine();
+            ImGuiEx.Text($"{e}");
+            ImGui.PopID();
+        }
+        return ret;
+    }
+
+    public static bool HoveredAndClicked(string tooltip = null, ImGuiMouseButton btn = ImGuiMouseButton.Left, bool requireCtrl = false)
     {
         if (ImGui.IsItemHovered())
         {
+            if (tooltip != null)
+            {
+                SetTooltip(tooltip);
+            }
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-            return ImGui.IsItemClicked(btn);
+            return (!requireCtrl || ImGui.GetIO().KeyCtrl) && ImGui.IsItemClicked(btn);
         }
         return false;
     }

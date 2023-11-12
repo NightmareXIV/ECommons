@@ -121,7 +121,7 @@ public static class DalamudReflector
 
             foreach (var t in installedPlugins)
             {
-                if ((string)t.GetType().GetProperty("Name").GetValue(t) == internalName)
+                if ((string)t.GetType().GetProperty("InternalName").GetValue(t) == internalName)
                 {
                     var type = t.GetType().Name == "LocalDevPlugin" ? t.GetType().BaseType : t.GetType();
                     var plugin = (IDalamudPlugin)type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t);
