@@ -52,7 +52,7 @@ public static unsafe partial class ImGuiEx
                 ret = true;
             }
             ImGui.SameLine();
-            ImGuiEx.Text($"{e}");
+            ImGuiEx.Text($"{e.ToString().Replace("_", " ")}");
             ImGui.PopID();
         }
         return ret;
