@@ -16,6 +16,8 @@ using ECommons.StringHelpers;
 using Dalamud.Utility;
 using ECommons.Commands;
 using ECommons.Throttlers;
+using ECommons.EzEventManager;
+using ECommons.EzHookManager;
 
 namespace ECommons;
 
@@ -96,6 +98,8 @@ public static class ECommonsMain
         EzThrottler.Throttler = null;
         FrameThrottler.Throttler = null;
         GenericHelpers.Safe(Callback.Dispose);
+        GenericHelpers.Safe(EzEvent.DisposeAll);
+        GenericHelpers.Safe(EzHookCommon.DisposeAll);
         Chat.instance = null;
         Instance = null;
     }
