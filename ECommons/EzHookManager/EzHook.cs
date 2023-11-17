@@ -1,5 +1,6 @@
 ﻿using Dalamud.Hooking;
 using ECommons.DalamudServices;
+using FFXIVClientStructs.FFXIV.Client.Game.Housing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,25 +14,18 @@ namespace ECommons.EzHookManager
         internal Hook<T> HookDelegate;
         internal T DetourDelegate;
 
+        public EzHook(string sig, T detour, bool autoEnable = true, int offset = 0)
+        {
+            DetourDelegate = detour;
+            HookDelegate = Svc.Hook.HookFromAddress(Svc.SigScanner.ScanText(sig) + offset, DetourDelegate);
+            EzHookCommon.RegisteredHooks.Add(HookDelegate);
+            if (autoEnable) HookDelegate.Enable();
+        }
+
         public EzHook(nint address, T detour, bool autoEnable = true)
         {
             DetourDelegate = detour;
             HookDelegate = Svc.Hook.HookFromAddress(address, DetourDelegate);
-            HookDelegate.Enable();
-            EzHookCommon.RegisteredHooks.Add(HookDelegate);
-        }
-
-        public EzHook(HookFromSignatureOptions opts, T detour, bool autoEnable = true)
-        {
-            DetourDelegate = detour;
-            if (opts.IsStatic)
-            {
-                HookDelegate = Svc.Hook.HookFromAddress(Svc.SigScanner.GetStaticAddressFromSig(opts.Signature, opts.StaticOffset) + opts.Offset, DetourDelegate);
-            }
-            else 
-            {
-                HookDelegate = Svc.Hook.HookFromAddress(Svc.SigScanner.ScanText(opts.Signature) + opts.Offset, DetourDelegate);
-            }
             EzHookCommon.RegisteredHooks.Add(HookDelegate);
             if (autoEnable) HookDelegate.Enable();
         }

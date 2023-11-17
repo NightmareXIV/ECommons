@@ -12,11 +12,11 @@ namespace ECommons.EzEventManager
     {
         internal static void DisposeAll()
         {
-            EzFrameworkUpdate.Registered.Each(x => x.Dispose());
+            EzFrameworkUpdate.Registered.ToArray().Each(x => x.Dispose());
             EzFrameworkUpdate.Registered = null;
-            EzLogout.Registered.Each(x => x.Dispose());
+            EzLogout.Registered.ToArray().Each(x => x.Dispose());
             EzLogout.Registered = null;
-            EzTerritoryChanged.Registered.Each(x => x.Dispose());
+            EzTerritoryChanged.Registered.ToArray().Each(x => x.Dispose());
             EzTerritoryChanged.Registered = null;
         }
     }

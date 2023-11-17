@@ -13,7 +13,7 @@ namespace ECommons.EzHookManager
 
         internal static void DisposeAll()
         {
-            RegisteredHooks.Each(x => x.Dispose());
+            RegisteredHooks.ToArray().Each(x => x.Dispose());
             RegisteredHooks = null;
         }
     }
