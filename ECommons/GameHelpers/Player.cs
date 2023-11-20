@@ -17,7 +17,7 @@ namespace ECommons.GameHelpers
     {
         public static PlayerCharacter Object => Svc.ClientState.LocalPlayer;
         public static bool Available => Svc.ClientState.LocalPlayer != null;
-        public static bool Interactable => Available && Object.IsTargetable();
+        public static bool Interactable => Available && Object.IsTargetable;
         public static ulong CID => Svc.ClientState.LocalContentId;
         public static StatusList Status => Svc.ClientState.LocalPlayer.StatusList;
         public static string Name => Svc.ClientState.LocalPlayer?.Name.ToString();
