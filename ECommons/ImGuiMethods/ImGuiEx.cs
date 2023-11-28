@@ -662,6 +662,13 @@ public static unsafe partial class ImGuiEx
         ImGui.PopTextWrapPos();
     }
 
+    public static void TextWrapped(Vector4 col, string s, float textWrapWidth)
+    {
+        ImGui.PushTextWrapPos(textWrapWidth);
+        ImGuiEx.Text(col, s);
+        ImGui.PopTextWrapPos();
+    }
+
     public static void TextWrapped(uint col, string s)
     {
         ImGui.PushTextWrapPos();
