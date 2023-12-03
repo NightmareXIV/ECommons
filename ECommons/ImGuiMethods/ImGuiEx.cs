@@ -4,9 +4,10 @@ using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Style;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Logging;
 using ECommons.DalamudServices;
+using ECommons.Logging;
 using ECommons.Reflection;
+using ECommons.Schedulers;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,55 @@ namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
+    public static bool EnumOrderer<T>(string id, List<T> order) where T : IConvertible
+    {
+        var ret = false;
+        var enumValues = Enum.GetValues(typeof(T)).Cast<T>().ToArray();
+        foreach (var x in enumValues) if (!order.Contains(x)) order.Add(x);
+        if(order.Count > enumValues.Length)
+        {
+            PluginLog.Warning($"EnumOrderer: duplicates or non-existing items found, enum {enumValues.Print()}, list {order.Print()}, cleaning up.");
+            order.RemoveAll(x => !enumValues.Contains(x));
+            var set = order.ToHashSet();
+            order.Clear();
+            order.AddRange(set);
+        }
+        for (int i = 0; i < order.Count; i++)
+        {
+            var e = order[i];
+            ImGui.PushID($"ECommonsEnumOrderer{id}{e}");
+            if (ImGui.ArrowButton("up", ImGuiDir.Up) && i > 0)
+            {
+                (order[i - 1], order[i]) = (order[i], order[i - 1]);
+                ret = true;
+            }
+            ImGui.SameLine();
+            if (ImGui.ArrowButton("down", ImGuiDir.Down) && i < order.Count - 1)
+            {
+                (order[i + 1], order[i]) = (order[i], order[i + 1]);
+                ret = true;
+            }
+            ImGui.SameLine();
+            ImGuiEx.Text($"{e.ToString().Replace("_", " ")}");
+            ImGui.PopID();
+        }
+        return ret;
+    }
+
+    public static bool HoveredAndClicked(string tooltip = null, ImGuiMouseButton btn = ImGuiMouseButton.Left, bool requireCtrl = false)
+    {
+        if (ImGui.IsItemHovered())
+        {
+            if (tooltip != null)
+            {
+                SetTooltip(tooltip);
+            }
+            ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+            return (!requireCtrl || ImGui.GetIO().KeyCtrl) && ImGui.IsItemClicked(btn);
+        }
+        return false;
+    }
+
     public static bool ButtonCond(string name, Func<bool> condition)
     {
         var dis = !condition();
@@ -388,20 +438,31 @@ public static unsafe partial class ImGuiEx
         return pressed;
     }
 
-    public static bool CollectionCheckbox<T>(string label, T value, List<T> collection, bool inverted = false)
+    public static bool CollectionCheckbox<T>(string label, T value, List<T> collection, bool inverted = false, bool delayedOperation = false)
     {
         var x = collection.Contains(value);
         if (inverted) x = !x;
         if (ImGui.Checkbox(label, ref x))
         {
-            if (inverted) x = !x;
-            if (x)
+            void Do()
             {
-                collection.Add(value);
+                if (inverted) x = !x;
+                if (x)
+                {
+                    collection.Add(value);
+                }
+                else
+                {
+                    collection.RemoveAll(x => x.Equals(value));
+                }
+            }
+            if (delayedOperation)
+            {
+                new TickScheduler(Do);
             }
             else
             {
-                collection.RemoveAll(x => x.Equals(value));
+                Do();
             }
             return true;
         }

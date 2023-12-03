@@ -121,7 +121,7 @@ public static class DalamudReflector
 
             foreach (var t in installedPlugins)
             {
-                if ((string)t.GetType().GetProperty("Name").GetValue(t) == internalName)
+                if ((string)t.GetType().GetProperty("InternalName").GetValue(t) == internalName)
                 {
                     var type = t.GetType().Name == "LocalDevPlugin" ? t.GetType().BaseType : t.GetType();
                     var plugin = (IDalamudPlugin)type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t);
@@ -158,7 +158,7 @@ public static class DalamudReflector
         {
             if (pluginInterface == null) pluginInterface = Svc.PluginInterface;
             var info = pluginInterface.GetType().Assembly.
-                    GetType("Dalamud.Service`1", true).MakeGenericType(Svc.PluginInterface.GetType().Assembly.GetType("Dalamud.Dalamud", true)).
+                    GetType("Dalamud.Service`1", true).MakeGenericType(pluginInterface.GetType().Assembly.GetType("Dalamud.Dalamud", true)).
                     GetMethod("Get").Invoke(null, BindingFlags.Default, null, Array.Empty<object>(), null);
             dalamudStartInfo = info.GetFoP<DalamudStartInfo>("StartInfo");
             return true;

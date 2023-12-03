@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>NightmareXIV</Authors>
-		<Version>2.1.0.1</Version>
+		<Version>2.1.0.2</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -19,6 +19,7 @@
     <Optimize>True</Optimize>
       <UseWindowsForms>true</UseWindowsForms>
       <EnableWindowsTargeting>true</EnableWindowsTargeting>
+      <IsTrimmable>true</IsTrimmable>
 	</PropertyGroup>
 
 	<PropertyGroup Label="Documentation">
