@@ -253,6 +253,7 @@ public static unsafe partial class ImGuiEx
     /// Button that is disabled unless CTRL key is held
     /// </summary>
     /// <param name="text">Button ID</param>
+    /// <param name="size">Optional size of the button, null if size is to be calculated automatically</param>
     /// <param name="affix">Button affix</param>
     /// <returns></returns>
     public static bool ButtonCtrl(string text, Vector2? size, string affix = " (Hold CTRL)")
