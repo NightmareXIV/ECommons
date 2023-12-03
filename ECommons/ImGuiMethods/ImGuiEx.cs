@@ -7,6 +7,7 @@ using Dalamud.Interface.Utility.Raii;
 using ECommons.DalamudServices;
 using ECommons.Logging;
 using ECommons.Reflection;
+using ECommons.Schedulers;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
@@ -436,20 +437,31 @@ public static unsafe partial class ImGuiEx
         return pressed;
     }
 
-    public static bool CollectionCheckbox<T>(string label, T value, List<T> collection, bool inverted = false)
+    public static bool CollectionCheckbox<T>(string label, T value, List<T> collection, bool inverted = false, bool delayedOperation = false)
     {
         var x = collection.Contains(value);
         if (inverted) x = !x;
         if (ImGui.Checkbox(label, ref x))
         {
-            if (inverted) x = !x;
-            if (x)
+            void Do()
             {
-                collection.Add(value);
+                if (inverted) x = !x;
+                if (x)
+                {
+                    collection.Add(value);
+                }
+                else
+                {
+                    collection.RemoveAll(x => x.Equals(value));
+                }
+            }
+            if (delayedOperation)
+            {
+                new TickScheduler(Do);
             }
             else
             {
-                collection.RemoveAll(x => x.Equals(value));
+                Do();
             }
             return true;
         }
