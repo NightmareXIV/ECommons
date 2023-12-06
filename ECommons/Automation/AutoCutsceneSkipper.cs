@@ -43,7 +43,7 @@ namespace ECommons.Automation
             Condition = cutsceneSkipCondition;
             SignatureHelper.Initialise(new AutoCutsceneSkipper());
             ConditionAddr = Svc.SigScanner.ScanText(ConditionSig);
-            PluginLog.Information($"Found cutscene skip condition address at {ConditionAddr}");
+            PluginLog.Information($"Found cutscene skip condition address at 0x{ConditionAddr:X16}");
             CutsceneHandleInputHook?.Enable();
             PluginLog.Information($"AutoCutsceneSkipper initialized");
         }
