@@ -31,7 +31,7 @@ namespace ECommons.ImGuiMethods.TerritorySelection
         };
         public static List<TerritorySelector> Selectors = [];
 
-        public static Dictionary<string, List<TerritoryType>> Cache = [];
+        public Dictionary<string, List<TerritoryType>> Cache = [];
         public bool OnlySelected = false;
         public string Filter = "";
 
@@ -51,13 +51,21 @@ namespace ECommons.ImGuiMethods.TerritorySelection
 
         void Setup(HashSet<uint> SelectedTerritories, Action<HashSet<uint>> Callback)
         {
+            this.WindowName ??= "Select zones";
             if (Singleton)
             {
                 Selectors.Each(x => x.Close());
                 Selectors.Clear();
             }
+            else
+            {
+                if(Selectors.Any(x => x.WindowName == this.WindowName))
+                {
+                    Notify.Error("Territory selector is already open");
+                    return;
+                }
+            }
             Selectors.Add(this);
-            this.WindowName ??= "Select zones";
             this.SelectedTerritories = SelectedTerritories;
             this.Callback = Callback;
             WindowSystem = new($"ECommonsTerritorySelector_{Guid.NewGuid()}");
@@ -92,7 +100,10 @@ namespace ECommons.ImGuiMethods.TerritorySelection
             Cache["All"] = [];
             foreach (var x in Svc.Data.GetExcelSheet<TerritoryType>())
             {
-                Cache["All"].Add(x);
+                if (x.PlaceName.Value?.Name.ExtractText().IsNullOrEmpty() == false)
+                {
+                    Cache["All"].Add(x);
+                }
             }
         }
 
