@@ -18,7 +18,7 @@ namespace ECommons.UIHelpers
             var ret = new List<T>();
             for (int i = 0; i < MaxLength; i++)
             {
-                var r = (AtkReader)Activator.CreateInstance(typeof(T), new object[] { (nint)UnitBase, Offset + i * Size });
+                var r = (AtkReader)Activator.CreateInstance(typeof(T), [(nint)UnitBase, Offset + (i * Size)]);
                 if (r.IsNull) break;
                 ret.Add((T)r);
             }
