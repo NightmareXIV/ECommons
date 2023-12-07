@@ -6,6 +6,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using static Dalamud.Plugin.Services.ITextureProvider;
@@ -133,7 +134,7 @@ public class ThreadLoadImageHandler
                         }
                     });
                     idleTicks++;
-                    Thread.Sleep(100);
+                    if(!CachedTextures.Any(x => x.Value.isCompleted) && !CachedIcons.Any(x => x.Value.isCompleted)) Thread.Sleep(100);
                 }
             });
             PluginLog.Information($"Stopping ThreadLoadImageHandler, ticks={idleTicks}");
