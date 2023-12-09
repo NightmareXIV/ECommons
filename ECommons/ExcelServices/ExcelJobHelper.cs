@@ -6,6 +6,11 @@ namespace ECommons.ExcelServices;
 
 public static class ExcelJobHelper
 {
+    public static int GetIcon(this Job j)
+    {
+        return j == Job.ADV ? 62143 : (062100 + (int)j);
+    }
+
     public static ClassJob GetJobByName(string name)
     {
         if (Svc.Data.GetExcelSheet<ClassJob>().TryGetFirst(x => x.Name.ToString().EqualsIgnoreCase(name), out var result))
