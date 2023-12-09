@@ -1,4 +1,5 @@
 ﻿using Dalamud.Game.ClientState.Objects.Types;
+using ECommons.GameHelpers;
 using ECommons.MathHelpers;
 using System;
 using System.Collections.Generic;
@@ -48,6 +49,11 @@ public static unsafe class CharacterFunctions
     public static byte GetTransformationID(this Character chr)
     {
         return *(byte*)(chr.Address + 3120);
+    }
+
+    public static bool IsInWater(this Character chr)
+    {
+        return *(byte*)(chr.Address + 528 + 940) == 1;
     }
 
     public static CombatRole GetRole(this Character c)
