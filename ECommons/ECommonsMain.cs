@@ -18,6 +18,7 @@ using ECommons.Commands;
 using ECommons.Throttlers;
 using ECommons.EzEventManager;
 using ECommons.EzHookManager;
+using ECommons.EzCharedDataManager;
 
 namespace ECommons;
 
@@ -101,6 +102,7 @@ public static class ECommonsMain
         GenericHelpers.Safe(Callback.Dispose);
         GenericHelpers.Safe(EzEvent.DisposeAll);
         GenericHelpers.Safe(EzHookCommon.DisposeAll);
+        GenericHelpers.Safe(EzSharedData.Dispose);
         Chat.instance = null;
         Instance = null;
     }
