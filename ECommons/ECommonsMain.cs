@@ -18,7 +18,7 @@ using ECommons.Commands;
 using ECommons.Throttlers;
 using ECommons.EzEventManager;
 using ECommons.EzHookManager;
-using ECommons.EzCharedDataManager;
+using ECommons.EzSharedDataManager;
 
 namespace ECommons;
 
