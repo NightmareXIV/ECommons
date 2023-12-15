@@ -31,12 +31,14 @@ namespace ECommons.EzSharedDataManager
             {
                 Data = Svc.PluginInterface.GetOrCreateData<T>(Name, () => DefaultValue);
                 Cache[Name] = Data;
+                return true;
             }
             else if (Mode == CreationMode.CreateAndKeep)
             {
                 Data = Svc.PluginInterface.GetOrCreateData<T>(Name, () => DefaultValue);
                 Keep.Add(Name);
                 Cache[Name] = Data;
+                return true;
             }
             Data = default;
             return false;
