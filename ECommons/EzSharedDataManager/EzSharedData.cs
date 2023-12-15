@@ -42,7 +42,8 @@ namespace ECommons.EzSharedDataManager
             return false;
         }
 
-        public static bool TryGetValueType<T>(string Name, out T Data, CreationMode Mode = CreationMode.ReadOnly, T DefaultValue = default) where T:struct
+        /* This doesn't works!
+         * public static bool TryGetValueType<T>(string Name, out T Data, CreationMode Mode = CreationMode.ReadOnly, T DefaultValue = default) where T:struct
         {
             if (Cache.TryGetValue(Name, out var data))
             {
@@ -73,7 +74,7 @@ namespace ECommons.EzSharedDataManager
             }
             Data = default;
             return false;
-        }
+        }*/
 
         internal static void Dispose()
         {
