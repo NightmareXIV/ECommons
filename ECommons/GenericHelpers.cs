@@ -16,29 +16,67 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Diagnostics.CodeAnalysis;
-using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
-using ECommons.ExcelServices.TerritoryEnumeration;
 using Newtonsoft.Json;
 using FFXIVClientStructs.FFXIV.Client.System.String;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using Dalamud.Memory;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.MathHelpers;
 using PInvoke;
 using System.Windows.Forms;
-using System.Threading;
 using ECommons.Interop;
-using System.Drawing;
-using ImGuiScene;
-using Dalamud.Game.ClientState.Objects;
-using Dalamud.Plugin.Services;
-using Dalamud.Game.Text;
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static bool TryDequeue<T>(this IList<T> List, out T result)
+    {
+        if(List.Count > 0)
+        {
+            result = List[0];
+            List.RemoveAt(0);
+            return true;
+        }
+        else
+        {
+            result = default;
+            return false;
+        }
+    }
+
+    public static T Dequeue<T>(this IList<T> List)
+    {
+        if(List.TryDequeue(out var ret))
+        {
+            return ret;
+        }
+        throw new InvalidOperationException("Sequence contains no elements");
+    }
+
+    public static T DequeueOrDefault<T>(this IList<T> List)
+    {
+        if (List.Count > 0)
+        {
+            var ret = List[0];
+            List.RemoveAt(0);
+            return ret;
+        }
+        else
+        {
+            return default;
+        }
+    }
+
+    public static T DequeueOrDefault<T>(this Queue<T> Queue)
+    {
+        if(Queue.Count > 0)
+        {
+            return Queue.Dequeue();
+        }
+        return default;
+    }
+
     public static int IndexOf<T>(this IEnumerable<T> values, Predicate<T> predicate)
     {
         var ret = -1;
