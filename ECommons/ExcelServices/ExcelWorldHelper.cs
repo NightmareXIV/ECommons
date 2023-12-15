@@ -16,7 +16,7 @@ public static class ExcelWorldHelper
         return null;
     }
 
-    public static bool? TryGetWorldByName(string name, out World result)
+    public static bool TryGetWorldByName(string name, out World result)
     {
         result = GetWorldByName(name);
         return result != null;
@@ -51,5 +51,13 @@ public static class ExcelWorldHelper
     public static string GetPublicWorldNameById(uint id)
     {
         return GetPublicWorldById(id)?.Name.ToString();
+    }
+
+    public enum Region
+    {
+        JP = 1,
+        NA = 2,
+        EU = 3,
+        OC = 4,
     }
 }
