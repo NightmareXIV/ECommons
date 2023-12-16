@@ -1,4 +1,4 @@
-﻿using Dalamud.Data;
+using Dalamud.Data;
 using Dalamud.Game;
 using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Buddy;
@@ -60,6 +60,7 @@ public class Svc
     [PluginService] public static IGameInteropProvider Hook { get; private set; }
     [PluginService] public static ITextureProvider Texture { get; private set; }
     [PluginService] public static IPluginLog Log { get; private set; }
+    [PluginService] public static IAddonLifecycle AddonLifeCycle { get; private set; }
 
     internal static bool IsInitialized = false;
     public static void Init(DalamudPluginInterface pi)
