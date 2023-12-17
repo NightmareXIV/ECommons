@@ -438,6 +438,44 @@ public static unsafe partial class ImGuiEx
         return pressed;
     }
 
+    public static bool CollectionCheckboxMulti<T>(string label, IEnumerable<T> values, List<T> collection, bool inverted = false, bool delayedOperation = false)
+    {
+        var x = collection.ContainsAny(values);
+        if (inverted) x = !x;
+        if (ImGui.Checkbox(label, ref x))
+        {
+            void Do()
+            {
+                if (inverted) x = !x;
+                if (x)
+                {
+                    foreach(var v in values)
+                    {
+                        collection.RemoveAll(x => x.Equals(v));
+                        collection.Add(v);
+                    }
+                }
+                else
+                {
+                    foreach (var v in values)
+                    {
+                        collection.RemoveAll(x => x.Equals(v));
+                    }
+                }
+            }
+            if (delayedOperation)
+            {
+                new TickScheduler(Do);
+            }
+            else
+            {
+                Do();
+            }
+            return true;
+        }
+        return false;
+    }
+
     public static bool CollectionCheckbox<T>(string label, T value, List<T> collection, bool inverted = false, bool delayedOperation = false)
     {
         var x = collection.Contains(value);

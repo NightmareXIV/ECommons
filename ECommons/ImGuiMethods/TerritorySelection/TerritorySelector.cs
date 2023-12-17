@@ -11,6 +11,7 @@ using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -38,6 +39,11 @@ namespace ECommons.ImGuiMethods.TerritorySelection
         WindowSystem WindowSystem;
         HashSet<uint> SelectedTerritories;
         Action<HashSet<uint>> Callback;
+
+        public Action<TerritoryType, Vector4?, string> ActionDrawPlaceName = (TerritoryType t, Vector4? col, string name) =>
+        {
+            ImGuiEx.Text(col, name);
+        };
 
         public TerritorySelector(Action<HashSet<uint>> Callback, string TitleName = null) : base(TitleName)
         {
@@ -195,7 +201,7 @@ namespace ECommons.ImGuiMethods.TerritorySelection
                                     ImGuiEx.Text($"{t.RowId}");
 
                                     ImGui.TableNextColumn(); //Place name
-                                    ImGuiEx.Text(col?ImGuiColors.DalamudOrange:ImGuiColors.DalamudYellow, $"{name}");
+                                    ActionDrawPlaceName(t, col ? ImGuiColors.DalamudOrange : ImGuiColors.DalamudYellow, name);
 
                                     ImGui.TableNextColumn(); //Duty
                                     if (!cfc.IsNullOrEmpty())
