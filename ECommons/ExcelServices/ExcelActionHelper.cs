@@ -2,6 +2,8 @@
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using System;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using LAction = Lumina.Excel.GeneratedSheets.Action;
 
 namespace ECommons.ExcelServices;
 
@@ -19,5 +21,32 @@ public unsafe static class ExcelActionHelper
             return Math.Max(cd2, ret);
         }
         return ret;
+    }
+
+    public static string GetActionName(this LAction data, bool forceIncludeID = false)
+    {
+        if(data == null)
+        {
+            return $"null";
+        }
+        else
+        {
+            var name = data.Name?.ExtractText();
+            if (name.IsNullOrEmpty())
+            {
+                return $"#{data.RowId}";
+            }
+            else
+            {
+                return (forceIncludeID? $"#{data.RowId} ":$"") + name;
+            }
+        }
+    }
+
+    public static string GetActionName(uint id, bool forceIncludeID = false)
+    {
+        var d = Svc.Data.GetExcelSheet<LAction>().GetRow(id);
+        if(d == null) return $"#{id}";
+        return d.GetActionName(forceIncludeID);
     }
 }

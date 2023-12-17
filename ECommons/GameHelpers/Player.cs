@@ -21,6 +21,7 @@ namespace ECommons.GameHelpers
         public static ulong CID => Svc.ClientState.LocalContentId;
         public static StatusList Status => Svc.ClientState.LocalPlayer.StatusList;
         public static string Name => Svc.ClientState.LocalPlayer?.Name.ToString();
+        public static string NameWithWorld => Svc.ClientState.LocalPlayer?.Name.ToString() + "@" + Svc.ClientState.LocalPlayer?.HomeWorld.GameData.Name;
         public static int Level => Svc.ClientState.LocalPlayer?.Level ?? 0;
         public static bool IsInHomeWorld => Svc.ClientState.LocalPlayer.HomeWorld.Id == Svc.ClientState.LocalPlayer.CurrentWorld.Id;
         public static string HomeWorld => Svc.ClientState.LocalPlayer?.HomeWorld.GameData.Name.ToString();

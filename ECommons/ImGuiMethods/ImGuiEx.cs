@@ -24,6 +24,11 @@ namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
+    public static bool InputTextMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10)
+    {
+        return ImGui.InputTextMultiline(id, ref text, maxLength, new(ImGuiEx.GetWindowContentRegionWidth(), ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)));
+    }
+
     public static bool EnumOrderer<T>(string id, List<T> order) where T : IConvertible
     {
         var ret = false;

@@ -12,6 +12,8 @@ public static class ProperOnLogin
 
     public static bool PlayerPresent => Svc.ClientState.LocalPlayer != null && Svc.ClientState.LocalContentId != 0;
 
+    public static void FireArtificially() => OnUpdate(null);
+
     public static void Register(Action action, bool fireImmediately = false)
     {
         if (RegisteredActions.Contains(action))
