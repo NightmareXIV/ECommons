@@ -30,6 +30,18 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static T GetOrDefault<T>(this IList<T> List, int index)
+    {
+        if (index < List.Count) return List[index];
+        return default;
+    }
+
+    public static T GetOrDefault<T>(this T[] Array, int index)
+    {
+        if (index < Array.Length) return Array[index];
+        return default;
+    }
+
     public static bool TryDequeue<T>(this IList<T> List, out T result)
     {
         if(List.Count > 0)
