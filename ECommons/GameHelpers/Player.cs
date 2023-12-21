@@ -29,5 +29,6 @@ namespace ECommons.GameHelpers
         public static Character* Character => (Character*)Svc.ClientState.LocalPlayer.Address;
         public static BattleChara* BattleChara => (BattleChara*)Svc.ClientState.LocalPlayer.Address;
         public static GameObject* GameObject => (GameObject*)Svc.ClientState.LocalPlayer.Address;
+        public static uint Territory => Svc.ClientState.TerritoryType;
     }
 }
