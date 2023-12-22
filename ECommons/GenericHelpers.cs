@@ -216,6 +216,23 @@ public static unsafe class GenericHelpers
             return Bitmask.IsBitSet(User32.GetAsyncKeyState((int)key), 15);
         }
     }
+    public static bool IsKeyPressed(IEnumerable<LimitedKeys> keys)
+    {
+        foreach (var x in keys)
+        {
+            if (IsKeyPressed(x)) return true;
+        }
+        return false;
+    }
+
+    public static bool IsKeyPressed(IEnumerable<Keys> keys)
+    {
+        foreach (var x in keys)
+        {
+            if (IsKeyPressed(x)) return true;
+        }
+        return false;
+    }
 
     /// <summary>
     /// Checks if you are targeting object <paramref name="obj"/>.
