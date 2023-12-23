@@ -64,7 +64,7 @@ public static unsafe partial class ImGuiEx
 
     public static void ActivateIfDoubleClicked()
     {
-        if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
+        if (ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
         {
             ImGui.SetKeyboardFocusHere(-1);
         }
