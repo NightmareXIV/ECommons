@@ -1,9 +1,7 @@
 ﻿using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Internal.Notifications;
-using Dalamud.Interface.Style;
 using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
 using ECommons.DalamudServices;
 using ECommons.Logging;
 using ECommons.Reflection;
@@ -11,19 +9,72 @@ using ECommons.Schedulers;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Xml.Linq;
 
 namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
+    public static bool SliderInt(string label, ref int v, int v_min, int v_max, string format, ImGuiSliderFlags flags)
+    {
+        var ret = ImGui.SliderInt(label, ref v, v_min, v_max, format, flags);
+        ActivateIfDoubleClicked();
+        return ret;
+    }
+
+    public static bool SliderInt(string label, ref int v, int v_min, int v_max, string format)
+    {
+        var ret = ImGui.SliderInt(label, ref v, v_min, v_max, format);
+        ActivateIfDoubleClicked();
+        return ret;
+    }
+
+    public static bool SliderInt(string label, ref int v, int v_min, int v_max)
+    {
+        var ret = ImGui.SliderInt(label, ref v, v_min, v_max);
+        ActivateIfDoubleClicked();
+        return ret;
+    }
+
+
+    public static bool SliderFloat(string label, ref float v, float v_min, float v_max, string format, ImGuiSliderFlags flags)
+    {
+        var ret = ImGui.SliderFloat(label, ref v, v_min, v_max, format, flags);
+        ActivateIfDoubleClicked();
+        return ret;
+    }
+
+    public static bool SliderFloat(string label, ref float v, float v_min, float v_max, string format)
+    {
+        var ret = ImGui.SliderFloat(label, ref v, v_min, v_max, format);
+        ActivateIfDoubleClicked();
+        return ret;
+    }
+
+    public static bool SliderFloat(string label, ref float v, float v_min, float v_max)
+    {
+        var ret = ImGui.SliderFloat(label, ref v, v_min, v_max);
+        ActivateIfDoubleClicked();
+        return ret;
+    }
+
+    public static void ActivateIfDoubleClicked()
+    {
+        if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
+        {
+            ImGui.SetKeyboardFocusHere(-1);
+        }
+    }
+
+    public static void SetNextItemWidthScaled(float width)
+    {
+        ImGui.SetNextItemWidth(width.Scale());
+    }
+
     public static bool InputTextMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10)
     {
         return ImGui.InputTextMultiline(id, ref text, maxLength, new(ImGuiEx.GetWindowContentRegionWidth(), ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)));
