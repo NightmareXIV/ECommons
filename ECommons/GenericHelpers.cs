@@ -30,6 +30,18 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static T GetOrDefault<T>(this IList<T> List, int index)
+    {
+        if (index < List.Count) return List[index];
+        return default;
+    }
+
+    public static T GetOrDefault<T>(this T[] Array, int index)
+    {
+        if (index < Array.Length) return Array[index];
+        return default;
+    }
+
     public static bool TryDequeue<T>(this IList<T> List, out T result)
     {
         if(List.Count > 0)
@@ -203,6 +215,23 @@ public static unsafe class GenericHelpers
         {
             return Bitmask.IsBitSet(User32.GetAsyncKeyState((int)key), 15);
         }
+    }
+    public static bool IsKeyPressed(IEnumerable<LimitedKeys> keys)
+    {
+        foreach (var x in keys)
+        {
+            if (IsKeyPressed(x)) return true;
+        }
+        return false;
+    }
+
+    public static bool IsKeyPressed(IEnumerable<Keys> keys)
+    {
+        foreach (var x in keys)
+        {
+            if (IsKeyPressed(x)) return true;
+        }
+        return false;
     }
 
     /// <summary>

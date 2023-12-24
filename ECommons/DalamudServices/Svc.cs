@@ -1,24 +1,5 @@
-﻿using Dalamud.Data;
-using Dalamud.Game;
-using Dalamud.Game.ClientState;
-using Dalamud.Game.ClientState.Buddy;
-using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.ClientState.Fates;
-using Dalamud.Game.ClientState.GamePad;
-using Dalamud.Game.ClientState.JobGauge;
-using Dalamud.Game.ClientState.Keys;
+﻿using Dalamud.Game;
 using Dalamud.Game.ClientState.Objects;
-using Dalamud.Game.ClientState.Party;
-using Dalamud.Game.Command;
-using Dalamud.Game.Config;
-using Dalamud.Game.DutyState;
-using Dalamud.Game.Gui;
-using Dalamud.Game.Gui.Dtr;
-using Dalamud.Game.Gui.FlyText;
-using Dalamud.Game.Gui.PartyFinder;
-using Dalamud.Game.Gui.Toast;
-using Dalamud.Game.Libc;
-using Dalamud.Game.Network;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
@@ -27,8 +8,6 @@ using System;
 
 namespace ECommons.DalamudServices;
 
-//If one of services is not ready, whole service class will be unavailable.
-//This is inconvenient. Let's bypass it.
 public class Svc
 {
     [PluginService] public static DalamudPluginInterface PluginInterface { get; private set; }
@@ -61,6 +40,12 @@ public class Svc
     [PluginService] public static ITextureProvider Texture { get; private set; }
     [PluginService] public static IPluginLog Log { get; private set; }
     [PluginService] public static IAddonLifecycle AddonLifecycle { get; private set; }
+    [PluginService] public static IAetheryteList AetheryteList { get; private set; }
+    [PluginService] public static IAddonEventManager AddonEventManager { get; private set; }
+    //[PluginService] public static IGameInventory GameInventory { get; private set; }
+    [PluginService] public static ITextureSubstitutionProvider TextureSubstitution { get; private set; }
+    [PluginService] public static ITitleScreenMenu TitleScreenMenu { get; private set; }
+
 
     internal static bool IsInitialized = false;
     public static void Init(DalamudPluginInterface pi)

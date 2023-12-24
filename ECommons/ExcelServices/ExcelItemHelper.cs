@@ -1,4 +1,5 @@
 ﻿using AutoRetainer.Sheets;
+using ECommons.DalamudServices;
 using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,29 @@ namespace ECommons.ExcelServices
             if (param.BaseParam.Row.EqualsAny<uint>(72, 73, 10)) ret.Add(Gatherers);
             if (param.BaseParam.Row.EqualsAny<uint>(70,71,11)) ret.Add(MagicalDPS);
             return ret;
+        }
+
+        public static string GetName(uint id, bool includeID = false)
+        {
+            var data = Svc.Data.GetExcelSheet<Item>().GetRow(id);
+            if (data == null) return $"#{id}";
+            return GetName(data);
+        }
+
+        static Dictionary<uint, string> ItemNameCache = [];
+        public static string GetName(this Item item, bool includeID = false)
+        {
+            if (item == null) return "? Unknown ?";
+            if (!ItemNameCache.TryGetValue(item.RowId, out string name))
+            {
+                name = item.Name.ExtractText();
+                ItemNameCache[item.RowId] = name;
+            }
+            if(name == "")
+            {
+                return $"#{item.RowId}";
+            }
+            return name;
         }
     }
 }
