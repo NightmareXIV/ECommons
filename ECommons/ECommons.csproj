@@ -19,7 +19,7 @@
     <Optimize>True</Optimize>
       <UseWindowsForms>true</UseWindowsForms>
       <EnableWindowsTargeting>true</EnableWindowsTargeting>
-      <IsTrimmable>true</IsTrimmable>
+      <IsTrimmable>false</IsTrimmable>
 	</PropertyGroup>
 
 	<PropertyGroup Label="Documentation">
