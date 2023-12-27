@@ -1,4 +1,5 @@
 ﻿using ECommons.DalamudServices;
+using ECommons.EzEventManager;
 using ECommons.GameHelpers;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ namespace ECommons.Configuration
         {
             this.Options = options?.ToArray() ?? [];
             this.Prefix = prefix;
+            new EzLogout(() => SaveAll(Options.Contains(Option.UnloadOnLogout)));
         }
 
         public T Get() => Get(Player.CID);
