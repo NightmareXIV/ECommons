@@ -43,6 +43,19 @@ namespace ECommons.ExcelServices
             return Sanctuaries.Contains(territoryType);
         }
 
+        public static bool NameExists(uint TerritoryType)
+        {
+            var data = Svc.Data.GetExcelSheet<TerritoryType>().GetRow(TerritoryType);
+            if (data != null) return NameExists(data);
+            return false;
+        }
+
+        public static bool NameExists(this TerritoryType t)
+        {
+            var nonExists = t.Name.ExtractText().IsNullOrEmpty() && t.ContentFinderCondition?.Value.Name.ExtractText().IsNullOrEmpty() != false;
+            return !nonExists;
+        }
+
         /// <summary>
         /// Gets fancy name for a territory.
         /// </summary>

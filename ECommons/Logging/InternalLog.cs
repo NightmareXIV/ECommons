@@ -93,7 +93,7 @@ public class InternalLog
                 :x.Level == LogEventLevel.Information?ImGuiColors.DalamudWhite
                 :x.Level == LogEventLevel.Debug?ImGuiColors.DalamudGrey
                 :x.Level == LogEventLevel.Verbose?ImGuiColors.DalamudGrey2
-                :ImGuiColors.DalamudWhite2, x.Message);
+                :ImGuiColors.DalamudWhite2, $"> [{x.Time}] {x.Message}");
         }
         if (Autoscroll)
         {
