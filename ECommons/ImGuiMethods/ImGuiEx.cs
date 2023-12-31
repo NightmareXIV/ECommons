@@ -19,6 +19,17 @@ namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
+    public static bool CheckboxInverted(string label, ref bool value)
+    {
+        var inv = !value;
+        if(ImGui.Checkbox(label, ref inv))
+        {
+            value = !inv;
+            return true;
+        }
+        return false;
+    }
+
     public static bool SliderInt(string label, ref int v, int v_min, int v_max, string format, ImGuiSliderFlags flags)
     {
         var ret = ImGui.SliderInt(label, ref v, v_min, v_max, format, flags);

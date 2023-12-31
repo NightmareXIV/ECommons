@@ -30,34 +30,50 @@ namespace ECommons.ImGuiMethods.TerritorySelection
             ["Trial"] = [TerritoryIntendedUseEnum.Trial],
             ["Deep Dungeon"] = [TerritoryIntendedUseEnum.Deep_Dungeon],
         };
-        public static List<TerritorySelector> Selectors = [];
+        public readonly static List<TerritorySelector> Selectors = [];
 
-        public Dictionary<string, List<TerritoryType>> Cache = [];
+        readonly Dictionary<string, List<TerritoryType>> Cache = [];
+
         public bool OnlySelected = false;
         public string Filter = "";
 
         WindowSystem WindowSystem;
         HashSet<uint> SelectedTerritories;
-        Action<HashSet<uint>> Callback;
+        uint SelectedTerritory;
+        bool IsSingleSelection = false;
+        Action<TerritorySelector, HashSet<uint>> Callback;
+        Action<TerritorySelector, uint> CallbackSingle;
 
         public Action<TerritoryType, Vector4?, string> ActionDrawPlaceName = (TerritoryType t, Vector4? col, string name) =>
         {
             ImGuiEx.Text(col, name);
         };
 
-        public TerritorySelector(Action<HashSet<uint>> Callback, string TitleName = null) : base(TitleName)
+        public TerritorySelector(uint SelectedTerritory, Action<TerritorySelector, uint> Callback, string TitleName = null) : base(TitleName)
         {
-            Setup([], Callback);
+            Setup([SelectedTerritory], null, Callback);
         }
 
-        public TerritorySelector(IEnumerable<uint> SelectedTerritories, Action<HashSet<uint>> Callback, string TitleName = null) : base(TitleName)
+        public TerritorySelector(Action<TerritorySelector, uint> Callback, string TitleName = null) : base(TitleName)
         {
-            Setup(SelectedTerritories?.ToHashSet() ?? [], Callback);
+            Setup([], null, Callback);
         }
 
-        void Setup(HashSet<uint> SelectedTerritories, Action<HashSet<uint>> Callback)
+        public TerritorySelector(IEnumerable<uint> SelectedTerritories, Action<TerritorySelector, HashSet<uint>> Callback, string TitleName = null) : base(TitleName)
+        {
+            Setup(SelectedTerritories?.ToHashSet() ?? [], Callback, null);
+        }
+
+        public TerritorySelector(Action<TerritorySelector, HashSet<uint>> Callback, string TitleName = null) : base(TitleName)
+        {
+            Setup([], Callback, null);
+        }
+
+        void Setup(HashSet<uint> SelectedTerritories, Action<TerritorySelector, HashSet<uint>> Callback, Action<TerritorySelector, uint> CallbackSingle)
         {
             this.WindowName ??= "Select zones";
+            this.IsSingleSelection = CallbackSingle != null;
+            this.SelectedTerritory = SelectedTerritories.FirstOrDefault();
             if (Singleton)
             {
                 Selectors.Each(x => x.Close());
@@ -74,6 +90,7 @@ namespace ECommons.ImGuiMethods.TerritorySelection
             Selectors.Add(this);
             this.SelectedTerritories = SelectedTerritories;
             this.Callback = Callback;
+            this.CallbackSingle = CallbackSingle;
             WindowSystem = new($"ECommonsTerritorySelector_{Guid.NewGuid()}");
             WindowSystem.AddWindow(this);
             Svc.PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
@@ -128,15 +145,33 @@ namespace ECommons.ImGuiMethods.TerritorySelection
                         if (Player.Available)
                         {
                             ImGui.SameLine();
-                            if(ImGuiEx.CollectionCheckbox($"Current zone: {ExcelTerritoryHelper.GetName(Svc.ClientState.TerritoryType)}", Svc.ClientState.TerritoryType, SelectedTerritories))
+                            if (!this.IsSingleSelection)
                             {
-                                try
+                                if (ImGuiEx.CollectionCheckbox($"Current zone: {ExcelTerritoryHelper.GetName(Svc.ClientState.TerritoryType)}", Svc.ClientState.TerritoryType, SelectedTerritories))
                                 {
-                                    Callback(SelectedTerritories);
+                                    try
+                                    {
+                                        Callback(this, SelectedTerritories);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        e.Log();
+                                    }
                                 }
-                                catch (Exception e)
+                            }
+                            else
+                            {
+                                if (ImGui.RadioButton($"Current zone: {ExcelTerritoryHelper.GetName(Svc.ClientState.TerritoryType)}", SelectedTerritory == Svc.ClientState.TerritoryType))
                                 {
-                                    e.Log();
+                                    SelectedTerritory = Svc.ClientState.TerritoryType;
+                                    try
+                                    {
+                                        CallbackSingle(this, SelectedTerritory);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        e.Log();
+                                    }
                                 }
                             }
                         }
@@ -185,15 +220,33 @@ namespace ECommons.ImGuiMethods.TerritorySelection
 
                                     ImGui.TableNextRow();
                                     ImGui.TableNextColumn();//checkbox
-                                    if (ImGuiEx.CollectionCheckbox($"##sel{t.RowId}", t.RowId, SelectedTerritories))
+                                    if (!this.IsSingleSelection)
                                     {
-                                        try
+                                        if (ImGuiEx.CollectionCheckbox($"##sel{t.RowId}", t.RowId, SelectedTerritories))
                                         {
-                                            Callback(SelectedTerritories);
+                                            try
+                                            {
+                                                Callback(this, SelectedTerritories);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                e.Log();
+                                            }
                                         }
-                                        catch (Exception e)
+                                    }
+                                    else
+                                    {
+                                        if (ImGui.RadioButton($"##sel{t.RowId}", t.RowId == SelectedTerritory))
                                         {
-                                            e.Log();
+                                            SelectedTerritory = t.RowId;
+                                            try
+                                            {
+                                                CallbackSingle(this, SelectedTerritory);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                e.Log();
+                                            }
                                         }
                                     }
 
