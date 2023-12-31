@@ -19,6 +19,17 @@ namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
+    public static bool Checkbox(string label, ref int value)
+    {
+        var b = value != 0;
+        if(ImGui.Checkbox(label, ref b))
+        {
+            value = b ? 1 : 0;
+            return true;
+        }
+        return false;
+    }
+
     public static bool CheckboxInverted(string label, ref bool value)
     {
         var inv = !value;
