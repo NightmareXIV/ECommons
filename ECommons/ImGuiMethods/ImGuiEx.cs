@@ -1064,7 +1064,7 @@ public static unsafe partial class ImGuiEx
 
     public static Vector2 CalcIconSize(FontAwesomeIcon icon, bool isButton = false)
     {
-        return CalcIconSize(icon.ToIconString(), isButton)
+        return CalcIconSize(icon.ToIconString(), isButton);
     }
 
     public static Vector2 CalcIconSize(string icon, bool isButton = false)
