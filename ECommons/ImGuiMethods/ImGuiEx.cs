@@ -19,6 +19,17 @@ namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
+    public static bool Checkbox(string label, ref int value)
+    {
+        var b = value != 0;
+        if(ImGui.Checkbox(label, ref b))
+        {
+            value = b ? 1 : 0;
+            return true;
+        }
+        return false;
+    }
+
     public static bool CheckboxBullet(string label, ref bool value)
     {
         int flags = value?1:0;
@@ -1036,12 +1047,9 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
-    public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default)
+    public static bool SmallIconButton(FontAwesomeIcon icon, string id = "ECommonsButton")
     {
-        ImGui.PushFont(UiBuilder.IconFont);
-        var result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{id}", size);
-        ImGui.PopFont();
-        return result;
+        return SmallIconButton(icon.ToIconString(), id);
     }
 
     public static bool SmallIconButton(string icon, string id = "ECommonsButton")
@@ -1052,20 +1060,30 @@ public static unsafe partial class ImGuiEx
         return result;
     }
 
-    public static bool IconButton(string icon, string id = "ECommonsButton")
+    public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default)
+    {
+        return IconButton(icon.ToIconString(), id, size);
+    }
+
+    public static bool IconButton(string icon, string id = "ECommonsButton", Vector2 size = default)
     {
         ImGui.PushFont(UiBuilder.IconFont);
-        var result = ImGui.Button($"{icon}##{icon}-{id}");
+        var result = ImGui.Button($"{icon}##{icon}-{id}", size);
         ImGui.PopFont();
         return result;
     }
 
-    public static Vector2 CalcIconSize(FontAwesomeIcon icon)
+    public static Vector2 CalcIconSize(FontAwesomeIcon icon, bool isButton = false)
+    {
+        return CalcIconSize(icon.ToIconString(), isButton);
+    }
+
+    public static Vector2 CalcIconSize(string icon, bool isButton = false)
     {
         ImGui.PushFont(UiBuilder.IconFont);
-        var result = ImGui.CalcTextSize($"{icon.ToIconString()}");
+        var result = ImGui.CalcTextSize($"{icon}");
         ImGui.PopFont();
-        return result;
+        return result + (isButton ? ImGui.GetStyle().FramePadding * 2f : Vector2.Zero);
     }
 
     public static float Measure(Action func, bool includeSpacing = true)
