@@ -43,6 +43,7 @@ namespace ECommons.ImGuiMethods.TerritorySelection
         bool IsSingleSelection = false;
         Action<TerritorySelector, HashSet<uint>> Callback;
         Action<TerritorySelector, uint> CallbackSingle;
+        static bool? VisibleAction = null;
 
         public Action<TerritoryType, Vector4?, string> ActionDrawPlaceName = (TerritoryType t, Vector4? col, string name) =>
         {
@@ -132,13 +133,14 @@ namespace ECommons.ImGuiMethods.TerritorySelection
 
         public override void Draw()
         {
+            VisibleAction = null;
             if (ImGui.BeginTabBar("##TerritorySelectorBar"))
             {
                 foreach (var x in Cache)
                 {
                     if (ImGui.BeginTabItem(x.Key))
                     {
-                        ImGui.SetNextItemWidth(300f);
+                        ImGui.SetNextItemWidth(200f);
                         ImGui.InputTextWithHint($"##search", "Filter...", ref Filter, 50);
                         ImGui.SameLine();
                         ImGui.Checkbox("Only selected", ref OnlySelected);
@@ -147,7 +149,7 @@ namespace ECommons.ImGuiMethods.TerritorySelection
                             ImGui.SameLine();
                             if (!this.IsSingleSelection)
                             {
-                                if (ImGuiEx.CollectionCheckbox($"Current zone: {ExcelTerritoryHelper.GetName(Svc.ClientState.TerritoryType)}", Svc.ClientState.TerritoryType, SelectedTerritories))
+                                if (ImGuiEx.CollectionCheckbox($"Current: {ExcelTerritoryHelper.GetName(Svc.ClientState.TerritoryType)}", Svc.ClientState.TerritoryType, SelectedTerritories))
                                 {
                                     try
                                     {
@@ -157,6 +159,16 @@ namespace ECommons.ImGuiMethods.TerritorySelection
                                     {
                                         e.Log();
                                     }
+                                }
+                                ImGui.SameLine();
+                                if (ImGui.Button("Add all visible"))
+                                {
+                                    VisibleAction = true;
+                                }
+                                ImGui.SameLine();
+                                if (ImGui.Button("Remove all visible"))
+                                {
+                                    VisibleAction = false;
                                 }
                             }
                             else
@@ -232,6 +244,16 @@ namespace ECommons.ImGuiMethods.TerritorySelection
                                             {
                                                 e.Log();
                                             }
+                                        }
+                                        if (VisibleAction == true && !SelectedTerritories.Contains(t.RowId))
+                                        {
+                                            SelectedTerritories.Add(t.RowId);
+                                            Callback(this, SelectedTerritories);
+                                        }
+                                        if (VisibleAction == false && SelectedTerritories.Contains(t.RowId))
+                                        {
+                                            SelectedTerritories.Remove(t.RowId);
+                                            Callback(this, SelectedTerritories);
                                         }
                                     }
                                     else
