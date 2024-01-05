@@ -19,6 +19,24 @@ namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
+    public static void HelpMarker(string helpText, Vector4? color = null, string symbolOverride = null) => InfoMarker(helpText, color, symbolOverride);
+
+    public static void InfoMarker(string helpText, Vector4? color = null, string symbolOverride = null)
+    {
+        ImGui.SameLine();
+        ImGui.PushFont(UiBuilder.IconFont);
+        ImGuiEx.Text(color ?? ImGuiColors.DalamudGrey3, symbolOverride ?? FontAwesomeIcon.InfoCircle.ToIconString());
+        ImGui.PopFont();
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
+            ImGui.TextUnformatted(helpText);
+            ImGui.PopTextWrapPos();
+            ImGui.EndTooltip();
+        }
+    }
+
     public static bool Checkbox(string label, ref int value)
     {
         var b = value != 0;
@@ -660,7 +678,9 @@ public static unsafe partial class ImGuiEx
     public static void SetTooltip(string text)
     {
         ImGui.BeginTooltip();
+        ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
         ImGui.TextUnformatted(text);
+        ImGui.PopTextWrapPos();
         ImGui.EndTooltip();
     }
 
@@ -799,7 +819,7 @@ public static unsafe partial class ImGuiEx
     {
         if (ImGui.IsItemHovered())
         {
-            ImGui.SetTooltip(s);
+            SetTooltip(s);
         }
     }
 
