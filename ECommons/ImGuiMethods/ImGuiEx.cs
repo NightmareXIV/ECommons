@@ -48,6 +48,17 @@ public static unsafe partial class ImGuiEx
         return false;
     }
 
+    public static bool CheckboxBullet(string label, ref bool value)
+    {
+        int flags = value?1:0;
+        if(ImGui.CheckboxFlags(label, ref flags, int.MaxValue))
+        {
+            value = !value;
+            return true;
+        }
+        return false;
+    }
+
     public static bool CheckboxInverted(string label, ref bool value)
     {
         var inv = !value;
