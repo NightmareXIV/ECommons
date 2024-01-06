@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ECommons.EzHookManager
 {
-    internal static class EzHookCommon
+    public static class EzHookCommon
     {
         internal static List<IDalamudHook> RegisteredHooks = [];
 
@@ -16,5 +16,7 @@ namespace ECommons.EzHookManager
             RegisteredHooks.ToArray().Each(x => x.Dispose());
             RegisteredHooks = null;
         }
+
+        public static int TrackMemory = 0;
     }
 }

@@ -76,9 +76,14 @@ public class InternalLog
     {
         ImGui.Checkbox("Autoscroll", ref Autoscroll);
         ImGui.SameLine();
-        if(ImGui.Button("Copy all"))
+        if (ImGui.Button("Copy all"))
         {
             ImGui.SetClipboardText(Messages.Select(x => $"[{x.Level}] {x.Message}").Join("\n"));
+        }
+        ImGui.SameLine();
+        if (ImGui.Button("Clear"))
+        {
+            Messages.Clear();
         }
         ImGui.SameLine();
         ImGuiEx.SetNextItemFullWidth();

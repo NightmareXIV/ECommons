@@ -1,13 +1,17 @@
 ﻿using Dalamud.Hooking;
 using ECommons.Logging;
 using ECommons.DalamudServices;
+using Dalamud.Memory;
+using Dalamud;
+using System.Linq;
 
 namespace ECommons.EzHookManager
 {
     /// <summary>
     /// A wrapper around Dalamud hook. Achieves 2 goals:
     /// - Auto-disposing all undisposed hooks upon plugin unload;
-    /// - Instead of disabling, completely disposes hook, restoring original code in memory.
+    /// - Lazy hooking and completely disposing hook upon disabling;
+    /// - Increasing transparency to developer, indicating that Dalamud's disable method doesn't completely disables it and just pauses detour execution.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class EzHook<T> where T:System.Delegate
@@ -37,21 +41,46 @@ namespace ECommons.EzHookManager
             Delegate = EzDelegate.Get<T>(address);
             Log($"Configured {typeof(T).FullName} at {address:X16}");
             Detour = detour;
-            if (autoEnable) HookDelegate.Enable();
+            if (autoEnable) Enable();
         }
+
 
         public void Enable()
         {
             if (HookDelegate == null)
             {
-                Log($"Creating hook {typeof(T).FullName}");
+                byte[] orig = null;
+                Log($"Creating hook {typeof(T).FullName} at {Address:X16}");
+                if (EzHookCommon.TrackMemory > 0) SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out orig);
                 HookDelegate = Svc.Hook.HookFromAddress(Address, Detour);
+                HookDelegate.Enable();
+                if (EzHookCommon.TrackMemory > 0 && SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out var changed) && orig != null)
+                {
+                    PluginLog.Debug($"   Before: {orig.Select(x => $"{x:X2}").Print(" ")}");
+                    PluginLog.Debug($"    After: {changed.Select(x => $"{x:X2}").Print(" ")}");
+                }
                 EzHookCommon.RegisteredHooks.Add(HookDelegate);
             }
             else if (!HookDelegate.IsEnabled)
             {
-                PluginLog.Error($"[EzHook] Hook is created but not enabled, this should not ever happen. Please report at https://github.com/NightmareXIV/ECommons/issues with logs and, if you are developer, source code.");
                 Log($"Enabling hook {typeof(T).FullName} at {Address:X16}");
+                HookDelegate.Enable();
+            }
+        }
+
+        public void Pause()
+        {
+            byte[] orig = null;
+            if (HookDelegate != null)
+            {
+                Log($"Disabling hook {typeof(T).FullName} at {Address:X16}");
+                if (EzHookCommon.TrackMemory > 0) SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out orig);
+                HookDelegate.Disable();
+                if (EzHookCommon.TrackMemory > 0 && SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out var changed) && orig != null)
+                {
+                    PluginLog.Debug($"   Before: {orig.Select(x => $"{x:X2}").Print(" ")}");
+                    PluginLog.Debug($"    After: {changed.Select(x => $"{x:X2}").Print(" ")}");
+                }
             }
         }
 
@@ -62,14 +91,22 @@ namespace ECommons.EzHookManager
         {
             if(HookDelegate != null)
             {
+                byte[] orig = null;
+                Log($"Disposing hook {typeof(T).FullName} at {Address:X16}");
+                if (EzHookCommon.TrackMemory > 0) SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out orig);
                 HookDelegate.Dispose();
                 EzHookCommon.RegisteredHooks.Remove(HookDelegate);
                 HookDelegate = null;
-                Log($"Disposing hook {typeof(T).FullName} at {Address:X16}");
+                if (EzHookCommon.TrackMemory > 0 && SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out var changed) && orig != null)
+                {
+                    PluginLog.Debug($"   Before: {orig.Select(x => $"{x:X2}").Print(" ")}");
+                    PluginLog.Debug($"    After: {changed.Select(x => $"{x:X2}").Print(" ")}");
+                }
             }
         }
 
         public bool IsEnabled => HookDelegate != null && HookDelegate.IsEnabled;
+        public bool IsCreated => HookDelegate != null;
         /// <summary>
         /// Calls original function as if it was unhooked if hook is enabled; calls original Delegate if hook is disabled.
         /// </summary>

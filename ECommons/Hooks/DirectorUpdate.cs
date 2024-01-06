@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ECommons.EzHookManager;
 
 namespace ECommons.Hooks
 {
@@ -19,6 +20,23 @@ namespace ECommons.Hooks
         internal static Hook<ProcessDirectorUpdate> ProcessDirectorUpdateHook = null;
         static Action<long, long, DirectorUpdateCategory, uint, uint, int, int> FullParamsCallback = null;
         static Action<DirectorUpdateCategory> CategoryOnlyCallback = null;
+
+        static ProcessDirectorUpdate OriginalDelegate;
+        public static ProcessDirectorUpdate Delegate
+        {
+            get
+            {
+                if(ProcessDirectorUpdateHook != null && !ProcessDirectorUpdateHook.IsDisposed)
+                {
+                    return ProcessDirectorUpdateHook.Original;
+                }
+                else
+                {
+                    OriginalDelegate ??= EzDelegate.Get<ProcessDirectorUpdate>(Sig);
+                    return OriginalDelegate;
+                }
+            }
+        }
 
         internal static long ProcessDirectorUpdateDetour_Full(long a1, long a2, DirectorUpdateCategory a3, uint a4, uint a5, int a6, int a7)
         {
