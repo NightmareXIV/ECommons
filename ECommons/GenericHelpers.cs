@@ -30,6 +30,55 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    /// <summary>
+    /// Copies text into user's clipboard using WinForms. Does not throws exceptions.
+    /// </summary>
+    /// <param name="text">Text to copy</param>
+    /// <param name="silent">Whether to display success/failure popup</param>
+    /// <returns>Whether operation succeeded</returns>
+    public static bool Copy(string text, bool silent = false)
+    {
+        try
+        {
+            Clipboard.SetText(text);
+            if (!silent) Notify.Success("Text copied to clipboard");
+            return true;
+        }
+        catch(Exception e)
+        {
+            if (!silent)
+            {
+                Notify.Error($"Error copying to clipboard:\n{e.Message}\nPlease try again");
+            }
+            PluginLog.Warning($"Error copying to clipboard:");
+            e.LogWarning();
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Reads text from user's clipboard
+    /// </summary>
+    /// <param name="silent">Whether to display popup when error occurs.</param>
+    /// <returns>Contents of the clipboard; null if clipboard couldn't be read.</returns>
+    public static string Paste(bool silent = false)
+    {
+        try
+        {
+            return Clipboard.GetText();
+        }
+        catch(Exception e)
+        {
+            if (!silent)
+            {
+                Notify.Error($"Error pasting from clipboard:\n{e.Message}\nPlease try again");
+            }
+            PluginLog.Warning($"Error pasting from clipboard:");
+            e.LogWarning();
+            return null;
+        }
+    }
+
     public static T GetOrDefault<T>(this IList<T> List, int index)
     {
         if (index < List.Count) return List[index];

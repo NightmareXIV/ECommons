@@ -1168,7 +1168,7 @@ public static unsafe partial class ImGuiEx
         }
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
-            ImGui.SetClipboardText(text);
+            GenericHelpers.Copy(text);
             Svc.PluginInterface.UiBuilder.AddNotification("Text copied to clipboard", null, NotificationType.Success);
         }
     }
@@ -1182,7 +1182,7 @@ public static unsafe partial class ImGuiEx
         }
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
-            ImGui.SetClipboardText(text);
+            GenericHelpers.Copy(text);
             Svc.PluginInterface.UiBuilder.AddNotification("Text copied to clipboard", DalamudReflector.GetPluginName(), NotificationType.Success);
         }
     }
@@ -1196,7 +1196,7 @@ public static unsafe partial class ImGuiEx
         }
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
-            ImGui.SetClipboardText(text);
+            GenericHelpers.Copy(text);
             Svc.PluginInterface.UiBuilder.AddNotification("Text copied to clipboard", DalamudReflector.GetPluginName(), NotificationType.Success);
         }
     }
@@ -1242,7 +1242,7 @@ public static unsafe partial class ImGuiEx
     {
         if (ImGui.Button(buttonText.Replace("$COPY", copy)))
         {
-            ImGui.SetClipboardText(copy);
+            GenericHelpers.Copy(copy);
             Svc.PluginInterface.UiBuilder.AddNotification("Text copied to clipboard", null, NotificationType.Success);
         }
     }
