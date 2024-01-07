@@ -1,5 +1,6 @@
 ﻿using Dalamud.Hooking;
 using ECommons.DalamudServices;
+using ECommons.EzHookManager;
 using ECommons.Logging;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,23 @@ namespace ECommons.Hooks
         public delegate long ProcessMapEffect(long a1, uint a2, ushort a3, ushort a4);
         internal static Hook<ProcessMapEffect> ProcessMapEffectHook = null;
         static Action<long, uint, ushort, ushort> Callback = null;
+
+        static ProcessMapEffect OriginalDelegate;
+        public static ProcessMapEffect Delegate
+        {
+            get
+            {
+                if (ProcessMapEffectHook != null && !ProcessMapEffectHook.IsDisposed)
+                {
+                    return ProcessMapEffectHook.Original;
+                }
+                else
+                {
+                    OriginalDelegate ??= EzDelegate.Get<ProcessMapEffect>(Sig);
+                    return OriginalDelegate;
+                }
+            }
+        }
 
         internal static long ProcessMapEffectDetour(long a1, uint a2, ushort a3, ushort a4)
         {
