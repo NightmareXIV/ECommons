@@ -28,15 +28,15 @@ public class SerializationFactory
     /// <summary>
     /// Serialization method
     /// </summary>
-    /// <param name="s"></param>
+    /// <param name="config"></param>
     /// <param name="prettyPrint">A parameter that informs serializar that pretty-print should be used, if possible.</param>
     /// <returns></returns>
-    public virtual string Serialize(IEzConfig s, bool prettyPrint)
+    public virtual string Serialize(IEzConfig config, bool prettyPrint)
     {
-        return JsonConvert.SerializeObject(s, new JsonSerializerSettings()
+        return JsonConvert.SerializeObject(config, new JsonSerializerSettings()
         {
             Formatting = prettyPrint ? Formatting.Indented : Formatting.None,
-            DefaultValueHandling = s.GetType().IsDefined(typeof(IgnoreDefaultValueAttribute), false) ? DefaultValueHandling.Ignore : DefaultValueHandling.Include
+            DefaultValueHandling = config.GetType().IsDefined(typeof(IgnoreDefaultValueAttribute), false) ? DefaultValueHandling.Ignore : DefaultValueHandling.Include
         });
     }
 }
