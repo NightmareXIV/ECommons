@@ -17,7 +17,7 @@ public class SerializationFactory
     /// <typeparam name="T"></typeparam>
     /// <param name="inputData"></param>
     /// <returns></returns>
-    public virtual T Deserialize<T>(string inputData) where T:IEzConfig
+    public virtual T Deserialize<T>(string inputData)
     {
         return JsonConvert.DeserializeObject<T>(inputData, new JsonSerializerSettings()
         {
@@ -31,7 +31,7 @@ public class SerializationFactory
     /// <param name="config"></param>
     /// <param name="prettyPrint">A parameter that informs serializar that pretty-print should be used, if possible.</param>
     /// <returns></returns>
-    public virtual string Serialize(IEzConfig config, bool prettyPrint)
+    public virtual string Serialize(object config, bool prettyPrint)
     {
         return JsonConvert.SerializeObject(config, new JsonSerializerSettings()
         {

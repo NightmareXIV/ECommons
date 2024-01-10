@@ -85,5 +85,11 @@ namespace ECommons.ExcelServices
                 return $"{id}{cfc}";
             }
         }
+
+        public static TerritoryType Get(uint ID) => Svc.Data.GetExcelSheet<TerritoryType>().GetRow(ID);
+
+        public static string GetBG(this TerritoryType t) => t?.Bg?.ExtractText();
+
+        public static string GetBG(uint ID) => Get(ID)?.Bg?.ExtractText();
     }
 }
