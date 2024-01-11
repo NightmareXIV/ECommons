@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommons.ExcelServices.TerritoryEnumeration
+namespace ECommons.ExcelServices.TerritoryEnumeration;
+
+public class CommonlyUsedAttribute : Attribute
 {
-    public class CommonlyUsedAttribute : Attribute
-    {
-    }
 }

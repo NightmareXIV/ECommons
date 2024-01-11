@@ -6,21 +6,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommons.ChatMethods
-{
-    public static class ChatPrinter
-    {
-        public static void Red(string text) => PrintColored(UIColor.Red, text);
-        public static void Orange(string text) => PrintColored(UIColor.Orange, text);
-        public static void Yellow(string text) => PrintColored(UIColor.Yellow, text);
-        public static void Green(string text) => PrintColored(UIColor.Green, text);
+namespace ECommons.ChatMethods;
 
-        public static void PrintColored(UIColor col, string text)
+public static class ChatPrinter
+{
+    public static void Red(string text) => PrintColored(UIColor.Red, text);
+    public static void Orange(string text) => PrintColored(UIColor.Orange, text);
+    public static void Yellow(string text) => PrintColored(UIColor.Yellow, text);
+    public static void Green(string text) => PrintColored(UIColor.Green, text);
+
+    public static void PrintColored(UIColor col, string text)
+    {
+        Svc.Chat.Print(new()
         {
-            Svc.Chat.Print(new()
-            {
-                Message = new SeStringBuilder().AddUiForeground(text, (ushort)col).Build()
-            });
-        }
+            Message = new SeStringBuilder().AddUiForeground(text, (ushort)col).Build()
+        });
     }
 }

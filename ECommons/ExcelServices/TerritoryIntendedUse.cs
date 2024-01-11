@@ -5,23 +5,22 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommons.ExcelServices
+namespace ECommons.ExcelServices;
+
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
+public enum TerritoryIntendedUse : uint
 {
-    [Obfuscation(Exclude = true, ApplyToMembers = true)]
-    public enum TerritoryIntendedUse : uint
-    {
-        Unknown = 0,
-        AllianceRaid,
-        Dungeon,
-        House,
-        Inn,
-        MainCity,
-        OpenArea,
-        Prison,
-        Raid,
-        OldRaid,
-        Residential,
-        Trial,
-        Variant
-    }
+    Unknown = 0,
+    AllianceRaid,
+    Dungeon,
+    House,
+    Inn,
+    MainCity,
+    OpenArea,
+    Prison,
+    Raid,
+    OldRaid,
+    Residential,
+    Trial,
+    Variant
 }

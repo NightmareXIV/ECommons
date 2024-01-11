@@ -6,29 +6,28 @@ using System.Text;
 using System.Threading.Tasks;
 using static Dalamud.Plugin.Services.IFramework;
 
-namespace ECommons.EzEventManager
+namespace ECommons.EzEventManager;
+
+/// <summary>
+/// Provides wrapped access to Framework.Update event. Disposed automatically upon calling <see cref="ECommonsMain.Dispose"/>.
+/// </summary>
+public class EzFrameworkUpdate : IDisposable
 {
-    /// <summary>
-    /// Provides wrapped access to Framework.Update event. Disposed automatically upon calling <see cref="ECommonsMain.Dispose"/>.
-    /// </summary>
-    public class EzFrameworkUpdate : IDisposable
+    internal static List<EzFrameworkUpdate> Registered = [];
+    internal Action Delegate;
+
+    public EzFrameworkUpdate(Action @delegate)
     {
-        internal static List<EzFrameworkUpdate> Registered = [];
-        internal Action Delegate;
+        Delegate = @delegate ?? throw new ArgumentNullException(nameof(@delegate));
+        Svc.Framework.Update += OnTrigger;
+        Registered.Add(this);
+    }
 
-        public EzFrameworkUpdate(Action @delegate)
-        {
-            Delegate = @delegate ?? throw new ArgumentNullException(nameof(@delegate));
-            Svc.Framework.Update += OnTrigger;
-            Registered.Add(this);
-        }
+    internal void OnTrigger(object _) => Delegate();
 
-        internal void OnTrigger(object _) => Delegate();
-
-        public void Dispose()
-        {
-            Svc.Framework.Update -= OnTrigger;
-            Registered.Remove(this);
-        }
+    public void Dispose()
+    {
+        Svc.Framework.Update -= OnTrigger;
+        Registered.Remove(this);
     }
 }

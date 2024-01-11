@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommons.EzSharedDataManager
+namespace ECommons.EzSharedDataManager;
+
+public enum CreationMode
 {
-    public enum CreationMode
-    {
-        ReadOnly, CreateAndKeep, CreateAndRelinquish
-    }
+    ReadOnly, CreateAndKeep, CreateAndRelinquish
 }

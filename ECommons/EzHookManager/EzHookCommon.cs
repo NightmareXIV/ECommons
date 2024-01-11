@@ -5,18 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommons.EzHookManager
+namespace ECommons.EzHookManager;
+
+public static class EzHookCommon
 {
-    public static class EzHookCommon
+    internal static List<IDalamudHook> RegisteredHooks = [];
+
+    internal static void DisposeAll()
     {
-        internal static List<IDalamudHook> RegisteredHooks = [];
-
-        internal static void DisposeAll()
-        {
-            RegisteredHooks.ToArray().Each(x => x.Dispose());
-            RegisteredHooks = null!;
-        }
-
-        public static int TrackMemory = 0;
+        RegisteredHooks.ToArray().Each(x => x.Dispose());
+        RegisteredHooks = null!;
     }
+
+    public static int TrackMemory = 0;
 }

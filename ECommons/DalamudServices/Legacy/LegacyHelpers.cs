@@ -8,15 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommons.DalamudServices.Legacy
-{
-    public static class LegacyHelpers
-    {
-        public static void PrintChat(this IChatGui chatGui, XivChatEntry entry) => Svc.Chat.Print(entry);
+namespace ECommons.DalamudServices.Legacy;
 
-        public static void SetTarget(this ITargetManager targetManager, GameObject obj)
-        {
-            targetManager.Target = obj;
-        }
+public static class LegacyHelpers
+{
+    public static void PrintChat(this IChatGui chatGui, XivChatEntry entry) => Svc.Chat.Print(entry);
+
+    public static void SetTarget(this ITargetManager targetManager, GameObject obj)
+    {
+        targetManager.Target = obj;
     }
 }
