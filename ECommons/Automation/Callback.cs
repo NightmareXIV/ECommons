@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Markup;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 using Dalamud.Hooking;
+#nullable disable
 
 namespace ECommons.Automation
 {

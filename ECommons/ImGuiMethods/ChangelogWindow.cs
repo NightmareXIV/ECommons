@@ -7,6 +7,7 @@ using ImGuiNET;
 using System;
 
 namespace ECommons.ImGuiMethods;
+#nullable disable
 
 public class ChangelogWindow : Window
 {

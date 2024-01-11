@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 namespace ECommons.ImGuiMethods;
+#nullable disable
 
 public static unsafe partial class ImGuiEx
 {

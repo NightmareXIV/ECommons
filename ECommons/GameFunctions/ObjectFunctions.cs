@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace ECommons.GameFunctions;
+#nullable disable
 
 public static unsafe class ObjectFunctions
 {

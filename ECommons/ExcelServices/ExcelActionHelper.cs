@@ -6,6 +6,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using LAction = Lumina.Excel.GeneratedSheets.Action;
 
 namespace ECommons.ExcelServices;
+#nullable disable
 
 public unsafe static class ExcelActionHelper
 {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using static Dalamud.Game.Command.CommandInfo;
 
 namespace ECommons;
+#nullable disable
 
 public static class EzCmd
 {

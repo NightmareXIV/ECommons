@@ -5,6 +5,7 @@ using ECommons.Reflection;
 using System;
 
 namespace ECommons.SimpleGui;
+#nullable disable
 
 public static class EzConfigGui
 {

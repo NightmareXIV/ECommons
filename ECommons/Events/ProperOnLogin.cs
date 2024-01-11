@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using ECommons.GameHelpers;
 
 namespace ECommons.Events;
+#nullable disable
 
 public static class ProperOnLogin
 {

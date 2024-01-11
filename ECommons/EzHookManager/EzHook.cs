@@ -6,6 +6,7 @@ using Dalamud;
 using System.Linq;
 
 namespace ECommons.EzHookManager
+#nullable disable
 {
     /// <summary>
     /// A wrapper around Dalamud hook. Achieves 2 goals:

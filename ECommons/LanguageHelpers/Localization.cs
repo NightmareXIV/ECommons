@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 
 namespace ECommons.LanguageHelpers;
+#nullable disable
 
 public static class Localization
 {

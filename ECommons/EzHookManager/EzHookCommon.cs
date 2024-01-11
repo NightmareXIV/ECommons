@@ -14,7 +14,7 @@ namespace ECommons.EzHookManager
         internal static void DisposeAll()
         {
             RegisteredHooks.ToArray().Each(x => x.Dispose());
-            RegisteredHooks = null;
+            RegisteredHooks = null!;
         }
 
         public static int TrackMemory = 0;

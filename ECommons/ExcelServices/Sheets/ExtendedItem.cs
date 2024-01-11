@@ -4,6 +4,7 @@ using Lumina;
 using Lumina.Excel.GeneratedSheets;
 
 namespace AutoRetainer.Sheets;
+#nullable disable
 
 //This code is authored by Caraxi https://github.com/Caraxi/SimpleTweaksPlugin/
 [Sheet("Item")]

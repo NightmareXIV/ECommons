@@ -20,6 +20,7 @@ public unsafe static class UniversalParty
     {
         get
         {
+            if (!Player.Available) return [];
             var span = new List<UniversalPartyMember>
             {
                 new()
@@ -62,7 +63,7 @@ public unsafe static class UniversalParty
                         {
                             Name = x.Name.ToString(),
                             HomeWorld = new(x.World),
-                            CurrentWorld = new(Svc.ClientState.LocalPlayer.CurrentWorld),
+                            CurrentWorld = new(Player.Object!.CurrentWorld),
                             GameObjectInternal = x.GameObject
                         });
                     }

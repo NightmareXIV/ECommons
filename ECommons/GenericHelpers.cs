@@ -25,6 +25,7 @@ using ECommons.MathHelpers;
 using PInvoke;
 using System.Windows.Forms;
 using ECommons.Interop;
+#nullable disable
 
 namespace ECommons;
 
@@ -626,7 +627,7 @@ public static unsafe class GenericHelpers
     }
 
     /// <summary>
-    /// Adds <paramref name="value"/> into <see cref="HashSet"/> if it doesn't exists yet or removes if it exists.
+    /// Adds <paramref name="value"/> into HashSet if it doesn't exists yet or removes if it exists.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="hashSet"></param>

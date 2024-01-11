@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.ExcelServices
+#nullable disable
 {
     public static class ExcelItemHelper
     {

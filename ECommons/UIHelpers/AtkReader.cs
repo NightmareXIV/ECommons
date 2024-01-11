@@ -10,6 +10,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace ECommons.UIHelpers
+#nullable disable
 {
     public unsafe abstract class AtkReader(AtkUnitBase* UnitBase, int BeginOffset = 0)
     {
@@ -77,7 +78,7 @@ namespace ECommons.UIHelpers
             return value.Byte != 0;
         }
 
-        protected SeString? ReadSeString(int n)
+        protected SeString ReadSeString(int n)
         {
             var num = n + BeginOffset;
             EnsureCount(UnitBase, num);
@@ -91,7 +92,7 @@ namespace ECommons.UIHelpers
         }
 
 
-        protected string? ReadString(int n)
+        protected string ReadString(int n)
         {
             var num = n + BeginOffset;
             EnsureCount(UnitBase, num);

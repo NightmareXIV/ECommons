@@ -1,6 +1,7 @@
 ﻿using static ECommons.LanguageHelpers.Localization;
 
 namespace ECommons.LanguageHelpers;
+#nullable disable
 
 public static class LocalizationExtensions
 {

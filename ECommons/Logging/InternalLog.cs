@@ -9,6 +9,7 @@ using System.Linq;
 using System.Numerics;
 
 namespace ECommons.Logging;
+#nullable disable
 
 public class InternalLog
 {

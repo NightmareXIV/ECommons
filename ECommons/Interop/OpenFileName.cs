@@ -6,6 +6,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+#nullable disable
 
 /*
 typedef struct tagOFN { 

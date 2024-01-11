@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using static Dalamud.Plugin.Services.IFramework;
 
 namespace ECommons.EzEventManager
+#nullable disable
 {
     internal static class EzEvent
     {

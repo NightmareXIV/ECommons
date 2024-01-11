@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ECommons.EzHookManager;
+#nullable disable
 
 namespace ECommons.Hooks
 {

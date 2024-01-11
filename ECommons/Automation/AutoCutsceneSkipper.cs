@@ -13,6 +13,7 @@ using System.Runtime.CompilerServices;
 using System.Data.SqlTypes;
 
 namespace ECommons.Automation
+#nullable disable
 {
     /// <summary>
     /// Provides automatic cutscene skipping trigger. Does not includes cutscene skipping confirmation.

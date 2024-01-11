@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.Hooks
+#nullable disable
 {
     public static unsafe class ActionEffect
     {

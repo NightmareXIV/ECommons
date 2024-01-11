@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.ImGuiMethods.TerritorySelection
+#nullable disable
 {
     public unsafe class TerritorySelector : Window
     {

@@ -8,6 +8,7 @@ using System.Linq;
 namespace ECommons.PartyFunctions;
 
 public class UniversalPartyMember
+#nullable disable
 {
     public String Name { get; init; }
     public ExcelResolver<World> HomeWorld { get; init; }

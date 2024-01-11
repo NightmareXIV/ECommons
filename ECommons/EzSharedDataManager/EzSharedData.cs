@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ECommons.EzSharedDataManager;
+#nullable disable
 
 /// <summary>
 /// EzSharedData class aims to resolve following problems with built-in SharedData service.

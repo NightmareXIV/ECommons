@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.StringHelpers
+#nullable disable
 {
     public static class EqualStrings
     {

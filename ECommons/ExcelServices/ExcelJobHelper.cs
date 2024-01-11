@@ -3,6 +3,7 @@ using Lumina.Excel.GeneratedSheets;
 using System.Linq;
 
 namespace ECommons.ExcelServices;
+#nullable disable
 
 public static class ExcelJobHelper
 {

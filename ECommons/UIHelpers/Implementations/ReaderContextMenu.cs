@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.UIHelpers.Implementations
+#nullable disable
 {
     public unsafe class ReaderContextMenu(AtkUnitBase* Addon) : AtkReader(Addon)
     {

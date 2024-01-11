@@ -4,8 +4,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+#nullable disable
 
 namespace ECommons.ExcelServices.TerritoryEnumeration
+#nullable disable
 {
     [Obfuscation(Exclude = true, ApplyToMembers = true)]
     public static class Houses

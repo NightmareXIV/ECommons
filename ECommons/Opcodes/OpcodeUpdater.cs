@@ -10,8 +10,8 @@ namespace ECommons.Opcodes;
 
 public static class OpcodeUpdater
 {
-    static HttpClient client;
-    public static void DownloadOpcodes(string url, Action<Dictionary<string, uint>> successCallback, Action<string> failureCallback = null)
+    static HttpClient? client;
+    public static void DownloadOpcodes(string url, Action<Dictionary<string, uint>> successCallback, Action<string>? failureCallback = null)
     {
         client ??= new();
         new Thread(() =>

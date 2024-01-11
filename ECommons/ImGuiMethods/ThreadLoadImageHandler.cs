@@ -13,6 +13,7 @@ using static Dalamud.Plugin.Services.ITextureProvider;
 using static ECommons.GenericHelpers;
 
 namespace ECommons.ImGuiMethods;
+#nullable disable
 
 public class ThreadLoadImageHandler
 {
@@ -105,7 +106,7 @@ public class ThreadLoadImageHandler
                                         }
                                         catch (Exception ex)
                                         {
-                                            //TODO: I don't know how to log exception in ECommons.
+                                            ex.Log();
                                         }
                                     }
                                     keyValuePair.Value.texture = texture;

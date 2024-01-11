@@ -5,6 +5,7 @@ using System.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ECommons.ExcelServices;
+#nullable disable
 
 public static class ExcelWorldHelper
 {

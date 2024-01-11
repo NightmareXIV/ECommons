@@ -8,6 +8,7 @@ using Action = Lumina.Excel.GeneratedSheets.Action;
 using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace ECommons.Hooks.ActionEffectTypes;
+#nullable disable
 
 public unsafe struct ActionEffectSet
 {

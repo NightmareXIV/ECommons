@@ -2,6 +2,7 @@
 using System;
 
 namespace ECommons.Hooks.ActionEffectTypes;
+#nullable disable
 
 public unsafe struct TargetEffect
 {

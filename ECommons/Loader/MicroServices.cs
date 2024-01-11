@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Dalamud.Plugin.Services;
 
 namespace ECommons.Loader
+#nullable disable
 {
     internal class MicroServices
     {

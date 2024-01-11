@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.Throttlers
+#nullable disable
 {
     public class FrameThrottler<T>
     {

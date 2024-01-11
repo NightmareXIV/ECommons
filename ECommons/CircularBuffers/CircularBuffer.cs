@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace ECommons.CircularBuffers;
+#nullable disable
 
 /// <inheritdoc/>
 /// <summary>

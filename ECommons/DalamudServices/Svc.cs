@@ -7,6 +7,7 @@ using ECommons.Logging;
 using System;
 
 namespace ECommons.DalamudServices;
+#nullable disable
 
 public class Svc
 {

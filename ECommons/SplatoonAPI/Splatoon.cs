@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 
 namespace ECommons.SplatoonAPI;
+#nullable disable
 
 public static class Splatoon
 {

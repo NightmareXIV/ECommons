@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 
 namespace ECommons.ObjectLifeTracker;
+#nullable disable
 
 public static class ObjectLife
 {
