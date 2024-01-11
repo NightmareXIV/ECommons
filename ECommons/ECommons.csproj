@@ -20,6 +20,7 @@
       <UseWindowsForms>true</UseWindowsForms>
       <EnableWindowsTargeting>true</EnableWindowsTargeting>
       <IsTrimmable>false</IsTrimmable>
+      <Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<PropertyGroup Label="Documentation">

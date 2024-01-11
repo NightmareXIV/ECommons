@@ -28,11 +28,11 @@ public static class EzConfig
     /// <summary>
     /// Default configuration reference
     /// </summary>
-    public static IEzConfig Config { get; private set; }
+    public static IEzConfig? Config { get; private set; }
     /// <summary>
     /// Default serialization factory. Create a class that extends SerializationFactory, implement your own serializer and deserializer and assign DefaultSerializationFactory to it before loading any configurations to change serializer to your own liking.
     /// </summary>
-    public static SerializationFactory DefaultSerializationFactory { get; set; } = new();
+    public static ISerializationFactory DefaultSerializationFactory { get; set; } = new DefaultSerializationFactory();
 
     /// <summary>
     /// Loads and returns default configuration file
@@ -90,7 +90,7 @@ public static class EzConfig
     /// <param name="prettyPrint">Inform serializer that you want pretty-print your configuration</param>
     /// <param name="appendConfigDirectory">If true, plugin configuration directory will be added to path</param>
     /// <param name="serializationFactory">If null, then default factory will be used.</param>
-    public static void SaveConfiguration(this IEzConfig Configuration, string path, bool prettyPrint = false, bool appendConfigDirectory = true, SerializationFactory serializationFactory = null)
+    public static void SaveConfiguration(this IEzConfig Configuration, string path, bool prettyPrint = false, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null)
     {
         serializationFactory ??= DefaultSerializationFactory;
         if (appendConfigDirectory) path = Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), path);
@@ -118,7 +118,7 @@ public static class EzConfig
     /// <param name="appendConfigDirectory">If true, plugin configuration directory will be added to path</param>
     /// <param name="serializationFactory">If null, then default factory will be used.</param>
     /// <returns></returns>
-    public static T LoadConfiguration<T>(string path, bool appendConfigDirectory = true, SerializationFactory serializationFactory = null) where T : IEzConfig, new()
+    public static T LoadConfiguration<T>(string path, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null) where T : IEzConfig, new()
     {
         serializationFactory ??= DefaultSerializationFactory;
         if (appendConfigDirectory) path = Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), path);

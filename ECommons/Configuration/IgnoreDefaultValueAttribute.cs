@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace ECommons.Configuration
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)
-]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class IgnoreDefaultValueAttribute : Attribute
     {
     }  

@@ -9,7 +9,7 @@ namespace ECommons.Configuration;
 /// <summary>
 /// Extend this class and override existing methods to create your own serialization factory.
 /// </summary>
-public class SerializationFactory
+public class DefaultSerializationFactory : ISerializationFactory
 {
     /// <summary>
     /// Deserialization method.
@@ -17,7 +17,7 @@ public class SerializationFactory
     /// <typeparam name="T"></typeparam>
     /// <param name="inputData"></param>
     /// <returns></returns>
-    public virtual T Deserialize<T>(string inputData)
+    public virtual T? Deserialize<T>(string inputData)
     {
         return JsonConvert.DeserializeObject<T>(inputData, new JsonSerializerSettings()
         {

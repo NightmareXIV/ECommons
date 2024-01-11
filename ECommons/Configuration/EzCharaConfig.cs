@@ -3,6 +3,7 @@ using ECommons.EzEventManager;
 using ECommons.GameHelpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing.Design;
 using System.IO;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace ECommons.Configuration
         Option[] Options;
         string Prefix;
 
-        public EzCharaConfig(IEnumerable<Option> options = null, string prefix = "EzConfig")
+        public EzCharaConfig(IEnumerable<Option>? options = null, string prefix = "EzConfig")
         {
             this.Options = options?.ToArray() ?? [];
             this.Prefix = prefix;
@@ -33,7 +34,7 @@ namespace ECommons.Configuration
         public T Get() => Get(Player.CID);
         public T GetDefault() => Get(0);
 
-        public bool TryGet(ulong CID, out T value)
+        public bool TryGet(ulong CID, [NotNullWhen(true)]out T? value)
         {
             if(CID == 0 && !Options.Contains(Option.AllowDefaultConfig))
             {
@@ -50,7 +51,7 @@ namespace ECommons.Configuration
             {
                 if (!Options.Contains(Option.AllowDefaultConfig)) throw new InvalidOperationException("Player is not currently logged in");
             }
-            if (Cache.TryGetValue(CID, out T result))
+            if (Cache.TryGetValue(CID, out var result))
             {
                 return result;
             }
