@@ -1,10 +1,8 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Memory;
 using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.UI.Info;
-using System;
 using System.Collections.Generic;
 
 namespace ECommons.PartyFunctions;

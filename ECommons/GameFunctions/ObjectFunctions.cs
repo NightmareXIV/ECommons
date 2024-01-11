@@ -1,5 +1,4 @@
 ﻿using Dalamud.Game.ClientState.Objects.Types;
-using Dalamud.Logging;
 using ECommons.DalamudServices;
 using System;
 using System.Numerics;

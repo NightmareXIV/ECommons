@@ -1,5 +1,4 @@
-﻿using Dalamud;
-using Dalamud.Game.ClientState.Keys;
+﻿using Dalamud.Game.ClientState.Keys;
 using ECommons.Logging;
 using Dalamud.Plugin;
 using ECommons.DalamudServices;

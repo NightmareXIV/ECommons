@@ -1,5 +1,4 @@
 ﻿using Dalamud.Game.ClientState.Objects.Types;
-using ECommons.GameHelpers;
 using ECommons.MathHelpers;
 using System;
 using System.Collections.Generic;

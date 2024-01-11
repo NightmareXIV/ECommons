@@ -1,7 +1,6 @@
 ﻿using ECommons.Logging;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
-using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.IO;

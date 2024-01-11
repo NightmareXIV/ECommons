@@ -3,14 +3,8 @@ using Dalamud.Utility.Signatures;
 using Dalamud;
 using ECommons.DalamudServices;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ECommons.DalamudServices.Legacy;
 using ECommons.Logging;
-using System.Runtime.CompilerServices;
-using System.Data.SqlTypes;
 
 namespace ECommons.Automation;
 #nullable disable

@@ -1,7 +1,6 @@
 ﻿using Dalamud.Hooking;
 using ECommons.Logging;
 using ECommons.DalamudServices;
-using Dalamud.Memory;
 using Dalamud;
 using System.Linq;
 

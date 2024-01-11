@@ -1,13 +1,7 @@
 ﻿using Dalamud.Hooking;
 using ECommons.Logging;
-using Dalamud.Utility.Signatures;
 using ECommons.DalamudServices;
-using Serilog.Core;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ECommons.EzHookManager;
 #nullable disable
 

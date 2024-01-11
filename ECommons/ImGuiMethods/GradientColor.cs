@@ -1,5 +1,4 @@
-﻿using ECommons.MathHelpers;
-using System;
+﻿using System;
 using System.Numerics;
 
 namespace ECommons.ImGuiMethods;
