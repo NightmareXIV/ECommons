@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.CodeDom;
 
 namespace ECommons.Configuration;
 
@@ -19,19 +20,32 @@ namespace ECommons.Configuration;
 /// </summary>
 public static class EzConfig
 {
-    const string DefaultConfigurationName = "DefaultConfig.json";
     /// <summary>
     /// Full path to default configuration file.
     /// </summary>
-    public static string DefaultConfigurationFileName => Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), DefaultConfigurationName);
+    public static string DefaultConfigurationFileName => Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), DefaultSerializationFactory.DefaultConfigFileName);
     /// <summary>
     /// Default configuration reference
     /// </summary>
     public static IEzConfig? Config { get; private set; }
+
+    private static bool WasCalled = false;
+
     /// <summary>
     /// Default serialization factory. Create a class that extends SerializationFactory, implement your own serializer and deserializer and assign DefaultSerializationFactory to it before loading any configurations to change serializer to your own liking.
     /// </summary>
-    public static ISerializationFactory DefaultSerializationFactory { get; set; } = new DefaultSerializationFactory();
+    public static ISerializationFactory DefaultSerializationFactory 
+    {
+        get
+        {
+            return EzConfigValueStorage.DefaultSerializationFactory;
+        }
+        set
+        {
+            if (WasCalled) throw new InvalidOperationException("Can not change DefaultSerializationFactory after any configurations has been loaded or saved");
+            EzConfigValueStorage.DefaultSerializationFactory = value;
+        }
+    }
 
     /// <summary>
     /// Loads and returns default configuration file
@@ -40,7 +54,7 @@ public static class EzConfig
     /// <returns></returns>
     public static T Init<T>() where T : IEzConfig, new()
     {
-        Config = LoadConfiguration<T>(DefaultConfigurationName);
+        Config = LoadConfiguration<T>(DefaultSerializationFactory.DefaultConfigFileName);
         return (T)Config;
     }
 
@@ -55,6 +69,7 @@ public static class EzConfig
         {
             throw new NullReferenceException("Migrate must be called before initialization");
         }
+        WasCalled = true;
         var path = DefaultConfigurationFileName;
         if(!File.Exists(path) && Svc.PluginInterface.ConfigFile.Exists)
         {
@@ -77,7 +92,7 @@ public static class EzConfig
     {
         if (Config != null)
         {
-            SaveConfiguration(Config, DefaultConfigurationName, true);
+            SaveConfiguration(Config, DefaultSerializationFactory.DefaultConfigFileName, true);
         }
     }
 
@@ -91,6 +106,7 @@ public static class EzConfig
     /// <param name="serializationFactory">If null, then default factory will be used.</param>
     public static void SaveConfiguration(this IEzConfig Configuration, string path, bool prettyPrint = false, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null)
     {
+        WasCalled = true;
         serializationFactory ??= DefaultSerializationFactory;
         if (appendConfigDirectory) path = Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), path);
         var antiCorruptionPath = $"{path}.new";
@@ -119,6 +135,7 @@ public static class EzConfig
     /// <returns></returns>
     public static T LoadConfiguration<T>(string path, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null) where T : IEzConfig, new()
     {
+        WasCalled = true;
         serializationFactory ??= DefaultSerializationFactory;
         if (appendConfigDirectory) path = Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), path);
         if (!File.Exists(path))

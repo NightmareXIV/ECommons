@@ -6,6 +6,8 @@ namespace ECommons.Configuration;
 /// </summary>
 public class DefaultSerializationFactory : ISerializationFactory
 {
+    public virtual string DefaultConfigFileName => "DefaultConfig.json";
+
     /// <summary>
     /// Deserialization method.
     /// </summary>
