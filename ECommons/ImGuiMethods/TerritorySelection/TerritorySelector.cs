@@ -2,7 +2,6 @@
 using Dalamud.Interface.Windowing;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
-using ECommons.ExcelServices.TerritoryEnumeration;
 using ECommons.GameHelpers;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
