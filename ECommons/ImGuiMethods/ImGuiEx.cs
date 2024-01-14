@@ -1080,6 +1080,15 @@ public static unsafe partial class ImGuiEx
         return result;
     }
 
+    public static bool Ctrl => ImGui.GetIO().KeyCtrl;
+    public static bool Alt => ImGui.GetIO().KeyAlt;
+    public static bool Shift => ImGui.GetIO().KeyShift;
+
+    public static bool IconButton(FontAwesome.FontAwesomeString icon, string id = "ECommonsButton", Vector2 size = default)
+    {
+        return IconButton((string)icon, id, size);
+    }
+
     public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default)
     {
         return IconButton(icon.ToIconString(), id, size);
@@ -1119,9 +1128,21 @@ public static unsafe partial class ImGuiEx
     public static void InputHex(string name, ref uint hexInt)
     {
         var text = $"{hexInt:X}";
-        if (ImGui.InputText(name, ref text, 8))
+        if (ImGui.InputText(name, ref text, 50))
         {
             if (uint.TryParse(text.Replace("0x", ""), NumberStyles.HexNumber, null, out var num))
+            {
+                hexInt = num;
+            }
+        }
+    }
+
+    public static void InputHex(string name, ref long hexInt)
+    {
+        var text = $"{hexInt:X}";
+        if (ImGui.InputText(name, ref text, 50))
+        {
+            if (long.TryParse(text.Replace("0x", ""), NumberStyles.HexNumber, null, out var num))
             {
                 hexInt = num;
             }
