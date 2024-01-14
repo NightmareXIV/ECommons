@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Statuses;
 using ECommons.DalamudServices;
+using ECommons.ExcelServices;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 #nullable disable
@@ -24,4 +25,5 @@ public unsafe static class Player
     public static BattleChara* BattleChara => (BattleChara*)Svc.ClientState.LocalPlayer.Address;
     public static GameObject* GameObject => (GameObject*)Svc.ClientState.LocalPlayer.Address;
     public static uint Territory => Svc.ClientState.TerritoryType;
+    public static Job Job => (Job)Object.ClassJob.Id;
 }
