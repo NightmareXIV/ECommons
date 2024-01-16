@@ -30,13 +30,14 @@ public static class ExcelWorldHelper
     }
 
     [Obsolete("Please use TryGet")]
-    public static bool TryGetWorldByName(string name, out World result) => TryGetWorldByName(name, out result);
+    public static bool TryGetWorldByName(string name, out World result) => TryGet(name, out result);
 
     public static bool TryGet(string name, out World result)
     {
         result = Get(name);
         return result != null;
     }
+
     public static bool TryGet(uint id, out World result)
     {
         result = Get(id);
