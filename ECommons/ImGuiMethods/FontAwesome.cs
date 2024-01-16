@@ -1,5 +1,7 @@
 ﻿using Dalamud.Interface;
+using ImGuiNET;
 using System;
+using System.Numerics;
 
 namespace ECommons.ImGuiMethods;
 public static class FontAwesome
@@ -10,6 +12,7 @@ public static class FontAwesome
     public static readonly FontAwesomeString Info = 0xf05a;
     public static readonly FontAwesomeString Trash = 61944;
     public static readonly FontAwesomeString Plus = 61543;
+    public static readonly FontAwesomeString Layers = 0xf5fd;
 
     public class FontAwesomeString
     {
@@ -36,6 +39,17 @@ public static class FontAwesome
                 throw new ArgumentOutOfRangeException("String must contain exactly one character");
             }
             return s[0];
+        }
+        public void ImGuiText() => ImGuiText(null, null);
+        public void ImGuiText(Vector4? col) => ImGuiText(null, col);
+        public void ImGuiText(string? hint) => ImGuiText(hint, null);
+
+        public void ImGuiText(string? hint, Vector4? col)
+        {
+            ImGui.PushFont(UiBuilder.IconFont);
+            ImGuiEx.Text(col, this);
+            ImGui.PopFont();
+            if (hint != null) ImGuiEx.Tooltip(hint);
         }
     }
 }
