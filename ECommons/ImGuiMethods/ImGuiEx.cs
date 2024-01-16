@@ -455,6 +455,159 @@ public static unsafe partial class ImGuiEx
     [Obsolete("Please switch to CollectionCheckbox")]
     public static bool HashSetCheckbox<T>(string label, T value, HashSet<T> collection) => CollectionCheckbox(label, value, collection);
 
+
+    public static bool CollectionCheckbox<T>(string label, IEnumerable<T> values, List<T> collection, bool inverted = false, bool delayedOperation = false)
+    {
+        if (!values.Any()) throw new InvalidOperationException("values can not be empty");
+        if (collection.ContainsAll(values))
+        {
+            var x = true;
+            if (ImGui.Checkbox(label, ref x))
+            {
+                void Do()
+                {
+                    foreach (var el in values)
+                    {
+                        collection.Remove(el);
+                    }
+                }
+                if (delayedOperation)
+                {
+                    new TickScheduler(Do);
+                }
+                else
+                {
+                    Do();
+                }
+                return true;
+            }
+        }
+        else if (collection.ContainsAny(values))
+        {
+            var x = true;
+            if (ImGuiEx.CheckboxBullet(label, ref x))
+            {
+                void Do()
+                {
+                    foreach (var el in values)
+                    {
+                        collection.Remove(el);
+                        collection.Add(el);
+                    }
+                }
+                if (delayedOperation)
+                {
+                    new TickScheduler(Do);
+                }
+                else
+                {
+                    Do();
+                }
+                return true;
+            }
+        }
+        else
+        {
+            var x = false;
+            if (ImGuiEx.CheckboxBullet(label, ref x))
+            {
+                void Do()
+                {
+                    foreach (var el in values)
+                    {
+                        collection.Add(el);
+                    }
+                }
+                if (delayedOperation)
+                {
+                    new TickScheduler(Do);
+                }
+                else
+                {
+                    Do();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static bool CollectionCheckbox<T>(string label, IEnumerable<T> values, HashSet<T> collection, bool inverted = false, bool delayedOperation = false)
+    {
+        if (!values.Any()) throw new InvalidOperationException("values can not be empty");
+        if (collection.ContainsAll(values))
+        {
+            var x = true;
+            if (ImGui.Checkbox(label, ref x))
+            {
+                void Do()
+                {
+                    foreach (var el in values)
+                    {
+                        collection.Remove(el);
+                    }
+                }
+                if (delayedOperation)
+                {
+                    new TickScheduler(Do);
+                }
+                else
+                {
+                    Do();
+                }
+                return true;
+            }
+        }
+        else if (collection.ContainsAny(values))
+        {
+            var x = true;
+            if (ImGuiEx.CheckboxBullet(label, ref x))
+            {
+                void Do()
+                {
+                    foreach (var el in values)
+                    {
+                        collection.Remove(el);
+                        collection.Add(el);
+                    }
+                }
+                if (delayedOperation)
+                {
+                    new TickScheduler(Do);
+                }
+                else
+                {
+                    Do();
+                }
+                return true;
+            }
+        }
+        else
+        {
+            var x = false;
+            if (ImGuiEx.CheckboxBullet(label, ref x))
+            {
+                void Do()
+                {
+                    foreach (var el in values)
+                    {
+                        collection.Add(el);
+                    }
+                }
+                if (delayedOperation)
+                {
+                    new TickScheduler(Do);
+                }
+                else
+                {
+                    Do();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static bool CollectionCheckbox<T>(string label, T value, HashSet<T> collection)
     {
         var x = collection.Contains(value);
@@ -543,44 +696,6 @@ public static unsafe partial class ImGuiEx
         ImGui.SetCursorPos(prevCursorPos);
 
         return pressed;
-    }
-
-    public static bool CollectionCheckboxMulti<T>(string label, IEnumerable<T> values, List<T> collection, bool inverted = false, bool delayedOperation = false)
-    {
-        var x = collection.ContainsAny(values);
-        if (inverted) x = !x;
-        if (ImGui.Checkbox(label, ref x))
-        {
-            void Do()
-            {
-                if (inverted) x = !x;
-                if (x)
-                {
-                    foreach(var v in values)
-                    {
-                        collection.RemoveAll(x => x.Equals(v));
-                        collection.Add(v);
-                    }
-                }
-                else
-                {
-                    foreach (var v in values)
-                    {
-                        collection.RemoveAll(x => x.Equals(v));
-                    }
-                }
-            }
-            if (delayedOperation)
-            {
-                new TickScheduler(Do);
-            }
-            else
-            {
-                Do();
-            }
-            return true;
-        }
-        return false;
     }
 
     public static bool CollectionCheckbox<T>(string label, T value, List<T> collection, bool inverted = false, bool delayedOperation = false)
