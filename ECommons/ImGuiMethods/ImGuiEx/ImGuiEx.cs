@@ -37,38 +37,9 @@ public static unsafe partial class ImGuiEx
         }
     }
 
-    public static bool Checkbox(string label, ref int value)
-    {
-        var b = value != 0;
-        if(ImGui.Checkbox(label, ref b))
-        {
-            value = b ? 1 : 0;
-            return true;
-        }
-        return false;
-    }
+    
 
-    public static bool CheckboxBullet(string label, ref bool value)
-    {
-        int flags = value?1:0;
-        if(ImGui.CheckboxFlags(label, ref flags, int.MaxValue))
-        {
-            value = !value;
-            return true;
-        }
-        return false;
-    }
-
-    public static bool CheckboxInverted(string label, ref bool value)
-    {
-        var inv = !value;
-        if(ImGui.Checkbox(label, ref inv))
-        {
-            value = !inv;
-            return true;
-        }
-        return false;
-    }
+    
 
     public static bool SliderInt(string label, ref int v, int v_min, int v_max, string format, ImGuiSliderFlags flags)
     {
@@ -452,27 +423,6 @@ public static unsafe partial class ImGuiEx
         return ImGui.BeginPopup(popupId);
     }
 
-    [Obsolete("Please switch to CollectionCheckbox")]
-    public static bool HashSetCheckbox<T>(string label, T value, HashSet<T> collection) => CollectionCheckbox(label, value, collection);
-
-    public static bool CollectionCheckbox<T>(string label, T value, HashSet<T> collection)
-    {
-        var x = collection.Contains(value);
-        if (ImGui.Checkbox(label, ref x))
-        {
-            if (x)
-            {
-                collection.Add(value);
-            }
-            else
-            {
-                collection.Remove(value);
-            }
-            return true;
-        }
-        return false;
-    }
-
     public record HeaderIconOptions
     {
         public Vector2 Offset { get; init; } = Vector2.Zero;
@@ -545,74 +495,6 @@ public static unsafe partial class ImGuiEx
         return pressed;
     }
 
-    public static bool CollectionCheckboxMulti<T>(string label, IEnumerable<T> values, List<T> collection, bool inverted = false, bool delayedOperation = false)
-    {
-        var x = collection.ContainsAny(values);
-        if (inverted) x = !x;
-        if (ImGui.Checkbox(label, ref x))
-        {
-            void Do()
-            {
-                if (inverted) x = !x;
-                if (x)
-                {
-                    foreach(var v in values)
-                    {
-                        collection.RemoveAll(x => x.Equals(v));
-                        collection.Add(v);
-                    }
-                }
-                else
-                {
-                    foreach (var v in values)
-                    {
-                        collection.RemoveAll(x => x.Equals(v));
-                    }
-                }
-            }
-            if (delayedOperation)
-            {
-                new TickScheduler(Do);
-            }
-            else
-            {
-                Do();
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public static bool CollectionCheckbox<T>(string label, T value, List<T> collection, bool inverted = false, bool delayedOperation = false)
-    {
-        var x = collection.Contains(value);
-        if (inverted) x = !x;
-        if (ImGui.Checkbox(label, ref x))
-        {
-            void Do()
-            {
-                if (inverted) x = !x;
-                if (x)
-                {
-                    collection.Add(value);
-                }
-                else
-                {
-                    collection.RemoveAll(x => x.Equals(value));
-                }
-            }
-            if (delayedOperation)
-            {
-                new TickScheduler(Do);
-            }
-            else
-            {
-                Do();
-            }
-            return true;
-        }
-        return false;
-    }
 
     public static Vector4 MutateColor(ImGuiCol col, byte r, byte g, byte b)
     {
@@ -1080,6 +962,15 @@ public static unsafe partial class ImGuiEx
         return result;
     }
 
+    public static bool Ctrl => ImGui.GetIO().KeyCtrl;
+    public static bool Alt => ImGui.GetIO().KeyAlt;
+    public static bool Shift => ImGui.GetIO().KeyShift;
+
+    public static bool IconButton(FontAwesome.FontAwesomeString icon, string id = "ECommonsButton", Vector2 size = default)
+    {
+        return IconButton((string)icon, id, size);
+    }
+
     public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default)
     {
         return IconButton(icon.ToIconString(), id, size);
@@ -1119,9 +1010,21 @@ public static unsafe partial class ImGuiEx
     public static void InputHex(string name, ref uint hexInt)
     {
         var text = $"{hexInt:X}";
-        if (ImGui.InputText(name, ref text, 8))
+        if (ImGui.InputText(name, ref text, 50))
         {
             if (uint.TryParse(text.Replace("0x", ""), NumberStyles.HexNumber, null, out var num))
+            {
+                hexInt = num;
+            }
+        }
+    }
+
+    public static void InputHex(string name, ref long hexInt)
+    {
+        var text = $"{hexInt:X}";
+        if (ImGui.InputText(name, ref text, 50))
+        {
+            if (long.TryParse(text.Replace("0x", ""), NumberStyles.HexNumber, null, out var num))
             {
                 hexInt = num;
             }

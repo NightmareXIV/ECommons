@@ -1,5 +1,6 @@
 ﻿using ECommons.DalamudServices;
 using Lumina.Excel.GeneratedSheets;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ECommons.ExcelServices;
@@ -7,6 +8,27 @@ namespace ECommons.ExcelServices;
 
 public static class ExcelJobHelper
 {
+    public static readonly Dictionary<Job, Job> Upgrades = new()
+    {
+        [Job.GLA] = Job.PLD,
+        [Job.PGL] = Job.MNK,
+        [Job.MRD] = Job.WAR,
+        [Job.LNC] = Job.DRG,
+        [Job.ARC] = Job.BRD,
+        [Job.CNJ] = Job.WHM,
+        [Job.THM] = Job.BLM,
+        [Job.ACN] = Job.SMN,
+        [Job.ROG] = Job.NIN,
+    };
+
+    public static Job GetUpgradedJob(this Job j)
+    {
+        if (Upgrades.TryGetValue(j, out Job job)) return job;
+        return j;
+    }
+
+    public static bool IsUpgradeable(this Job j) => Upgrades.ContainsKey(j);
+
     public static int GetIcon(this Job j)
     {
         return j == Job.ADV ? 62143 : (062100 + (int)j);

@@ -11,7 +11,7 @@ public unsafe static class ExcelActionHelper
     public static float GetActionCooldown(uint id)
     {
         var detail = ActionManager.Instance()->GetRecastGroupDetail(Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(id).CooldownGroup - 1);
-        var cdg2 = Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(id).AdditionalCooldownGroup - 1;
+        var cdg2 = Svc.Data.GetExcelSheet<LAction>().GetRow(id).AdditionalCooldownGroup - 1;
         var ret = detail->IsActive == 1 ? detail->Total - detail->Elapsed : 0;
         if (cdg2 > 0)
         {

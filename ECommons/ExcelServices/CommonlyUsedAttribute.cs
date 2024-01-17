@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ECommons.ExcelServices.TerritoryEnumeration;
+namespace ECommons.ExcelServices;
 
 public class CommonlyUsedAttribute : Attribute
 {
