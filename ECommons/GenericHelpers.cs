@@ -41,8 +41,16 @@ public static unsafe class GenericHelpers
     {
         try
         {
-            Clipboard.SetText(text);
-            if (!silent) Notify.Success("Text copied to clipboard");
+            if (text.IsNullOrEmpty())
+            {
+                Clipboard.Clear();
+                if (!silent) Notify.Success("Clipboard cleared");
+            }
+            else
+            {
+                Clipboard.SetText(text);
+                if (!silent) Notify.Success("Text copied to clipboard");
+            }
             return true;
         }
         catch(Exception e)
