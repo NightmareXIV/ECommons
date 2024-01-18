@@ -31,6 +31,31 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static string GetCallStackID(int maxFrames = 3) 
+    {
+        try
+        {
+            if (maxFrames == 0)
+            {
+                maxFrames = int.MaxValue;
+            }
+            else
+            {
+                maxFrames--;
+            }
+            var stack = new StackTrace().GetFrames();
+            if (stack.Length > 1)
+            {
+                return stack[1..Math.Min(stack.Length, maxFrames)].Select(x => x.GetMethod() == null ? "<unknown>" : $"{x.GetMethod().DeclaringType?.FullName}.{x.GetMethod().Name}").Join(" <- ");
+            }
+        }
+        catch(Exception e)
+        {
+            e.Log();
+        }
+        return "";
+    }
+
     /// <summary>
     /// Copies text into user's clipboard using WinForms. Does not throws exceptions.
     /// </summary>

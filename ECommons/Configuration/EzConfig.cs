@@ -118,7 +118,7 @@ public static class EzConfig
             File.Move(antiCorruptionPath, saveTo);
             PluginLog.Warning($"Success. Please manually check {saveTo} file contents.");
         }
-        PluginLog.Verbose($"From caller {new StackTrace().GetFrames().Select(x => x.GetMethod()?.Name ?? "<unknown>").Join(" <- ")} engaging anti-corruption mechanism, writing file to {antiCorruptionPath}");
+        PluginLog.Verbose($"From caller {GenericHelpers.GetCallStackID(999)} engaging anti-corruption mechanism, writing file to {antiCorruptionPath}");
         File.WriteAllText(antiCorruptionPath, serializationFactory.Serialize(Configuration, prettyPrint), Encoding.UTF8);
         PluginLog.Verbose($"Now moving {antiCorruptionPath} to {path}");
         File.Move(antiCorruptionPath, path, true);
