@@ -25,6 +25,11 @@ ECommonsMain.Init(pluginInterface, this);
 ```
 
 where pluginInterface is a <b>DalamudPluginInterface</b>.
+
+Don't forget to dispose it in your plugin's dispose method:
+```
+ECommonsMain.Duispose();
+```
 </section>
 
 <section id="using-modules">
