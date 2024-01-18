@@ -30,6 +30,19 @@ Don't forget to dispose it in your plugin's dispose method:
 ```
 ECommonsMain.Dispose();
 ```
+
+Using certain functions like clipboard or keypresses will require you to enable Windows Forms module. Add the following section into any unconditional `PropertyGroup` of your plugin's `.csproj` file:
+```
+<PropertyGroup>
+  <UseWindowsForms>true</UseWindowsForms>
+</PropertyGroup>
+```
+Additionally, to be able to build on Linux (if you're using Github Actions or want to send your plugin to official Dalamud repo), you will have to enable windows targeting. Add the following section into your plugin's `.csproj` file:
+```
+<PropertyGroup>
+  <EnableWindowsTargeting>true</EnableWindowsTargeting>
+</PropertyGroup>
+```
 </section>
 
 <section id="using-modules">
