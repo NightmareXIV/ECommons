@@ -28,7 +28,7 @@ where pluginInterface is a <b>DalamudPluginInterface</b>.
 
 Don't forget to dispose it in your plugin's dispose method:
 ```
-ECommonsMain.Duispose();
+ECommonsMain.Dispose();
 ```
 </section>
 
