@@ -31,7 +31,7 @@ Don't forget to dispose it in your plugin's dispose method:
 ECommonsMain.Dispose();
 ```
 
-Using certain functions like clipboard or keypresses will require you to enable Windows Forms module. Add the following section into any unconditional `PropertyGroup` of your plugin's `.csproj` file:
+Using certain functions like clipboard or keypresses will require you to enable Windows Forms module. Add the following section into your plugin's `.csproj` file:
 ```
 <PropertyGroup>
   <UseWindowsForms>true</UseWindowsForms>
