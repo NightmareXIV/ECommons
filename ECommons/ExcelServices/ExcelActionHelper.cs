@@ -1,7 +1,6 @@
 ﻿using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using System;
-using LAction = Lumina.Excel.GeneratedSheets.Action;
 
 namespace ECommons.ExcelServices;
 #nullable disable
@@ -11,7 +10,7 @@ public unsafe static class ExcelActionHelper
     public static float GetActionCooldown(uint id)
     {
         var detail = ActionManager.Instance()->GetRecastGroupDetail(Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(id).CooldownGroup - 1);
-        var cdg2 = Svc.Data.GetExcelSheet<LAction>().GetRow(id).AdditionalCooldownGroup - 1;
+        var cdg2 = Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(id).AdditionalCooldownGroup - 1;
         var ret = detail->IsActive == 1 ? detail->Total - detail->Elapsed : 0;
         if (cdg2 > 0)
         {
@@ -22,7 +21,7 @@ public unsafe static class ExcelActionHelper
         return ret;
     }
 
-    public static string GetActionName(this LAction data, bool forceIncludeID = false)
+    public static string GetActionName(this Lumina.Excel.GeneratedSheets.Action data, bool forceIncludeID = false)
     {
         if(data == null)
         {
@@ -44,7 +43,7 @@ public unsafe static class ExcelActionHelper
 
     public static string GetActionName(uint id, bool forceIncludeID = false)
     {
-        var d = Svc.Data.GetExcelSheet<LAction>().GetRow(id);
+        var d = Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(id);
         if(d == null) return $"#{id}";
         return d.GetActionName(forceIncludeID);
     }
