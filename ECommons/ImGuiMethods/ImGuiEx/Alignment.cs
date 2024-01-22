@@ -57,4 +57,44 @@ public static unsafe partial class ImGuiEx
             RightFloatWidthCache[id] = pos2 - pos1;
         }
     }
+
+    static readonly Dictionary<string, float> CenteredLineWidths = new();
+    public static void LineCentered(Action func) => LineCentered(GenericHelpers.GetCallStackID(), func);
+    public static void LineCentered(string id, Action func)
+    {
+        if (CenteredLineWidths.TryGetValue(id, out var dims))
+        {
+            ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X / 2 - dims / 2);
+        }
+        var oldCur = ImGui.GetCursorPosX();
+        func();
+        ImGui.SameLine(0, 0);
+        CenteredLineWidths[id] = ImGui.GetCursorPosX() - oldCur;
+        ImGui.Dummy(Vector2.Zero);
+    }
+
+
+
+    static Dictionary<string, float> InputWithRightButtonsAreaValues = new();
+    public static void InputWithRightButtonsArea(Action inputAction, Action rightAction) => InputWithRightButtonsArea(GenericHelpers.GetCallStackID(), inputAction, rightAction);
+    /// <summary>
+    /// Convenient way to display stretched input with button or other elements on it's right side.
+    /// </summary>
+    /// <param name="id">Unique ID</param>
+    /// <param name="inputAction">A single element that accepts transformation by ImGui.SetNextItemWidth method</param>
+    /// <param name="rightAction">A line of elements on the right side. Can contain multiple elements but only one line.</param>
+    public static void InputWithRightButtonsArea(string id, Action inputAction, Action rightAction)
+    {
+        if (InputWithRightButtonsAreaValues.ContainsKey(id))
+        {
+            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - InputWithRightButtonsAreaValues[id]);
+        }
+        inputAction();
+        ImGui.SameLine();
+        var cur1 = ImGui.GetCursorPosX();
+        rightAction();
+        ImGui.SameLine(0, 0);
+        InputWithRightButtonsAreaValues[id] = ImGui.GetCursorPosX() - cur1 + ImGui.GetStyle().ItemSpacing.X;
+        ImGui.Dummy(Vector2.Zero);
+    }
 }
