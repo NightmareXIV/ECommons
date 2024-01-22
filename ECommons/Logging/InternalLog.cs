@@ -79,7 +79,7 @@ public class InternalLog
         ImGui.SameLine();
         if (ImGui.Button("Copy all"))
         {
-            GenericHelpers.Copy(Messages.Select(x => $"[{x.Level}] {x.Message}").Join("\n"));
+            GenericHelpers.Copy(Messages.Select(x => $"[{x.Level}@{x.Time}] {x.Message}").Join("\n"));
         }
         ImGui.SameLine();
         if (ImGui.Button("Clear"))
