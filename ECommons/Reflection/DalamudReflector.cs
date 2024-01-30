@@ -18,9 +18,9 @@ public static class DalamudReflector
     static GetRefValue getRefValue;
     static Dictionary<string, IDalamudPlugin> pluginCache;
     static List<Action> onPluginsChangedActions;
-    static bool IsMonitoring;
+    static bool IsMonitoring = false;
 
-    internal static void Init(bool monitorPlugins = true)
+    internal static void Init()
     {
         onPluginsChangedActions = new();
         pluginCache = new();
@@ -31,8 +31,6 @@ public static class DalamudReflector
                         BindingFlags.NonPublic | BindingFlags.Instance,
                         null, new Type[] { typeof(int) }, null));
         });
-        IsMonitoring = monitorPlugins;
-        if (monitorPlugins) Svc.Framework.Update += MonitorPlugins;
     }
 
     internal static void Dispose()
@@ -47,8 +45,13 @@ public static class DalamudReflector
 
     public static void RegisterOnInstalledPluginsChangedEvents(params Action[] actions)
     {
-        if (!IsMonitoring) throw new InvalidOperationException("Monitoring installed plugins disabled. Please enable it.");
-        foreach(var x in actions)
+        if (!IsMonitoring)
+        {
+            IsMonitoring = true;
+            PluginLog.Information($"[ECommons] [DalamudReflector] RegisterOnInstalledPluginsChangedEvents was requested for the first time. Starting to monitor plugins for changes...");
+            Svc.Framework.Update += MonitorPlugins;
+        }
+        foreach (var x in actions)
         {
             onPluginsChangedActions.Add(x);
         }
@@ -119,7 +122,15 @@ public static class DalamudReflector
 
     public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false, bool ignoreCache = false)
     {
-        if (!IsMonitoring) ignoreCache = true;
+        if (!ignoreCache)
+        {
+            if (!IsMonitoring)
+            {
+                IsMonitoring = true;
+                PluginLog.Information($"[ECommons] [DalamudReflector] Plugin cache was requested for the first time. Starting to monitor plugins for changes...");
+                Svc.Framework.Update += MonitorPlugins;
+            }
+        }
         if (pluginCache == null)
         {
             throw new Exception("PluginCache is null. Have you initialised the DalamudReflector module on ECommons initialisation?");
