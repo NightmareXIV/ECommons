@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Dalamud.Common;
 using System.Linq;
+using System.Runtime.Loader;
 #nullable disable
 
 namespace ECommons.Reflection;
@@ -16,7 +17,7 @@ public static class DalamudReflector
 {
     delegate ref int GetRefValue(int vkCode);
     static GetRefValue getRefValue;
-    static Dictionary<string, IDalamudPlugin> pluginCache;
+    static Dictionary<string, CachedPluginEntry> pluginCache;
     static List<Action> onPluginsChangedActions;
     static bool IsMonitoring = false;
 
@@ -122,7 +123,9 @@ public static class DalamudReflector
         }
     }
 
-    public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false, bool ignoreCache = false)
+    public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false, bool ignoreCache = false) => TryGetDalamudPlugin(internalName, out instance, out _, suppressErrors, ignoreCache);
+
+    public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, out AssemblyLoadContext context, bool suppressErrors = false, bool ignoreCache = false)
     {
         if (!ignoreCache)
         {
@@ -138,8 +141,10 @@ public static class DalamudReflector
             throw new Exception("PluginCache is null. Have you initialised the DalamudReflector module on ECommons initialisation?");
         }
 
-        if(!ignoreCache && pluginCache.TryGetValue(internalName, out instance) && instance != null)
+        if(!ignoreCache && pluginCache.TryGetValue(internalName, out var entry) && entry.Plugin != null)
         {
+            instance = entry.Plugin;
+            context = entry.Context;
             return true;
         }
         try
@@ -160,12 +165,14 @@ public static class DalamudReflector
                     else
                     {
                         instance = plugin;
-                        pluginCache[internalName] = plugin;
+                        context = t.GetFoP("loader")?.GetFoP<AssemblyLoadContext>("context");
+                        pluginCache[internalName] = new(plugin, context);
                         return true;
                     }
                 }
             }
             instance = null;
+            context = null;
             return false;
         }
         catch (Exception e)
@@ -176,6 +183,7 @@ public static class DalamudReflector
                 PluginLog.Error(e.StackTrace);
             }
             instance = null;
+            context = null;
             return false;
         }
     }
