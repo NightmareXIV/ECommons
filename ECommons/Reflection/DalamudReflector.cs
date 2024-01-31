@@ -44,6 +44,10 @@ public static class DalamudReflector
         Svc.Framework.Update -= MonitorPlugins;
     }
 
+    /// <summary>
+    /// Registers actions that will be triggered upon any installed plugin state change. Plugin monitoring will begin upon registering any actions.
+    /// </summary>
+    /// <param name="actions"></param>
     public static void RegisterOnInstalledPluginsChangedEvents(params Action[] actions)
     {
         if (!IsMonitoring)
@@ -57,6 +61,7 @@ public static class DalamudReflector
             onPluginsChangedActions.Add(x);
         }
     }
+
 
     public static void SetKeyState(VirtualKey key, int state)
     {
@@ -125,6 +130,16 @@ public static class DalamudReflector
 
     public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false, bool ignoreCache = false) => TryGetDalamudPlugin(internalName, out instance, out _, suppressErrors, ignoreCache);
 
+    /// <summary>
+    /// Attempts to retrieve an instance of loaded plugin and it's load context. 
+    /// </summary>
+    /// <param name="internalName">Target plugin's internal name</param>
+    /// <param name="instance">Plugin instance</param>
+    /// <param name="context">Plugin's load context. May be null.</param>
+    /// <param name="suppressErrors">Whether to stay silent on failures</param>
+    /// <param name="ignoreCache">Whether to disable caching of the plugin and it's context to speed up further searches</param>
+    /// <returns>Whether operation succeeded</returns>
+    /// <exception cref="Exception"></exception>
     public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, out AssemblyLoadContext context, bool suppressErrors = false, bool ignoreCache = false)
     {
         if (!ignoreCache)
