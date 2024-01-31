@@ -86,7 +86,9 @@ public static class DalamudReflector
         }
     }
 
-    public static bool TryGetLocalPlugin(out object localPlugin, out Type type)
+    public static bool TryGetLocalPlugin(out object localPlugin, out Type type) => TryGetLocalPlugin(ECommonsMain.Instance, out localPlugin, out type);
+
+    public static bool TryGetLocalPlugin(IDalamudPlugin instance, out object localPlugin, out Type type)
     {
         try
         {
@@ -102,7 +104,7 @@ public static class DalamudReflector
                 if (t != null)
                 {
                     type = t.GetType().Name == "LocalDevPlugin" ? t.GetType().BaseType : t.GetType();
-                    if (object.ReferenceEquals(type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t), ECommonsMain.Instance))
+                    if (object.ReferenceEquals(type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t), instance))
                     {
                         localPlugin = t;
                         return true;
