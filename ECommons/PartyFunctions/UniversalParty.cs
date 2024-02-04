@@ -39,14 +39,14 @@ public unsafe static class UniversalParty
                     {
                         var x = group.GroupMembersSpan[c];
                         var name = MemoryHelper.ReadStringNullTerminated((nint)x.Name);
-                        if (name != Player.Name && x.HomeWorld != Player.Object.HomeWorld.Id)
+                        if (!(name == Player.Name && x.HomeWorld == Player.Object.HomeWorld.Id))
                         {
                             span.Add(new()
                             {
                                 Name = name,
                                 HomeWorld = new((uint)x.HomeWorld),
                                 CurrentWorld = new((uint)x.CurrentWorld),
-                            }) ;
+                            });
                         }
                     }
                 }
