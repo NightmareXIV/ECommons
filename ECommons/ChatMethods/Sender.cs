@@ -3,6 +3,7 @@ using Dalamud.Game.Text.SeStringHandling;
 using ECommons.DalamudServices;
 using Lumina.Excel.GeneratedSheets;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace ECommons.ChatMethods;
@@ -49,6 +50,21 @@ public struct Sender : IEquatable<Sender>
     {
         return Name == other.Name &&
                HomeWorld == other.HomeWorld;
+    }
+
+    public PlayerCharacter? Find()
+    {
+        foreach (var x in Svc.Objects)
+        {
+            if (x is PlayerCharacter pc && pc.Name.ToString() == this.Name && pc.HomeWorld.Id == this.HomeWorld) return pc;
+        }
+        return null;
+    }
+
+    public bool TryFind([NotNullWhen(true)] out PlayerCharacter pc)
+    {
+        pc = Find();
+        return pc != null;
     }
 
     public override int GetHashCode()

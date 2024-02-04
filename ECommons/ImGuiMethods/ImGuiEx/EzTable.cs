@@ -66,7 +66,7 @@ public static unsafe partial class ImGuiEx
             this.Delegate = @delegate ?? throw new ArgumentNullException(nameof(@delegate));
             this.ColumnFlags = ImGuiTableColumnFlags.None;
         }
-        public EzTableEntry(string columnName, Action @delegate, bool stretch)
+        public EzTableEntry(string columnName, bool stretch, Action @delegate)
         {
             this.ColumnName = columnName ?? throw new ArgumentNullException(nameof(columnName));
             this.Delegate = @delegate ?? throw new ArgumentNullException(nameof(@delegate));
