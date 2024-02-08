@@ -882,6 +882,28 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
+    public static bool EnumRadio<T>(ref T refConfigField, bool sameLine = false, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : Enum, IConvertible
+    {
+        var ret = false;
+        var values = Enum.GetValues(typeof(T));
+        bool first = true;
+        foreach (var x in values)
+        {
+            if (!first && sameLine) ImGui.SameLine();
+            first = false;
+            var equals = EqualityComparer<T>.Default.Equals((T)x, refConfigField);
+            var element = (names != null && names.TryGetValue((T)x, out var n)) ? n : x.ToString().Replace("_", " ");
+            if ((filter == null || filter((T)x))
+                && ImGui.RadioButton(element, equals)
+                )
+            {
+                ret = true;
+                refConfigField = (T)x;
+            }
+        }
+        return ret;
+    }
+
     public static Dictionary<string, Box<string>> ComboSearch = new();
     public static bool Combo<T>(string name, ref T refConfigField, IEnumerable<T> values, Func<T, bool> filter = null, Dictionary<T, string> names = null)
     {

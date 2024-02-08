@@ -18,6 +18,7 @@ using ECommons.Throttlers;
 using ECommons.EzEventManager;
 using ECommons.EzHookManager;
 using ECommons.EzSharedDataManager;
+using Serilog.Events;
 #nullable disable
 
 namespace ECommons;
@@ -32,6 +33,7 @@ public static class ECommonsMain
         Instance = instance;
         GenericHelpers.Safe(() => Svc.Init(pluginInterface));
         PluginLog.Information($"This is ECommons v{typeof(ECommonsMain).Assembly.GetName().Version} and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}. Hello!");
+        Svc.Log.MinimumLogLevel = LogEventLevel.Verbose;
         GenericHelpers.Safe(CmdManager.Init);
         if (modules.ContainsAny(Module.All, Module.ObjectFunctions))
         {
