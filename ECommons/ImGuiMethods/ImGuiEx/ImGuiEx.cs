@@ -676,7 +676,9 @@ public static unsafe partial class ImGuiEx
     {
         if (ImGui.IsItemHovered())
         {
+            ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
             SetTooltip(s);
+            ImGui.PopTextWrapPos();
         }
     }
 
@@ -833,7 +835,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="name">ImGui ID</param>
     /// <param name="refConfigField">Value</param>
     /// <param name="names">Optional Name overrides</param>
-    public static bool EnumCombo<T>(string name, ref T refConfigField, IDictionary<T, string> names) where T : IConvertible
+    public static bool EnumCombo<T>(string name, ref T refConfigField, IDictionary<T, string> names) where T : Enum, IConvertible
     {
         return EnumCombo(name, ref refConfigField, null, names);
     }
@@ -847,7 +849,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="filter">Optional filter</param>
     /// <param name="names">Optional Name overrides</param>
     /// <returns></returns>
-    public static bool EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : IConvertible
+    public static bool EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : Enum, IConvertible
     {
         var ret = false;
         if (ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString().Replace("_", " ")))
