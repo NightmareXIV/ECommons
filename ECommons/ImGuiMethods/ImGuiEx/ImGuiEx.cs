@@ -97,9 +97,9 @@ public static unsafe partial class ImGuiEx
         ImGui.SetNextItemWidth(width.Scale());
     }
 
-    public static bool InputTextMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10)
+    public static bool InputTextMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
     {
-        return ImGui.InputTextMultiline(id, ref text, maxLength, new(ImGuiEx.GetWindowContentRegionWidth(), ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)));
+        return ImGui.InputTextMultiline(id, ref text, maxLength, new(width ?? ImGuiEx.GetWindowContentRegionWidth(), ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)));
     }
 
     public static bool EnumOrderer<T>(string id, List<T> order) where T : IConvertible
