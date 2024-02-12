@@ -41,6 +41,8 @@ public class ThreadLoadImageHandler
         Safe(CachedIcons.Clear);
     }
 
+    public static bool TryGetIconTextureWrap(int icon, bool hq, out IDalamudTextureWrap textureWrap) => TryGetIconTextureWrap((uint)icon, hq, out textureWrap);
+
     public static bool TryGetIconTextureWrap(uint icon, bool hq, out IDalamudTextureWrap textureWrap)
     {
         ImageLoadingResult result;

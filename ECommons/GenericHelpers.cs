@@ -25,12 +25,27 @@ using ECommons.MathHelpers;
 using PInvoke;
 using System.Windows.Forms;
 using ECommons.Interop;
+using System.Globalization;
 #nullable disable
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static bool TryParseByteArray(string input, out byte[] output)
+    {
+        var str = input.Split(" ");
+        output = new byte[str.Length];
+        for (int i = 0; i < str.Length; i++)
+        {
+            if (!byte.TryParse(str[i], NumberStyles.HexNumber, null, out output[i]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static string GetCallStackID(int maxFrames = 3) 
     {
         try

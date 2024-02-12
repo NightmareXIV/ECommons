@@ -97,9 +97,9 @@ public static unsafe partial class ImGuiEx
         ImGui.SetNextItemWidth(width.Scale());
     }
 
-    public static bool InputTextMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10)
+    public static bool InputTextMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
     {
-        return ImGui.InputTextMultiline(id, ref text, maxLength, new(ImGuiEx.GetWindowContentRegionWidth(), ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)));
+        return ImGui.InputTextMultiline(id, ref text, maxLength, new(width ?? ImGuiEx.GetWindowContentRegionWidth(), ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)));
     }
 
     public static bool EnumOrderer<T>(string id, List<T> order) where T : IConvertible
@@ -878,6 +878,28 @@ public static unsafe partial class ImGuiEx
                 if (ImGui.IsWindowAppearing() && equals) ImGui.SetScrollHereY();
             }
             ImGui.EndCombo();
+        }
+        return ret;
+    }
+
+    public static bool EnumRadio<T>(ref T refConfigField, bool sameLine = false, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : Enum, IConvertible
+    {
+        var ret = false;
+        var values = Enum.GetValues(typeof(T));
+        bool first = true;
+        foreach (var x in values)
+        {
+            if (!first && sameLine) ImGui.SameLine();
+            first = false;
+            var equals = EqualityComparer<T>.Default.Equals((T)x, refConfigField);
+            var element = (names != null && names.TryGetValue((T)x, out var n)) ? n : x.ToString().Replace("_", " ");
+            if ((filter == null || filter((T)x))
+                && ImGui.RadioButton(element, equals)
+                )
+            {
+                ret = true;
+                refConfigField = (T)x;
+            }
         }
         return ret;
     }
