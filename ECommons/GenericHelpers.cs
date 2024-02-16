@@ -26,6 +26,8 @@ using PInvoke;
 using System.Windows.Forms;
 using ECommons.Interop;
 using System.Globalization;
+using System.Collections;
+using Dalamud.Interface.Windowing;
 #nullable disable
 
 namespace ECommons;
@@ -1129,34 +1131,84 @@ public static unsafe class GenericHelpers
         }
     }
 
-    public static bool TryGetFirst<K>(this IEnumerable<K> enumerable, out K value)
+    /// <summary>
+    /// Attempts to get first element of <see cref="IEnumerable"/>.
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool TryGetFirst<TSource>(this IEnumerable<TSource> source, out TSource value)
     {
-        try
-        {
-            value = enumerable.First();
-            return true;
-        }
-        catch (Exception)
+        if (source == null)
         {
             value = default;
             return false;
         }
+        var list = source as IList<TSource>;
+        if (list != null)
+        {
+            if (list.Count > 0)
+            {
+                value = list[0];
+                return true;
+            }
+        }
+        else
+        {
+            using (var e = source.GetEnumerator())
+            {
+                if (e.MoveNext())
+                {
+                    value = e.Current;
+                    return true;
+                }
+            }
+        }
+        value = default;
+        return false;
     }
 
-    public static bool TryGetFirst<K>(this IEnumerable<K> enumerable, Func<K, bool> predicate, out K value)
+    /// <summary>
+    /// Attempts to get first element of IEnumerable
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="predicate">Function to test elements.</param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool TryGetFirst<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, out TSource value)
     {
-        try
-        {
-            value = enumerable.First(predicate);
-            return true;
-        }
-        catch (Exception)
+        if (source == null)
         {
             value = default;
             return false;
         }
+        if (predicate == null)
+        {
+            value = default;
+            return false;
+        }
+        foreach (TSource element in source)
+        {
+            if (predicate(element))
+            {
+                value = element;
+                return true;
+            }
+        }
+        value = default;
+        return false;
     }
 
+    /// <summary>
+    /// Attempts to get last element of <see cref="IEnumerable"/>.
+    /// </summary>
+    /// <typeparam name="K"></typeparam>
+    /// <param name="enumerable"></param>
+    /// <param name="predicate">Function to test elements.</param>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public static bool TryGetLast<K>(this IEnumerable<K> enumerable, Func<K, bool> predicate, out K value)
     {
         try
@@ -1171,6 +1223,13 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Attempts to get first instance of addon by name.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="Addon"></param>
+    /// <param name="AddonPtr"></param>
+    /// <returns></returns>
     public static bool TryGetAddonByName<T>(string Addon, out T* AddonPtr) where T : unmanaged
     {
         var a = Svc.GameGui.GetAddonByName(Addon, 1);
@@ -1186,6 +1245,11 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Attempts to find out whether SelectString entry is enabled based on text color. 
+    /// </summary>
+    /// <param name="textNodePtr"></param>
+    /// <returns></returns>
     public static bool IsSelectItemEnabled(AtkTextNode* textNodePtr)
     {
         var col = textNodePtr->TextColor;
@@ -1213,6 +1277,17 @@ public static unsafe class GenericHelpers
         var item = list[sourceIndex];
         list.RemoveAt(sourceIndex);
         list.Insert(targetedIndex, item);
+    }
+
+    public static void SetMinSize(this Window window, float width = 100, float height = 100) => SetMinSize(window, new Vector2(width, height));
+
+    public static void SetMinSize(this Window window, Vector2 minSize)
+    {
+        window.SizeConstraints = new()
+        {
+            MinimumSize = minSize,
+            MaximumSize = new Vector2(float.MaxValue)
+        };
     }
 
 

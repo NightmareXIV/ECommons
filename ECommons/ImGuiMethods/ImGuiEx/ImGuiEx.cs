@@ -3,9 +3,10 @@ using Dalamud.Interface.Colors;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Utility;
 using ECommons.DalamudServices;
+using ECommons.ExcelServices;
 using ECommons.Logging;
-using ECommons.Schedulers;
 using ImGuiNET;
+using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,12 +14,78 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
+using Action = System.Action;
 
 namespace ECommons.ImGuiMethods;
 #nullable disable
 
 public static unsafe partial class ImGuiEx
 {
+    public enum JobSelectorOption 
+    { 
+        None, 
+        /// <summary>
+        /// With this option, base jobs will be included as well.
+        /// </summary>
+        IncludeBase,
+        /// <summary>
+        /// Whether to clear filter when user opens job selection menu.
+        /// </summary>
+        ClearFilterOnOpen,
+    }
+    static string JobSelectorFilter = "";
+    /// <summary>
+    /// ImGui combo that opens up into a multiple job selector with icons and search field.
+    /// </summary>
+    /// <param name="id">Standard ID that will be passed directly to the combo.</param>
+    /// <param name="selectedJobs">A collection where selected jobs will be written.</param>
+    /// <param name="options">An array of extra options, if desired.</param>
+    /// <param name="maxPreviewJobs">How much jobs maximum will be visible on a preview before it will just display amount.</param>
+    /// <param name="noJobSelectedPreview">Preview value that should be displayed when no job is selected.</param>
+    /// <param name="jobDisplayFilter">Optional extra filter for jobs to be displayed.</param>
+    /// <returns><see langword="true"/> every time <paramref name="selectedJobs"/> is modified.</returns>
+    public static bool JobSelector(string id, ICollection<Job> selectedJobs, JobSelectorOption[] options = null, int maxPreviewJobs = 3, string noJobSelectedPreview = "None", Func<Job, bool> jobDisplayFilter = null)
+    {
+        var ret = false;
+        var baseJobs = options?.Contains(JobSelectorOption.IncludeBase) == true;
+        string preview;
+        if(selectedJobs.Count == 0)
+        {
+            preview = noJobSelectedPreview;
+        }
+        else if(selectedJobs.Count > maxPreviewJobs)
+        {
+            preview = $"{selectedJobs.Count} selected";
+        }
+        else
+        {
+            preview = selectedJobs.Select(x => x.ToString().Replace("_", " ")).Print();
+        }
+        if (ImGui.BeginCombo(id, preview))
+        {
+            if(ImGui.IsWindowAppearing() && options?.Contains(JobSelectorOption.ClearFilterOnOpen) == true)
+            ImGuiEx.SetNextItemWidthScaled(150f);
+            ImGui.InputTextWithHint("##filter", "Filter...", ref JobSelectorFilter, 50);
+            foreach (var cond in Enum.GetValues<Job>().Where(x => baseJobs || !x.IsUpgradeable()).OrderByDescending(x => Svc.Data.GetExcelSheet<ClassJob>().GetRow((uint)x).Role))
+            {
+                if (cond == Job.ADV) continue;
+                if (jobDisplayFilter != null && !jobDisplayFilter(cond)) continue;
+                var name = cond.ToString().Replace("_", " ");
+                if (JobSelectorFilter == "" || name.Contains(JobSelectorFilter, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (ThreadLoadImageHandler.TryGetIconTextureWrap((uint)cond.GetIcon(), false, out var texture))
+                    {
+                        ImGui.Image(texture.ImGuiHandle, new Vector2(24f.Scale()));
+                        ImGui.SameLine();
+                    }
+                    if (ImGuiEx.CollectionCheckbox(name, cond, selectedJobs)) ret = true;
+                }
+            }
+            ImGui.EndCombo();
+        }
+        return ret;
+    }
+
     public static void HelpMarker(string helpText, Vector4? color = null, string symbolOverride = null) => InfoMarker(helpText, color, symbolOverride);
 
     public static void InfoMarker(string helpText, Vector4? color = null, string symbolOverride = null)
