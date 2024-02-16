@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Xml.Linq;
 using System.Collections.Generic;
 using System;
+using System.ComponentModel;
 
 namespace ECommons.Reflection;
 #nullable disable
@@ -74,14 +75,22 @@ public static partial class ReflectionHelper
         }
     }
 
-    public static object Call(this object obj, string name, object[] values)
+    public static object Call(this object obj, string name, object[] values, bool matchExactArgumentTypes = false)
     {
-        var info = obj.GetType().GetMethod(name, AllFlags, values.Select(x => x.GetType()).ToArray());
+        MethodInfo info;
+        if (!matchExactArgumentTypes)
+        {
+            info = obj.GetType().GetMethod(name, AllFlags);
+        }
+        else
+        {
+            info = obj.GetType().GetMethod(name, AllFlags, values.Select(x => x.GetType()).ToArray());
+        }
         return info.Invoke(obj, values);
     }
 
-    public static T Call<T>(this object obj, string name, object[] values)
+    public static T Call<T>(this object obj, string name, object[] values, bool matchExactArgumentTypes = false)
     {
-        return (T)Call(obj, name, values);
+        return (T)Call(obj, name, values, matchExactArgumentTypes);
     }
 } 
