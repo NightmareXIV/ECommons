@@ -30,4 +30,6 @@ public static partial class ReflectionHelper
         }
         return methodInfo?.Invoke(obj, parameters);
     }
+
+    public static T Call<T>(this object obj, IEnumerable<Assembly> assemblies, string methodName, IEnumerable<string> methodTypeArguments, object[] parameters) => (T)Call(obj, assemblies, methodName, methodTypeArguments, parameters);
 }
