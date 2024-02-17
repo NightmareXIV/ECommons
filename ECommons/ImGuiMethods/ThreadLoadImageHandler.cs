@@ -72,7 +72,7 @@ public class ThreadLoadImageHandler
     internal static void BeginThreadIfNotRunning()
     {
         if (ThreadRunning) return;
-        PluginLog.Information("Starting ThreadLoadImageHandler");
+        PluginLog.Debug("Starting ThreadLoadImageHandler");
         ThreadRunning = true;
         new Thread(() =>
         {
@@ -88,7 +88,7 @@ public class ThreadLoadImageHandler
                             {
                                 idleTicks = 0;
                                 keyValuePair.Value.isCompleted = true;
-                                PluginLog.Information("Loading image " + keyValuePair.Key);
+                                PluginLog.Debug("Loading image " + keyValuePair.Key);
                                 if (keyValuePair.Key.StartsWith("http:", StringComparison.OrdinalIgnoreCase) || keyValuePair.Key.StartsWith("https:", StringComparison.OrdinalIgnoreCase))
                                 {
                                     var result = httpClient.GetAsync(keyValuePair.Key).Result;
@@ -130,7 +130,7 @@ public class ThreadLoadImageHandler
                             {
                                 idleTicks = 0;
                                 keyValuePair.Value.isCompleted = true;
-                                PluginLog.Information($"Loading icon {keyValuePair.Key.ID}, hq={keyValuePair.Key.HQ}");
+                                PluginLog.Debug($"Loading icon {keyValuePair.Key.ID}, hq={keyValuePair.Key.HQ}");
                                 keyValuePair.Value.texture = Svc.Texture.GetIcon(keyValuePair.Key.ID, keyValuePair.Key.HQ?IconFlags.HiRes:IconFlags.None);
                             }
                         }
@@ -139,7 +139,7 @@ public class ThreadLoadImageHandler
                     if(!CachedTextures.Any(x => x.Value.isCompleted) && !CachedIcons.Any(x => x.Value.isCompleted)) Thread.Sleep(100);
                 }
             });
-            PluginLog.Information($"Stopping ThreadLoadImageHandler, ticks={idleTicks}");
+            PluginLog.Debug($"Stopping ThreadLoadImageHandler, ticks={idleTicks}");
             ThreadRunning = false;
         }).Start();
     }
