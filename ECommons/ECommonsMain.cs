@@ -13,9 +13,13 @@ using ECommons.Hooks;
 using ECommons.Loader;
 using ECommons.Automation;
 using ECommons.StringHelpers;
-using Dalamud.Utility;
 using ECommons.Commands;
 using ECommons.Throttlers;
+using ECommons.EzEventManager;
+using ECommons.EzHookManager;
+using ECommons.EzSharedDataManager;
+using Serilog.Events;
+#nullable disable
 
 namespace ECommons;
 
@@ -28,6 +32,8 @@ public static class ECommonsMain
     {
         Instance = instance;
         GenericHelpers.Safe(() => Svc.Init(pluginInterface));
+        PluginLog.Information($"This is ECommons v{typeof(ECommonsMain).Assembly.GetName().Version} and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}. Hello!");
+        Svc.Log.MinimumLogLevel = LogEventLevel.Verbose;
         GenericHelpers.Safe(CmdManager.Init);
         if (modules.ContainsAny(Module.All, Module.ObjectFunctions))
         {
@@ -37,7 +43,7 @@ public static class ECommonsMain
         if (modules.ContainsAny(Module.All, Module.DalamudReflector, Module.SplatoonAPI))
         {
             PluginLog.Information("Advanced Dalamud reflection module has been requested");
-            GenericHelpers.Safe(DalamudReflector.Init);
+            GenericHelpers.Safe(() => DalamudReflector.Init());
         }
         if (modules.ContainsAny(Module.All, Module.ObjectLife))
         {
@@ -60,6 +66,7 @@ public static class ECommonsMain
         {
             GenericHelpers.Safe(EzConfig.Save);
         }
+        GenericHelpers.Safe(EzConfig.Dispose);
         GenericHelpers.Safe(ThreadLoadImageHandler.Dispose);
         GenericHelpers.Safe(ObjectLife.Dispose);
         GenericHelpers.Safe(DalamudReflector.Dispose);
@@ -91,10 +98,14 @@ public static class ECommonsMain
         GenericHelpers.Safe(SendAction.Dispose);
         GenericHelpers.Safe(TaskManager.DisposeAll);
         GenericHelpers.Safe(EqualStrings.Dispose);
+        GenericHelpers.Safe(AutoCutsceneSkipper.Dispose);
         GenericHelpers.Safe(() => ThreadLoadImageHandler.httpClient?.Dispose());
         EzThrottler.Throttler = null;
         FrameThrottler.Throttler = null;
         GenericHelpers.Safe(Callback.Dispose);
+        GenericHelpers.Safe(EzEvent.DisposeAll);
+        GenericHelpers.Safe(EzHookCommon.DisposeAll);
+        GenericHelpers.Safe(EzSharedData.Dispose);
         Chat.instance = null;
         Instance = null;
     }

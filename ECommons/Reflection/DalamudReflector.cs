@@ -1,5 +1,4 @@
-﻿using Dalamud;
-using Dalamud.Game.ClientState.Keys;
+﻿using Dalamud.Game.ClientState.Keys;
 using ECommons.Logging;
 using Dalamud.Plugin;
 using ECommons.DalamudServices;
@@ -8,6 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Dalamud.Common;
+using System.Linq;
+using System.Runtime.Loader;
+#nullable disable
 
 namespace ECommons.Reflection;
 
@@ -15,8 +17,9 @@ public static class DalamudReflector
 {
     delegate ref int GetRefValue(int vkCode);
     static GetRefValue getRefValue;
-    static Dictionary<string, IDalamudPlugin> pluginCache;
+    static Dictionary<string, CachedPluginEntry> pluginCache;
     static List<Action> onPluginsChangedActions;
+    static bool IsMonitoring = false;
 
     internal static void Init()
     {
@@ -29,7 +32,6 @@ public static class DalamudReflector
                         BindingFlags.NonPublic | BindingFlags.Instance,
                         null, new Type[] { typeof(int) }, null));
         });
-        Svc.PluginInterface.ActivePluginsChanged += OnInstalledPluginsChanged;
     }
 
     internal static void Dispose()
@@ -39,16 +41,27 @@ public static class DalamudReflector
             pluginCache = null;
             onPluginsChangedActions = null;
         }
-        Svc.PluginInterface.ActivePluginsChanged -= OnInstalledPluginsChanged;
+        Svc.Framework.Update -= MonitorPlugins;
     }
 
+    /// <summary>
+    /// Registers actions that will be triggered upon any installed plugin state change. Plugin monitoring will begin upon registering any actions.
+    /// </summary>
+    /// <param name="actions"></param>
     public static void RegisterOnInstalledPluginsChangedEvents(params Action[] actions)
     {
-        foreach(var x in actions)
+        if (!IsMonitoring)
+        {
+            IsMonitoring = true;
+            PluginLog.Information($"[ECommons] [DalamudReflector] RegisterOnInstalledPluginsChangedEvents was requested for the first time. Starting to monitor plugins for changes...");
+            Svc.Framework.Update += MonitorPlugins;
+        }
+        foreach (var x in actions)
         {
             onPluginsChangedActions.Add(x);
         }
     }
+
 
     public static void SetKeyState(VirtualKey key, int state)
     {
@@ -69,7 +82,19 @@ public static class DalamudReflector
                 GetMethod("Get").Invoke(null, BindingFlags.Default, null, Array.Empty<object>(), null);
     }
 
-    public static bool TryGetLocalPlugin(out object localPlugin, out Type type)
+    static InstalledPluginState[] PrevInstalledPluginState = [];
+    static void MonitorPlugins(object _)
+    {
+        if(!Svc.PluginInterface.InstalledPlugins.SequenceEqual(PrevInstalledPluginState))
+        {
+            PrevInstalledPluginState = Svc.PluginInterface.InstalledPlugins.ToArray();
+            OnInstalledPluginsChanged();
+        }
+    }
+
+    public static bool TryGetLocalPlugin(out object localPlugin, out Type type) => TryGetLocalPlugin(ECommonsMain.Instance, out localPlugin, out type);
+
+    public static bool TryGetLocalPlugin(IDalamudPlugin instance, out object localPlugin, out Type type)
     {
         try
         {
@@ -85,7 +110,7 @@ public static class DalamudReflector
                 if (t != null)
                 {
                     type = t.GetType().Name == "LocalDevPlugin" ? t.GetType().BaseType : t.GetType();
-                    if (object.ReferenceEquals(type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t), ECommonsMain.Instance))
+                    if (object.ReferenceEquals(type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t), instance))
                     {
                         localPlugin = t;
                         return true;
@@ -103,15 +128,38 @@ public static class DalamudReflector
         }
     }
 
-    public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false, bool ignoreCache = false)
+    public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false, bool ignoreCache = false) => TryGetDalamudPlugin(internalName, out instance, out _, suppressErrors, ignoreCache);
+
+    /// <summary>
+    /// Attempts to retrieve an instance of loaded plugin and it's load context. 
+    /// </summary>
+    /// <param name="internalName">Target plugin's internal name</param>
+    /// <param name="instance">Plugin instance</param>
+    /// <param name="context">Plugin's load context. May be null.</param>
+    /// <param name="suppressErrors">Whether to stay silent on failures</param>
+    /// <param name="ignoreCache">Whether to disable caching of the plugin and it's context to speed up further searches</param>
+    /// <returns>Whether operation succeeded</returns>
+    /// <exception cref="Exception"></exception>
+    public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, out AssemblyLoadContext context, bool suppressErrors = false, bool ignoreCache = false)
     {
+        if (!ignoreCache)
+        {
+            if (!IsMonitoring)
+            {
+                IsMonitoring = true;
+                PluginLog.Information($"[ECommons] [DalamudReflector] Plugin cache was requested for the first time. Starting to monitor plugins for changes...");
+                Svc.Framework.Update += MonitorPlugins;
+            }
+        }
         if (pluginCache == null)
         {
             throw new Exception("PluginCache is null. Have you initialised the DalamudReflector module on ECommons initialisation?");
         }
 
-        if(!ignoreCache && pluginCache.TryGetValue(internalName, out instance) && instance != null)
+        if(!ignoreCache && pluginCache.TryGetValue(internalName, out var entry) && entry.Plugin != null)
         {
+            instance = entry.Plugin;
+            context = entry.Context;
             return true;
         }
         try
@@ -121,7 +169,7 @@ public static class DalamudReflector
 
             foreach (var t in installedPlugins)
             {
-                if ((string)t.GetType().GetProperty("Name").GetValue(t) == internalName)
+                if ((string)t.GetType().GetProperty("InternalName").GetValue(t) == internalName)
                 {
                     var type = t.GetType().Name == "LocalDevPlugin" ? t.GetType().BaseType : t.GetType();
                     var plugin = (IDalamudPlugin)type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t);
@@ -132,12 +180,14 @@ public static class DalamudReflector
                     else
                     {
                         instance = plugin;
-                        pluginCache[internalName] = plugin;
+                        context = t.GetFoP("loader")?.GetFoP<AssemblyLoadContext>("context");
+                        pluginCache[internalName] = new(plugin, context);
                         return true;
                     }
                 }
             }
             instance = null;
+            context = null;
             return false;
         }
         catch (Exception e)
@@ -148,6 +198,7 @@ public static class DalamudReflector
                 PluginLog.Error(e.StackTrace);
             }
             instance = null;
+            context = null;
             return false;
         }
     }
@@ -158,7 +209,7 @@ public static class DalamudReflector
         {
             if (pluginInterface == null) pluginInterface = Svc.PluginInterface;
             var info = pluginInterface.GetType().Assembly.
-                    GetType("Dalamud.Service`1", true).MakeGenericType(Svc.PluginInterface.GetType().Assembly.GetType("Dalamud.Dalamud", true)).
+                    GetType("Dalamud.Service`1", true).MakeGenericType(pluginInterface.GetType().Assembly.GetType("Dalamud.Dalamud", true)).
                     GetMethod("Get").Invoke(null, BindingFlags.Default, null, Array.Empty<object>(), null);
             dalamudStartInfo = info.GetFoP<DalamudStartInfo>("StartInfo");
             return true;
@@ -176,7 +227,7 @@ public static class DalamudReflector
         return Svc.PluginInterface?.InternalName ?? "Not initialized";
     }
 
-    internal static void OnInstalledPluginsChanged(PluginListInvalidationKind kind, bool affectedThisPlugin)
+    internal static void OnInstalledPluginsChanged()
     {
         PluginLog.Verbose("Installed plugins changed event fired");
         _ = new TickScheduler(delegate

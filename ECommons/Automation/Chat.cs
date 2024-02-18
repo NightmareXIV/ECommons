@@ -26,6 +26,7 @@ using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using Framework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
 namespace ECommons.Automation;
+#nullable disable
 
 /// <summary>
 /// A class containing chat functionality

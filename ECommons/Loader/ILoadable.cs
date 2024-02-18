@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ECommons.Loader;
 
-namespace ECommons.Loader
+public interface ILoadable
 {
-    public interface ILoadable
-    {
-        public bool IsDisposed { get; }
-    }
+    public bool IsDisposed { get; }
 }

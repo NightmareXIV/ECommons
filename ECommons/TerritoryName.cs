@@ -15,10 +15,10 @@ public static class TerritoryName
         {
             return val;
         }
-        var data = Svc.Data.GetExcelSheet<TerritoryType>().GetRow(id);
+        var data = Svc.Data.GetExcelSheet<TerritoryType>()!.GetRow(id);
         if(data != null)
         {
-            var zoneName = data.PlaceName.Value.Name.ToString();
+            var zoneName = data.PlaceName.Value?.Name.ToString() ?? "";
             if (zoneName != string.Empty) 
             {
                 var cfc = data.ContentFinderCondition.Value;

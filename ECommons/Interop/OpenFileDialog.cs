@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace ECommons.Interop;
+#nullable disable
 
 public class OpenFileDialog
 {

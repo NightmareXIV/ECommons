@@ -2,33 +2,77 @@
 using ECommons.DalamudServices;
 using System;
 using System.Collections.Generic;
+using ECommons.GameHelpers;
 
 namespace ECommons.Events;
+#nullable disable
 
 public static class ProperOnLogin
 {
     static HashSet<Action> RegisteredActions = new();
-    static bool EventRegistered = false;
+    static HashSet<Action> RegisteredActionsInteractable = new();
+    static bool EventRegisteredAvailable = false;
+    static bool EventRegisteredInteractable = false;
 
     public static bool PlayerPresent => Svc.ClientState.LocalPlayer != null && Svc.ClientState.LocalContentId != 0;
 
-    public static void Register(Action action, bool fireImmediately = false)
+    public static void FireArtificially()
     {
-        if (RegisteredActions.Contains(action))
+        OnUpdateAvailable(null);
+        OnUpdateInteractable(null);
+    }
+
+    [Obsolete("Use either RegisterAvailable or RegisterInteractable")]
+    public static void Register(Action action, bool fireImmediately = false) => RegisterAvailable(action, fireImmediately);
+
+    public static void RegisterAvailable(Action action, bool fireImmediately = false)
+    {
+        if (RegisteredActionsInteractable.Contains(action))
         {
-            PluginLog.Warning($"{action.GetType().FullName} ProperOnLogin event is already registered!");
+            PluginLog.Warning($"{action.GetType().FullName} ProperOnLogin available event is already registered in interactable section!");
+        }
+        else if (RegisteredActions.Contains(action))
+        {
+            PluginLog.Warning($"{action.GetType().FullName} ProperOnLogin available event is already registered in available section!");
         }
         else
         {
             RegisteredActions.Add(action);
-            PluginLog.Debug($"Registered ProperOnLogin event: {action.GetType().FullName}");
-            if (!EventRegistered)
+            PluginLog.Debug($"Registered ProperOnLogin available event: {action.GetType().FullName}");
+            if (!EventRegisteredAvailable)
             {
-                EventRegistered = true;
-                Svc.ClientState.Login += OnLogin;
-                PluginLog.Debug("ProperOnLogin master event registered");
+                EventRegisteredAvailable = true;
+                Svc.ClientState.Login += OnLoginAvailable;
+                PluginLog.Debug("ProperOnLogin master available event registered");
             }
             if(fireImmediately && PlayerPresent)
+            {
+                GenericHelpers.Safe(action);
+            }
+        }
+    }
+
+    public static void RegisterInteractable(Action action, bool fireImmediately = false)
+    {
+        if (RegisteredActionsInteractable.Contains(action))
+        {
+            PluginLog.Warning($"{action.GetType().FullName} ProperOnLogin interactable event is already registered in interactable section!");
+        }
+        else if(RegisteredActions.Contains(action))
+        {
+            PluginLog.Warning($"{action.GetType().FullName} ProperOnLogin interactable event is already registered in available section!");
+        }
+        else
+        {
+            RegisteredActionsInteractable.Add(action);
+            PluginLog.Debug($"Registered interactable ProperOnLogin event: {action.GetType().FullName}");
+            if (!EventRegisteredInteractable)
+            {
+                EventRegisteredInteractable = true;
+                Svc.ClientState.Login += OnLoginInteractable;
+                PluginLog.Debug("ProperOnLogin interactable master event registered");
+            }
+            if (fireImmediately && Player.Interactable)
             {
                 GenericHelpers.Safe(action);
             }
@@ -38,29 +82,28 @@ public static class ProperOnLogin
     [Obsolete("This event is automatically disposed together with ECommons")]
     public static void Unregister(Action action)
     {
-        if (!RegisteredActions.Contains(action))
+        if (!RegisteredActions.Remove(action) && !RegisteredActionsInteractable.Remove(action))
         {
             PluginLog.Warning($"{action.GetType().FullName} ProperOnLogin event is not registered!");
         }
         else
         {
-            RegisteredActions.Remove(action);
             PluginLog.Debug($"Unregistered ProperOnLogin event: {action.GetType().FullName}");
         }
     }
 
-    static void OnLogin()
+    static void OnLoginAvailable()
     {
-        Svc.Framework.Update += OnUpdate;
-        PluginLog.Debug("Registering ProperOnLogin event's framework update");
+        Svc.Framework.Update += OnUpdateAvailable;
+        PluginLog.Debug("Registering ProperOnLogin Available event's framework update");
     }
 
-    static void OnUpdate(object _)
+    static void OnUpdateAvailable(object _)
     {
         if(PlayerPresent)
         {
-            PluginLog.Debug("Firing ProperOnLogin event and unregistering framework update");
-            Svc.Framework.Update -= OnUpdate;
+            PluginLog.Debug("Firing ProperOnLogin Available event and unregistering framework update");
+            Svc.Framework.Update -= OnUpdateAvailable;
             foreach(var x in RegisteredActions)
             {
                 try
@@ -69,7 +112,34 @@ public static class ProperOnLogin
                 }
                 catch(Exception e)
                 {
-                    PluginLog.Error($"Exception while processing ProperOnLogin event in {x.GetType().FullName}");
+                    PluginLog.Error($"Exception while processing ProperOnLogin Available event in {x.GetType().FullName}");
+                    e.Log();
+                }
+            }
+        }
+    }
+
+    static void OnLoginInteractable()
+    {
+        Svc.Framework.Update += OnUpdateInteractable;
+        PluginLog.Debug("Registering ProperOnLogin Interactable event's framework update");
+    }
+
+    static void OnUpdateInteractable(object _)
+    {
+        if (Player.Interactable)
+        {
+            PluginLog.Debug("Firing ProperOnLogin Interactable event and unregistering framework update");
+            Svc.Framework.Update -= OnUpdateInteractable;
+            foreach (var x in RegisteredActionsInteractable)
+            {
+                try
+                {
+                    x();
+                }
+                catch (Exception e)
+                {
+                    PluginLog.Error($"Exception while processing ProperOnLogin Interactable event in {x.GetType().FullName}");
                     e.Log();
                 }
             }
@@ -78,10 +148,15 @@ public static class ProperOnLogin
 
     internal static void Dispose()
     {
-        if (EventRegistered)
+        if (EventRegisteredAvailable)
         {
-            Svc.ClientState.Login -= OnLogin;
-            PluginLog.Debug("ProperOnLogin master event unregistered");
+            Svc.ClientState.Login -= OnLoginAvailable;
+            PluginLog.Debug("ProperOnLogin master available event unregistered");
+        }
+        if (EventRegisteredInteractable)
+        {
+            Svc.ClientState.Login -= OnLoginInteractable;
+            PluginLog.Debug("ProperOnLogin master interactable event unregistered");
         }
     }
 }

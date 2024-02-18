@@ -1,17 +1,18 @@
 ﻿using Dalamud.Interface.Internal;
 using ECommons.DalamudServices;
 using ECommons.Logging;
-using ImGuiScene;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using static Dalamud.Plugin.Services.ITextureProvider;
 using static ECommons.GenericHelpers;
 
 namespace ECommons.ImGuiMethods;
+#nullable disable
 
 public class ThreadLoadImageHandler
 {
@@ -39,6 +40,8 @@ public class ThreadLoadImageHandler
         }
         Safe(CachedIcons.Clear);
     }
+
+    public static bool TryGetIconTextureWrap(int icon, bool hq, out IDalamudTextureWrap textureWrap) => TryGetIconTextureWrap((uint)icon, hq, out textureWrap);
 
     public static bool TryGetIconTextureWrap(uint icon, bool hq, out IDalamudTextureWrap textureWrap)
     {
@@ -69,7 +72,7 @@ public class ThreadLoadImageHandler
     internal static void BeginThreadIfNotRunning()
     {
         if (ThreadRunning) return;
-        PluginLog.Information("Starting ThreadLoadImageHandler");
+        PluginLog.Debug("Starting ThreadLoadImageHandler");
         ThreadRunning = true;
         new Thread(() =>
         {
@@ -85,7 +88,7 @@ public class ThreadLoadImageHandler
                             {
                                 idleTicks = 0;
                                 keyValuePair.Value.isCompleted = true;
-                                PluginLog.Information("Loading image " + keyValuePair.Key);
+                                PluginLog.Debug("Loading image " + keyValuePair.Key);
                                 if (keyValuePair.Key.StartsWith("http:", StringComparison.OrdinalIgnoreCase) || keyValuePair.Key.StartsWith("https:", StringComparison.OrdinalIgnoreCase))
                                 {
                                     var result = httpClient.GetAsync(keyValuePair.Key).Result;
@@ -104,7 +107,7 @@ public class ThreadLoadImageHandler
                                         }
                                         catch (Exception ex)
                                         {
-                                            //TODO: I don't know how to log exception in ECommons.
+                                            ex.Log();
                                         }
                                     }
                                     keyValuePair.Value.texture = texture;
@@ -127,16 +130,16 @@ public class ThreadLoadImageHandler
                             {
                                 idleTicks = 0;
                                 keyValuePair.Value.isCompleted = true;
-                                PluginLog.Information($"Loading icon {keyValuePair.Key.ID}, hq={keyValuePair.Key.HQ}");
+                                PluginLog.Debug($"Loading icon {keyValuePair.Key.ID}, hq={keyValuePair.Key.HQ}");
                                 keyValuePair.Value.texture = Svc.Texture.GetIcon(keyValuePair.Key.ID, keyValuePair.Key.HQ?IconFlags.HiRes:IconFlags.None);
                             }
                         }
                     });
                     idleTicks++;
-                    Thread.Sleep(100);
+                    if(!CachedTextures.Any(x => x.Value.isCompleted) && !CachedIcons.Any(x => x.Value.isCompleted)) Thread.Sleep(100);
                 }
             });
-            PluginLog.Information($"Stopping ThreadLoadImageHandler, ticks={idleTicks}");
+            PluginLog.Debug($"Stopping ThreadLoadImageHandler, ticks={idleTicks}");
             ThreadRunning = false;
         }).Start();
     }

@@ -1,30 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+#nullable disable
 
-namespace ECommons.ExcelServices.TerritoryEnumeration
+namespace ECommons.ExcelServices.TerritoryEnumeration;
+
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
+public static class Prisons
 {
-    [Obfuscation(Exclude = true, ApplyToMembers = true)]
-    public static class Prisons
-    {
-        public const ushort Mordion_Gaol = 176;
+    public const ushort Mordion_Gaol = 176;
 
-        static ushort[] list = null;
-        public static ushort[] List
+    static ushort[] list = null;
+    public static ushort[] List
+    {
+        get
         {
-            get
+            if (list == null)
             {
-                if (list == null)
-                {
-                    var s = new List<ushort>();
-                    typeof(Prisons).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).Each(x => s.Add((ushort)x.GetValue(null)));
-                    list = s.ToArray();
-                }
-                return list;
+                var s = new List<ushort>();
+                typeof(Prisons).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).Each(x => s.Add((ushort)x.GetValue(null)));
+                list = s.ToArray();
             }
+            return list;
         }
     }
 }

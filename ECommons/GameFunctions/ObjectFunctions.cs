@@ -1,11 +1,11 @@
 ﻿using Dalamud.Game.ClientState.Objects.Types;
-using Dalamud.Logging;
 using ECommons.DalamudServices;
 using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace ECommons.GameFunctions;
+#nullable disable
 
 public static unsafe class ObjectFunctions
 {

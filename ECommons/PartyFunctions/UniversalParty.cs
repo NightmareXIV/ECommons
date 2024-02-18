@@ -1,8 +1,8 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Memory;
 using ECommons.DalamudServices;
+using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.UI.Info;
-using System;
 using System.Collections.Generic;
 
 namespace ECommons.PartyFunctions;
@@ -10,49 +10,64 @@ namespace ECommons.PartyFunctions;
 public unsafe static class UniversalParty
 {
     public static bool IsCrossWorldParty => Svc.Condition[ConditionFlag.ParticipatingInCrossWorldPartyOrAlliance];
+    public static bool IsAlliance => IsCrossWorldParty && InfoProxyCrossRealm.Instance()->IsInAllianceRaid != 0;
 
-    public static int Length  
-    {
-        get 
-        {
-            var cnt = IsCrossWorldParty ? InfoProxyCrossRealm.Instance()->CrossRealmGroupArraySpan.Length : Svc.Party.Length;
-            return cnt > 1?cnt:0;
-        }
-    }
+    public static int Length => Members.Count;
 
-    public static UniversalPartyMember[] Members
+    public static List<UniversalPartyMember> Members
     {
         get
         {
-            if (Length == 0) return Array.Empty<UniversalPartyMember>();
-            var span = new List<UniversalPartyMember>();
+            if (!Player.Available) return [];
+            var span = new List<UniversalPartyMember>
+            {
+                new()
+                {
+                    Name = Player.Name,
+                    HomeWorld = new(Player.Object.HomeWorld),
+                    CurrentWorld = new(Player.Object.CurrentWorld),
+                    GameObjectInternal = Player.Object
+                }
+            };
             if (IsCrossWorldParty)
             {
-                for (int i = 0; i < InfoProxyCrossRealm.Instance()->CrossRealmGroupArraySpan[0].GroupMemberCount; i++)
+                var proxy = InfoProxyCrossRealm.Instance();
+                for (int i = 0; i < proxy->GroupCount; i++)
                 {
-                    var x = InfoProxyCrossRealm.Instance()->CrossRealmGroupArraySpan[0].GroupMembersSpan[i];
-                    span.Add(new()
+                    var group = proxy->CrossRealmGroupArraySpan[i];
+                    for (int c = 0; c < group.GroupMemberCount; c++)
                     {
-                        Name = MemoryHelper.ReadStringNullTerminated((IntPtr)x.Name),
-                        HomeWorld = new((uint)x.HomeWorld),
-                        CurrentWorld = new((uint)x.CurrentWorld),
-                    });
+                        var x = group.GroupMembersSpan[c];
+                        var name = MemoryHelper.ReadStringNullTerminated((nint)x.Name);
+                        if (!(name == Player.Name && x.HomeWorld == Player.Object.HomeWorld.Id))
+                        {
+                            span.Add(new()
+                            {
+                                Name = name,
+                                HomeWorld = new((uint)x.HomeWorld),
+                                CurrentWorld = new((uint)x.CurrentWorld),
+                            });
+                        }
+                    }
                 }
             }
             else
             {
                 foreach(var x in Svc.Party)
                 {
-                    span.Add(new()
+                    if (x.GameObject?.Address != Player.Object?.Address)
                     {
-                        Name = x.Name.ToString(),
-                        HomeWorld = new(x.World),
-                        CurrentWorld = new(Svc.ClientState.LocalPlayer.CurrentWorld),
-                        GameObjectInternal = x.GameObject
-                    });
+                        span.Add(new()
+                        {
+                            Name = x.Name.ToString(),
+                            HomeWorld = new(x.World),
+                            CurrentWorld = new(Player.Object!.CurrentWorld),
+                            GameObjectInternal = x.GameObject
+                        });
+                    }
                 }
             }
-            return span.ToArray();
+            return span;
         }
     }
 }

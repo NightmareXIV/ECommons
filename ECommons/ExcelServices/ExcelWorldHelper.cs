@@ -4,21 +4,43 @@ using System;
 using System.Linq;
 
 namespace ECommons.ExcelServices;
+#nullable disable
 
 public static class ExcelWorldHelper
 {
-    public static World GetWorldByName(string name)
+    [Obsolete("Please use Get")]
+    public static World GetWorldByName(string name) => Get(name);
+    public static World Get(string name, bool onlyPublic = false)
     {
-        if(Svc.Data.GetExcelSheet<World>().TryGetFirst(x => x.Name.ToString().EqualsIgnoreCase(name), out var result))
+        if(Svc.Data.GetExcelSheet<World>().TryGetFirst(x => x.Name.ToString().EqualsIgnoreCase(name) && (!onlyPublic || x.Region.EqualsAny(Enum.GetValues<Region>().Select(z => (byte)z).ToArray())), out var result))
         {
             return result;
         }
         return null;
     }
 
-    public static bool? TryGetWorldByName(string name, out World result)
+    public static World Get(uint id, bool onlyPublic = false)
     {
-        result = GetWorldByName(name);
+        var result = Svc.Data.GetExcelSheet<World>().GetRow(id);
+        if (result != null && (!onlyPublic || result.Region.EqualsAny(Enum.GetValues<Region>().Select(z => (byte)z).ToArray())))
+        {
+            return result;
+        }
+        return null;
+    }
+
+    [Obsolete("Please use TryGet")]
+    public static bool TryGetWorldByName(string name, out World result) => TryGet(name, out result);
+
+    public static bool TryGet(string name, out World result)
+    {
+        result = Get(name);
+        return result != null;
+    }
+
+    public static bool TryGet(uint id, out World result)
+    {
+        result = Get(id);
         return result != null;
     }
 
@@ -27,29 +49,31 @@ public static class ExcelWorldHelper
         return Svc.Data.GetExcelSheet<World>().Where(x => ((region == null && x.Region.EqualsAny(Enum.GetValues<Region>().Select(z => (byte)z).ToArray())) || (region.HasValue && x.Region == (byte)region.Value)) && x.IsPublic).ToArray();
     }
 
-    public static World GetWorldById(uint id)
+    [Obsolete("Please use Get")]
+    public static World GetWorldById(uint id) => Get(id);
+    public static World Get(uint id)
     {
         return Svc.Data.GetExcelSheet<World>().GetRow(id);
     }
 
-    public static string GetWorldNameById(uint id)
+    [Obsolete("Please use GetName")]
+    public static string GetWorldNameById(uint id) => GetName(id);
+    public static string GetName(uint id)
     {
-        return GetWorldById(id)?.Name.ToString();
+        return Get(id)?.Name.ToString();
     }
 
-    public static World GetPublicWorldById(uint id)
-    {
-        var data = Svc.Data.GetExcelSheet<World>().GetRow(id);
-        if (data.Region.EqualsAny(Enum.GetValues<Region>().Select(z => (byte)z).ToArray()))
-        {
-            return data;
-        }
-        return null;
-    }
+    [Obsolete("Please use Get")]
+    public static World GetPublicWorldById(uint id) => Get(id, true);
 
+    [Obsolete("Please use GetName")]
+    public static string GetPublicWorldNameById(uint id) => Get(id, true).Name.ToString();
 
-    public static string GetPublicWorldNameById(uint id)
+    public enum Region
     {
-        return GetPublicWorldById(id)?.Name.ToString();
+        JP = 1,
+        NA = 2,
+        EU = 3,
+        OC = 4,
     }
 }

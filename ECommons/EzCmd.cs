@@ -1,11 +1,11 @@
 ﻿using Dalamud.Game.Command;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
-using System;
 using System.Collections.Generic;
 using static Dalamud.Game.Command.CommandInfo;
 
 namespace ECommons;
+#nullable disable
 
 public static class EzCmd
 {

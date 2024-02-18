@@ -16,29 +16,201 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Diagnostics.CodeAnalysis;
-using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
-using ECommons.ExcelServices.TerritoryEnumeration;
 using Newtonsoft.Json;
 using FFXIVClientStructs.FFXIV.Client.System.String;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using Dalamud.Memory;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.MathHelpers;
 using PInvoke;
 using System.Windows.Forms;
-using System.Threading;
 using ECommons.Interop;
-using System.Drawing;
-using ImGuiScene;
-using Dalamud.Game.ClientState.Objects;
-using Dalamud.Plugin.Services;
-using Dalamud.Game.Text;
+using System.Globalization;
+using System.Collections;
+using Dalamud.Interface.Windowing;
+#nullable disable
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static bool TryParseByteArray(string input, out byte[] output)
+    {
+        var str = input.Split(" ");
+        output = new byte[str.Length];
+        for (int i = 0; i < str.Length; i++)
+        {
+            if (!byte.TryParse(str[i], NumberStyles.HexNumber, null, out output[i]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static string GetCallStackID(int maxFrames = 3) 
+    {
+        try
+        {
+            if (maxFrames == 0)
+            {
+                maxFrames = int.MaxValue;
+            }
+            else
+            {
+                maxFrames--;
+            }
+            var stack = new StackTrace().GetFrames();
+            if (stack.Length > 1)
+            {
+                return stack[1..Math.Min(stack.Length, maxFrames)].Select(x => x.GetMethod() == null ? "<unknown>" : $"{x.GetMethod().DeclaringType?.FullName}.{x.GetMethod().Name}").Join(" <- ");
+            }
+        }
+        catch(Exception e)
+        {
+            e.Log();
+        }
+        return "";
+    }
+
+    /// <summary>
+    /// Copies text into user's clipboard using WinForms. Does not throws exceptions.
+    /// </summary>
+    /// <param name="text">Text to copy</param>
+    /// <param name="silent">Whether to display success/failure popup</param>
+    /// <returns>Whether operation succeeded</returns>
+    public static bool Copy(string text, bool silent = false)
+    {
+        try
+        {
+            if (text.IsNullOrEmpty())
+            {
+                Clipboard.Clear();
+                if (!silent) Notify.Success("Clipboard cleared");
+            }
+            else
+            {
+                Clipboard.SetText(text);
+                if (!silent) Notify.Success("Text copied to clipboard");
+            }
+            return true;
+        }
+        catch(Exception e)
+        {
+            if (!silent)
+            {
+                Notify.Error($"Error copying to clipboard:\n{e.Message}\nPlease try again");
+            }
+            PluginLog.Warning($"Error copying to clipboard:");
+            e.LogWarning();
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Reads text from user's clipboard
+    /// </summary>
+    /// <param name="silent">Whether to display popup when error occurs.</param>
+    /// <returns>Contents of the clipboard; null if clipboard couldn't be read.</returns>
+    public static string Paste(bool silent = false)
+    {
+        try
+        {
+            return Clipboard.GetText();
+        }
+        catch(Exception e)
+        {
+            if (!silent)
+            {
+                Notify.Error($"Error pasting from clipboard:\n{e.Message}\nPlease try again");
+            }
+            PluginLog.Warning($"Error pasting from clipboard:");
+            e.LogWarning();
+            return null;
+        }
+    }
+
+    public static T GetOrDefault<T>(this IList<T> List, int index)
+    {
+        if (index < List.Count) return List[index];
+        return default;
+    }
+
+    public static T GetOrDefault<T>(this T[] Array, int index)
+    {
+        if (index < Array.Length) return Array[index];
+        return default;
+    }
+
+    public static bool TryDequeue<T>(this IList<T> List, out T result)
+    {
+        if(List.Count > 0)
+        {
+            result = List[0];
+            List.RemoveAt(0);
+            return true;
+        }
+        else
+        {
+            result = default;
+            return false;
+        }
+    }
+
+    public static T Dequeue<T>(this IList<T> List)
+    {
+        if(List.TryDequeue(out var ret))
+        {
+            return ret;
+        }
+        throw new InvalidOperationException("Sequence contains no elements");
+    }
+
+    public static T DequeueOrDefault<T>(this IList<T> List)
+    {
+        if (List.Count > 0)
+        {
+            var ret = List[0];
+            List.RemoveAt(0);
+            return ret;
+        }
+        else
+        {
+            return default;
+        }
+    }
+
+    public static T DequeueOrDefault<T>(this Queue<T> Queue)
+    {
+        if(Queue.Count > 0)
+        {
+            return Queue.Dequeue();
+        }
+        return default;
+    }
+
+    public static int IndexOf<T>(this IEnumerable<T> values, Predicate<T> predicate)
+    {
+        var ret = -1;
+        foreach(var v in values)
+        {
+            ret++;
+            if(predicate(v))
+            {
+                return ret;
+            }
+        }
+        return -1;
+    }
+    
+    public static bool ContainsIgnoreCase(this IEnumerable<string> haystack, string needle)
+    {
+        foreach(var x in haystack)
+        {
+            if (x.EqualsIgnoreCase(needle)) return true;
+        }
+        return false;
+    }
 
     public static T[] Together<T>(this T[] array, params T[] additionalValues)
     {
@@ -143,6 +315,23 @@ public static unsafe class GenericHelpers
         {
             return Bitmask.IsBitSet(User32.GetAsyncKeyState((int)key), 15);
         }
+    }
+    public static bool IsKeyPressed(IEnumerable<LimitedKeys> keys)
+    {
+        foreach (var x in keys)
+        {
+            if (IsKeyPressed(x)) return true;
+        }
+        return false;
+    }
+
+    public static bool IsKeyPressed(IEnumerable<Keys> keys)
+    {
+        foreach (var x in keys)
+        {
+            if (IsKeyPressed(x)) return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -488,7 +677,7 @@ public static unsafe class GenericHelpers
     }
 
     /// <summary>
-    /// Adds <paramref name="value"/> into <see cref="HashSet"/> if it doesn't exists yet or removes if it exists.
+    /// Adds <paramref name="value"/> into HashSet if it doesn't exists yet or removes if it exists.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="hashSet"></param>
@@ -631,6 +820,14 @@ public static unsafe class GenericHelpers
     public static void Log(this Exception e)
     {
         PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
+    }
+    public static void LogVerbose(this Exception e)
+    {
+        PluginLog.LogVerbose($"{e.Message}\n{e.StackTrace ?? ""}");
+    }
+    public static void LogInternal(this Exception e)
+    {
+        InternalLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
     }
 
     public static void Log(this Exception e, string ErrorMessage)
@@ -938,34 +1135,84 @@ public static unsafe class GenericHelpers
         }
     }
 
-    public static bool TryGetFirst<K>(this IEnumerable<K> enumerable, out K value)
+    /// <summary>
+    /// Attempts to get first element of <see cref="IEnumerable"/>.
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool TryGetFirst<TSource>(this IEnumerable<TSource> source, out TSource value)
     {
-        try
-        {
-            value = enumerable.First();
-            return true;
-        }
-        catch (Exception)
+        if (source == null)
         {
             value = default;
             return false;
         }
+        var list = source as IList<TSource>;
+        if (list != null)
+        {
+            if (list.Count > 0)
+            {
+                value = list[0];
+                return true;
+            }
+        }
+        else
+        {
+            using (var e = source.GetEnumerator())
+            {
+                if (e.MoveNext())
+                {
+                    value = e.Current;
+                    return true;
+                }
+            }
+        }
+        value = default;
+        return false;
     }
 
-    public static bool TryGetFirst<K>(this IEnumerable<K> enumerable, Func<K, bool> predicate, out K value)
+    /// <summary>
+    /// Attempts to get first element of IEnumerable
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="predicate">Function to test elements.</param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool TryGetFirst<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, out TSource value)
     {
-        try
-        {
-            value = enumerable.First(predicate);
-            return true;
-        }
-        catch (Exception)
+        if (source == null)
         {
             value = default;
             return false;
         }
+        if (predicate == null)
+        {
+            value = default;
+            return false;
+        }
+        foreach (TSource element in source)
+        {
+            if (predicate(element))
+            {
+                value = element;
+                return true;
+            }
+        }
+        value = default;
+        return false;
     }
 
+    /// <summary>
+    /// Attempts to get last element of <see cref="IEnumerable"/>.
+    /// </summary>
+    /// <typeparam name="K"></typeparam>
+    /// <param name="enumerable"></param>
+    /// <param name="predicate">Function to test elements.</param>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public static bool TryGetLast<K>(this IEnumerable<K> enumerable, Func<K, bool> predicate, out K value)
     {
         try
@@ -980,6 +1227,13 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Attempts to get first instance of addon by name.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="Addon"></param>
+    /// <param name="AddonPtr"></param>
+    /// <returns></returns>
     public static bool TryGetAddonByName<T>(string Addon, out T* AddonPtr) where T : unmanaged
     {
         var a = Svc.GameGui.GetAddonByName(Addon, 1);
@@ -995,6 +1249,11 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Attempts to find out whether SelectString entry is enabled based on text color. 
+    /// </summary>
+    /// <param name="textNodePtr"></param>
+    /// <returns></returns>
     public static bool IsSelectItemEnabled(AtkTextNode* textNodePtr)
     {
         var col = textNodePtr->TextColor;
@@ -1005,6 +1264,34 @@ public static unsafe class GenericHelpers
             || (col.A == 0xFF && col.R == 0xFF && col.G == 0xFF && col.B == 0xFF)
             // EEE1C5FF
             || (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5);
+    }
+
+    public static void MoveItemToPosition<T>(List<T> list, Func<T, bool> sourceItemSelector, int targetedIndex)
+    {
+        int sourceIndex = -1;
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (sourceItemSelector(list[i]))
+            {
+                sourceIndex = i;
+                break;
+            }
+        }
+        if (sourceIndex == targetedIndex) return;
+        var item = list[sourceIndex];
+        list.RemoveAt(sourceIndex);
+        list.Insert(targetedIndex, item);
+    }
+
+    public static void SetMinSize(this Window window, float width = 100, float height = 100) => SetMinSize(window, new Vector2(width, height));
+
+    public static void SetMinSize(this Window window, Vector2 minSize)
+    {
+        window.SizeConstraints = new()
+        {
+            MinimumSize = minSize,
+            MaximumSize = new Vector2(float.MaxValue)
+        };
     }
 
 
@@ -1024,4 +1311,5 @@ public static unsafe class GenericHelpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete($"Use MemoryHelper.ReadRaw")]
     public static byte[] ReadRaw(IntPtr memoryAddress, int length) => MemoryHelper.ReadRaw(memoryAddress, length);
+
 }

@@ -7,11 +7,12 @@ using System.Linq;
 using System.Reflection;
 
 namespace ECommons.SplatoonAPI;
+#nullable disable
 
 public static class Splatoon
 {
-    internal static IDalamudPlugin Instance;
-    internal static int Version;
+    public static IDalamudPlugin Instance { get; internal set; }
+    public static int Version { get; internal set; }
 
     internal static Action OnConnect;
 

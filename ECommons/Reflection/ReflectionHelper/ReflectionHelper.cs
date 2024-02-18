@@ -1,14 +1,21 @@
-﻿using Dalamud.Logging;
+﻿using ECommons.Logging;
+using ECommons.DalamudServices;
+using System.Collections;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
+using System.Xml.Linq;
+using System.Collections.Generic;
+using System;
+using System.ComponentModel;
 
 namespace ECommons.Reflection;
+#nullable disable
 
-public static class ReflectionHelper
+public static partial class ReflectionHelper
 {
     public const BindingFlags AllFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
     public const BindingFlags StaticFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+    public const BindingFlags InstanceFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
     public static object GetFoP(this object obj, string name)
     {
@@ -34,17 +41,27 @@ public static class ReflectionHelper
         }
     }
 
+    /// <summary>
+    /// Subject for future refactoring and changes!
+    /// </summary>
     public static object GetStaticFoP(this object obj, string type, string name)
     {
         return obj.GetType().Assembly.GetType(type).GetField(name, StaticFlags)?.GetValue(null)
             ?? obj.GetType().Assembly.GetType(type).GetProperty(name, StaticFlags)?.GetValue(null);
     }
 
+    /// <summary>
+    /// Subject for future refactoring and changes!
+    /// </summary>
     public static T GetStaticFoP<T>(this object obj, string type, string name)
     {
         return (T)GetStaticFoP(obj, type, name);
     }
 
+
+    /// <summary>
+    /// Subject for future refactoring and changes!
+    /// </summary>
     public static void SetStaticFoP(this object obj, string type, string name, object value)
     {
         var field = obj.GetType().Assembly.GetType(type).GetField(name, StaticFlags);
@@ -58,22 +75,22 @@ public static class ReflectionHelper
         }
     }
 
-    public static object Call(this object obj, string name, params object[] values)
+    public static object Call(this object obj, string name, object[] values, bool matchExactArgumentTypes = false)
     {
-        var info = obj.GetType().GetMethod(name, AllFlags, values.Select(x => x.GetType()).ToArray());
+        MethodInfo info;
+        if (!matchExactArgumentTypes)
+        {
+            info = obj.GetType().GetMethod(name, AllFlags);
+        }
+        else
+        {
+            info = obj.GetType().GetMethod(name, AllFlags, values.Select(x => x.GetType()).ToArray());
+        }
         return info.Invoke(obj, values);
     }
 
-    public static T Call<T>(this object obj, string name, params object[] values)
+    public static T Call<T>(this object obj, string name, object[] values, bool matchExactArgumentTypes = false)
     {
-        return (T)Call(obj, name, values);
+        return (T)Call(obj, name, values, matchExactArgumentTypes);
     }
-
-    public static object CallStatic(this object obj, string type, string name, params object[] values)
-    {
-        var info = obj.GetType().Assembly.GetType(type).GetMethod(name, AllFlags, values.Select(x => x.GetType()).ToArray());
-        return info.Invoke(obj, values);
-    }
-
-    public static object CallStatic<T>(this object obj, string type, string name, params object[] values) => CallStatic(obj, type, name, values);
-}
+} 

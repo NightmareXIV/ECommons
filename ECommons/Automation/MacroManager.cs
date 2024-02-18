@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace ECommons.Automation;
+#nullable disable
 
 public unsafe static class MacroManager
 {

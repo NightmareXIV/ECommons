@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ECommons.ImGuiMethods;
+#nullable disable
 
 // ImGui extra functionality related with Drag and Drop
 public static class ImGuiDragDrop

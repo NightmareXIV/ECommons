@@ -80,7 +80,7 @@ public static class CmdManager
 
             if (ImGui.IsMouseClicked(ImGuiMouseButton.Right))
             {
-                ImGui.SetClipboardText(command);
+                GenericHelpers.Copy(command);
             }
         }
 

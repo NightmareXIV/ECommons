@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Reflection;
 
 namespace ECommons.SplatoonAPI;
+#nullable disable
 
 public class Element
 {
