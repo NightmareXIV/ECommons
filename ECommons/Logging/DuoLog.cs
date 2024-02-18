@@ -67,7 +67,8 @@ public static class DuoLog
         {
             Svc.Chat.Print(new()
             {
-                Message = new SeStringBuilder().AddUiForeground(str, 17).Build()
+                Message = new SeStringBuilder().AddUiForeground(str, 17).Build(),
+                Type = Dalamud.Game.Text.XivChatType.ErrorMessage,
             });
         });
     }
