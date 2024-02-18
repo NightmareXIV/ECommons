@@ -1,4 +1,4 @@
-﻿using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.MathHelpers;
 using System;
 using System.Collections.Generic;
@@ -52,6 +52,7 @@ public static unsafe class CharacterFunctions
 
     public static CombatRole GetRole(this Character c)
     {
+        if (c is null) return CombatRole.NonCombat;
         if (c.ClassJob.GameData.Role == 1) return CombatRole.Tank;
         if (c.ClassJob.GameData.Role == 2) return CombatRole.DPS;
         if (c.ClassJob.GameData.Role == 3) return CombatRole.DPS;
