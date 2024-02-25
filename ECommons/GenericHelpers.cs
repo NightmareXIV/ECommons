@@ -130,6 +130,25 @@ public static unsafe class GenericHelpers
         }
     }
 
+    public static string ToHexString(this IEnumerable<byte> bytes)
+    {
+        var first = true;
+        var sb = new StringBuilder();
+        foreach(var x in bytes)
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                sb.Append(' ');
+            }
+            sb.Append($"{x:X2}");
+        }
+        return sb.ToString();
+    }
+
     public static T GetOrDefault<T>(this IList<T> List, int index)
     {
         if (index < List.Count) return List[index];
