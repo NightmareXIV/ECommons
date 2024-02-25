@@ -1,7 +1,9 @@
-﻿using ECommons.DalamudServices;
+using ECommons.DalamudServices;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace ECommons.ExcelServices;
 #nullable disable
@@ -44,9 +46,19 @@ public static class ExcelWorldHelper
         return result != null;
     }
 
-    public static World[] GetPublicWorlds(Region? region)
+    public static World[] GetPublicWorlds(Region? region = null)
     {
-        return Svc.Data.GetExcelSheet<World>().Where(x => ((region == null && x.Region.EqualsAny(Enum.GetValues<Region>().Select(z => (byte)z).ToArray())) || (region.HasValue && x.Region == (byte)region.Value)) && x.IsPublic).ToArray();
+        return Svc.Data.GetExcelSheet<World>().Where(x => x.IsPublic && (region == null || x.GetRegion() == region.Value)).ToArray();
+    }
+
+    public static World[] GetPublicWorlds(uint dataCenter)
+    {
+        return Svc.Data.GetExcelSheet<World>().Where(x => x.IsPublic && x.DataCenter.Row == dataCenter).ToArray();
+    }
+
+    public static WorldDCGroupType[] GetDataCenters(Region? region = null)
+    {
+        return Svc.Data.GetExcelSheet<WorldDCGroupType>().Where(x => region == null || (Region)x.Region == region.Value).ToArray();
     }
 
     [Obsolete("Please use Get")]
@@ -75,5 +87,13 @@ public static class ExcelWorldHelper
         NA = 2,
         EU = 3,
         OC = 4,
+    }
+
+    public static Region GetRegion(this World world)
+    {
+        var dc = world.DataCenter;
+        var dcg = Svc.Data.GetExcelSheet<WorldDCGroupType>().GetRow(dc.Row);
+        if (dcg == null) return 0;
+        return (Region)dcg.Region;
     }
 }
