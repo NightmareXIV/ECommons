@@ -34,6 +34,17 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static T SafeSelect<T>(this IList<T> list, int index)
+    {
+        if (index < 0 || index >= list.Count) return default;
+        return list[index];
+    }
+    public static T SafeSelect<T>(this T[] list, int index)
+    {
+        if (index < 0 || index >= list.Length) return default;
+        return list[index];
+    }
+
     public static bool TryParseByteArray(string input, out byte[] output)
     {
         var str = input.Split(" ");

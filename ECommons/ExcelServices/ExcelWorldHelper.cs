@@ -14,6 +14,7 @@ public static class ExcelWorldHelper
     public static World GetWorldByName(string name) => Get(name);
     public static World Get(string name, bool onlyPublic = false)
     {
+        if (name == null) return null;
         if(Svc.Data.GetExcelSheet<World>().TryGetFirst(x => x.Name.ToString().EqualsIgnoreCase(name) && (!onlyPublic || x.Region.EqualsAny(Enum.GetValues<Region>().Select(z => (byte)z).ToArray())), out var result))
         {
             return result;
