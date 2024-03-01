@@ -17,7 +17,7 @@ namespace ECommons.ImGuiMethods;
 public class ThreadLoadImageHandler
 {
     internal static ConcurrentDictionary<string, ImageLoadingResult> CachedTextures = new();
-    internal static ConcurrentDictionary<(uint ID, bool HQ), ImageLoadingResult> CachedIcons = new();
+    internal static ConcurrentDictionary<(uint ID, IconFlags HQ), ImageLoadingResult> CachedIcons = new();
 
     private static readonly List<Func<byte[], byte[]>> _conversionsToBitmap = new() { b => b, };
 
@@ -42,8 +42,13 @@ public class ThreadLoadImageHandler
     }
 
     public static bool TryGetIconTextureWrap(int icon, bool hq, out IDalamudTextureWrap textureWrap) => TryGetIconTextureWrap((uint)icon, hq, out textureWrap);
+    public static bool TryGetIconTextureWrap(int icon, IconFlags hq, out IDalamudTextureWrap textureWrap) => TryGetIconTextureWrap((uint)icon, hq, out textureWrap);
 
     public static bool TryGetIconTextureWrap(uint icon, bool hq, out IDalamudTextureWrap textureWrap)
+    {
+        return TryGetIconTextureWrap(icon, hq ? IconFlags.HiRes : IconFlags.None, out textureWrap);
+    }
+    public static bool TryGetIconTextureWrap(uint icon, IconFlags hq, out IDalamudTextureWrap textureWrap)
     {
         ImageLoadingResult result;
         if (!CachedIcons.TryGetValue((icon, hq), out result))
@@ -131,7 +136,7 @@ public class ThreadLoadImageHandler
                                 idleTicks = 0;
                                 keyValuePair.Value.isCompleted = true;
                                 PluginLog.Verbose($"Loading icon {keyValuePair.Key.ID}, hq={keyValuePair.Key.HQ}");
-                                keyValuePair.Value.texture = Svc.Texture.GetIcon(keyValuePair.Key.ID, keyValuePair.Key.HQ?IconFlags.HiRes:IconFlags.None);
+                                keyValuePair.Value.texture = Svc.Texture.GetIcon(keyValuePair.Key.ID, keyValuePair.Key.HQ);
                             }
                         }
                     });
