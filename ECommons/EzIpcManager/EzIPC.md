@@ -15,7 +15,7 @@ public class IPCProvider()
     }
 
     [EzIPC("RenamedFunction")]
-    public int MyIPCFunction() //will register as MyPlugin.MyIPCFunction
+    public int MyIPCFunction() //will register as MyPlugin.RenamedFunction
     {
         return DoOtherThings();
     }
