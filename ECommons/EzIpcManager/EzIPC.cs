@@ -44,15 +44,17 @@ public static class EzIPC
         foreach (var field in instance.GetType().GetFields(ReflectionHelper.AllFlags))
         {
             var attr = field.GetCustomAttributes(true).OfType<EzIPCAttribute>().FirstOrDefault();
-            if (attr != null && field.FieldType.IsGenericType)
+            if (attr != null)
             {
                 var ipcName = attr.IPCName ?? field.Name;
-                if (field.FieldType.GetGenericTypeDefinition().EqualsAny([.. FuncTypes, ..ActionTypes]))
+                var isNonGenericAction = field.FieldType == typeof(Action);
+                if (isNonGenericAction || field.FieldType.GetGenericTypeDefinition().EqualsAny([.. FuncTypes, ..ActionTypes]))
                 {
                     PluginLog.Information($"[EzIPC Subscriber] Attempting to assign IPC method to {instance.GetType().Name}.{field.Name}");
-                    var isAction = field.FieldType.GetGenericTypeDefinition().EqualsAny(ActionTypes);
+                    var isAction = isNonGenericAction || field.FieldType.GetGenericTypeDefinition().EqualsAny(ActionTypes);
                     var reg = FindIpcSubscriber(field.FieldType.GetGenericArguments().Length + (isAction?1:0)) ?? throw new ArgumentNullException("Could not retrieve GetIpcSubscriber. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
-                    var genericMethod = reg.MakeGenericMethod(isAction? [.. field.FieldType.GetGenericArguments(), typeof(object)] : field.FieldType.GetGenericArguments());
+                    var genericArgs = field.FieldType.IsGenericType ? field.FieldType.GetGenericArguments() : [];
+                    var genericMethod = reg.MakeGenericMethod(isAction? [.. genericArgs, typeof(object)] : genericArgs);
                     var name = $"{prefix}.{ipcName}";
                     var callerInfo = genericMethod.Invoke(Svc.PluginInterface, [name])!;
                     field.SetValue(instance, ReflectionHelper.CreateDelegate(callerInfo.GetType().GetMethod(isAction?"InvokeAction":"InvokeFunc"), callerInfo));
