@@ -34,45 +34,61 @@ public static class EzIPC
         prefix ??= Svc.PluginInterface.InternalName;
         foreach (var method in instance.GetType().GetMethods(ReflectionHelper.AllFlags))
         {
-            var attr = method.GetCustomAttributes(true).OfType<EzIPCAttribute>().FirstOrDefault();
-            if(attr != null)
+            try
             {
-                PluginLog.Information($"[EzIPC Provider] Attempting to register {instance.GetType().Name}.{method.Name} as IPC method ({method.GetParameters().Length})");
-                var ipcName = attr.IPCName ?? method.Name;
-                var reg = FindIpcProvider(method.GetParameters().Length + 1) ?? throw new ArgumentNullException("[EzIPC Provider] Could not retrieve GetIpcProvider. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
-                var isAction = method.ReturnType == typeof(void);
-                var genericArray = (Type[])[..method.GetParameters().Select(x => x.ParameterType), isAction ? typeof(object) : method.ReturnType];
-                var genericMethod = reg.MakeGenericMethod([.. genericArray]);
-                var name = attr.ApplyPrefix?$"{prefix}.{ipcName}":ipcName;
-                PluginLog.Information($"[EzIPC Provider] Registering IPC method {name} with method {instance.GetType().FullName}.{method.Name}");
-                genericMethod.Invoke(Svc.PluginInterface, [name]).Call(isAction?"RegisterAction":"RegisterFunc", [ReflectionHelper.CreateDelegate(method, instance)], true);
-                Unregister.Add(() => 
+                var attr = method.GetCustomAttributes(true).OfType<EzIPCAttribute>().FirstOrDefault();
+                if (attr != null)
                 {
-                    PluginLog.Information($"[EzIPC Provider] Unregistering IPC method {name}");
-                    genericMethod.Invoke(Svc.PluginInterface, [name]).Call(isAction ? "UnregisterAction" : "UnregisterFunc", [], true);
-                });
+                    PluginLog.Information($"[EzIPC Provider] Attempting to register {instance.GetType().Name}.{method.Name} as IPC method ({method.GetParameters().Length})");
+                    var ipcName = attr.IPCName ?? method.Name;
+                    var reg = FindIpcProvider(method.GetParameters().Length + 1) ?? throw new NullReferenceException("[EzIPC Provider] Could not retrieve GetIpcProvider. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
+                    var isAction = method.ReturnType == typeof(void);
+                    var genericArray = (Type[])[.. method.GetParameters().Select(x => x.ParameterType), isAction ? typeof(object) : method.ReturnType];
+                    var genericMethod = reg.MakeGenericMethod([.. genericArray]);
+                    var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
+                    PluginLog.Information($"[EzIPC Provider] Registering IPC method {name} with method {instance.GetType().FullName}.{method.Name}");
+                    genericMethod.Invoke(Svc.PluginInterface, [name]).Call(isAction ? "RegisterAction" : "RegisterFunc", [ReflectionHelper.CreateDelegate(method, instance)], true);
+                    Unregister.Add(() =>
+                    {
+                        PluginLog.Information($"[EzIPC Provider] Unregistering IPC method {name}");
+                        genericMethod.Invoke(Svc.PluginInterface, [name]).Call(isAction ? "UnregisterAction" : "UnregisterFunc", [], true);
+                    });
+                }
+            }
+            catch(Exception e)
+            {
+                PluginLog.Error($"[EzIPC Provider] Failed to initialize provider for {instance.GetType().Name}.{method.Name}");
+                e.Log();
             }
         }
 
         //init subscriber
         foreach (var field in instance.GetType().GetFields(ReflectionHelper.AllFlags))
         {
-            var attr = field.GetCustomAttributes(true).OfType<EzIPCAttribute>().FirstOrDefault();
-            if (attr != null)
+            try
             {
-                var ipcName = attr.IPCName ?? field.Name;
-                var isNonGenericAction = field.FieldType == typeof(Action);
-                if (isNonGenericAction || field.FieldType.GetGenericTypeDefinition().EqualsAny([.. FuncTypes, ..ActionTypes]))
+                var attr = field.GetCustomAttributes(true).OfType<EzIPCAttribute>().FirstOrDefault();
+                if (attr != null)
                 {
-                    PluginLog.Information($"[EzIPC Subscriber] Attempting to assign IPC method to {instance.GetType().Name}.{field.Name}");
-                    var isAction = isNonGenericAction || field.FieldType.GetGenericTypeDefinition().EqualsAny(ActionTypes);
-                    var reg = FindIpcSubscriber(field.FieldType.GetGenericArguments().Length + (isAction?1:0)) ?? throw new ArgumentNullException("Could not retrieve GetIpcSubscriber. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
-                    var genericArgs = field.FieldType.IsGenericType ? field.FieldType.GetGenericArguments() : [];
-                    var genericMethod = reg.MakeGenericMethod(isAction? [.. genericArgs, typeof(object)] : genericArgs);
-                    var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
-                    var callerInfo = genericMethod.Invoke(Svc.PluginInterface, [name])!;
-                    field.SetValue(instance, ReflectionHelper.CreateDelegate(callerInfo.GetType().GetMethod(isAction?"InvokeAction":"InvokeFunc"), callerInfo));
+                    var ipcName = attr.IPCName ?? field.Name;
+                    var isNonGenericAction = field.FieldType == typeof(Action);
+                    if (isNonGenericAction || field.FieldType.GetGenericTypeDefinition().EqualsAny([.. FuncTypes, .. ActionTypes]))
+                    {
+                        PluginLog.Information($"[EzIPC Subscriber] Attempting to assign IPC method to {instance.GetType().Name}.{field.Name}");
+                        var isAction = isNonGenericAction || field.FieldType.GetGenericTypeDefinition().EqualsAny(ActionTypes);
+                        var reg = FindIpcSubscriber(field.FieldType.GetGenericArguments().Length + (isAction ? 1 : 0)) ?? throw new NullReferenceException("Could not retrieve GetIpcSubscriber. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
+                        var genericArgs = field.FieldType.IsGenericType ? field.FieldType.GetGenericArguments() : [];
+                        var genericMethod = reg.MakeGenericMethod(isAction ? [.. genericArgs, typeof(object)] : genericArgs);
+                        var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
+                        var callerInfo = genericMethod.Invoke(Svc.PluginInterface, [name])!;
+                        field.SetValue(instance, ReflectionHelper.CreateDelegate(callerInfo.GetType().GetMethod(isAction ? "InvokeAction" : "InvokeFunc"), callerInfo));
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                PluginLog.Error($"[EzIPC Subscriber] Failed to initialize subscriber for {instance.GetType().Name}.{field.Name}");
+                e.Log();
             }
         }
 
@@ -80,45 +96,61 @@ public static class EzIPC
         prefix ??= Svc.PluginInterface.InternalName;
         foreach (var method in instance.GetType().GetMethods(ReflectionHelper.AllFlags))
         {
-            var attr = method.GetCustomAttributes(true).OfType<EzIPCEventAttribute>().FirstOrDefault();
-            if (attr != null)
+            try
             {
-                PluginLog.Information($"[EzIPC Subscriber] Attempting to register {instance.GetType().Name}.{method.Name} as IPC event ({method.GetParameters().Length})");
-                var ipcName = attr.IPCName ?? method.Name;
-                var reg = FindIpcSubscriber(method.GetParameters().Length + 1) ?? throw new ArgumentNullException("[EzIPC Provider] Could not retrieve FindIpcSubscriber. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
-                if (method.ReturnType != typeof(void)) throw new InvalidOperationException($"Event method must have void return value");
-                var genericArray = (Type[])[.. method.GetParameters().Select(x => x.ParameterType), typeof(object)];
-                var genericMethod = reg.MakeGenericMethod([.. genericArray]);
-                var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
-                PluginLog.Information($"[EzIPC Subscriber] Registering IPC event {name} with method {instance.GetType().FullName}.{method.Name}");
-                var d = ReflectionHelper.CreateDelegate(method, instance);
-                genericMethod.Invoke(Svc.PluginInterface, [name]).Call("Subscribe", [d], true);
-                Unregister.Add(() =>
+                var attr = method.GetCustomAttributes(true).OfType<EzIPCEventAttribute>().FirstOrDefault();
+                if (attr != null)
                 {
-                    PluginLog.Information($"[EzIPC Subscriber] Unregistering IPC event {name}");
-                    genericMethod.Invoke(Svc.PluginInterface, [name]).Call("Unsubscribe", [d], true);
-                });
+                    PluginLog.Information($"[EzIPC Subscriber] Attempting to register {instance.GetType().Name}.{method.Name} as IPC event ({method.GetParameters().Length})");
+                    var ipcName = attr.IPCName ?? method.Name;
+                    var reg = FindIpcSubscriber(method.GetParameters().Length + 1) ?? throw new NullReferenceException("[EzIPC Provider] Could not retrieve FindIpcSubscriber. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
+                    if (method.ReturnType != typeof(void)) throw new InvalidOperationException($"Event method must have void return value");
+                    var genericArray = (Type[])[.. method.GetParameters().Select(x => x.ParameterType), typeof(object)];
+                    var genericMethod = reg.MakeGenericMethod([.. genericArray]);
+                    var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
+                    PluginLog.Information($"[EzIPC Subscriber] Registering IPC event {name} with method {instance.GetType().FullName}.{method.Name}");
+                    var d = ReflectionHelper.CreateDelegate(method, instance);
+                    genericMethod.Invoke(Svc.PluginInterface, [name]).Call("Subscribe", [d], true);
+                    Unregister.Add(() =>
+                    {
+                        PluginLog.Information($"[EzIPC Subscriber] Unregistering IPC event {name}");
+                        genericMethod.Invoke(Svc.PluginInterface, [name]).Call("Unsubscribe", [d], true);
+                    });
+                }
+            }
+            catch (Exception e)
+            {
+                PluginLog.Error($"[EzIPC Subscriber] Failed to subscribe for event for {instance.GetType().Name}.{method.Name}");
+                e.Log();
             }
         }
 
         //init provider event
         foreach (var field in instance.GetType().GetFields(ReflectionHelper.AllFlags))
         {
-            var attr = field.GetCustomAttributes(true).OfType<EzIPCEventAttribute>().FirstOrDefault();
-            if (attr != null)
+            try
             {
-                var ipcName = attr.IPCName ?? field.Name;
-                var isNonGenericAction = field.FieldType == typeof(Action);
-                if (isNonGenericAction || field.FieldType.GetGenericTypeDefinition().EqualsAny(ActionTypes))
+                var attr = field.GetCustomAttributes(true).OfType<EzIPCEventAttribute>().FirstOrDefault();
+                if (attr != null)
                 {
-                    PluginLog.Information($"[EzIPC Provider] Attempting to assign IPC event to {instance.GetType().Name}.{field.Name}");
-                    var reg = FindIpcProvider(field.FieldType.GetGenericArguments().Length + 1) ?? throw new ArgumentNullException("Could not retrieve GetIpcProvider. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
-                    var genericArgs = field.FieldType.IsGenericType ? field.FieldType.GetGenericArguments() : [];
-                    var genericMethod = reg.MakeGenericMethod([.. genericArgs, typeof(object)]);
-                    var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
-                    var callerInfo = genericMethod.Invoke(Svc.PluginInterface, [name])!;
-                    field.SetValue(instance, ReflectionHelper.CreateDelegate(callerInfo.GetType().GetMethod("SendMessage"), callerInfo));
+                    var ipcName = attr.IPCName ?? field.Name;
+                    var isNonGenericAction = field.FieldType == typeof(Action);
+                    if (isNonGenericAction || field.FieldType.GetGenericTypeDefinition().EqualsAny(ActionTypes))
+                    {
+                        PluginLog.Information($"[EzIPC Provider] Attempting to assign IPC event to {instance.GetType().Name}.{field.Name}");
+                        var reg = FindIpcProvider(field.FieldType.GetGenericArguments().Length + 1) ?? throw new NullReferenceException("Could not retrieve GetIpcProvider. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
+                        var genericArgs = field.FieldType.IsGenericType ? field.FieldType.GetGenericArguments() : [];
+                        var genericMethod = reg.MakeGenericMethod([.. genericArgs, typeof(object)]);
+                        var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
+                        var callerInfo = genericMethod.Invoke(Svc.PluginInterface, [name])!;
+                        field.SetValue(instance, ReflectionHelper.CreateDelegate(callerInfo.GetType().GetMethod("SendMessage"), callerInfo));
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                PluginLog.Error($"[EzIPC Provider] Failed to initialize event provider for {instance.GetType().Name}.{field.Name}");
+                e.Log();
             }
         }
     }
@@ -133,12 +165,19 @@ public static class EzIPC
             }
             catch(Exception e)
             {
+                PluginLog.Error($"Error while unregistering IPC");
                 e.Log();
             }
         }
+        Unregister = null!;
     }
 
-    static MethodInfo? FindIpcProvider(int numGenericArgs)
+    /// <summary>
+    /// Searches for IPC provider function with specified number of generic arguments
+    /// </summary>
+    /// <param name="numGenericArgs"></param>
+    /// <returns></returns>
+    public static MethodInfo? FindIpcProvider(int numGenericArgs)
     {
         foreach (var m in Svc.PluginInterface.GetType().GetMethods(ReflectionHelper.AllFlags))
         {
@@ -150,7 +189,12 @@ public static class EzIPC
         return null;
     }
 
-    static MethodInfo? FindIpcSubscriber(int numGenericArgs)
+    /// <summary>
+    /// Searches for IPC subscriber function with specified number of generic arguments
+    /// </summary>
+    /// <param name="numGenericArgs"></param>
+    /// <returns></returns>
+    public static MethodInfo? FindIpcSubscriber(int numGenericArgs)
     {
         foreach (var m in Svc.PluginInterface.GetType().GetMethods(ReflectionHelper.AllFlags))
         {
