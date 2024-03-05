@@ -49,7 +49,7 @@ public class IPCSubscriber()
     }
 
     [EzIPCEvent]
-    void Event(int a1)
+    void AwesomeEvent(int a1)
     {
         DoSomethingElse(a1);
     }
