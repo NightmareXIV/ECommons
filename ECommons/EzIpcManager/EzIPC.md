@@ -1,5 +1,5 @@
 IPC provider side example:
-```
+```C#
 public class IPCProvider()
 {
     //Internal plugin name is MyPlugin
@@ -26,7 +26,7 @@ public class IPCProvider()
 ```
 
 IPC subscriber (consumer) side example:
-```
+```C#
 public class IPCSubscriber()
 {
     public IPCSubscriber()
@@ -37,7 +37,10 @@ public class IPCSubscriber()
     [EzIPC] public readonly Action MyIPCAction; //retrieves delegate for MyPlugin.MyIPCAction
     [EzIPC("RenamedFunction")] public readonly Func<int> SinceItsRenamedFieldCanHaveAnyName;
 
-    [EzIPC("OtherPlugin_OtherAction", applyPrefix:false)] public Action OtherPluginAction; //you can define full tag without prefix for plugins that don't follow this standard naming convention or if you want to get IPC from multiple plugins in one class
+    [EzIPC("OtherPlugin_OtherAction", applyPrefix:false)] public Action OtherPluginAction;
+    //you can define full tag without prefix for plugins
+    //that don't follow this standard naming convention or
+    //if you want to get IPC from multiple plugins in one class
 
     [EzIPCEvent] //event subscription
     void Event()
