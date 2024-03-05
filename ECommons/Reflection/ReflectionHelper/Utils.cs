@@ -120,7 +120,7 @@ public static partial class ReflectionHelper
         return objects.Select(x => x.GetType()).ToArray();
     }
 
-    public static Delegate CreateDelegate(this MethodInfo methodInfo, object target)
+    public static Delegate CreateDelegate(MethodInfo methodInfo, object target)
     {
         Func<Type[], Type> getType;
         var isAction = methodInfo.ReturnType.Equals((typeof(void)));

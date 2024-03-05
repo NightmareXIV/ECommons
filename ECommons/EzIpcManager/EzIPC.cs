@@ -36,10 +36,10 @@ public static class EzIPC
     /// Each Action and Function field that have <see cref="EzIPCAttribute"/> will be assigned delegate that represents respective GetIPCSubscriber. Make sure to explicitly specify prefix if you're calling other plugin's IPC.
     /// You do not need to dispose IPC methods in any way. Everything is disposed upon calling <see cref="ECommonsMain.Dispose"/>.
     /// </summary>
-    /// <param name="instanceType">Type of a static class that has EzIPC methods and fields.</param>
+    /// <param name="staticType">Type of a static class that has EzIPC methods and fields.</param>
     /// <param name="prefix">Name prefix</param>
     /// <exception cref="ArgumentNullException"></exception>
-    public static void Init(Type instanceType, string? prefix = null) => Init(null, instanceType, prefix);
+    public static void Init(Type staticType, string? prefix = null) => Init(null, staticType, prefix);
 
     /// <summary>
     /// Initializes IPC provider and subscriber.
