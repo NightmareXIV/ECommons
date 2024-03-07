@@ -28,6 +28,7 @@ using ECommons.Interop;
 using System.Globalization;
 using System.Collections;
 using Dalamud.Interface.Windowing;
+using ECommons.ExcelServices;
 #nullable disable
 
 namespace ECommons;
@@ -860,16 +861,8 @@ public static unsafe class GenericHelpers
         }
     }
 
-    public static bool TryGetWorldByName(string world, out Lumina.Excel.GeneratedSheets.World worldId) 
-    {
-        if(Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.World>().TryGetFirst(x => x.Name.ToString().Equals(world, StringComparison.OrdinalIgnoreCase), out var w))
-        {
-            worldId = w;
-            return true;
-        }
-        worldId = default;
-        return false;
-    }
+    [Obsolete($"Please use ExcelWorldHelper.TryGetWorldByName")]
+    public static bool TryGetWorldByName(string world, out Lumina.Excel.GeneratedSheets.World worldId) => ExcelWorldHelper.TryGetWorldByName(world, out worldId);
 
     public static Vector4 Invert(this Vector4 v)
     {
