@@ -60,7 +60,7 @@ public static class EzIPC
                     var ipcName = attr.IPCName ?? method.Name;
                     var reg = FindIpcProvider(method.GetParameters().Length + 1) ?? throw new NullReferenceException("[EzIPC Provider] Could not retrieve GetIpcProvider. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
                     var isAction = method.ReturnType == typeof(void);
-                    var genericArray = (Type[])[.. method.GetParameters().Select(x => x.ParameterType), isAction ? typeof(object) : method.ReturnType];
+                    var genericArray = (Type[])[.. method.GetParameters().Select(x => x.ParameterType), isAction ? attr.ActionLastGenericType : method.ReturnType];
                     var genericMethod = reg.MakeGenericMethod([.. genericArray]);
                     var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
                     PluginLog.Information($"[EzIPC Provider] Registering IPC method {name} with method {instanceType.FullName}.{method.Name}");
@@ -97,7 +97,7 @@ public static class EzIPC
                         var isAction = isNonGenericAction || field.FieldType.GetGenericTypeDefinition().EqualsAny(ActionTypes);
                         var reg = FindIpcSubscriber(field.FieldType.GetGenericArguments().Length + (isAction ? 1 : 0)) ?? throw new NullReferenceException("Could not retrieve GetIpcSubscriber. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
                         var genericArgs = field.FieldType.IsGenericType ? field.FieldType.GetGenericArguments() : [];
-                        var genericMethod = reg.MakeGenericMethod(isAction ? [.. genericArgs, typeof(object)] : genericArgs);
+                        var genericMethod = reg.MakeGenericMethod(isAction ? [.. genericArgs, attr.ActionLastGenericType] : genericArgs);
                         var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
                         var callerInfo = genericMethod.Invoke(Svc.PluginInterface, [name])!;
                         field.SetValue(instance, ReflectionHelper.CreateDelegate(callerInfo.GetType().GetMethod(isAction ? "InvokeAction" : "InvokeFunc"), callerInfo));
@@ -124,7 +124,7 @@ public static class EzIPC
                     var ipcName = attr.IPCName ?? method.Name;
                     var reg = FindIpcSubscriber(method.GetParameters().Length + 1) ?? throw new NullReferenceException("[EzIPC Provider] Could not retrieve FindIpcSubscriber. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
                     if (method.ReturnType != typeof(void)) throw new InvalidOperationException($"Event method must have void return value");
-                    var genericArray = (Type[])[.. method.GetParameters().Select(x => x.ParameterType), typeof(object)];
+                    var genericArray = (Type[])[.. method.GetParameters().Select(x => x.ParameterType), attr.ActionLastGenericType];
                     var genericMethod = reg.MakeGenericMethod([.. genericArray]);
                     var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
                     PluginLog.Information($"[EzIPC Subscriber] Registering IPC event {name} with method {instanceType.FullName}.{method.Name}");
@@ -161,7 +161,7 @@ public static class EzIPC
                         PluginLog.Information($"[EzIPC Provider] Attempting to assign IPC event to {instanceType.Name}.{field.Name}");
                         var reg = FindIpcProvider(field.FieldType.GetGenericArguments().Length + 1) ?? throw new NullReferenceException("Could not retrieve GetIpcProvider. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
                         var genericArgs = field.FieldType.IsGenericType ? field.FieldType.GetGenericArguments() : [];
-                        var genericMethod = reg.MakeGenericMethod([.. genericArgs, typeof(object)]);
+                        var genericMethod = reg.MakeGenericMethod([.. genericArgs, attr.ActionLastGenericType]);
                         var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
                         var callerInfo = genericMethod.Invoke(Svc.PluginInterface, [name])!;
                         field.SetValue(instance, ReflectionHelper.CreateDelegate(callerInfo.GetType().GetMethod("SendMessage"), callerInfo));
