@@ -28,15 +28,49 @@ using ECommons.Interop;
 using System.Globalization;
 using System.Collections;
 using Dalamud.Interface.Windowing;
+using ECommons.ExcelServices;
 #nullable disable
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
-    public static bool TryParseByteArray(string input, out byte[] output)
+    /// <summary>
+    /// Safely selects an entry of the list at a specified index, returning default value if index is out of range.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public static T SafeSelect<T>(this IList<T> list, int index)
     {
-        var str = input.Split(" ");
+        if (index < 0 || index >= list.Count) return default;
+        return list[index];
+    }
+
+    /// <summary>
+    /// Safely selects an entry of the array at a specified index, returning default value if index is out of range.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public static T SafeSelect<T>(this T[] list, int index)
+    {
+        if (index < 0 || index >= list.Length) return default;
+        return list[index];
+    }
+
+    /// <summary>
+    /// Attempts to parse byte array string separated by specified character.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="output"></param>
+    /// <param name="separator"></param>
+    /// <returns></returns>
+    public static bool TryParseByteArray(string input, out byte[] output, char separator = ' ')
+    {
+        var str = input.Split(separator);
         output = new byte[str.Length];
         for (int i = 0; i < str.Length; i++)
         {
@@ -48,6 +82,11 @@ public static unsafe class GenericHelpers
         return true;
     }
 
+    /// <summary>
+    /// Retrieves entries from call stack in a form of single string.
+    /// </summary>
+    /// <param name="maxFrames"></param>
+    /// <returns></returns>
     public static string GetCallStackID(int maxFrames = 3) 
     {
         try
@@ -130,18 +169,44 @@ public static unsafe class GenericHelpers
         }
     }
 
-    public static T GetOrDefault<T>(this IList<T> List, int index)
+    /// <summary>
+    /// Converts byte array to hex string where bytes are separated by a specified character
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <param name="separator"></param>
+    /// <returns></returns>
+    public static string ToHexString(this IEnumerable<byte> bytes, char separator = ' ')
     {
-        if (index < List.Count) return List[index];
-        return default;
+        var first = true;
+        var sb = new StringBuilder();
+        foreach(var x in bytes)
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                sb.Append(separator);
+            }
+            sb.Append($"{x:X2}");
+        }
+        return sb.ToString();
     }
 
-    public static T GetOrDefault<T>(this T[] Array, int index)
-    {
-        if (index < Array.Length) return Array[index];
-        return default;
-    }
+    [Obsolete($"Use {nameof(SafeSelect)}")]
+    public static T GetOrDefault<T>(this IList<T> List, int index) => SafeSelect(List, index);
 
+    [Obsolete($"Use {nameof(SafeSelect)}")]
+    public static T GetOrDefault<T>(this T[] Array, int index) => SafeSelect(Array, index);
+
+    /// <summary>
+    /// Treats list as a queue, removing and returning element at index 0.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="List"></param>
+    /// <param name="result"></param>
+    /// <returns></returns>
     public static bool TryDequeue<T>(this IList<T> List, out T result)
     {
         if(List.Count > 0)
@@ -157,6 +222,13 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Treats list as a queue, removing and returning element at index 0.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="List"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public static T Dequeue<T>(this IList<T> List)
     {
         if(List.TryDequeue(out var ret))
@@ -166,6 +238,12 @@ public static unsafe class GenericHelpers
         throw new InvalidOperationException("Sequence contains no elements");
     }
 
+    /// <summary>
+    /// Treats list as a queue, removing and returning element at index 0 or default value if there's nothing to dequeue.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="List"></param>
+    /// <returns></returns>
     public static T DequeueOrDefault<T>(this IList<T> List)
     {
         if (List.Count > 0)
@@ -180,6 +258,12 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Dequeues element from queue or returns default value if there's nothing to dequeue.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="Queue"></param>
+    /// <returns></returns>
     public static T DequeueOrDefault<T>(this Queue<T> Queue)
     {
         if(Queue.Count > 0)
@@ -189,6 +273,13 @@ public static unsafe class GenericHelpers
         return default;
     }
 
+    /// <summary>
+    /// Searches index of first element in IEnumerable that matches the predicate.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="values"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
     public static int IndexOf<T>(this IEnumerable<T> values, Predicate<T> predicate)
     {
         var ret = -1;
@@ -770,16 +861,8 @@ public static unsafe class GenericHelpers
         }
     }
 
-    public static bool TryGetWorldByName(string world, out Lumina.Excel.GeneratedSheets.World worldId) 
-    {
-        if(Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.World>().TryGetFirst(x => x.Name.ToString().Equals(world, StringComparison.OrdinalIgnoreCase), out var w))
-        {
-            worldId = w;
-            return true;
-        }
-        worldId = default;
-        return false;
-    }
+    [Obsolete($"Please use ExcelWorldHelper.TryGetWorldByName")]
+    public static bool TryGetWorldByName(string world, out Lumina.Excel.GeneratedSheets.World worldId) => ExcelWorldHelper.TryGetWorldByName(world, out worldId);
 
     public static Vector4 Invert(this Vector4 v)
     {

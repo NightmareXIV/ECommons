@@ -34,12 +34,14 @@ public static unsafe partial class ImGuiEx
     /// <param name="id">Unique ID of a line.</param>
     /// <param name="drawAction">Line draw action. You can only use one line in one action.</param>
     /// <param name="width">Calculated width of your line.</param>
-    public static void RightFloat(string id, Action drawAction, out float width)
+    /// <param name="contentRegionAvailX">Override content region avail if needed</param>
+    public static void RightFloat(string id, Action drawAction, out float width, float? contentRegionAvailX = null)
     {
         if(RightFloatWidthCache.TryGetValue(id, out var value))
         {
+            contentRegionAvailX ??= ImGui.GetContentRegionAvail().X;
             var cur = ImGui.GetCursorPos();
-            ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - value);
+            ImGui.SetCursorPosX(contentRegionAvailX.Value - value);
             DrawAndStore();
             ImGui.SetCursorPos(cur);
         }
