@@ -865,8 +865,7 @@ public static unsafe partial class ImGuiEx
             {
                 ImGui.PushStyleColor(ImGuiCol.Text, x.color.Value);
             }
-            if (openTabName == x.name) ImGui.SetNextItemOpen(true);
-            if (ImGui.BeginTabItem(x.name))
+            if (ImGuiEx.BeginTabItem(x.name, openTabName == x.name?ImGuiTabItemFlags.SetSelected:ImGuiTabItemFlags.None))
             {
                 if (x.color != null)
                 {
