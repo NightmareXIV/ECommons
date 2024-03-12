@@ -853,8 +853,8 @@ public static unsafe partial class ImGuiEx
     }
 
     public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, false, tabs);
-
-    public static void EzTabBar(string id, bool KoFiTransparent, params (string name, Action function, Vector4? color, bool child)[] tabs)
+    public static void EzTabBar(string id, bool KoFiTransparent, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, KoFiTransparent, null, tabs);
+    public static void EzTabBar(string id, bool KoFiTransparent, string openTabName, params (string name, Action function, Vector4? color, bool child)[] tabs)
     {
         ImGui.BeginTabBar(id);
         foreach (var x in tabs)
@@ -864,6 +864,7 @@ public static unsafe partial class ImGuiEx
             {
                 ImGui.PushStyleColor(ImGuiCol.Text, x.color.Value);
             }
+            if (openTabName == x.name) ImGui.SetNextItemOpen(true);
             if (ImGui.BeginTabItem(x.name))
             {
                 if (x.color != null)
