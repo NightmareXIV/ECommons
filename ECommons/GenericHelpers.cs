@@ -35,6 +35,16 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static V SafeSelect<K, V>(this IDictionary<K, V> dictionary, K key) => SafeSelect(dictionary, key, default);
+    public static V SafeSelect<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue)
+    {
+        if(dictionary.TryGetValue(key, out var ret))
+        {
+            return ret;
+        }
+        return defaultValue;
+    }
+
     /// <summary>
     /// Safely selects an entry of the list at a specified index, returning default value if index is out of range.
     /// </summary>

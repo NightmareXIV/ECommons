@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -1022,20 +1023,17 @@ public static unsafe partial class ImGuiEx
     public static bool Alt => ImGui.GetIO().KeyAlt;
     public static bool Shift => ImGui.GetIO().KeyShift;
 
-    public static bool IconButton(FontAwesome.FontAwesomeString icon, string id = "ECommonsButton", Vector2 size = default)
+    public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
     {
-        return IconButton((string)icon, id, size);
+        return IconButton(icon.ToIconString(), id, size, enabled);
     }
 
-    public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default)
-    {
-        return IconButton(icon.ToIconString(), id, size);
-    }
-
-    public static bool IconButton(string icon, string id = "ECommonsButton", Vector2 size = default)
+    public static bool IconButton(string icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
     {
         ImGui.PushFont(UiBuilder.IconFont);
-        var result = ImGui.Button($"{icon}##{icon}-{id}", size);
+        if (!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        var result = ImGui.Button($"{icon}##{icon}-{id}", size) && enabled;
+        if (!enabled) ImGui.PopStyleVar();
         ImGui.PopFont();
         return result;
     }
