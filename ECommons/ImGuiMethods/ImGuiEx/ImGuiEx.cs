@@ -783,6 +783,13 @@ public static unsafe partial class ImGuiEx
         ImGui.TextUnformatted(s);
     }
 
+    public static void Text(ImFontPtr font, string s)
+    {
+        ImGui.PushFont(font);
+        ImGui.TextUnformatted(s);
+        ImGui.PopFont();
+    }
+
     public static void Text(Vector4 col, string s)
     {
         ImGui.PushStyleColor(ImGuiCol.Text, col);
@@ -790,11 +797,29 @@ public static unsafe partial class ImGuiEx
         ImGui.PopStyleColor();
     }
 
+    public static void Text(Vector4 col, ImFontPtr font, string s)
+    {
+        ImGui.PushFont(font);
+        ImGui.PushStyleColor(ImGuiCol.Text, col);
+        ImGui.TextUnformatted(s);
+        ImGui.PopStyleColor();
+        ImGui.PopFont();
+    }
+
     public static void Text(uint col, string s)
     {
         ImGui.PushStyleColor(ImGuiCol.Text, col);
         ImGui.TextUnformatted(s);
         ImGui.PopStyleColor();
+    }
+
+    public static void Text(uint col, ImFontPtr font, string s)
+    {
+        ImGui.PushFont(font);
+        ImGui.PushStyleColor(ImGuiCol.Text, col);
+        ImGui.TextUnformatted(s);
+        ImGui.PopStyleColor();
+        ImGui.PopFont();
     }
 
     public static void TextWrapped(string s)
