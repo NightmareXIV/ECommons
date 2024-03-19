@@ -127,7 +127,7 @@ public static unsafe class GenericHelpers
 
     public static bool TryDequeue<T>(this IList<T> List, out T result)
     {
-        if(List.Count > 0)
+        if (List.Count > 0)
         {
             result = List[0];
             List.RemoveAt(0);
@@ -142,7 +142,31 @@ public static unsafe class GenericHelpers
 
     public static T Dequeue<T>(this IList<T> List)
     {
-        if(List.TryDequeue(out var ret))
+        if (List.TryDequeue(out var ret))
+        {
+            return ret;
+        }
+        throw new InvalidOperationException("Sequence contains no elements");
+    }
+
+    public static bool TryDequeueLast<T>(this IList<T> List, out T result)
+    {
+        if (List.Count > 0)
+        {
+            result = List[List.Count-1];
+            List.RemoveAt(List.Count - 1);
+            return true;
+        }
+        else
+        {
+            result = default;
+            return false;
+        }
+    }
+
+    public static T DequeueLast<T>(this IList<T> List)
+    {
+        if (List.TryDequeueLast(out var ret))
         {
             return ret;
         }
