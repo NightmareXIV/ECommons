@@ -8,4 +8,9 @@ public class Box<T>
     {
         Value = value;
     }
+
+    public Box<T> Clone()
+    {
+        return new Box<T>(Value);
+    }
 }

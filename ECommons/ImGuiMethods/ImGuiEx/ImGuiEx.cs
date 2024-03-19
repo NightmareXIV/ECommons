@@ -3,22 +3,90 @@ using Dalamud.Interface.Colors;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Utility;
 using ECommons.DalamudServices;
+using ECommons.ExcelServices;
 using ECommons.Logging;
-using ECommons.Schedulers;
 using ImGuiNET;
+using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
+using Action = System.Action;
 
 namespace ECommons.ImGuiMethods;
 #nullable disable
 
 public static unsafe partial class ImGuiEx
 {
+    public enum JobSelectorOption 
+    { 
+        None, 
+        /// <summary>
+        /// With this option, base jobs will be included as well.
+        /// </summary>
+        IncludeBase,
+        /// <summary>
+        /// Whether to clear filter when user opens job selection menu.
+        /// </summary>
+        ClearFilterOnOpen,
+    }
+    static string JobSelectorFilter = "";
+    /// <summary>
+    /// ImGui combo that opens up into a multiple job selector with icons and search field.
+    /// </summary>
+    /// <param name="id">Standard ID that will be passed directly to the combo.</param>
+    /// <param name="selectedJobs">A collection where selected jobs will be written.</param>
+    /// <param name="options">An array of extra options, if desired.</param>
+    /// <param name="maxPreviewJobs">How much jobs maximum will be visible on a preview before it will just display amount.</param>
+    /// <param name="noJobSelectedPreview">Preview value that should be displayed when no job is selected.</param>
+    /// <param name="jobDisplayFilter">Optional extra filter for jobs to be displayed.</param>
+    /// <returns><see langword="true"/> every time <paramref name="selectedJobs"/> is modified.</returns>
+    public static bool JobSelector(string id, ICollection<Job> selectedJobs, JobSelectorOption[] options = null, int maxPreviewJobs = 3, string noJobSelectedPreview = "None", Func<Job, bool> jobDisplayFilter = null)
+    {
+        var ret = false;
+        var baseJobs = options?.Contains(JobSelectorOption.IncludeBase) == true;
+        string preview;
+        if(selectedJobs.Count == 0)
+        {
+            preview = noJobSelectedPreview;
+        }
+        else if(selectedJobs.Count > maxPreviewJobs)
+        {
+            preview = $"{selectedJobs.Count} selected";
+        }
+        else
+        {
+            preview = selectedJobs.Select(x => x.ToString().Replace("_", " ")).Print();
+        }
+        if (ImGui.BeginCombo(id, preview))
+        {
+            if(ImGui.IsWindowAppearing() && options?.Contains(JobSelectorOption.ClearFilterOnOpen) == true)
+            ImGuiEx.SetNextItemWidthScaled(150f);
+            ImGui.InputTextWithHint("##filter", "Filter...", ref JobSelectorFilter, 50);
+            foreach (var cond in Enum.GetValues<Job>().Where(x => baseJobs || !x.IsUpgradeable()).OrderByDescending(x => Svc.Data.GetExcelSheet<ClassJob>().GetRow((uint)x).Role))
+            {
+                if (cond == Job.ADV) continue;
+                if (jobDisplayFilter != null && !jobDisplayFilter(cond)) continue;
+                var name = cond.ToString().Replace("_", " ");
+                if (JobSelectorFilter == "" || name.Contains(JobSelectorFilter, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (ThreadLoadImageHandler.TryGetIconTextureWrap((uint)cond.GetIcon(), false, out var texture))
+                    {
+                        ImGui.Image(texture.ImGuiHandle, new Vector2(24f.Scale()));
+                        ImGui.SameLine();
+                    }
+                    if (ImGuiEx.CollectionCheckbox(name, cond, selectedJobs)) ret = true;
+                }
+            }
+            ImGui.EndCombo();
+        }
+        return ret;
+    }
+
     public static void HelpMarker(string helpText, Vector4? color = null, string symbolOverride = null) => InfoMarker(helpText, color, symbolOverride);
 
     public static void InfoMarker(string helpText, Vector4? color = null, string symbolOverride = null)
@@ -97,9 +165,9 @@ public static unsafe partial class ImGuiEx
         ImGui.SetNextItemWidth(width.Scale());
     }
 
-    public static bool InputTextMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10)
+    public static bool InputTextMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
     {
-        return ImGui.InputTextMultiline(id, ref text, maxLength, new(ImGuiEx.GetWindowContentRegionWidth(), ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)));
+        return ImGui.InputTextMultiline(id, ref text, maxLength, new(width ?? ImGuiEx.GetWindowContentRegionWidth(), ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)));
     }
 
     public static bool EnumOrderer<T>(string id, List<T> order) where T : IConvertible
@@ -565,7 +633,8 @@ public static unsafe partial class ImGuiEx
 
     public static float Scale(this float f)
     {
-        return f * ImGuiHelpers.GlobalScale;
+        // Dalamud global scale and font size are now indepedent from each other, so both need to factored in.
+        return f * ImGuiHelpers.GlobalScale * (ImGui.GetFontSize() / 12f);
     }
 
     public static void SetTooltip(string text)
@@ -676,7 +745,9 @@ public static unsafe partial class ImGuiEx
     {
         if (ImGui.IsItemHovered())
         {
+            ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
             SetTooltip(s);
+            ImGui.PopTextWrapPos();
         }
     }
 
@@ -712,6 +783,13 @@ public static unsafe partial class ImGuiEx
         ImGui.TextUnformatted(s);
     }
 
+    public static void Text(ImFontPtr font, string s)
+    {
+        ImGui.PushFont(font);
+        ImGui.TextUnformatted(s);
+        ImGui.PopFont();
+    }
+
     public static void Text(Vector4 col, string s)
     {
         ImGui.PushStyleColor(ImGuiCol.Text, col);
@@ -719,11 +797,29 @@ public static unsafe partial class ImGuiEx
         ImGui.PopStyleColor();
     }
 
+    public static void Text(Vector4 col, ImFontPtr font, string s)
+    {
+        ImGui.PushFont(font);
+        ImGui.PushStyleColor(ImGuiCol.Text, col);
+        ImGui.TextUnformatted(s);
+        ImGui.PopStyleColor();
+        ImGui.PopFont();
+    }
+
     public static void Text(uint col, string s)
     {
         ImGui.PushStyleColor(ImGuiCol.Text, col);
         ImGui.TextUnformatted(s);
         ImGui.PopStyleColor();
+    }
+
+    public static void Text(uint col, ImFontPtr font, string s)
+    {
+        ImGui.PushFont(font);
+        ImGui.PushStyleColor(ImGuiCol.Text, col);
+        ImGui.TextUnformatted(s);
+        ImGui.PopStyleColor();
+        ImGui.PopFont();
     }
 
     public static void TextWrapped(string s)
@@ -784,8 +880,8 @@ public static unsafe partial class ImGuiEx
     }
 
     public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, false, tabs);
-
-    public static void EzTabBar(string id, bool KoFiTransparent, params (string name, Action function, Vector4? color, bool child)[] tabs)
+    public static void EzTabBar(string id, bool KoFiTransparent, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, KoFiTransparent, null, tabs);
+    public static void EzTabBar(string id, bool KoFiTransparent, string openTabName, params (string name, Action function, Vector4? color, bool child)[] tabs)
     {
         ImGui.BeginTabBar(id);
         foreach (var x in tabs)
@@ -795,7 +891,7 @@ public static unsafe partial class ImGuiEx
             {
                 ImGui.PushStyleColor(ImGuiCol.Text, x.color.Value);
             }
-            if (ImGui.BeginTabItem(x.name))
+            if (ImGuiEx.BeginTabItem(x.name, openTabName == x.name?ImGuiTabItemFlags.SetSelected:ImGuiTabItemFlags.None))
             {
                 if (x.color != null)
                 {
@@ -833,7 +929,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="name">ImGui ID</param>
     /// <param name="refConfigField">Value</param>
     /// <param name="names">Optional Name overrides</param>
-    public static bool EnumCombo<T>(string name, ref T refConfigField, IDictionary<T, string> names) where T : IConvertible
+    public static bool EnumCombo<T>(string name, ref T refConfigField, IDictionary<T, string> names) where T : Enum, IConvertible
     {
         return EnumCombo(name, ref refConfigField, null, names);
     }
@@ -847,7 +943,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="filter">Optional filter</param>
     /// <param name="names">Optional Name overrides</param>
     /// <returns></returns>
-    public static bool EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : IConvertible
+    public static bool EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : Enum, IConvertible
     {
         var ret = false;
         if (ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString().Replace("_", " ")))
@@ -876,6 +972,28 @@ public static unsafe partial class ImGuiEx
                 if (ImGui.IsWindowAppearing() && equals) ImGui.SetScrollHereY();
             }
             ImGui.EndCombo();
+        }
+        return ret;
+    }
+
+    public static bool EnumRadio<T>(ref T refConfigField, bool sameLine = false, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : Enum, IConvertible
+    {
+        var ret = false;
+        var values = Enum.GetValues(typeof(T));
+        bool first = true;
+        foreach (var x in values)
+        {
+            if (!first && sameLine) ImGui.SameLine();
+            first = false;
+            var equals = EqualityComparer<T>.Default.Equals((T)x, refConfigField);
+            var element = (names != null && names.TryGetValue((T)x, out var n)) ? n : x.ToString().Replace("_", " ");
+            if ((filter == null || filter((T)x))
+                && ImGui.RadioButton(element, equals)
+                )
+            {
+                ret = true;
+                refConfigField = (T)x;
+            }
         }
         return ret;
     }
@@ -930,20 +1048,17 @@ public static unsafe partial class ImGuiEx
     public static bool Alt => ImGui.GetIO().KeyAlt;
     public static bool Shift => ImGui.GetIO().KeyShift;
 
-    public static bool IconButton(FontAwesome.FontAwesomeString icon, string id = "ECommonsButton", Vector2 size = default)
+    public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
     {
-        return IconButton((string)icon, id, size);
+        return IconButton(icon.ToIconString(), id, size, enabled);
     }
 
-    public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default)
-    {
-        return IconButton(icon.ToIconString(), id, size);
-    }
-
-    public static bool IconButton(string icon, string id = "ECommonsButton", Vector2 size = default)
+    public static bool IconButton(string icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
     {
         ImGui.PushFont(UiBuilder.IconFont);
-        var result = ImGui.Button($"{icon}##{icon}-{id}", size);
+        if (!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        var result = ImGui.Button($"{icon}##{icon}-{id}", size) && enabled;
+        if (!enabled) ImGui.PopStyleVar();
         ImGui.PopFont();
         return result;
     }

@@ -2,6 +2,7 @@
 using Lumina.Excel.GeneratedSheets;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace ECommons.ExcelServices;
 #nullable disable
@@ -24,6 +25,16 @@ public static class ExcelJobHelper
     public static Job GetUpgradedJob(this Job j)
     {
         if (Upgrades.TryGetValue(j, out Job job)) return job;
+        return j;
+    }
+
+    public static Job GetDowngradedJob(this Job j)
+    {
+        var dj = Upgrades.FindKeysByValue(j);
+        if(dj.TryGetFirst(out var ret))
+        {
+            return ret;
+        }
         return j;
     }
 
