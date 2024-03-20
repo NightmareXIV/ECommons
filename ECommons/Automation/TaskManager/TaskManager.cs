@@ -9,7 +9,7 @@ using System.Reflection;
 namespace ECommons.Automation;
 #nullable disable
 
-public class TaskManager : IDisposable
+public partial class TaskManager : IDisposable
 {
     private static readonly List<TaskManager> Instances = new();
     /// <summary>
@@ -45,8 +45,8 @@ public class TaskManager : IDisposable
     public bool ShowDebug = true;
     Action<string> LogTimeout => TimeoutSilently ? PluginLog.Verbose : PluginLog.Warning;
 
-    Queue<TaskManagerTask> Tasks = new();
-    Queue<TaskManagerTask> ImmediateTasks = new();
+    List<TaskManagerTask> Tasks = new();
+    List<TaskManagerTask> ImmediateTasks = new();
 
     /// <summary>
     /// Initializes new instance of <see cref="TaskManager"/>.
@@ -106,138 +106,11 @@ public class TaskManager : IDisposable
     /// </summary>
     public bool IsBusy => CurrentTask != null || Tasks.Count > 0 || ImmediateTasks.Count > 0;
 
-    public void Enqueue(Func<bool?> task, string name = null)
-    {
-        Tasks.Enqueue(new(task, TimeLimitMS, AbortOnTimeout, name));
-        MaxTasks++;
-    }
-
-    public void Enqueue(Func<bool?> task, int timeLimitMs, string name = null)
-    {
-        Tasks.Enqueue(new(task, timeLimitMs, AbortOnTimeout, name));
-        MaxTasks++;
-    }
-
-    public void Enqueue(Func<bool?> task, bool abortOnTimeout, string name = null)
-    {
-        Tasks.Enqueue(new(task, TimeLimitMS, abortOnTimeout, name));
-        MaxTasks++;
-    }
-
-    public void Enqueue(Func<bool?> task, int timeLimitMs, bool abortOnTimeout, string name = null)
-    {
-        Tasks.Enqueue(new(task, timeLimitMs, abortOnTimeout, name));
-        MaxTasks++;
-    }
-    public void Enqueue(Action task, string name = null)
-    {
-        Tasks.Enqueue(new(() => { task(); return true; }, TimeLimitMS, AbortOnTimeout, name));
-        MaxTasks++;
-    }
-
-    public void Enqueue(Action task, int timeLimitMs, string name = null)
-    {
-        Tasks.Enqueue(new(() => { task(); return true; }, timeLimitMs, AbortOnTimeout, name));
-        MaxTasks++;
-    }
-
-    public void Enqueue(Action task, bool abortOnTimeout, string name = null)
-    {
-        Tasks.Enqueue(new(() => { task(); return true; }, TimeLimitMS, abortOnTimeout, name));
-        MaxTasks++;
-    }
-
-    public void Enqueue(Action task, int timeLimitMs, bool abortOnTimeout, string name = null)
-    {
-        Tasks.Enqueue(new(() => { task(); return true; }, timeLimitMs, abortOnTimeout, name));
-        MaxTasks++;
-    }
-
-    public void DelayNext(int delayMS, bool useFrameThrottler = false) => DelayNext("ECommonsGenericDelay", delayMS, useFrameThrottler);
-    public void DelayNext(string uniqueName, int delayMS, bool useFrameThrottler = false)
-    {
-        if (useFrameThrottler)
-        {
-            Enqueue(() => FrameThrottler.Throttle(uniqueName, delayMS), $"FrameThrottler.Throttle({uniqueName}, {delayMS})");
-            Enqueue(() => FrameThrottler.Check(uniqueName), $"FrameThrottler.Check({uniqueName})");
-        }
-        else
-        {
-            Enqueue(() => EzThrottler.Throttle(uniqueName, delayMS), $"EzThrottler.Throttle({uniqueName}, {delayMS})");
-            Enqueue(() => EzThrottler.Check(uniqueName), $"EzThrottler.Check({uniqueName})");
-        }
-        MaxTasks += 2;
-    }
-
-    public void DelayNextImmediate(int delayMS, bool useFrameThrottler = false) => DelayNextImmediate("ECommonsGenericDelay", delayMS, useFrameThrottler);
-    public void DelayNextImmediate(string uniqueName, int delayMS, bool useFrameThrottler = false)
-    {
-        if (useFrameThrottler)
-        {
-            EnqueueImmediate(() => FrameThrottler.Throttle(uniqueName, delayMS), $"FrameThrottler.Throttle({uniqueName}, {delayMS})");
-            EnqueueImmediate(() => FrameThrottler.Check(uniqueName), $"FrameThrottler.Check({uniqueName})");
-        }
-        else
-        {
-            EnqueueImmediate(() => EzThrottler.Throttle(uniqueName, delayMS), $"EzThrottler.Throttle({uniqueName}, {delayMS})");
-            EnqueueImmediate(() => EzThrottler.Check(uniqueName), $"EzThrottler.Check({uniqueName})");
-        }
-        MaxTasks += 2;
-    }
-
     public void Abort()
     {
         Tasks.Clear();
         ImmediateTasks.Clear();
         CurrentTask = null;
-    }
-
-    public void EnqueueImmediate(Func<bool?> task, string name = null)
-    {
-        ImmediateTasks.Enqueue(new(task, TimeLimitMS, AbortOnTimeout, name));
-        MaxTasks++;
-    }
-
-    public void EnqueueImmediate(Func<bool?> task, int timeLimitMs, string name = null)
-    {
-        ImmediateTasks.Enqueue(new(task, timeLimitMs, AbortOnTimeout, name));
-        MaxTasks++;
-    }
-
-    public void EnqueueImmediate(Func<bool?> task, bool abortOnTimeout, string name = null)
-    {
-        ImmediateTasks.Enqueue(new(task, TimeLimitMS, abortOnTimeout, name));
-        MaxTasks++;
-    }
-
-    public void EnqueueImmediate(Func<bool?> task, int timeLimitMs, bool abortOnTimeout, string name = null)
-    {
-        ImmediateTasks.Enqueue(new(task, timeLimitMs, abortOnTimeout, name));
-        MaxTasks++;
-    }
-
-    public void EnqueueImmediate(Action task, string name = null)
-    {
-        ImmediateTasks.Enqueue(new(() => { task(); return true; }, TimeLimitMS, AbortOnTimeout, name));
-        MaxTasks++;
-    }
-
-    public void EnqueueImmediate(Action task, int timeLimitMs, string name = null)
-    {
-        ImmediateTasks.Enqueue(new(() => { task(); return true; }, timeLimitMs, AbortOnTimeout, name));
-        MaxTasks++;
-    }
-
-    public void EnqueueImmediate(Action task, bool abortOnTimeout, string name = null)
-    {
-        ImmediateTasks.Enqueue(new(() => { task(); return true; }, TimeLimitMS, abortOnTimeout, name));
-        MaxTasks++;
-    }
-
-    public void EnqueueImmediate(Action task, int timeLimitMs, bool abortOnTimeout, string name = null)
-    {
-        ImmediateTasks.Enqueue(new(() => { task(); return true; }, timeLimitMs, abortOnTimeout, name));
-        MaxTasks++;
     }
 
     void Tick(object _)

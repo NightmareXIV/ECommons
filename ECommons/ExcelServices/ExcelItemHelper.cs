@@ -34,6 +34,10 @@ public static class ExcelItemHelper
         return ret;
     }
 
+    public static Item Get(int rowId) => Get((uint)rowId);
+
+    public static Item Get(uint rowId) => Svc.Data.GetExcelSheet<Item>().GetRow(rowId);
+
     public static string GetName(uint id, bool includeID = false)
     {
         var data = Svc.Data.GetExcelSheet<Item>().GetRow(id);

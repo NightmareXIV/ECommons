@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using Dalamud.Common;
 using System.Linq;
+using System.Runtime.Loader;
+using Newtonsoft.Json;
+using System.IO;
 #nullable disable
 
 namespace ECommons.Reflection;
@@ -16,11 +19,11 @@ public static class DalamudReflector
 {
     delegate ref int GetRefValue(int vkCode);
     static GetRefValue getRefValue;
-    static Dictionary<string, IDalamudPlugin> pluginCache;
+    static Dictionary<string, CachedPluginEntry> pluginCache;
     static List<Action> onPluginsChangedActions;
-    static bool IsMonitoring;
+    static bool IsMonitoring = false;
 
-    internal static void Init(bool monitorPlugins = true)
+    internal static void Init()
     {
         onPluginsChangedActions = new();
         pluginCache = new();
@@ -31,8 +34,6 @@ public static class DalamudReflector
                         BindingFlags.NonPublic | BindingFlags.Instance,
                         null, new Type[] { typeof(int) }, null));
         });
-        IsMonitoring = monitorPlugins;
-        if (monitorPlugins) Svc.Framework.Update += MonitorPlugins;
     }
 
     internal static void Dispose()
@@ -45,14 +46,24 @@ public static class DalamudReflector
         Svc.Framework.Update -= MonitorPlugins;
     }
 
+    /// <summary>
+    /// Registers actions that will be triggered upon any installed plugin state change. Plugin monitoring will begin upon registering any actions.
+    /// </summary>
+    /// <param name="actions"></param>
     public static void RegisterOnInstalledPluginsChangedEvents(params Action[] actions)
     {
-        if (!IsMonitoring) throw new InvalidOperationException("Monitoring installed plugins disabled. Please enable it.");
-        foreach(var x in actions)
+        if (!IsMonitoring)
+        {
+            IsMonitoring = true;
+            PluginLog.Information($"[ECommons] [DalamudReflector] RegisterOnInstalledPluginsChangedEvents was requested for the first time. Starting to monitor plugins for changes...");
+            Svc.Framework.Update += MonitorPlugins;
+        }
+        foreach (var x in actions)
         {
             onPluginsChangedActions.Add(x);
         }
     }
+
 
     public static void SetKeyState(VirtualKey key, int state)
     {
@@ -83,7 +94,9 @@ public static class DalamudReflector
         }
     }
 
-    public static bool TryGetLocalPlugin(out object localPlugin, out Type type)
+    public static bool TryGetLocalPlugin(out object localPlugin, out Type type) => TryGetLocalPlugin(ECommonsMain.Instance, out localPlugin, out type);
+
+    public static bool TryGetLocalPlugin(IDalamudPlugin instance, out object localPlugin, out Type type)
     {
         try
         {
@@ -99,7 +112,7 @@ public static class DalamudReflector
                 if (t != null)
                 {
                     type = t.GetType().Name == "LocalDevPlugin" ? t.GetType().BaseType : t.GetType();
-                    if (object.ReferenceEquals(type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t), ECommonsMain.Instance))
+                    if (object.ReferenceEquals(type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t), instance))
                     {
                         localPlugin = t;
                         return true;
@@ -117,16 +130,38 @@ public static class DalamudReflector
         }
     }
 
-    public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false, bool ignoreCache = false)
+    public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false, bool ignoreCache = false) => TryGetDalamudPlugin(internalName, out instance, out _, suppressErrors, ignoreCache);
+
+    /// <summary>
+    /// Attempts to retrieve an instance of loaded plugin and it's load context. 
+    /// </summary>
+    /// <param name="internalName">Target plugin's internal name</param>
+    /// <param name="instance">Plugin instance</param>
+    /// <param name="context">Plugin's load context. May be null.</param>
+    /// <param name="suppressErrors">Whether to stay silent on failures</param>
+    /// <param name="ignoreCache">Whether to disable caching of the plugin and it's context to speed up further searches</param>
+    /// <returns>Whether operation succeeded</returns>
+    /// <exception cref="Exception"></exception>
+    public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, out AssemblyLoadContext context, bool suppressErrors = false, bool ignoreCache = false)
     {
-        if (!IsMonitoring) ignoreCache = true;
+        if (!ignoreCache)
+        {
+            if (!IsMonitoring)
+            {
+                IsMonitoring = true;
+                PluginLog.Information($"[ECommons] [DalamudReflector] Plugin cache was requested for the first time. Starting to monitor plugins for changes...");
+                Svc.Framework.Update += MonitorPlugins;
+            }
+        }
         if (pluginCache == null)
         {
             throw new Exception("PluginCache is null. Have you initialised the DalamudReflector module on ECommons initialisation?");
         }
 
-        if(!ignoreCache && pluginCache.TryGetValue(internalName, out instance) && instance != null)
+        if(!ignoreCache && pluginCache.TryGetValue(internalName, out var entry) && entry.Plugin != null)
         {
+            instance = entry.Plugin;
+            context = entry.Context;
             return true;
         }
         try
@@ -147,12 +182,14 @@ public static class DalamudReflector
                     else
                     {
                         instance = plugin;
-                        pluginCache[internalName] = plugin;
+                        context = t.GetFoP("loader")?.GetFoP<AssemblyLoadContext>("context");
+                        pluginCache[internalName] = new(plugin, context);
                         return true;
                     }
                 }
             }
             instance = null;
+            context = null;
             return false;
         }
         catch (Exception e)
@@ -163,6 +200,7 @@ public static class DalamudReflector
                 PluginLog.Error(e.StackTrace);
             }
             instance = null;
+            context = null;
             return false;
         }
     }
@@ -202,5 +240,31 @@ public static class DalamudReflector
                 x();
             }
         });
+    }
+
+    public static bool IsOnStaging()
+    {
+        if (TryGetDalamudStartInfo(out var startinfo, Svc.PluginInterface))
+        {
+            if (File.Exists(startinfo.ConfigurationPath))
+            {
+                var file = File.ReadAllText(startinfo.ConfigurationPath);
+                var ob = JsonConvert.DeserializeObject<dynamic>(file);
+                string type = ob.DalamudBetaKind;
+                if (type is not null && !string.IsNullOrEmpty(type) && type != "release")
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return false;
     }
 }
