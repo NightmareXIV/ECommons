@@ -299,6 +299,9 @@ public static unsafe class GenericHelpers
             return Bitmask.IsBitSet(User32.GetAsyncKeyState((int)key), 15);
         }
     }
+
+    public static bool IsAnyKeyPressed(IEnumerable<LimitedKeys> keys) => keys.Any(IsKeyPressed);
+
     public static bool IsKeyPressed(IEnumerable<LimitedKeys> keys)
     {
         foreach (var x in keys)
