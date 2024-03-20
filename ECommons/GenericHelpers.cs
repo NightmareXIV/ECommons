@@ -808,6 +808,10 @@ public static unsafe class GenericHelpers
     {
         PluginLog.LogVerbose($"{e.Message}\n{e.StackTrace ?? ""}");
     }
+    public static void LogInfo(this Exception e)
+    {
+        PluginLog.Information($"{e.Message}\n{e.StackTrace ?? ""}");
+    }
 
     public static void Log(this Exception e, string ErrorMessage)
     {
