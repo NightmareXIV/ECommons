@@ -18,6 +18,8 @@ using ECommons.Throttlers;
 using ECommons.EzEventManager;
 using ECommons.EzHookManager;
 using ECommons.EzSharedDataManager;
+using Serilog.Events;
+using ECommons.EzIpcManager;
 #nullable disable
 
 namespace ECommons;
@@ -32,6 +34,7 @@ public static class ECommonsMain
         Instance = instance;
         GenericHelpers.Safe(() => Svc.Init(pluginInterface));
         PluginLog.Information($"This is ECommons v{typeof(ECommonsMain).Assembly.GetName().Version} and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}. Hello!");
+        Svc.Log.MinimumLogLevel = LogEventLevel.Verbose;
         GenericHelpers.Safe(CmdManager.Init);
         if (modules.ContainsAny(Module.All, Module.ObjectFunctions))
         {
@@ -64,6 +67,7 @@ public static class ECommonsMain
         {
             GenericHelpers.Safe(EzConfig.Save);
         }
+        GenericHelpers.Safe(EzConfig.Dispose);
         GenericHelpers.Safe(ThreadLoadImageHandler.Dispose);
         GenericHelpers.Safe(ObjectLife.Dispose);
         GenericHelpers.Safe(DalamudReflector.Dispose);
@@ -103,6 +107,7 @@ public static class ECommonsMain
         GenericHelpers.Safe(EzEvent.DisposeAll);
         GenericHelpers.Safe(EzHookCommon.DisposeAll);
         GenericHelpers.Safe(EzSharedData.Dispose);
+        GenericHelpers.Safe(EzIPC.Dispose);
         Chat.instance = null;
         Instance = null;
     }

@@ -25,12 +25,78 @@ using ECommons.MathHelpers;
 using PInvoke;
 using System.Windows.Forms;
 using ECommons.Interop;
+using System.Globalization;
+using System.Collections;
+using Dalamud.Interface.Windowing;
+using ECommons.ExcelServices;
 #nullable disable
 
 namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static V SafeSelect<K, V>(this IDictionary<K, V> dictionary, K key) => SafeSelect(dictionary, key, default);
+    public static V SafeSelect<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue)
+    {
+        if(dictionary.TryGetValue(key, out var ret))
+        {
+            return ret;
+        }
+        return defaultValue;
+    }
+
+    /// <summary>
+    /// Safely selects an entry of the list at a specified index, returning default value if index is out of range.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public static T SafeSelect<T>(this IList<T> list, int index)
+    {
+        if (index < 0 || index >= list.Count) return default;
+        return list[index];
+    }
+
+    /// <summary>
+    /// Safely selects an entry of the array at a specified index, returning default value if index is out of range.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public static T SafeSelect<T>(this T[] list, int index)
+    {
+        if (index < 0 || index >= list.Length) return default;
+        return list[index];
+    }
+
+    /// <summary>
+    /// Attempts to parse byte array string separated by specified character.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="output"></param>
+    /// <param name="separator"></param>
+    /// <returns></returns>
+    public static bool TryParseByteArray(string input, out byte[] output, char separator = ' ')
+    {
+        var str = input.Split(separator);
+        output = new byte[str.Length];
+        for (int i = 0; i < str.Length; i++)
+        {
+            if (!byte.TryParse(str[i], NumberStyles.HexNumber, null, out output[i]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Retrieves entries from call stack in a form of single string.
+    /// </summary>
+    /// <param name="maxFrames"></param>
+    /// <returns></returns>
     public static string GetCallStackID(int maxFrames = 3) 
     {
         try
@@ -113,21 +179,47 @@ public static unsafe class GenericHelpers
         }
     }
 
-    public static T GetOrDefault<T>(this IList<T> List, int index)
+    /// <summary>
+    /// Converts byte array to hex string where bytes are separated by a specified character
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <param name="separator"></param>
+    /// <returns></returns>
+    public static string ToHexString(this IEnumerable<byte> bytes, char separator = ' ')
     {
-        if (index < List.Count) return List[index];
-        return default;
+        var first = true;
+        var sb = new StringBuilder();
+        foreach(var x in bytes)
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                sb.Append(separator);
+            }
+            sb.Append($"{x:X2}");
+        }
+        return sb.ToString();
     }
 
-    public static T GetOrDefault<T>(this T[] Array, int index)
-    {
-        if (index < Array.Length) return Array[index];
-        return default;
-    }
+    [Obsolete($"Use {nameof(SafeSelect)}")]
+    public static T GetOrDefault<T>(this IList<T> List, int index) => SafeSelect(List, index);
 
+    [Obsolete($"Use {nameof(SafeSelect)}")]
+    public static T GetOrDefault<T>(this T[] Array, int index) => SafeSelect(Array, index);
+
+    /// <summary>
+    /// Treats list as a queue, removing and returning element at index 0.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="List"></param>
+    /// <param name="result"></param>
+    /// <returns></returns>
     public static bool TryDequeue<T>(this IList<T> List, out T result)
     {
-        if(List.Count > 0)
+        if (List.Count > 0)
         {
             result = List[0];
             List.RemoveAt(0);
@@ -140,15 +232,52 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Treats list as a queue, removing and returning element at index 0.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="List"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public static T Dequeue<T>(this IList<T> List)
     {
-        if(List.TryDequeue(out var ret))
+        if (List.TryDequeue(out var ret))
         {
             return ret;
         }
         throw new InvalidOperationException("Sequence contains no elements");
     }
 
+    public static bool TryDequeueLast<T>(this IList<T> List, out T result)
+    {
+        if (List.Count > 0)
+        {
+            result = List[List.Count-1];
+            List.RemoveAt(List.Count - 1);
+            return true;
+        }
+        else
+        {
+            result = default;
+            return false;
+        }
+    }
+
+    public static T DequeueLast<T>(this IList<T> List)
+    {
+        if (List.TryDequeueLast(out var ret))
+        {
+            return ret;
+        }
+        throw new InvalidOperationException("Sequence contains no elements");
+    }
+
+    /// <summary>
+    /// Treats list as a queue, removing and returning element at index 0 or default value if there's nothing to dequeue.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="List"></param>
+    /// <returns></returns>
     public static T DequeueOrDefault<T>(this IList<T> List)
     {
         if (List.Count > 0)
@@ -163,6 +292,12 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Dequeues element from queue or returns default value if there's nothing to dequeue.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="Queue"></param>
+    /// <returns></returns>
     public static T DequeueOrDefault<T>(this Queue<T> Queue)
     {
         if(Queue.Count > 0)
@@ -172,6 +307,13 @@ public static unsafe class GenericHelpers
         return default;
     }
 
+    /// <summary>
+    /// Searches index of first element in IEnumerable that matches the predicate.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="values"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
     public static int IndexOf<T>(this IEnumerable<T> values, Predicate<T> predicate)
     {
         var ret = -1;
@@ -299,6 +441,9 @@ public static unsafe class GenericHelpers
             return Bitmask.IsBitSet(User32.GetAsyncKeyState((int)key), 15);
         }
     }
+
+    public static bool IsAnyKeyPressed(IEnumerable<LimitedKeys> keys) => keys.Any(IsKeyPressed);
+
     public static bool IsKeyPressed(IEnumerable<LimitedKeys> keys)
     {
         foreach (var x in keys)
@@ -753,16 +898,8 @@ public static unsafe class GenericHelpers
         }
     }
 
-    public static bool TryGetWorldByName(string world, out Lumina.Excel.GeneratedSheets.World worldId) 
-    {
-        if(Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.World>().TryGetFirst(x => x.Name.ToString().Equals(world, StringComparison.OrdinalIgnoreCase), out var w))
-        {
-            worldId = w;
-            return true;
-        }
-        worldId = default;
-        return false;
-    }
+    [Obsolete($"Please use ExcelWorldHelper.TryGetWorldByName")]
+    public static bool TryGetWorldByName(string world, out Lumina.Excel.GeneratedSheets.World worldId) => ExcelWorldHelper.TryGetWorldByName(world, out worldId);
 
     public static Vector4 Invert(this Vector4 v)
     {
@@ -807,6 +944,10 @@ public static unsafe class GenericHelpers
     public static void LogVerbose(this Exception e)
     {
         PluginLog.LogVerbose($"{e.Message}\n{e.StackTrace ?? ""}");
+    }
+    public static void LogInternal(this Exception e)
+    {
+        InternalLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
     }
     public static void LogInfo(this Exception e)
     {
@@ -1118,34 +1259,84 @@ public static unsafe class GenericHelpers
         }
     }
 
-    public static bool TryGetFirst<K>(this IEnumerable<K> enumerable, out K value)
+    /// <summary>
+    /// Attempts to get first element of <see cref="IEnumerable"/>.
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool TryGetFirst<TSource>(this IEnumerable<TSource> source, out TSource value)
     {
-        try
-        {
-            value = enumerable.First();
-            return true;
-        }
-        catch (Exception)
+        if (source == null)
         {
             value = default;
             return false;
         }
+        var list = source as IList<TSource>;
+        if (list != null)
+        {
+            if (list.Count > 0)
+            {
+                value = list[0];
+                return true;
+            }
+        }
+        else
+        {
+            using (var e = source.GetEnumerator())
+            {
+                if (e.MoveNext())
+                {
+                    value = e.Current;
+                    return true;
+                }
+            }
+        }
+        value = default;
+        return false;
     }
 
-    public static bool TryGetFirst<K>(this IEnumerable<K> enumerable, Func<K, bool> predicate, out K value)
+    /// <summary>
+    /// Attempts to get first element of IEnumerable
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="predicate">Function to test elements.</param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool TryGetFirst<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, out TSource value)
     {
-        try
-        {
-            value = enumerable.First(predicate);
-            return true;
-        }
-        catch (Exception)
+        if (source == null)
         {
             value = default;
             return false;
         }
+        if (predicate == null)
+        {
+            value = default;
+            return false;
+        }
+        foreach (TSource element in source)
+        {
+            if (predicate(element))
+            {
+                value = element;
+                return true;
+            }
+        }
+        value = default;
+        return false;
     }
 
+    /// <summary>
+    /// Attempts to get last element of <see cref="IEnumerable"/>.
+    /// </summary>
+    /// <typeparam name="K"></typeparam>
+    /// <param name="enumerable"></param>
+    /// <param name="predicate">Function to test elements.</param>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public static bool TryGetLast<K>(this IEnumerable<K> enumerable, Func<K, bool> predicate, out K value)
     {
         try
@@ -1160,6 +1351,13 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Attempts to get first instance of addon by name.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="Addon"></param>
+    /// <param name="AddonPtr"></param>
+    /// <returns></returns>
     public static bool TryGetAddonByName<T>(string Addon, out T* AddonPtr) where T : unmanaged
     {
         var a = Svc.GameGui.GetAddonByName(Addon, 1);
@@ -1175,6 +1373,11 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Attempts to find out whether SelectString entry is enabled based on text color. 
+    /// </summary>
+    /// <param name="textNodePtr"></param>
+    /// <returns></returns>
     public static bool IsSelectItemEnabled(AtkTextNode* textNodePtr)
     {
         var col = textNodePtr->TextColor;
@@ -1185,6 +1388,34 @@ public static unsafe class GenericHelpers
             || (col.A == 0xFF && col.R == 0xFF && col.G == 0xFF && col.B == 0xFF)
             // EEE1C5FF
             || (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5);
+    }
+
+    public static void MoveItemToPosition<T>(List<T> list, Func<T, bool> sourceItemSelector, int targetedIndex)
+    {
+        int sourceIndex = -1;
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (sourceItemSelector(list[i]))
+            {
+                sourceIndex = i;
+                break;
+            }
+        }
+        if (sourceIndex == targetedIndex) return;
+        var item = list[sourceIndex];
+        list.RemoveAt(sourceIndex);
+        list.Insert(targetedIndex, item);
+    }
+
+    public static void SetMinSize(this Window window, float width = 100, float height = 100) => SetMinSize(window, new Vector2(width, height));
+
+    public static void SetMinSize(this Window window, Vector2 minSize)
+    {
+        window.SizeConstraints = new()
+        {
+            MinimumSize = minSize,
+            MaximumSize = new Vector2(float.MaxValue)
+        };
     }
 
 
@@ -1204,4 +1435,5 @@ public static unsafe class GenericHelpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete($"Use MemoryHelper.ReadRaw")]
     public static byte[] ReadRaw(IntPtr memoryAddress, int length) => MemoryHelper.ReadRaw(memoryAddress, length);
+
 }
