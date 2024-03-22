@@ -35,6 +35,11 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static bool AddressEquals(this GameObject obj, GameObject other)
+    {
+        return obj?.Address == other?.Address;
+    }
+
     public static V SafeSelect<K, V>(this IDictionary<K, V> dictionary, K key) => SafeSelect(dictionary, key, default);
     public static V SafeSelect<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue)
     {
