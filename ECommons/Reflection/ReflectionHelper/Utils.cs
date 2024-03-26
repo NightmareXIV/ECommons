@@ -1,4 +1,5 @@
-﻿using FFXIVClientStructs.FFXIV.Component.GUI;
+﻿using ECommons.Reflection.FieldPropertyUnion;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -142,5 +143,34 @@ public static partial class ReflectionHelper
         }
 
         return Delegate.CreateDelegate(getType(types.ToArray()), target, methodInfo.Name);
+    }
+
+    public static IFieldPropertyUnion[] GetFieldPropertyUnions(this Type type, BindingFlags bindingFlags = BindingFlags.Default)
+    {
+        var ret = new List<IFieldPropertyUnion>();
+        foreach (var item in type.GetFields(bindingFlags))
+        {
+            ret.Add(new UnionField(item));
+        }
+        foreach (var item in type.GetProperties(bindingFlags))
+        {
+            ret.Add(new UnionProperty(item));
+        }
+        return [.. ret];
+    }
+
+    public static IFieldPropertyUnion? GetFieldPropertyUnion(this Type type, string name, BindingFlags bindingFlags = BindingFlags.Default)
+    {
+        var f = type.GetField(name, bindingFlags);
+        if(f != null)
+        {
+            return new UnionField(f);
+        }
+        var p = type.GetProperty(name, bindingFlags);
+        if (p == null)
+        {
+            return new UnionProperty(p);
+        }
+        return null;
     }
 }

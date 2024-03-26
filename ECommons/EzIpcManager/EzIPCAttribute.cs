@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.EzIpcManager;
-[AttributeUsage(AttributeTargets.Method | AttributeTargets.Field, AllowMultiple = false)]
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
 public class EzIPCAttribute : Attribute
 {
     public string? IPCName;

@@ -22,6 +22,17 @@ namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
+    public static bool TreeNode(string name, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.None) => ImGuiEx.TreeNode(null, name, flags);
+
+    public static bool TreeNode(Vector4? color, string name, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.None)
+    {
+        flags |= ImGuiTreeNodeFlags.SpanFullWidth;
+        if (color != null) ImGui.PushStyleColor(ImGuiCol.Text, color.Value);
+        var ret = ImGui.TreeNodeEx(name, flags);
+        if (color != null) ImGui.PopStyleColor();
+        return ret;
+    }
+
     public enum JobSelectorOption 
     { 
         None, 
