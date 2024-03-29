@@ -35,6 +35,21 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static bool AddressEquals(this GameObject obj, GameObject other)
+    {
+        return obj?.Address == other?.Address;
+    }
+
+    public static V SafeSelect<K, V>(this IDictionary<K, V> dictionary, K key) => SafeSelect(dictionary, key, default);
+    public static V SafeSelect<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue)
+    {
+        if(dictionary.TryGetValue(key, out var ret))
+        {
+            return ret;
+        }
+        return defaultValue;
+    }
+
     /// <summary>
     /// Safely selects an entry of the list at a specified index, returning default value if index is out of range.
     /// </summary>
@@ -209,7 +224,7 @@ public static unsafe class GenericHelpers
     /// <returns></returns>
     public static bool TryDequeue<T>(this IList<T> List, out T result)
     {
-        if(List.Count > 0)
+        if (List.Count > 0)
         {
             result = List[0];
             List.RemoveAt(0);
@@ -231,7 +246,31 @@ public static unsafe class GenericHelpers
     /// <exception cref="InvalidOperationException"></exception>
     public static T Dequeue<T>(this IList<T> List)
     {
-        if(List.TryDequeue(out var ret))
+        if (List.TryDequeue(out var ret))
+        {
+            return ret;
+        }
+        throw new InvalidOperationException("Sequence contains no elements");
+    }
+
+    public static bool TryDequeueLast<T>(this IList<T> List, out T result)
+    {
+        if (List.Count > 0)
+        {
+            result = List[List.Count-1];
+            List.RemoveAt(List.Count - 1);
+            return true;
+        }
+        else
+        {
+            result = default;
+            return false;
+        }
+    }
+
+    public static T DequeueLast<T>(this IList<T> List)
+    {
+        if (List.TryDequeueLast(out var ret))
         {
             return ret;
         }
@@ -407,6 +446,9 @@ public static unsafe class GenericHelpers
             return Bitmask.IsBitSet(User32.GetAsyncKeyState((int)key), 15);
         }
     }
+
+    public static bool IsAnyKeyPressed(IEnumerable<LimitedKeys> keys) => keys.Any(IsKeyPressed);
+
     public static bool IsKeyPressed(IEnumerable<LimitedKeys> keys)
     {
         foreach (var x in keys)
@@ -911,6 +953,10 @@ public static unsafe class GenericHelpers
     public static void LogInternal(this Exception e)
     {
         InternalLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
+    }
+    public static void LogInfo(this Exception e)
+    {
+        PluginLog.Information($"{e.Message}\n{e.StackTrace ?? ""}");
     }
 
     public static void Log(this Exception e, string ErrorMessage)

@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.DalamudServices;
+using ECommons.ExcelServices;
 using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Linq;
@@ -10,9 +11,10 @@ namespace ECommons.PartyFunctions;
 public class UniversalPartyMember
 #nullable disable
 {
-    public String Name { get; init; }
+    public string Name { get; init; }
     public ExcelResolver<World> HomeWorld { get; init; }
     public ExcelResolver<World> CurrentWorld { get; init; }
+    public string NameWithWorld => $"{Name}@{HomeWorld.GameData.Name}";
 
     internal GameObject GameObjectInternal = null;
     public GameObject GameObject

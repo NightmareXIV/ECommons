@@ -1,4 +1,5 @@
-﻿using FFXIVClientStructs.FFXIV.Component.GUI;
+﻿using ECommons.Reflection.FieldPropertyUnion;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,7 +54,7 @@ public static partial class ReflectionHelper
     }
 
     /// <summary>
-    /// Searches for specified types in specified assembly list.
+    /// Searches for specified non-generic types in specified assembly list.
     /// </summary>
     /// <param name="assemblies">Assemblies to search in</param>
     /// <param name="typeNames">A list of requested types names</param>
@@ -76,7 +77,12 @@ public static partial class ReflectionHelper
         return genericArgs;
     }
 
-
+    /// <summary>
+    /// Searches for specified generic and non-generic types in specified assembly list.
+    /// </summary>
+    /// <param name="assemblies">Assemblies to search in</param>
+    /// <param name="typeNames">A list of tuples of requested types names and generic argument types. Array of types can be left empty or null to specify that this type is non-generic.</param>
+    /// <returns>A list of requested types. Please check resulting list length to ensure all types were found.</returns>
     public static List<Type> FindTypesInAssemblies(IEnumerable<Assembly> assemblies, IEnumerable<(string TypeName, Type[] TypeArguments)> typeNames)
     {
         var genericArgs = new List<Type>();
@@ -120,6 +126,12 @@ public static partial class ReflectionHelper
         return objects.Select(x => x.GetType()).ToArray();
     }
 
+    /// <summary>
+    /// Creates delegate to a method by MethodInfo
+    /// </summary>
+    /// <param name="methodInfo">MethodInfo of a method for which a delegate will be created.</param>
+    /// <param name="target">Instance object that is hosting the method. Pass null if a method is static.</param>
+    /// <returns></returns>
     public static Delegate CreateDelegate(MethodInfo methodInfo, object target)
     {
         Func<Type[], Type> getType;
@@ -142,5 +154,34 @@ public static partial class ReflectionHelper
         }
 
         return Delegate.CreateDelegate(getType(types.ToArray()), target, methodInfo.Name);
+    }
+
+    public static IFieldPropertyUnion[] GetFieldPropertyUnions(this Type type, BindingFlags bindingFlags = BindingFlags.Default)
+    {
+        var ret = new List<IFieldPropertyUnion>();
+        foreach (var item in type.GetFields(bindingFlags))
+        {
+            ret.Add(new UnionField(item));
+        }
+        foreach (var item in type.GetProperties(bindingFlags))
+        {
+            ret.Add(new UnionProperty(item));
+        }
+        return [.. ret];
+    }
+
+    public static IFieldPropertyUnion? GetFieldPropertyUnion(this Type type, string name, BindingFlags bindingFlags = BindingFlags.Default)
+    {
+        var f = type.GetField(name, bindingFlags);
+        if(f != null)
+        {
+            return new UnionField(f);
+        }
+        var p = type.GetProperty(name, bindingFlags);
+        if (p == null)
+        {
+            return new UnionProperty(p);
+        }
+        return null;
     }
 }
