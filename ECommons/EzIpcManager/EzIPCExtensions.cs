@@ -156,7 +156,6 @@ public static class EzIPCExtensions
         }
     }
 
-
     /// <summary>
     /// Tries to invoke previously obtained function delegate via <see cref="EzIPC"/> safely. Does not throws <see cref="IpcNotReadyError"/>.
     /// </summary>

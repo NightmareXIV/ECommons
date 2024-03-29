@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Dalamud.Plugin.Ipc.Exceptions;
+using FFXIVClientStructs.FFXIV.Client.Game.Control;
 
 namespace ECommons.EzIpcManager;
 
@@ -14,22 +16,30 @@ namespace ECommons.EzIpcManager;
 /// </summary>
 public static class EzIPC
 {
+    /// <summary>
+    /// Event that fires whenever an exception occurs in any of safe invocation wrapper methods.
+    /// </summary>
+    public static event Action<Exception>? OnSafeInvocationException;
+
+    internal static void InvokeOnSafeInvocationException(Exception e) => OnSafeInvocationException?.Invoke(e);
+
     static List<EzIPCDisposalToken> Unregister = [];
 
     static Type[] FuncTypes = [typeof(Func<>), typeof(Func<,>), typeof(Func<,,>), typeof(Func<,,,>), typeof(Func<,,,,>), typeof(Func<,,,,,>), typeof(Func<,,,,,,>), typeof(Func<,,,,,,,>), typeof(Func<,,,,,,,,>), typeof(Func<,,,,,,,,,>)];
     static Type[] ActionTypes = [typeof(Action<>), typeof(Action<,>), typeof(Action<,,>), typeof(Action<,,,>), typeof(Action<,,,,>), typeof(Action<,,,,,>), typeof(Action<,,,,,,>), typeof(Action<,,,,,,,>), typeof(Action<,,,,,,,,>), typeof(Action<,,,,,,,,,>)];
 
     /// <summary>
-    /// Initializes IPC provider and subscriber for an instance type. Static methods or field/propertys/properties will be ignored, register them separately via static Init if you must.<br></br>
+    /// Initializes IPC provider and subscriber for an instance type. Static methods or field/properties/properties will be ignored, register them separately via static Init if you must.<br></br>
     /// Each method that have <see cref="EzIPCAttribute"/> or <see cref="EzIPCEventAttribute"/> will be registered for IPC under "Prefix.IPCName" tag. If prefix is not specified, it is your plugin's internal name. If IPCName is not specified, it is method name.<br></br>
     /// Each Action and Function field/property that have <see cref="EzIPCAttribute"/> will be assigned delegate that represents respective GetIPCSubscriber. Each Action field/property that have <see cref="EzIPCEventAttribute"/> will be assigned to become respective tag's event trigger. Make sure to explicitly specify prefix if you're interacting with other plugin's IPC.<br></br>
     /// You do not need to dispose IPC methods in any way. Everything is disposed upon calling <see cref="ECommonsMain.Dispose"/>.
     /// </summary>
-    /// <param name="instance">Instance of a class that has EzIPC methods and field/propertys/properties.</param>
+    /// <param name="instance">Instance of a class that has EzIPC methods and field/properties/properties.</param>
     /// <param name="prefix">Name prefix</param>
+    /// <param name="safeWrapper">Type of a safe invocation wrapper to be used for IPC calls. Wrappers, when used, will silently drop exceptions and return default object if invocation has failed. You can subscribe to <see cref="EzIPC.OnSafeInvocationException"/> event to observe these exceptions.</param>
     /// <exception cref="ArgumentNullException"></exception>
     /// <returns>Array of disposal tokens that can be used to dispose registered providers and event subscription. <b>Typical use of EzIPC never has any need to store and deal with these tokens</b>; you only ever need them when you want to unregister IPC before your plugin's Dispose method is called.</returns>
-    public static EzIPCDisposalToken[] Init(object instance, string? prefix = null) => Init(instance, instance.GetType(), prefix);
+    public static EzIPCDisposalToken[] Init(object instance, string? prefix = null, SafeWrapper safeWrapper = SafeWrapper.None) => Init(instance, instance.GetType(), prefix, safeWrapper);
 
     /// <summary>
     /// Initializes IPC provider and subscriber for a static type.<br></br>
@@ -37,14 +47,16 @@ public static class EzIPC
     /// Each Action and Function field/property that have <see cref="EzIPCAttribute"/> will be assigned delegate that represents respective GetIPCSubscriber. Each Action field/property that have <see cref="EzIPCEventAttribute"/> will be assigned to become respective tag's event trigger. Make sure to explicitly specify prefix if you're interacting with other plugin's IPC.<br></br>
     /// You do not need to dispose IPC methods in any way. Everything is disposed upon calling <see cref="ECommonsMain.Dispose"/>.
     /// </summary>
-    /// <param name="staticType">Type of a static class that has EzIPC methods and field/propertys/properties.</param>
+    /// <param name="staticType">Type of a static class that has EzIPC methods and field/properties/properties.</param>
     /// <param name="prefix">Name prefix</param>
+    /// <param name="safeWrapper">Type of a safe invocation wrapper to be used for IPC calls. Wrappers, when used, will silently drop exceptions and return default object if invocation has failed. You can subscribe to <see cref="EzIPC.OnSafeInvocationException"/> event to observe these exceptions.</param>
     /// <exception cref="ArgumentNullException"></exception>
     /// <returns>Array of disposal tokens that can be used to dispose registered providers and event subscription. <b>Typical use of EzIPC never has any need to store and deal with these tokens</b>; you only ever need them when you want to unregister IPC before your plugin's Dispose method is called.</returns>
-    public static EzIPCDisposalToken[] Init(Type staticType, string? prefix = null) => Init(null, staticType, prefix);
+    public static EzIPCDisposalToken[] Init(Type staticType, string? prefix = null, SafeWrapper safeWrapper = SafeWrapper.None) => Init(null, staticType, prefix, safeWrapper);
 
-    private static EzIPCDisposalToken[] Init(object? instance, Type instanceType, string? prefix)
+    private static EzIPCDisposalToken[] Init(object? instance, Type instanceType, string? prefix, SafeWrapper safeWrapper = SafeWrapper.None)
     {
+        if (safeWrapper == SafeWrapper.Inherit) throw new InvalidOperationException($"{nameof(SafeWrapper.Inherit)} is only valid option when used in EzIPC attribute. Please choose your desired SafeWrapper.");
         var ret = new List<EzIPCDisposalToken>();
         var bFlags = BindingFlags.Public | BindingFlags.NonPublic | (instance != null ? BindingFlags.Instance : BindingFlags.Static);
         //init provider
@@ -93,14 +105,28 @@ public static class EzIPC
                     var isNonGenericAction = reference.UnionType == typeof(Action);
                     if (isNonGenericAction || reference.UnionType.GetGenericTypeDefinition().EqualsAny([.. FuncTypes, .. ActionTypes]))
                     {
-                        PluginLog.Information($"[EzIPC Subscriber] Attempting to assign IPC method to {instanceType.Name}.{reference.Name}");
+                        var wrapper = attr.Wrapper == SafeWrapper.Inherit ? safeWrapper : attr.Wrapper;
+                        PluginLog.Information($"[EzIPC Subscriber] Attempting to assign IPC method to {instanceType.Name}.{reference.Name} with wrapper {wrapper}");
                         var isAction = isNonGenericAction || reference.UnionType.GetGenericTypeDefinition().EqualsAny(ActionTypes);
-                        var reg = FindIpcSubscriber(reference.UnionType.GetGenericArguments().Length + (isAction ? 1 : 0)) ?? throw new NullReferenceException("Could not retrieve GetIpcSubscriber. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
+                        var genericArgsLen = reference.UnionType.GetGenericArguments().Length;
+                        var reg = FindIpcSubscriber(genericArgsLen + (isAction ? 1 : 0)) ?? throw new NullReferenceException("Could not retrieve GetIpcSubscriber. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
                         var genericArgs = reference.UnionType.IsGenericType ? reference.UnionType.GetGenericArguments() : [];
-                        var genericMethod = reg.MakeGenericMethod(isAction ? [.. genericArgs, attr.ActionLastGenericType] : genericArgs);
+                        var adjustedGenericArgs = isAction ? [.. genericArgs, attr.ActionLastGenericType] : genericArgs;
+                        var genericMethod = reg.MakeGenericMethod(adjustedGenericArgs);
                         var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
                         var callerInfo = genericMethod.Invoke(Svc.PluginInterface, [name])!;
-                        reference.SetValue(instance, ReflectionHelper.CreateDelegate(callerInfo.GetType().GetMethod(isAction ? "InvokeAction" : "InvokeFunc"), callerInfo));
+                        var invocationDelegate = ReflectionHelper.CreateDelegate(callerInfo.GetType().GetMethod(isAction ? "InvokeAction" : "InvokeFunc"), callerInfo);
+                        if(wrapper != SafeWrapper.None)
+                        {
+                            var safeWrapperObj = CreateSafeWrapper(wrapper, adjustedGenericArgs) ?? throw new NullReferenceException("Safe wrapper creation failed. Please report this exception to developer.");
+                            var safeWrapperMethod = safeWrapperObj.GetType().GetMethod(isAction ? "InvokeAction" : "InvokeFunction", ReflectionHelper.AllFlags);
+                            safeWrapperObj.SetFoP(isAction ? "Action" : "Function", invocationDelegate);
+                            reference.SetValue(instance, ReflectionHelper.CreateDelegate(safeWrapperMethod, safeWrapperObj));
+                        }
+                        else
+                        {
+                            reference.SetValue(instance, invocationDelegate);
+                        }
                     }
                 }
             }
@@ -192,6 +218,7 @@ public static class EzIPC
             }
         }
         Unregister.Clear();
+        OnSafeInvocationException = null;
     }
 
     /// <summary>
@@ -226,5 +253,37 @@ public static class EzIPC
             }
         }
         return null;
+    }
+
+    static object? CreateSafeWrapper(SafeWrapper wrapperKind, Type[] adjustedGenericArgs)
+    {
+        Type? type = null;
+        if (wrapperKind == SafeWrapper.IPCException)
+        {
+            if (adjustedGenericArgs.Length == 1) type = typeof(SafeWrapperIPC.Wrapper<>);
+            if (adjustedGenericArgs.Length == 2) type = typeof(SafeWrapperIPC.Wrapper<,>);
+            if (adjustedGenericArgs.Length == 3) type = typeof(SafeWrapperIPC.Wrapper<,,>);
+            if (adjustedGenericArgs.Length == 4) type = typeof(SafeWrapperIPC.Wrapper<,,,>);
+            if (adjustedGenericArgs.Length == 5) type = typeof(SafeWrapperIPC.Wrapper<,,,,>);
+            if (adjustedGenericArgs.Length == 6) type = typeof(SafeWrapperIPC.Wrapper<,,,,,>);
+            if (adjustedGenericArgs.Length == 7) type = typeof(SafeWrapperIPC.Wrapper<,,,,,,>);
+            if (adjustedGenericArgs.Length == 8) type = typeof(SafeWrapperIPC.Wrapper<,,,,,,,>);
+            if (adjustedGenericArgs.Length == 9) type = typeof(SafeWrapperIPC.Wrapper<,,,,,,,,>);
+        }
+        else
+        {
+            if (adjustedGenericArgs.Length == 1) type = typeof(SafeWrapperAny.Wrapper<>);
+            if (adjustedGenericArgs.Length == 2) type = typeof(SafeWrapperAny.Wrapper<,>);
+            if (adjustedGenericArgs.Length == 3) type = typeof(SafeWrapperAny.Wrapper<,,>);
+            if (adjustedGenericArgs.Length == 4) type = typeof(SafeWrapperAny.Wrapper<,,,>);
+            if (adjustedGenericArgs.Length == 5) type = typeof(SafeWrapperAny.Wrapper<,,,,>);
+            if (adjustedGenericArgs.Length == 6) type = typeof(SafeWrapperAny.Wrapper<,,,,,>);
+            if (adjustedGenericArgs.Length == 7) type = typeof(SafeWrapperAny.Wrapper<,,,,,,>);
+            if (adjustedGenericArgs.Length == 8) type = typeof(SafeWrapperAny.Wrapper<,,,,,,,>);
+            if (adjustedGenericArgs.Length == 9) type = typeof(SafeWrapperAny.Wrapper<,,,,,,,,>);
+        }
+        if (type == null) throw new ArgumentNullException($"Could not find safe wrapper of {wrapperKind} kind with {adjustedGenericArgs.Length} arguments");
+        type = type.MakeGenericType(adjustedGenericArgs);
+        return Activator.CreateInstance(type);
     }
 }
