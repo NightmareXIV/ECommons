@@ -9,10 +9,10 @@ namespace ECommons.ImGuiMethods;
 public static unsafe partial class ImGuiEx
 {
     static int a;
-    public static void EzTable(IEnumerable<EzTableEntry> entries) => EzTable(null, null, entries);
-    public static void EzTable(string? id, IEnumerable<EzTableEntry> entries) => EzTable(id, null, entries);
-    public static void EzTable(ImGuiTableFlags? tableFlags, IEnumerable<EzTableEntry> entries) => EzTable(null, tableFlags, entries);
-    public static void EzTable(string? ID, ImGuiTableFlags? tableFlags, IEnumerable<EzTableEntry> entries)
+    public static void EzTable(IEnumerable<EzTableEntry> entries) => EzTable(null, null, entries, true);
+    public static void EzTable(string? id, IEnumerable<EzTableEntry> entries) => EzTable(id, null, entries, true);
+    public static void EzTable(ImGuiTableFlags? tableFlags, IEnumerable<EzTableEntry> entries) => EzTable(null, tableFlags, entries, true);
+    public static void EzTable(string? ID, ImGuiTableFlags? tableFlags, IEnumerable<EzTableEntry> entries, bool header)
     {
         if (!entries.Any())
         {
@@ -29,7 +29,7 @@ public static unsafe partial class ImGuiEx
             {
                 ImGui.TableSetupColumn(entriesArray[i].ColumnName, entriesArray[i].ColumnFlags);
             }
-            ImGui.TableHeadersRow();
+            if(header) ImGui.TableHeadersRow();
             for (int i = 0; i < entriesArray.Length; i++)
             {
                 if (i % size == 0) ImGui.TableNextRow();

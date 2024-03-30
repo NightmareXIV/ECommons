@@ -1,5 +1,6 @@
 ﻿using Dalamud.Interface;
 using Dalamud.Interface.Colors;
+using Dalamud.Interface.Components;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Utility;
 using ECommons.DalamudServices;
@@ -1071,6 +1072,14 @@ public static unsafe partial class ImGuiEx
         var result = ImGui.Button($"{icon}##{icon}-{id}", size) && enabled;
         if (!enabled) ImGui.PopStyleVar();
         ImGui.PopFont();
+        return result;
+    }
+
+    public static bool IconButtonWithText(FontAwesomeIcon icon, string id, bool enabled = true)
+    {
+        if (!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        var result = ImGuiComponents.IconButtonWithText(icon, $"{id}") && enabled;
+        if (!enabled) ImGui.PopStyleVar();
         return result;
     }
 
