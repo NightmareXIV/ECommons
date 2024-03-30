@@ -20,7 +20,7 @@ public class EzIPCAttribute : Attribute
     /// <param name="applyPrefix">Whether to apply prefix before name or not.</param>
     /// <param name="actionLastGenericType">Dummy return type used as a last generic argument for actions. When omitted, typeof(object) is used.</param>
     /// <param name="wrapper">Wrapper type</param>
-    public EzIPCAttribute(string? iPCName = null, bool applyPrefix = true, Type? actionLastGenericType = null, SafeWrapper wrapper = SafeWrapper.None)
+    public EzIPCAttribute(string? iPCName = null, bool applyPrefix = true, Type? actionLastGenericType = null, SafeWrapper wrapper = SafeWrapper.Inherit)
     {
         this.IPCName = iPCName;
         this.ApplyPrefix = applyPrefix;

@@ -54,7 +54,7 @@ public static class EzIPC
     /// <returns>Array of disposal tokens that can be used to dispose registered providers and event subscription. <b>Typical use of EzIPC never has any need to store and deal with these tokens</b>; you only ever need them when you want to unregister IPC before your plugin's Dispose method is called.</returns>
     public static EzIPCDisposalToken[] Init(Type staticType, string? prefix = null, SafeWrapper safeWrapper = SafeWrapper.None) => Init(null, staticType, prefix, safeWrapper);
 
-    private static EzIPCDisposalToken[] Init(object? instance, Type instanceType, string? prefix, SafeWrapper safeWrapper = SafeWrapper.None)
+    private static EzIPCDisposalToken[] Init(object? instance, Type instanceType, string? prefix, SafeWrapper safeWrapper)
     {
         if (safeWrapper == SafeWrapper.Inherit) throw new InvalidOperationException($"{nameof(SafeWrapper.Inherit)} is only valid option when used in EzIPC attribute. Please choose your desired SafeWrapper.");
         var ret = new List<EzIPCDisposalToken>();
