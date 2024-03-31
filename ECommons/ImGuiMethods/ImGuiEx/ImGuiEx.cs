@@ -117,11 +117,11 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
-    public static void HelpMarker(string helpText, Vector4? color = null, string symbolOverride = null) => InfoMarker(helpText, color, symbolOverride);
+    public static void HelpMarker(string helpText, Vector4? color = null, string symbolOverride = null, bool sameLine = true) => InfoMarker(helpText, color, symbolOverride, sameLine);
 
-    public static void InfoMarker(string helpText, Vector4? color = null, string symbolOverride = null)
+    public static void InfoMarker(string helpText, Vector4? color = null, string symbolOverride = null, bool sameLine = true)
     {
-        ImGui.SameLine();
+        if(sameLine) ImGui.SameLine();
         ImGui.PushFont(UiBuilder.IconFont);
         ImGuiEx.Text(color ?? ImGuiColors.DalamudGrey3, symbolOverride ?? FontAwesomeIcon.InfoCircle.ToIconString());
         ImGui.PopFont();
@@ -453,7 +453,7 @@ public static unsafe partial class ImGuiEx
     /// </summary>
     /// <param name="id">Unique ImGui ID</param>
     /// <param name="values">List of actions for each column</param>
-    public static void EzTableColumns(string id, Action[] values)
+    public static void EzTableColumns(string id, Action[] values, int? columns = null, ImGuiTableFlags extraFlags = ImGuiTableFlags.None)
     {
         if (values.Length == 1)
         {
@@ -461,7 +461,7 @@ public static unsafe partial class ImGuiEx
         }
         else
         {
-            if (ImGui.BeginTable(id, values.Length, ImGuiTableFlags.SizingStretchSame))
+            if (ImGui.BeginTable(id, Math.Max(1, columns ?? values.Length), ImGuiTableFlags.SizingStretchSame | ImGuiTableFlags.NoSavedSettings | extraFlags))
             {
                 foreach (Action action in values)
                 {

@@ -12,11 +12,11 @@ public enum SafeWrapper
     /// </summary>
     None,
     /// <summary>
-    /// Only catch IPCException
+    /// Only catch and discard IPCException
     /// </summary>
     IPCException,
     /// <summary>
-    /// Catch all exceptions
+    /// Catch and discard all exceptions
     /// </summary>
     AnyException,
     /// <summary>
