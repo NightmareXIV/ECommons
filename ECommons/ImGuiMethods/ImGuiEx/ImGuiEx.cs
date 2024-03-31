@@ -22,6 +22,24 @@ namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
+    public static bool Selectable(Vector4? color, string id)
+    {
+        var ret = ImGuiEx.TreeNode(color, id, ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.Leaf);
+        return ret;
+    }
+
+    public static bool Selectable(string id) => Selectable(null, id);
+
+    public static bool Selectable(string id, ref bool selected) => Selectable(null, id, ref selected);
+
+    public static bool Selectable(Vector4? color, string id, ref bool selected, ImGuiTreeNodeFlags extraFlags = ImGuiTreeNodeFlags.Leaf)
+    {
+        ImGuiEx.TreeNode(color, id, ImGuiTreeNodeFlags.NoTreePushOnOpen | (selected ? ImGuiTreeNodeFlags.Selected : ImGuiTreeNodeFlags.None) | extraFlags);
+        var ret = ImGui.IsItemClicked(ImGuiMouseButton.Left);
+        if (ret) selected = !selected;
+        return ret;
+    }
+
     public static bool TreeNode(string name, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.None) => ImGuiEx.TreeNode(null, name, flags);
 
     public static bool TreeNode(Vector4? color, string name, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.None)
