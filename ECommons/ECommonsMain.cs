@@ -19,6 +19,7 @@ using ECommons.EzEventManager;
 using ECommons.EzHookManager;
 using ECommons.EzSharedDataManager;
 using Serilog.Events;
+using ECommons.EzIpcManager;
 #nullable disable
 
 namespace ECommons;
@@ -106,6 +107,7 @@ public static class ECommonsMain
         GenericHelpers.Safe(EzEvent.DisposeAll);
         GenericHelpers.Safe(EzHookCommon.DisposeAll);
         GenericHelpers.Safe(EzSharedData.Dispose);
+        GenericHelpers.Safe(EzIPC.Dispose);
         Chat.instance = null;
         Instance = null;
     }

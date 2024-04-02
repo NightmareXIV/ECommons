@@ -9,6 +9,8 @@ using System.Reflection;
 using Dalamud.Common;
 using System.Linq;
 using System.Runtime.Loader;
+using Newtonsoft.Json;
+using System.IO;
 #nullable disable
 
 namespace ECommons.Reflection;
@@ -238,5 +240,31 @@ public static class DalamudReflector
                 x();
             }
         });
+    }
+
+    public static bool IsOnStaging()
+    {
+        if (TryGetDalamudStartInfo(out var startinfo, Svc.PluginInterface))
+        {
+            if (File.Exists(startinfo.ConfigurationPath))
+            {
+                var file = File.ReadAllText(startinfo.ConfigurationPath);
+                var ob = JsonConvert.DeserializeObject<dynamic>(file);
+                string type = ob.DalamudBetaKind;
+                if (type is not null && !string.IsNullOrEmpty(type) && type != "release")
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return false;
     }
 }
