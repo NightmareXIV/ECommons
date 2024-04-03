@@ -3,7 +3,7 @@ using Lumina.Excel;
 using Lumina;
 using Lumina.Excel.GeneratedSheets;
 
-namespace AutoRetainer.Sheets;
+namespace Ecommons.Sheets;
 #nullable disable
 
 //This code is authored by Caraxi https://github.com/Caraxi/SimpleTweaksPlugin/

@@ -125,6 +125,18 @@ public class Chat
         SendMessageUnsafe(bytes);
 #pragma warning restore CS0618 // Type or member is obsolete
     }
+
+    /// <summary>
+    /// Executes command as if it was typed in chat box. 
+    /// </summary>
+    /// <param name="message">Full text of the command.</param>
+    /// <exception cref="InvalidOperationException">If you didn't prefixed it with a slash.</exception>
+    public void ExecuteCommand(string message)
+    {
+        if (!message.StartsWith("/")) throw new InvalidOperationException($"Attempted to execute command but was not prefixed with a slash: {message}");
+        this.SendMessage(message);
+    }
+
     /// <summary>
     /// <para>
     /// Sanitises a string by removing any invalid input.

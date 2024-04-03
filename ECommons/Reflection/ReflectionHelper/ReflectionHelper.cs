@@ -17,17 +17,35 @@ public static partial class ReflectionHelper
     public const BindingFlags StaticFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
     public const BindingFlags InstanceFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
+    /// <summary>
+    /// Gets field or property of an instance object.
+    /// </summary>
+    /// <param name="obj">Instance containing field/property.</param>
+    /// <param name="name">Name of the field/property</param>
+    /// <returns>Value of a field/property</returns>
     public static object GetFoP(this object obj, string name)
     {
         return obj.GetType().GetField(name, AllFlags)?.GetValue(obj) 
             ?? obj.GetType().GetProperty(name, AllFlags)?.GetValue(obj);
     }
 
+    /// <summary>
+    /// Gets field or property of an instance object.
+    /// </summary>
+    /// <param name="obj">Instance containing field/property.</param>
+    /// <param name="name">Name of the field/property</param>
+    /// <returns>Value of a field/property</returns>
     public static T GetFoP<T>(this object obj, string name)
     {
         return (T)GetFoP(obj, name);
     }
 
+    /// <summary>
+    /// Sets a field or property of an instance object.
+    /// </summary>
+    /// <param name="obj">Instance containing field/property.</param>
+    /// <param name="name">Name of the field/property</param>
+    /// <param name="value">Value to set</param>
     public static void SetFoP(this object obj, string name, object value)
     {
         var field = obj.GetType().GetField(name, AllFlags);
@@ -75,7 +93,15 @@ public static partial class ReflectionHelper
         }
     }
 
-    public static object Call(this object obj, string name, object[] values, bool matchExactArgumentTypes = false)
+    /// <summary>
+    /// Attempts to call a non-generic instance method.
+    /// </summary>
+    /// <param name="obj">Instance containing method</param>
+    /// <param name="name">Method's name</param>
+    /// <param name="params">Method's parameters</param>
+    /// <param name="matchExactArgumentTypes">Whether to search for exact method types. Set this to true if you're dealing with ambiguous overloads.</param>
+    /// <returns>Object returned by the target method</returns>
+    public static object Call(this object obj, string name, object[] @params, bool matchExactArgumentTypes = false)
     {
         MethodInfo info;
         if (!matchExactArgumentTypes)
@@ -84,13 +110,21 @@ public static partial class ReflectionHelper
         }
         else
         {
-            info = obj.GetType().GetMethod(name, AllFlags, values.Select(x => x.GetType()).ToArray());
+            info = obj.GetType().GetMethod(name, AllFlags, @params.Select(x => x.GetType()).ToArray());
         }
-        return info.Invoke(obj, values);
+        return info.Invoke(obj, @params);
     }
 
-    public static T Call<T>(this object obj, string name, object[] values, bool matchExactArgumentTypes = false)
+    /// <summary>
+    /// Attempts to call a non-generic instance method.
+    /// </summary>
+    /// <param name="obj">Instance containing method</param>
+    /// <param name="name">Method's name</param>
+    /// <param name="params">Method's parameters</param>
+    /// <param name="matchExactArgumentTypes">Whether to search for exact method types. Set this to true if you're dealing with ambiguous overloads.</param>
+    /// <returns>Object returned by the target method</returns>
+    public static T Call<T>(this object obj, string name, object[] @params, bool matchExactArgumentTypes = false)
     {
-        return (T)Call(obj, name, values, matchExactArgumentTypes);
+        return (T)Call(obj, name, @params, matchExactArgumentTypes);
     }
 } 

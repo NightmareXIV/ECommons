@@ -9,7 +9,7 @@ namespace ECommons.Hooks;
 
 public static class MapEffect
 {
-    const string Sig = "48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 8B FA 41 0F B7 E8";
+    public const string Sig = "48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 8B FA 41 0F B7 E8";
 
     public delegate long ProcessMapEffect(long a1, uint a2, ushort a3, ushort a4);
     internal static Hook<ProcessMapEffect> ProcessMapEffectHook = null;

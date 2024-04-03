@@ -46,6 +46,7 @@ public class Svc
     //[PluginService] public static IGameInventory GameInventory { get; private set; }
     [PluginService] public static ITextureSubstitutionProvider TextureSubstitution { get; private set; }
     [PluginService] public static ITitleScreenMenu TitleScreenMenu { get; private set; }
+    [PluginService] public static INotificationManager NotificationManager { get; private set; }
 
 
     internal static bool IsInitialized = false;
