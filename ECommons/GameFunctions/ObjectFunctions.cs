@@ -1,4 +1,4 @@
-﻿using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.DalamudServices;
 using System;
 using System.Numerics;
@@ -42,6 +42,12 @@ public static unsafe class ObjectFunctions
         //11: orange, aggroed to your party but not attacked yet
         //10: purple, engaged with other party
         return plateType == 7 || plateType == 9 || plateType == 11 || plateType == 10;
+    }
+
+    public static float GetTargetDistance(this GameObject a)
+    {
+        if (a == null) return 0;
+        return Vector3.Distance(a.Position, Svc.ClientState.LocalPlayer.Position);
     }
 
     public static int GetAttackableEnemyCountAroundPoint(Vector3 point, float radius)
