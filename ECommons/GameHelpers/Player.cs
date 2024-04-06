@@ -1,10 +1,11 @@
-﻿using Dalamud.Game.ClientState.Objects.SubKinds;
+﻿using ECommons.ExcelServices;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Statuses;
 using ECommons.DalamudServices;
-using ECommons.ExcelServices;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using System.Runtime.CompilerServices;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 #nullable disable
 
 namespace ECommons.GameHelpers;
@@ -27,6 +28,7 @@ public unsafe static class Player
     public static GameObject* GameObject => (GameObject*)Svc.ClientState.LocalPlayer.Address;
     public static uint Territory => Svc.ClientState.TerritoryType;
     public static Job Job => GetJob(Svc.ClientState.LocalPlayer);
+    public static GrandCompany GrandCompany => (GrandCompany)PlayerState.Instance()->GrandCompany;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string GetNameWithWorld(this PlayerCharacter pc) => pc == null?null:(pc.Name.ToString() + "@" + pc.HomeWorld.GameData.Name);

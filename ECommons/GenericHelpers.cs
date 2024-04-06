@@ -35,6 +35,14 @@ namespace ECommons;
 
 public static unsafe class GenericHelpers
 {
+    public static bool IsScreenReady()
+    {
+        { if (TryGetAddonByName<AtkUnitBase>("NowLoading", out var addon) && addon->IsVisible) return false; }
+        { if (TryGetAddonByName<AtkUnitBase>("FadeMiddle", out var addon) && addon->IsVisible) return false; }
+        { if (TryGetAddonByName<AtkUnitBase>("FadeBack", out var addon) && addon->IsVisible) return false; }
+        return true;
+    }
+
     public static bool AddressEquals(this GameObject obj, GameObject other)
     {
         return obj?.Address == other?.Address;

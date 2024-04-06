@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using Dalamud.Plugin.Ipc.Exceptions;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
+using System.Security.Cryptography.Xml;
 
 namespace ECommons.EzIpcManager;
 
@@ -70,6 +71,8 @@ public static class EzIPC
                 {
                     PluginLog.Information($"[EzIPC Provider] Attempting to register {instanceType.Name}.{method.Name} as IPC method ({method.GetParameters().Length})");
                     var ipcName = attr.IPCName ?? method.Name;
+                    ipcName = ipcName.Replace("%m", method.Name);
+                    ipcName = ipcName.Replace("%p", Svc.PluginInterface.InternalName);
                     var reg = FindIpcProvider(method.GetParameters().Length + 1) ?? throw new NullReferenceException("[EzIPC Provider] Could not retrieve GetIpcProvider. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
                     var isAction = method.ReturnType == typeof(void);
                     var genericArray = (Type[])[.. method.GetParameters().Select(x => x.ParameterType), isAction ? attr.ActionLastGenericType : method.ReturnType];
@@ -102,6 +105,8 @@ public static class EzIPC
                 if (attr != null)
                 {
                     var ipcName = attr.IPCName ?? reference.Name;
+                    ipcName = ipcName.Replace("%m", reference.Name);
+                    ipcName = ipcName.Replace("%p", Svc.PluginInterface.InternalName);
                     var isNonGenericAction = reference.UnionType == typeof(Action);
                     if (isNonGenericAction || reference.UnionType.GetGenericTypeDefinition().EqualsAny([.. FuncTypes, .. ActionTypes]))
                     {
@@ -148,6 +153,8 @@ public static class EzIPC
                 {
                     PluginLog.Information($"[EzIPC Subscriber] Attempting to register {instanceType.Name}.{method.Name} as IPC event ({method.GetParameters().Length})");
                     var ipcName = attr.IPCName ?? method.Name;
+                    ipcName = ipcName.Replace("%m", method.Name);
+                    ipcName = ipcName.Replace("%p", Svc.PluginInterface.InternalName);
                     var reg = FindIpcSubscriber(method.GetParameters().Length + 1) ?? throw new NullReferenceException("[EzIPC Provider] Could not retrieve FindIpcSubscriber. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
                     if (method.ReturnType != typeof(void)) throw new InvalidOperationException($"Event method must have void return value");
                     var genericArray = (Type[])[.. method.GetParameters().Select(x => x.ParameterType), attr.ActionLastGenericType];
@@ -181,6 +188,8 @@ public static class EzIPC
                 if (attr != null)
                 {
                     var ipcName = attr.IPCName ?? reference.Name;
+                    ipcName = ipcName.Replace("%m", reference.Name);
+                    ipcName = ipcName.Replace("%p", Svc.PluginInterface.InternalName);
                     var isNonGenericAction = reference.UnionType == typeof(Action);
                     if (isNonGenericAction || reference.UnionType.GetGenericTypeDefinition().EqualsAny(ActionTypes))
                     {
