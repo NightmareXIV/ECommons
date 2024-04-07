@@ -2,12 +2,14 @@
 using ECommons.Configuration;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
+using ECommons.Reflection;
+using System.Runtime.ConstrainedExecution;
 
 namespace ECommons.SimpleGui;
 
-internal class ConfigWindow : Window
+public class ConfigWindow : Window
 {
-    public ConfigWindow(string name) : base(name)
+    public ConfigWindow() : base($"{DalamudReflector.GetPluginName()} v{ECommonsMain.Instance.GetType().Assembly.GetName().Version}###{DalamudReflector.GetPluginName()}")
     {
         this.SizeConstraints = new()
         {
