@@ -1,5 +1,6 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
+using Dalamud.Interface.Components;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Utility;
 using ECommons.DalamudServices;
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -21,6 +23,35 @@ namespace ECommons.ImGuiMethods;
 
 public static unsafe partial class ImGuiEx
 {
+    public static bool Selectable(Vector4? color, string id)
+    {
+        var ret = ImGuiEx.TreeNode(color, id, ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.Leaf);
+        return ret;
+    }
+
+    public static bool Selectable(string id) => Selectable(null, id);
+
+    public static bool Selectable(string id, ref bool selected) => Selectable(null, id, ref selected);
+
+    public static bool Selectable(Vector4? color, string id, ref bool selected, ImGuiTreeNodeFlags extraFlags = ImGuiTreeNodeFlags.Leaf)
+    {
+        ImGuiEx.TreeNode(color, id, ImGuiTreeNodeFlags.NoTreePushOnOpen | (selected ? ImGuiTreeNodeFlags.Selected : ImGuiTreeNodeFlags.None) | extraFlags);
+        var ret = ImGui.IsItemClicked(ImGuiMouseButton.Left);
+        if (ret) selected = !selected;
+        return ret;
+    }
+
+    public static bool TreeNode(string name, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.None) => ImGuiEx.TreeNode(null, name, flags);
+
+    public static bool TreeNode(Vector4? color, string name, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.None)
+    {
+        flags |= ImGuiTreeNodeFlags.SpanFullWidth;
+        if (color != null) ImGui.PushStyleColor(ImGuiCol.Text, color.Value);
+        var ret = ImGui.TreeNodeEx(name, flags);
+        if (color != null) ImGui.PopStyleColor();
+        return ret;
+    }
+
     public enum JobSelectorOption 
     { 
         None, 
@@ -86,11 +117,11 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
-    public static void HelpMarker(string helpText, Vector4? color = null, string symbolOverride = null) => InfoMarker(helpText, color, symbolOverride);
+    public static void HelpMarker(string helpText, Vector4? color = null, string symbolOverride = null, bool sameLine = true) => InfoMarker(helpText, color, symbolOverride, sameLine);
 
-    public static void InfoMarker(string helpText, Vector4? color = null, string symbolOverride = null)
+    public static void InfoMarker(string helpText, Vector4? color = null, string symbolOverride = null, bool sameLine = true)
     {
-        ImGui.SameLine();
+        if(sameLine) ImGui.SameLine();
         ImGui.PushFont(UiBuilder.IconFont);
         ImGuiEx.Text(color ?? ImGuiColors.DalamudGrey3, symbolOverride ?? FontAwesomeIcon.InfoCircle.ToIconString());
         ImGui.PopFont();
@@ -422,7 +453,7 @@ public static unsafe partial class ImGuiEx
     /// </summary>
     /// <param name="id">Unique ImGui ID</param>
     /// <param name="values">List of actions for each column</param>
-    public static void EzTableColumns(string id, Action[] values)
+    public static void EzTableColumns(string id, Action[] values, int? columns = null, ImGuiTableFlags extraFlags = ImGuiTableFlags.None)
     {
         if (values.Length == 1)
         {
@@ -430,7 +461,7 @@ public static unsafe partial class ImGuiEx
         }
         else
         {
-            if (ImGui.BeginTable(id, values.Length, ImGuiTableFlags.SizingStretchSame))
+            if (ImGui.BeginTable(id, Math.Max(1, columns ?? values.Length), ImGuiTableFlags.SizingStretchSame | ImGuiTableFlags.NoSavedSettings | extraFlags))
             {
                 foreach (Action action in values)
                 {
@@ -631,7 +662,8 @@ public static unsafe partial class ImGuiEx
 
     public static float Scale(this float f)
     {
-        return f * ImGuiHelpers.GlobalScale;
+        // Dalamud global scale and font size are now indepedent from each other, so both need to factored in.
+        return f * ImGuiHelpers.GlobalScale * (ImGui.GetFontSize() / 12f);
     }
 
     public static void SetTooltip(string text)
@@ -780,6 +812,13 @@ public static unsafe partial class ImGuiEx
         ImGui.TextUnformatted(s);
     }
 
+    public static void Text(ImFontPtr font, string s)
+    {
+        ImGui.PushFont(font);
+        ImGui.TextUnformatted(s);
+        ImGui.PopFont();
+    }
+
     public static void Text(Vector4 col, string s)
     {
         ImGui.PushStyleColor(ImGuiCol.Text, col);
@@ -787,11 +826,29 @@ public static unsafe partial class ImGuiEx
         ImGui.PopStyleColor();
     }
 
+    public static void Text(Vector4 col, ImFontPtr font, string s)
+    {
+        ImGui.PushFont(font);
+        ImGui.PushStyleColor(ImGuiCol.Text, col);
+        ImGui.TextUnformatted(s);
+        ImGui.PopStyleColor();
+        ImGui.PopFont();
+    }
+
     public static void Text(uint col, string s)
     {
         ImGui.PushStyleColor(ImGuiCol.Text, col);
         ImGui.TextUnformatted(s);
         ImGui.PopStyleColor();
+    }
+
+    public static void Text(uint col, ImFontPtr font, string s)
+    {
+        ImGui.PushFont(font);
+        ImGui.PushStyleColor(ImGuiCol.Text, col);
+        ImGui.TextUnformatted(s);
+        ImGui.PopStyleColor();
+        ImGui.PopFont();
     }
 
     public static void TextWrapped(string s)
@@ -859,8 +916,8 @@ public static unsafe partial class ImGuiEx
     }
 
     public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, false, tabs);
-
-    public static void EzTabBar(string id, bool KoFiTransparent, params (string name, Action function, Vector4? color, bool child)[] tabs)
+    public static void EzTabBar(string id, bool KoFiTransparent, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, KoFiTransparent, null, tabs);
+    public static void EzTabBar(string id, bool KoFiTransparent, string openTabName, params (string name, Action function, Vector4? color, bool child)[] tabs)
     {
         ImGui.BeginTabBar(id);
         foreach (var x in tabs)
@@ -870,7 +927,7 @@ public static unsafe partial class ImGuiEx
             {
                 ImGui.PushStyleColor(ImGuiCol.Text, x.color.Value);
             }
-            if (ImGui.BeginTabItem(x.name))
+            if (ImGuiEx.BeginTabItem(x.name, openTabName == x.name?ImGuiTabItemFlags.SetSelected:ImGuiTabItemFlags.None))
             {
                 if (x.color != null)
                 {
@@ -1027,21 +1084,26 @@ public static unsafe partial class ImGuiEx
     public static bool Alt => ImGui.GetIO().KeyAlt;
     public static bool Shift => ImGui.GetIO().KeyShift;
 
-    public static bool IconButton(FontAwesome.FontAwesomeString icon, string id = "ECommonsButton", Vector2 size = default)
+    public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
     {
-        return IconButton((string)icon, id, size);
+        return IconButton(icon.ToIconString(), id, size, enabled);
     }
 
-    public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default)
-    {
-        return IconButton(icon.ToIconString(), id, size);
-    }
-
-    public static bool IconButton(string icon, string id = "ECommonsButton", Vector2 size = default)
+    public static bool IconButton(string icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
     {
         ImGui.PushFont(UiBuilder.IconFont);
-        var result = ImGui.Button($"{icon}##{icon}-{id}", size);
+        if (!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        var result = ImGui.Button($"{icon}##{icon}-{id}", size) && enabled;
+        if (!enabled) ImGui.PopStyleVar();
         ImGui.PopFont();
+        return result;
+    }
+
+    public static bool IconButtonWithText(FontAwesomeIcon icon, string id, bool enabled = true)
+    {
+        if (!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        var result = ImGuiComponents.IconButtonWithText(icon, $"{id}") && enabled;
+        if (!enabled) ImGui.PopStyleVar();
         return result;
     }
 

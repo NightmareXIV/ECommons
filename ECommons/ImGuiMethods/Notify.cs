@@ -1,4 +1,5 @@
-﻿using Dalamud.Interface.Internal.Notifications;
+﻿using Dalamud.Interface.ImGuiNotification;
+using Dalamud.Interface.Internal.Notifications;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using ECommons.Schedulers;
@@ -11,7 +12,7 @@ public static class Notify
     {
         _ = new TickScheduler(delegate
         {
-            Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Success);
+            Svc.NotificationManager.AddNotification(new Notification() { Content = s, Title = DalamudReflector.GetPluginName(), Type = NotificationType.Success });
         });
     }
 
@@ -19,7 +20,7 @@ public static class Notify
     {
         _ = new TickScheduler(delegate
         {
-            Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Info);
+            Svc.NotificationManager.AddNotification(new Notification() { Content = s, Title = DalamudReflector.GetPluginName(), Type = NotificationType.Info });
         });
     }
 
@@ -27,7 +28,7 @@ public static class Notify
     {
         _ = new TickScheduler(delegate
         {
-            Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Error);
+            Svc.NotificationManager.AddNotification(new Notification() { Content = s, Title = DalamudReflector.GetPluginName(), Type = NotificationType.Error });
         });
     }
 
@@ -35,7 +36,7 @@ public static class Notify
     {
         _ = new TickScheduler(delegate
         {
-            Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.Warning);
+            Svc.NotificationManager.AddNotification(new Notification() { Content = s, Title = DalamudReflector.GetPluginName(), Type = NotificationType.Warning });
         });
     }
 
@@ -43,7 +44,7 @@ public static class Notify
     {
         _ = new TickScheduler(delegate
         {
-            Svc.PluginInterface.UiBuilder.AddNotification(s, DalamudReflector.GetPluginName(), NotificationType.None);
+            Svc.NotificationManager.AddNotification(new Notification() { Content = s, Title = DalamudReflector.GetPluginName(), Type = NotificationType.None });
         });
     }
 }
