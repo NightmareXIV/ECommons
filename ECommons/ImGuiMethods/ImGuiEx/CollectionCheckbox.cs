@@ -3,6 +3,7 @@ using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -71,9 +72,16 @@ public static unsafe partial class ImGuiEx
     /// <returns></returns>
     public static bool CollectionCheckbox<T>(string label, T value, ICollection<T> collection, bool inverted = false, bool delayedOperation = false)
     {
+        bool Draw(ref bool x) => ImGui.Checkbox(label, ref x);
+        return CollectionCore(Draw, value, collection, inverted, delayedOperation);
+    }
+
+    public delegate bool CollectionCoreDelegate(ref bool contains);
+    public static bool CollectionCore<T>(CollectionCoreDelegate draw, T value, ICollection<T> collection, bool inverted = false, bool delayedOperation = false)
+    {
         var x = collection.Contains(value);
         if (inverted) x = !x;
-        if (ImGui.Checkbox(label, ref x))
+        if (draw(ref x))
         {
             Execute(delegate
             {
