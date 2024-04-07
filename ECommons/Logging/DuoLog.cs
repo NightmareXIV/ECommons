@@ -1,4 +1,5 @@
-﻿using Dalamud.Game.Text.SeStringHandling;
+﻿using Dalamud.Game.Text;
+using Dalamud.Game.Text.SeStringHandling;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using ECommons.Schedulers;
@@ -15,7 +16,8 @@ public static class DuoLog
         {
             Svc.Chat.Print(new()
             {
-                Message = new SeStringBuilder().AddUiForeground(str, 3).Build()
+                Message = new SeStringBuilder().AddUiForeground(str, 3).Build(),
+                XivChatType = Svc.PluginInterface.GeneralChatType
             });
         });
     }
@@ -28,7 +30,8 @@ public static class DuoLog
         {
             Svc.Chat.Print(new()
             {
-                Message = new SeStringBuilder().AddUiForeground(str, 4).Build()
+                Message = new SeStringBuilder().AddUiForeground(str, 4).Build(),
+                XivChatType = Svc.PluginInterface.GeneralChatType
             });
         });
     }
@@ -41,7 +44,8 @@ public static class DuoLog
         {
             Svc.Chat.Print(new()
             {
-                Message = new SeStringBuilder().AddUiForeground(str, 5).Build()
+                Message = new SeStringBuilder().AddUiForeground(str, 5).Build(),
+                XivChatType = Svc.PluginInterface.GeneralChatType
             });
         });
     }
@@ -52,7 +56,7 @@ public static class DuoLog
         PluginLog.Warning(str);
         _ = new TickScheduler(delegate
         {
-            Svc.Chat.Print(new()
+            Svc.Chat.PrintError(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(str, 540).Build()
             });
@@ -65,7 +69,7 @@ public static class DuoLog
         PluginLog.Error(str);
         _ = new TickScheduler(delegate
         {
-            Svc.Chat.Print(new()
+            Svc.Chat.PrintError(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(str, 17).Build()
             });
@@ -78,7 +82,7 @@ public static class DuoLog
         PluginLog.Fatal(str);
         _ = new TickScheduler(delegate
         {
-            Svc.Chat.Print(new()
+            Svc.Chat.PrintError(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(str, 19).Build()
             });
