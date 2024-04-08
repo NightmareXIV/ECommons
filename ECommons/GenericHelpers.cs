@@ -1431,6 +1431,15 @@ public static unsafe class GenericHelpers
         };
     }
 
+    public static void SetSizeConstraints(this Window window, Vector2 minSize, Vector2 maxSize)
+    {
+        window.SizeConstraints = new()
+        {
+            MinimumSize = minSize,
+            MaximumSize = maxSize
+        };
+    }
+
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete($"Use MemoryHelper.ReadSeString")]
