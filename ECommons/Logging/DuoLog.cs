@@ -3,6 +3,7 @@ using Dalamud.Game.Text.SeStringHandling;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using ECommons.Schedulers;
+using System;
 
 namespace ECommons.Logging;
 
@@ -17,7 +18,7 @@ public static class DuoLog
             Svc.Chat.Print(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(str, 3).Build(),
-                XivChatType = Svc.PluginInterface.GeneralChatType
+                Type = Svc.PluginInterface.GeneralChatType
             });
         });
     }
@@ -31,7 +32,7 @@ public static class DuoLog
             Svc.Chat.Print(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(str, 4).Build(),
-                XivChatType = Svc.PluginInterface.GeneralChatType
+                Type = Svc.PluginInterface.GeneralChatType
             });
         });
     }
@@ -45,7 +46,7 @@ public static class DuoLog
             Svc.Chat.Print(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(str, 5).Build(),
-                XivChatType = Svc.PluginInterface.GeneralChatType
+                Type = Svc.PluginInterface.GeneralChatType
             });
         });
     }
@@ -56,9 +57,10 @@ public static class DuoLog
         PluginLog.Warning(str);
         _ = new TickScheduler(delegate
         {
-            Svc.Chat.PrintError(new()
+            Svc.Chat.Print(new()
             {
-                Message = new SeStringBuilder().AddUiForeground(str, 540).Build()
+                Message = new SeStringBuilder().AddUiForeground(str, 540).Build(),
+                Type = Svc.PluginInterface.GeneralChatType,
             });
         });
     }
@@ -69,9 +71,10 @@ public static class DuoLog
         PluginLog.Error(str);
         _ = new TickScheduler(delegate
         {
-            Svc.Chat.PrintError(new()
+            Svc.Chat.Print(new()
             {
-                Message = new SeStringBuilder().AddUiForeground(str, 17).Build()
+                Message = new SeStringBuilder().AddUiForeground(str, 17).Build(),
+                Type = Svc.PluginInterface.GeneralChatType,
             });
         });
     }
@@ -82,9 +85,10 @@ public static class DuoLog
         PluginLog.Fatal(str);
         _ = new TickScheduler(delegate
         {
-            Svc.Chat.PrintError(new()
+            Svc.Chat.Print(new()
             {
-                Message = new SeStringBuilder().AddUiForeground(str, 19).Build()
+                Message = new SeStringBuilder().AddUiForeground(str, 19).Build(),
+                Type = Svc.PluginInterface.GeneralChatType,
             });
         });
     }
