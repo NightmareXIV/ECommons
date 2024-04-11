@@ -97,7 +97,7 @@ public unsafe abstract class AtkReader(AtkUnitBase* UnitBase, int BeginOffset = 
         {
             return null;
         }
-        if (!value.Type.EqualsAny(ValueType.String, ValueType.AllocatedString)) throw new InvalidCastException($"Value {num} from Addon {MemoryHelper.ReadStringNullTerminated((nint)UnitBase->Name)} was requested as String but it was {value.Type}");
+        if (!value.Type.EqualsAny(ValueType.String, ValueType.AllocatedString, ValueType.String8)) throw new InvalidCastException($"Value {num} from Addon {MemoryHelper.ReadStringNullTerminated((nint)UnitBase->Name)} was requested as String but it was {value.Type}");
         return MemoryHelper.ReadStringNullTerminated((nint)value.String);
     }
 
