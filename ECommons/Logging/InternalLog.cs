@@ -79,7 +79,9 @@ public class InternalLog
         ImGui.SameLine();
         if (ImGui.Button("Copy all"))
         {
+#pragma warning disable
             GenericHelpers.Copy(Messages.Select(x => $"[{x.Level}@{x.Time}] {x.Message}").Join("\n"));
+#pragma warning restore
         }
         ImGui.SameLine();
         if (ImGui.Button("Clear"))

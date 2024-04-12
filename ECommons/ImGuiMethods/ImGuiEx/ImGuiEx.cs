@@ -455,6 +455,8 @@ public static unsafe partial class ImGuiEx
     /// </summary>
     /// <param name="id">Unique ImGui ID</param>
     /// <param name="values">List of actions for each column</param>
+    /// <param name="columns">Force number of columns</param>
+    /// <param name="extraFlags">Add extra flags to the table</param>
     public static void EzTableColumns(string id, Action[] values, int? columns = null, ImGuiTableFlags extraFlags = ImGuiTableFlags.None)
     {
         if (values.Length == 1)
@@ -579,8 +581,10 @@ public static unsafe partial class ImGuiEx
             ImGui.GetWindowDrawList().AddCircleFilled(center, halfSize.X, ImGui.GetColorU32(ImGui.IsMouseDown(ImGuiMouseButton.Left) ? ImGuiCol.ButtonActive : ImGuiCol.ButtonHovered));
             if (ImGui.IsMouseReleased(options.MouseButton))
                 pressed = true;
+#pragma warning disable
             if (options.ToastTooltipOnClick && ImGui.IsMouseReleased(options.ToastTooltipOnClickButton))
                 Svc.PluginInterface.UiBuilder.AddNotification(options.Tooltip!, null, NotificationType.Info);
+#pragma warning restore
         }
 
         ImGui.SetCursorPos(buttonPos);
@@ -1190,7 +1194,9 @@ public static unsafe partial class ImGuiEx
         }
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
+#pragma warning disable
             GenericHelpers.Copy(text);
+#pragma warning restore
         }
     }
 
@@ -1203,7 +1209,9 @@ public static unsafe partial class ImGuiEx
         }
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
+#pragma warning disable
             GenericHelpers.Copy(text);
+#pragma warning restore
         }
     }
 
@@ -1216,7 +1224,9 @@ public static unsafe partial class ImGuiEx
         }
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
+#pragma warning disable
             GenericHelpers.Copy(text);
+#pragma warning restore
         }
     }
 
@@ -1261,7 +1271,9 @@ public static unsafe partial class ImGuiEx
     {
         if (ImGui.Button(buttonText.Replace("$COPY", copy)))
         {
+#pragma warning disable
             GenericHelpers.Copy(copy);
+#pragma warning restore
         }
     }
 

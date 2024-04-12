@@ -23,7 +23,6 @@ using Dalamud.Memory;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.MathHelpers;
 using PInvoke;
-using System.Windows.Forms;
 using ECommons.Interop;
 using System.Globalization;
 using System.Collections;
@@ -33,7 +32,7 @@ using ECommons.ExcelServices;
 
 namespace ECommons;
 
-public static unsafe class GenericHelpers
+public static unsafe partial class GenericHelpers
 {
     public static bool IsScreenReady()
     {
@@ -133,63 +132,6 @@ public static unsafe class GenericHelpers
             e.Log();
         }
         return "";
-    }
-
-    /// <summary>
-    /// Copies text into user's clipboard using WinForms. Does not throws exceptions.
-    /// </summary>
-    /// <param name="text">Text to copy</param>
-    /// <param name="silent">Whether to display success/failure popup</param>
-    /// <returns>Whether operation succeeded</returns>
-    public static bool Copy(string text, bool silent = false)
-    {
-        try
-        {
-            if (text.IsNullOrEmpty())
-            {
-                Clipboard.Clear();
-                if (!silent) Notify.Success("Clipboard cleared");
-            }
-            else
-            {
-                Clipboard.SetText(text);
-                if (!silent) Notify.Success("Text copied to clipboard");
-            }
-            return true;
-        }
-        catch(Exception e)
-        {
-            if (!silent)
-            {
-                Notify.Error($"Error copying to clipboard:\n{e.Message}\nPlease try again");
-            }
-            PluginLog.Warning($"Error copying to clipboard:");
-            e.LogWarning();
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// Reads text from user's clipboard
-    /// </summary>
-    /// <param name="silent">Whether to display popup when error occurs.</param>
-    /// <returns>Contents of the clipboard; null if clipboard couldn't be read.</returns>
-    public static string Paste(bool silent = false)
-    {
-        try
-        {
-            return Clipboard.GetText();
-        }
-        catch(Exception e)
-        {
-            if (!silent)
-            {
-                Notify.Error($"Error pasting from clipboard:\n{e.Message}\nPlease try again");
-            }
-            PluginLog.Warning($"Error pasting from clipboard:");
-            e.LogWarning();
-            return null;
-        }
     }
 
     /// <summary>
@@ -414,9 +356,11 @@ public static unsafe class GenericHelpers
         }
     }
 
+#pragma warning disable
     /// <summary>
     /// Sets whether <see cref="User32.GetKeyState"/> or <see cref="User32.GetAsyncKeyState"/> will be used when calling <see cref="IsKeyPressed(Keys)"/> or <see cref="IsKeyPressed(LimitedKeys)"/>
     /// </summary>
+#pragma warning restore
     public static bool UseAsyncKeyCheck = false;
 
     /// <summary>
@@ -424,16 +368,16 @@ public static unsafe class GenericHelpers
     /// </summary>
     /// <param name="key">Key</param>
     /// <returns>Whether the key is currently pressed</returns>
-    public static bool IsKeyPressed(Keys key)
+    public static bool IsKeyPressed(int key)
     {
-        if (key == Keys.None) return false;
+        if (key == 0) return false;
         if (UseAsyncKeyCheck)
         {
-            return Bitmask.IsBitSet(User32.GetKeyState((int)key), 15);
+            return Bitmask.IsBitSet(User32.GetKeyState(key), 15);
         }
         else
         {
-            return Bitmask.IsBitSet(User32.GetAsyncKeyState((int)key), 15);
+            return Bitmask.IsBitSet(User32.GetAsyncKeyState(key), 15);
         }
     }
 
@@ -442,18 +386,7 @@ public static unsafe class GenericHelpers
     /// </summary>
     /// <param name="key">Key</param>
     /// <returns>Whether the key is currently pressed</returns>
-    public static bool IsKeyPressed(LimitedKeys key)
-    {
-        if (key == LimitedKeys.None) return false;
-        if (UseAsyncKeyCheck)
-        {
-            return Bitmask.IsBitSet(User32.GetKeyState((int)key), 15);
-        }
-        else
-        {
-            return Bitmask.IsBitSet(User32.GetAsyncKeyState((int)key), 15);
-        }
-    }
+    public static bool IsKeyPressed(LimitedKeys key) => IsKeyPressed((int)key);
 
     public static bool IsAnyKeyPressed(IEnumerable<LimitedKeys> keys) => keys.Any(IsKeyPressed);
 
@@ -466,7 +399,7 @@ public static unsafe class GenericHelpers
         return false;
     }
 
-    public static bool IsKeyPressed(IEnumerable<Keys> keys)
+    public static bool IsKeyPressed(IEnumerable<int> keys)
     {
         foreach (var x in keys)
         {

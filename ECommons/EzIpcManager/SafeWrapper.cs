@@ -19,8 +19,10 @@ public enum SafeWrapper
     /// Catch and discard all exceptions
     /// </summary>
     AnyException,
+#pragma warning disable
     /// <summary>
     /// Inherit default setting from <see cref="EzIPC.Init"/> call
     /// </summary>
+#pragma warning restore
     Inherit = 255
 }
