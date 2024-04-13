@@ -40,6 +40,7 @@ public static class EzConfigGui
         }
         WindowSystem = new($"ECommons@{DalamudReflector.GetPluginName()}");
         Config = config;
+        configWindow = new();
         WindowSystem.AddWindow(configWindow);
         Svc.PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
         Svc.PluginInterface.UiBuilder.OpenConfigUi += Open;

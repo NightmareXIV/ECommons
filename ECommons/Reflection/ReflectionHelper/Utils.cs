@@ -178,7 +178,7 @@ public static partial class ReflectionHelper
             return new UnionField(f);
         }
         var p = type.GetProperty(name, bindingFlags);
-        if (p == null)
+        if (p != null)
         {
             return new UnionProperty(p);
         }
