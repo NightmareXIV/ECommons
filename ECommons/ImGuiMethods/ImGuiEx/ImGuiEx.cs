@@ -1089,6 +1089,22 @@ public static unsafe partial class ImGuiEx
         return IconButton(icon.ToIconString(), id, size, enabled);
     }
 
+    public static bool Button(string label, bool enabled = true)
+    {
+        if (!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        var ret = ImGui.Button(label) && enabled;
+        if (!enabled) ImGui.PopStyleVar();
+        return ret;
+    }
+
+    public static bool Button(string label, Vector2 size, bool enabled = true)
+    {
+        if (!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        var ret = ImGui.Button(label, size) && enabled;
+        if (!enabled) ImGui.PopStyleVar();
+        return ret;
+    }
+
     public static bool IconButton(string icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
     {
         ImGui.PushFont(UiBuilder.IconFont);
