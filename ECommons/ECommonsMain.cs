@@ -68,7 +68,7 @@ public static class ECommonsMain
             GenericHelpers.Safe(EzConfig.Save);
         }
         GenericHelpers.Safe(EzConfig.Dispose);
-        GenericHelpers.Safe(ThreadLoadImageHandler.Dispose);
+        GenericHelpers.Safe(ThreadLoadImageHandler.ClearAll);
         GenericHelpers.Safe(ObjectLife.Dispose);
         GenericHelpers.Safe(DalamudReflector.Dispose);
         if (EzConfigGui.WindowSystem != null)
