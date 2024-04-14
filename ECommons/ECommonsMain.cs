@@ -33,7 +33,18 @@ public static class ECommonsMain
     {
         Instance = instance;
         GenericHelpers.Safe(() => Svc.Init(pluginInterface));
-        PluginLog.Information($"This is ECommons v{typeof(ECommonsMain).Assembly.GetName().Version} and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}. Hello!");
+#if DEBUG
+var type = "debug build without forms";
+#elif RELEASE
+var type = "release build without forms";
+#elif DEBUGFORMS
+var type = "debug build with forms";
+#elif RELEASEFORMS
+var type = "release build with forms";
+#else
+var type = "unknown build";
+#endif
+        PluginLog.Information($"This is ECommons v{typeof(ECommonsMain).Assembly.GetName().Version} ({type}) and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}. Hello!");
         Svc.Log.MinimumLogLevel = LogEventLevel.Verbose;
         GenericHelpers.Safe(CmdManager.Init);
         if (modules.ContainsAny(Module.All, Module.ObjectFunctions))
