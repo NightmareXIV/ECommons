@@ -22,10 +22,7 @@ public class ThreadLoadImageHandler
     private static readonly List<Func<byte[], byte[]>> _conversionsToBitmap = new() { b => b, };
 
     static volatile bool ThreadRunning = false;
-    internal static HttpClient httpClient = new()
-    {
-        Timeout = TimeSpan.FromSeconds(10),
-    };
+    internal static HttpClient httpClient = null;
 
     internal static void Dispose()
     {
@@ -76,6 +73,10 @@ public class ThreadLoadImageHandler
 
     internal static void BeginThreadIfNotRunning()
     {
+        httpClient ??= new()
+        {
+            Timeout = TimeSpan.FromSeconds(10),
+        };
         if (ThreadRunning) return;
         PluginLog.Verbose("Starting ThreadLoadImageHandler");
         ThreadRunning = true;

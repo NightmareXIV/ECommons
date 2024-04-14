@@ -19,16 +19,19 @@ public class DefaultSerializationFactory : ISerializationFactory
     /// <returns></returns>
     public virtual T? Deserialize<T>(string inputData)
     {
-        if(typeof(T).GetFieldPropertyUnion("JsonSerializerSettings", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(null) is not JsonSerializerSettings settings)
+        var type = typeof(T).GetFieldPropertyUnion("JsonSerializerSettings", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+        JsonSerializerSettings settings;
+        if (type != null && type.GetValue(null) is JsonSerializerSettings s)
+        {
+            settings = s;
+            PluginLog.Debug($"Using JSON serializer settings from object to perform deserialization");
+        }
+        else
         {
             settings = new JsonSerializerSettings()
             {
                 ObjectCreationHandling = ObjectCreationHandling.Replace,
             };
-        }
-        else
-        {
-            PluginLog.Debug($"Using JSON serializer settings from object to perform deserialization");
         }
         return JsonConvert.DeserializeObject<T>(inputData, settings);
     }
@@ -41,17 +44,20 @@ public class DefaultSerializationFactory : ISerializationFactory
     /// <returns></returns>
     public virtual string Serialize(object config, bool prettyPrint)
     {
-        if (config.GetType().GetFieldPropertyUnion("JsonSerializerSettings", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(null) is not JsonSerializerSettings settings)
+        var type = config.GetType().GetFieldPropertyUnion("JsonSerializerSettings", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+        JsonSerializerSettings settings;
+        if (type != null && type.GetValue(null) is JsonSerializerSettings s)
+        {
+            settings = s;
+            PluginLog.Debug($"Using JSON serializer settings from object to perform serialization");
+        }
+        else
         {
             settings = new JsonSerializerSettings()
             {
                 Formatting = prettyPrint ? Formatting.Indented : Formatting.None,
                 DefaultValueHandling = config.GetType().IsDefined(typeof(IgnoreDefaultValueAttribute), false) ? DefaultValueHandling.Ignore : DefaultValueHandling.Include
             };
-        }
-        else
-        {
-            PluginLog.Debug($"Using JSON serializer settings from object to perform serialization");
         }
         return JsonConvert.SerializeObject(config, settings);
     }
