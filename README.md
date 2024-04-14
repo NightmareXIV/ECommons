@@ -3,6 +3,9 @@
   <p>ECommons is a multi-functional library designed to work within Dalamud Plugins. It features a variety of different systems and shortcuts which cuts out a lot of boiler plate code normally used to do standard plugin tasks.</p>
 </section>
 
+# WARNING
+## Starting from v2.2.0.1, Windows Forms and Windows Targeting are now disabled by default. This affects only couple functions, please set a build configuration with forms manually if you need so.
+
 <section id="getting-started">
 <a href="#getting-started" alt="Getting Started"><h2>Getting Started</h2></a>
 Add ECommons as a submodule to your project:
