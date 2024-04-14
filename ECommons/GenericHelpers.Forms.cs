@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-#if (DEBUG || RELEASE)
+#if (DEBUGFORMS || RELEASEFORMS)
 using System.Windows.Forms;
 #endif
 
@@ -21,7 +21,7 @@ public static partial class GenericHelpers
     /// <param name="text">Text to copy</param>
     /// <param name="silent">Whether to display success/failure popup</param>
     /// <returns>Whether operation succeeded</returns>
-#if !(DEBUG || RELEASE)
+#if !(DEBUGFORMS || RELEASEFORMS)
     [Obsolete("You have selected not to use Windows Forms; copying will be done via ImGui. This has been known to cause serious issues in past. If you are working with clipboard a lot, consider enabling Windows Forms.")]
 #endif
     public static bool Copy(string text, bool silent = false)
@@ -30,7 +30,7 @@ public static partial class GenericHelpers
         {
             if (text.IsNullOrEmpty())
             {
-#if (DEBUG || RELEASE)
+#if (DEBUGFORMS || RELEASEFORMS)
                 Clipboard.Clear();
 #else
                 ImGui.SetClipboardText("");
@@ -39,7 +39,7 @@ public static partial class GenericHelpers
             }
             else
             {
-#if (DEBUG || RELEASE)
+#if (DEBUGFORMS || RELEASEFORMS)
                 Clipboard.SetText(text);
 #else
                 ImGui.SetClipboardText(text);
@@ -65,14 +65,14 @@ public static partial class GenericHelpers
     /// </summary>
     /// <param name="silent">Whether to display popup when error occurs.</param>
     /// <returns>Contents of the clipboard; null if clipboard couldn't be read.</returns>
-#if !(DEBUG || RELEASE)
+#if !(DEBUGFORMS || RELEASEFORMS)
     [Obsolete("You have selected not to use Windows Forms; pasting will be done via ImGui. This has been known to cause serious issues in past. If you are working with clipboard a lot, consider enabling Windows Forms.")]
 #endif
     public static string? Paste(bool silent = false)
     {
         try
         {
-#if (DEBUG || RELEASE)
+#if (DEBUGFORMS || RELEASEFORMS)
             return Clipboard.GetText();
 #else
             return ImGui.GetClipboardText();
@@ -90,7 +90,7 @@ public static partial class GenericHelpers
         }
     }
 
-#if (DEBUG || RELEASE)
+#if (DEBUGFORMS || RELEASEFORMS)
 
     /// <summary>
     /// Checks if a key is pressed via winapi.
