@@ -5,9 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Dalamud.Plugin.Ipc.Exceptions;
-using FFXIVClientStructs.FFXIV.Client.Game.Control;
-using System.Security.Cryptography.Xml;
 
 namespace ECommons.EzIpcManager;
 

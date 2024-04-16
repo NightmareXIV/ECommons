@@ -1,5 +1,4 @@
-﻿using ECommons.Logging;
-using ECommons.Reflection;
+﻿using ECommons.Reflection;
 using System;
 using System.Reflection;
 

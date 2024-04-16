@@ -3,7 +3,6 @@ using ECommons.Configuration;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using ECommons.Reflection;
-using System.Runtime.ConstrainedExecution;
 
 namespace ECommons.SimpleGui;
 

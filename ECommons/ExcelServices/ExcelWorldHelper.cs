@@ -1,8 +1,6 @@
 using ECommons.DalamudServices;
-using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel.GeneratedSheets;
 using System;
-using System.Collections;
 using System.Linq;
 
 namespace ECommons.ExcelServices;

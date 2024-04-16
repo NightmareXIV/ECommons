@@ -1,9 +1,7 @@
 ﻿using Dalamud.Configuration;
 using Dalamud.Interface.Windowing;
-using ECommons.Configuration;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
-using Newtonsoft.Json.Linq;
 using System;
 
 namespace ECommons.SimpleGui;
