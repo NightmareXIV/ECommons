@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace ECommons.Automation;
+namespace ECommons.Automation.LegacyTaskManager;
 #nullable disable
 
 public partial class TaskManager : IDisposable
