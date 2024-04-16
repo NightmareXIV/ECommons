@@ -35,16 +35,17 @@ public partial class TaskManager
     /// Enqueues a single task into the end of the queue.
     /// </summary>
     /// <param name="task"></param>
-    public void EnqueueTask(TaskManagerTask task) => EnqueueMulti([task]);
+    public void EnqueueTask(TaskManagerTask task) => EnqueueMulti(task);
 
     /// <summary>
     /// Enqueues specified tasks into the end of the queue.
     /// </summary>
     /// <param name="tasks">Sequence of tasks to enqueue</param>
-    public void EnqueueMulti(IEnumerable<TaskManagerTask> tasks)
+    public void EnqueueMulti(params TaskManagerTask?[] tasks)
     {
         foreach (var task in tasks)
         {
+            if (task == null) continue;
             Log($"Enqueued task {task.Name}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
             Tasks.Add(task);
         }

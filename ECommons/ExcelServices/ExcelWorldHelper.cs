@@ -74,6 +74,7 @@ public static class ExcelWorldHelper
 
     [Obsolete("Please use GetName")]
     public static string GetWorldNameById(uint id) => GetName(id);
+    public static string GetName(int id) => GetName((uint)id);
     public static string GetName(uint id)
     {
         return Get(id)?.Name.ToString();
