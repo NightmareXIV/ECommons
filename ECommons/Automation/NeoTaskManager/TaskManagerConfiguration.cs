@@ -29,4 +29,17 @@ public class TaskManagerConfiguration
         if (this.ShowDebug == null) throw new NullReferenceException();
         if (this.ShowError == null) throw new NullReferenceException();
     }
+
+    public TaskManagerConfiguration With(TaskManagerConfiguration other)
+    {
+        return new()
+        {
+            TimeLimitMS = other?.TimeLimitMS ?? this.TimeLimitMS,
+            AbortOnError = other?.AbortOnError ?? this.AbortOnError,
+            AbortOnTimeout = other?.AbortOnTimeout ?? this.AbortOnTimeout,
+            ShowDebug = other?.ShowDebug ?? this.ShowDebug,
+            ShowError = other?.ShowError ?? this.ShowError,
+            TimeoutSilently = other?.TimeoutSilently ?? this.TimeoutSilently,
+        };
+    }
 }

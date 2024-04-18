@@ -9,7 +9,7 @@ public unsafe class FrameDelayTask
     public FrameDelayTask(int ms)
     {
         StopAt = Framework.Instance()->FrameCounter + ms;
-        Task = new((Func<bool?>)(() => Framework.Instance()->FrameCounter >= StopAt), $"Delay ({ms} frames)");
+        Task = new((Func<bool?>)(() => Framework.Instance()->FrameCounter >= StopAt), $"Delay ({ms} frames)", new(abortOnTimeout:false));
     }
 
     public static implicit operator TaskManagerTask(FrameDelayTask task) => task.Task;
