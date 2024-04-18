@@ -1,6 +1,7 @@
 ﻿
 using ECommons.ImGuiMethods;
 using ECommons.Logging;
+using ImGuiNET;
 using System;
 using System.Collections.Generic;
 #if (DEBUGFORMS || RELEASEFORMS)
