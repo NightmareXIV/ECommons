@@ -9,6 +9,19 @@ namespace ECommons.Automation.NeoTaskManager;
 /// </summary>
 public partial class TaskManager : IDisposable
 {
+    public TaskManager(TaskManagerConfiguration defaultConfiguration)
+    {
+        DefaultConfiguration = new TaskManagerConfiguration()
+        {
+            AbortOnTimeout = true,
+            AbortOnError = true,
+            ShowDebug = false,
+            ShowError = true,
+            TimeLimitMS = 30000,
+            TimeoutSilently = false,
+        }.With(defaultConfiguration);
+    }
+
     private static readonly List<TaskManager> Instances = [];
     internal static void DisposeAll()
     {
@@ -21,15 +34,7 @@ public partial class TaskManager : IDisposable
     /// <summary>
     /// Default configuration that will be used for tasks. Default configuration must not contain any null statements.
     /// </summary>
-    public readonly TaskManagerConfiguration DefaultConfiguration = new()
-    {
-        AbortOnTimeout = true,
-        AbortOnError = true,
-        ShowDebug = false,
-        ShowError = true,
-        TimeLimitMS = 30000,
-        TimeoutSilently = false,
-    };
+    public readonly TaskManagerConfiguration DefaultConfiguration;
 
     /// <summary>
     /// Amount of tasks that a TaskManager ever observed. Resets to 0 when there are no more tasks.
