@@ -9,19 +9,6 @@ namespace ECommons.Automation.NeoTaskManager;
 /// </summary>
 public partial class TaskManager : IDisposable
 {
-    public TaskManager(TaskManagerConfiguration defaultConfiguration)
-    {
-        DefaultConfiguration = new TaskManagerConfiguration()
-        {
-            AbortOnTimeout = true,
-            AbortOnError = true,
-            ShowDebug = false,
-            ShowError = true,
-            TimeLimitMS = 30000,
-            TimeoutSilently = false,
-        }.With(defaultConfiguration);
-    }
-
     private static readonly List<TaskManager> Instances = [];
     internal static void DisposeAll()
     {
@@ -83,9 +70,18 @@ public partial class TaskManager : IDisposable
     private long AbortAt = 0;
     private bool stepMode = false;
 
-    public TaskManager()
+    public TaskManager(TaskManagerConfiguration defaultConfiguration)
     {
-        DefaultConfiguration.AssertNotNull();
+				DefaultConfiguration = new TaskManagerConfiguration()
+				{
+						AbortOnTimeout = true,
+						AbortOnError = true,
+						ShowDebug = false,
+						ShowError = true,
+						TimeLimitMS = 30000,
+						TimeoutSilently = false,
+				}.With(defaultConfiguration);
+				DefaultConfiguration.AssertNotNull();
         Svc.Framework.Update += Tick;
         Instances.Add(this);
     }
