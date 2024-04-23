@@ -137,7 +137,7 @@ public partial class TaskManager : IDisposable
             var ShowError = CurrentTask.Configuration?.ShowError ?? this.DefaultConfiguration.ShowError!.Value;
             var ExecuteDefaultConfigurationEvents = CurrentTask.Configuration?.ExecuteDefaultConfigurationEvents ?? this.DefaultConfiguration.ExecuteDefaultConfigurationEvents!.Value;
 
-						if (Tasks.Count > MaxTasks) MaxTasks = Tasks.Count;
+						if (NumQueuedTasks > MaxTasks) MaxTasks = NumQueuedTasks;
             try
             {
                 if (AbortAt == 0)
