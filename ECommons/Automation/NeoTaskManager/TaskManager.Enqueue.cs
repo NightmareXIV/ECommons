@@ -46,8 +46,16 @@ public partial class TaskManager
         foreach (var task in tasks)
         {
             if (task == null) continue;
-            Log($"Enqueued task {task.Name}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
-            Tasks.Add(task);
+            if (this.IsStackActive)
+						{
+								Log($"(stack) Enqueued task {task.Name}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
+								Stack.Add(task);
+            }
+            else
+            {
+                Log($"Enqueued task {task.Name}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
+                Tasks.Add(task);
+            }
         }
     }
 }

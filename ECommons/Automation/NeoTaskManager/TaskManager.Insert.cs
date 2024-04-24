@@ -46,8 +46,16 @@ public partial class TaskManager
         foreach (var task in tasks.Reverse())
         {
             if (task == null) continue;
-            Log($"Inserted task {task.Name}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
-            Tasks.Insert(0, task);
+            if (IsStackActive)
+						{
+								Log($"(stack) Inserted task {task.Name}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
+								Stack.Insert(0, task);
+            }
+            else
+            {
+                Log($"Inserted task {task.Name}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
+                Tasks.Insert(0, task);
+            }
         }
     }
 }
