@@ -73,14 +73,19 @@ public class InternalLog
 
     static string Search = "";
     static bool Autoscroll = true;
-    public static void PrintImgui()
+    static LogEventLevel SelectedLevel = LogEventLevel.Verbose;
+		public static void PrintImgui()
     {
+        ImGui.SetNextItemWidth(100f);
+        ImGuiEx.EnumCombo("##Level", ref SelectedLevel);
+        ImGuiEx.Tooltip("Select minumum log level that will be displayed. Regardless, all levels will be logged.");
+				ImGui.SameLine();
         ImGui.Checkbox("Autoscroll", ref Autoscroll);
         ImGui.SameLine();
         if (ImGui.Button("Copy all"))
         {
 #pragma warning disable
-            GenericHelpers.Copy(Messages.Select(x => $"[{x.Level}@{x.Time}] {x.Message}").Join("\n"));
+            GenericHelpers.Copy(Messages.Where(x => x.Level >= SelectedLevel).Select(x => $"[{x.Level}@{x.Time}] {x.Message}").Join("\n"));
 #pragma warning restore
         }
         ImGui.SameLine();
@@ -94,6 +99,7 @@ public class InternalLog
         ImGui.BeginChild($"Plugin_log{DalamudReflector.GetPluginName()}");
         foreach(var x in Messages)
         {
+            if (x.Level < SelectedLevel) continue;
             if(Search == String.Empty || x.Level.ToString().EqualsIgnoreCase(Search) || x.Message.Contains(Search, StringComparison.OrdinalIgnoreCase))
             ImGuiEx.TextWrappedCopy(x.Level == LogEventLevel.Fatal?ImGuiColors.DPSRed
                 :x.Level == LogEventLevel.Error?ImGuiColors.DalamudRed
