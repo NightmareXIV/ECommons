@@ -79,7 +79,7 @@ public class InternalLog
         Warning = 0b1000,
         Error = 0b10000,
         Fatal = 0b100000,
-        Default = Info | Warning | Error
+        Default = ~0
     }
 
     static string Search = "";
