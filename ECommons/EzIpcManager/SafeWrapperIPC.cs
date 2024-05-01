@@ -1,8 +1,10 @@
 ﻿using Dalamud.Plugin.Ipc.Exceptions;
 using System;
+using System.Reflection;
 
 namespace ECommons.EzIpcManager;
 #nullable disable
+[Obfuscation(Exclude = true)]
 internal static class SafeWrapperIPC
 {
     internal class Wrapper<T1, T2, T3, T4, T5, T6, T7, T8, TRet>()

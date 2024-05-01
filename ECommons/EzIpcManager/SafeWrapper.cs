@@ -1,4 +1,7 @@
-﻿namespace ECommons.EzIpcManager;
+﻿using System.Reflection;
+
+namespace ECommons.EzIpcManager;
+[Obfuscation(Exclude = true)]
 public enum SafeWrapper
 {
     /// <summary>
