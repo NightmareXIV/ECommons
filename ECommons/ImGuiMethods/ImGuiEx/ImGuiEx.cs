@@ -865,7 +865,7 @@ public static unsafe partial class ImGuiEx
         ImGui.PopTextWrapPos();
     }
 
-    public static void TextWrapped(Vector4 col, string s)
+    public static void TextWrapped(Vector4? col, string s)
     {
         ImGui.PushTextWrapPos(0);
         ImGuiEx.Text(col, s);
