@@ -49,8 +49,10 @@ public static unsafe partial class GenericHelpers
 
     public static V SafeSelect<K, V>(this IDictionary<K, V> dictionary, K key) => SafeSelect(dictionary, key, default);
     public static V SafeSelect<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue)
-    {
-        if(dictionary.TryGetValue(key, out var ret))
+		{
+				if (dictionary == null) return default;
+				if (key == null) return default;
+				if (dictionary.TryGetValue(key, out var ret))
         {
             return ret;
         }
@@ -66,6 +68,7 @@ public static unsafe partial class GenericHelpers
     /// <returns></returns>
     public static T SafeSelect<T>(this IList<T> list, int index)
     {
+        if (list == null) return default;
         if (index < 0 || index >= list.Count) return default;
         return list[index];
     }
@@ -612,7 +615,6 @@ public static unsafe partial class GenericHelpers
                || Svc.Condition[ConditionFlag.CarryingItem]
                || Svc.Condition[ConditionFlag.CarryingObject]
                || Svc.Condition[ConditionFlag.BeingMoved]
-               || Svc.Condition[ConditionFlag.Emoting]
                || Svc.Condition[ConditionFlag.Mounted2]
                || Svc.Condition[ConditionFlag.Mounting]
                || Svc.Condition[ConditionFlag.Mounting71]

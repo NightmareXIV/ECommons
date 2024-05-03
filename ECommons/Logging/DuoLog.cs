@@ -1,9 +1,7 @@
-﻿using Dalamud.Game.Text;
-using Dalamud.Game.Text.SeStringHandling;
+﻿using Dalamud.Game.Text.SeStringHandling;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using ECommons.Schedulers;
-using System;
 
 namespace ECommons.Logging;
 

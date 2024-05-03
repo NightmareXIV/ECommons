@@ -4,6 +4,9 @@
 </section>
 
 # WARNING
+## Starting from 2.2.0.2, if you have previously used TaskManager it's namespace has changed, simply add `using ECommons.Automation.LegacyTaskManager;` and you're all good.
+
+# WARNING
 ## Starting from v2.2.0.1, Windows Forms and Windows Targeting are now disabled by default. This affects only couple functions, please set a build configuration with forms manually if you need so.
 
 <section id="getting-started">

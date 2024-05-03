@@ -1,9 +1,8 @@
 using ECommons.DalamudServices;
-using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel.GeneratedSheets;
 using System;
-using System.Collections;
 using System.Linq;
+using System.Reflection;
 
 namespace ECommons.ExcelServices;
 #nullable disable
@@ -12,12 +11,17 @@ public static class ExcelWorldHelper
 {
     [Obsolete("Please use Get")]
     public static World GetWorldByName(string name) => Get(name);
+
+    private static Dictionary<string, World> NameCache = [];
+
     public static World Get(string name, bool onlyPublic = false)
     {
         if (name == null) return null;
+        if(NameCache.TryGetValue(name, out var world)) return world;
         if(Svc.Data.GetExcelSheet<World>().TryGetFirst(x => x.Name.ToString().EqualsIgnoreCase(name) && (!onlyPublic || x.Region.EqualsAny(Enum.GetValues<Region>().Select(z => (byte)z).ToArray())), out var result))
         {
-            return result;
+            NameCache[name] = result;
+						return result;
         }
         return null;
     }
@@ -76,6 +80,7 @@ public static class ExcelWorldHelper
 
     [Obsolete("Please use GetName")]
     public static string GetWorldNameById(uint id) => GetName(id);
+    public static string GetName(int id) => GetName((uint)id);
     public static string GetName(uint id)
     {
         return Get(id)?.Name.ToString();
@@ -87,6 +92,7 @@ public static class ExcelWorldHelper
     [Obsolete("Please use GetName")]
     public static string GetPublicWorldNameById(uint id) => Get(id, true).Name.ToString();
 
+    [Obfuscation(Exclude = true)]
     public enum Region
     {
         JP = 1,

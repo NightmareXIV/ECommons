@@ -6,7 +6,10 @@ namespace ECommons.Automation;
 
 public static partial class WindowsKeypress
 {
-    public static bool SendKeypress(int key)
+		public static bool SendKeypress(LimitedKeys key) => SendKeypress((int)key);
+		public static bool SendMousepress(LimitedKeys key) => SendKeypress((int)key);
+
+		public static bool SendKeypress(int key)
     {
         if (WindowFunctions.TryFindGameWindow(out var h))
         {

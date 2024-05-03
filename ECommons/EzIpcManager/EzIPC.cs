@@ -5,9 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Dalamud.Plugin.Ipc.Exceptions;
-using FFXIVClientStructs.FFXIV.Client.Game.Control;
-using System.Security.Cryptography.Xml;
 
 namespace ECommons.EzIpcManager;
 
@@ -269,30 +266,39 @@ public static class EzIPC
         Type? type = null;
         if (wrapperKind == SafeWrapper.IPCException)
         {
-            if (adjustedGenericArgs.Length == 1) type = typeof(SafeWrapperIPC.Wrapper<>);
-            if (adjustedGenericArgs.Length == 2) type = typeof(SafeWrapperIPC.Wrapper<,>);
-            if (adjustedGenericArgs.Length == 3) type = typeof(SafeWrapperIPC.Wrapper<,,>);
-            if (adjustedGenericArgs.Length == 4) type = typeof(SafeWrapperIPC.Wrapper<,,,>);
-            if (adjustedGenericArgs.Length == 5) type = typeof(SafeWrapperIPC.Wrapper<,,,,>);
-            if (adjustedGenericArgs.Length == 6) type = typeof(SafeWrapperIPC.Wrapper<,,,,,>);
-            if (adjustedGenericArgs.Length == 7) type = typeof(SafeWrapperIPC.Wrapper<,,,,,,>);
-            if (adjustedGenericArgs.Length == 8) type = typeof(SafeWrapperIPC.Wrapper<,,,,,,,>);
-            if (adjustedGenericArgs.Length == 9) type = typeof(SafeWrapperIPC.Wrapper<,,,,,,,,>);
+            type = adjustedGenericArgs.Length switch
+            {
+                1 => typeof(SafeWrapperIPC.Wrapper<>),
+                2 => typeof(SafeWrapperIPC.Wrapper<,>),
+                3 => typeof(SafeWrapperIPC.Wrapper<,,>),
+                4 => typeof(SafeWrapperIPC.Wrapper<,,,>),
+                5 => typeof(SafeWrapperIPC.Wrapper<,,,,>),
+                6 => typeof(SafeWrapperIPC.Wrapper<,,,,,>),
+                7 => typeof(SafeWrapperIPC.Wrapper<,,,,,,>),
+                8 => typeof(SafeWrapperIPC.Wrapper<,,,,,,,>),
+                9 => typeof(SafeWrapperIPC.Wrapper<,,,,,,,,>),
+                _ => throw new ArgumentOutOfRangeException(GetThrowString()),
+            };
         }
         else
         {
-            if (adjustedGenericArgs.Length == 1) type = typeof(SafeWrapperAny.Wrapper<>);
-            if (adjustedGenericArgs.Length == 2) type = typeof(SafeWrapperAny.Wrapper<,>);
-            if (adjustedGenericArgs.Length == 3) type = typeof(SafeWrapperAny.Wrapper<,,>);
-            if (adjustedGenericArgs.Length == 4) type = typeof(SafeWrapperAny.Wrapper<,,,>);
-            if (adjustedGenericArgs.Length == 5) type = typeof(SafeWrapperAny.Wrapper<,,,,>);
-            if (adjustedGenericArgs.Length == 6) type = typeof(SafeWrapperAny.Wrapper<,,,,,>);
-            if (adjustedGenericArgs.Length == 7) type = typeof(SafeWrapperAny.Wrapper<,,,,,,>);
-            if (adjustedGenericArgs.Length == 8) type = typeof(SafeWrapperAny.Wrapper<,,,,,,,>);
-            if (adjustedGenericArgs.Length == 9) type = typeof(SafeWrapperAny.Wrapper<,,,,,,,,>);
+            type = adjustedGenericArgs.Length switch
+            {
+                1 => typeof(SafeWrapperAny.Wrapper<>),
+                2 => typeof(SafeWrapperAny.Wrapper<,>),
+                3 => typeof(SafeWrapperAny.Wrapper<,,>),
+                4 => typeof(SafeWrapperAny.Wrapper<,,,>),
+                5 => typeof(SafeWrapperAny.Wrapper<,,,,>),
+                6 => typeof(SafeWrapperAny.Wrapper<,,,,,>),
+                7 => typeof(SafeWrapperAny.Wrapper<,,,,,,>),
+                8 => typeof(SafeWrapperAny.Wrapper<,,,,,,,>),
+                9 => typeof(SafeWrapperAny.Wrapper<,,,,,,,,>),
+                _ => throw new ArgumentOutOfRangeException(GetThrowString()),
+            };
         }
-        if (type == null) throw new ArgumentNullException($"Could not find safe wrapper of {wrapperKind} kind with {adjustedGenericArgs.Length} arguments");
         type = type.MakeGenericType(adjustedGenericArgs);
         return Activator.CreateInstance(type);
+
+        string GetThrowString() => $"Could not find safe wrapper of {wrapperKind} kind with {adjustedGenericArgs.Length} arguments";
     }
 }

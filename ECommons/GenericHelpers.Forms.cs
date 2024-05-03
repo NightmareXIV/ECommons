@@ -1,13 +1,9 @@
 ﻿
 using ECommons.ImGuiMethods;
 using ECommons.Logging;
-using FFXIVClientStructs.FFXIV.Client.System.Input;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 #if (DEBUGFORMS || RELEASEFORMS)
 using System.Windows.Forms;
 #endif
