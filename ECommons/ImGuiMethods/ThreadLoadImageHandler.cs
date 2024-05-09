@@ -125,7 +125,7 @@ public class ThreadLoadImageHandler
                                 {
                                     if (File.Exists(keyValuePair.Key))
                                     {
-                                        keyValuePair.Value.texture = Svc.PluginInterface.UiBuilder.LoadImage(keyValuePair.Key);
+                                        keyValuePair.Value.texture = Svc.Texture.GetTextureFromFile(new FileInfo(keyValuePair.Key));
                                     }
                                     else
                                     {
