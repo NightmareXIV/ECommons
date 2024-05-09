@@ -13,6 +13,7 @@ public class UniversalPartyMember
     public ExcelResolver<World> HomeWorld { get; init; }
     public ExcelResolver<World> CurrentWorld { get; init; }
     public string NameWithWorld => $"{Name}@{HomeWorld.GameData.Name}";
+    public ulong ContentID { get; init; }
 
     internal GameObject GameObjectInternal = null;
     public GameObject GameObject
