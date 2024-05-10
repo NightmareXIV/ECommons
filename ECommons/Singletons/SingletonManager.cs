@@ -22,12 +22,12 @@ public class SingletonManager
 				try
 				{
 						var singletonT = typeof(SingletonT<>).MakeGenericType(type);
-						if (singletonT.GetField(nameof(SingletonT<object>.Instance), BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null) != null)
+						if (singletonT.GetFields(BindingFlags.Static | BindingFlags.NonPublic)[0]!.GetValue(null) != null)
 						{
 								throw new InvalidOperationException($"Singleton for type {type} is already initialized.");
 						}
 						var obj = Activator.CreateInstance(type, true);
-						singletonT.GetField(nameof(SingletonT<object>.Instance), BindingFlags.Static | BindingFlags.NonPublic)!.SetValue(null, obj);
+						singletonT.GetFields(BindingFlags.Static | BindingFlags.NonPublic)[0]!.SetValue(null, obj);
 						PluginLog.Debug($"Assigned singleton instance {type.FullName}");
 						if (obj is IDisposable disposable)
 						{
@@ -68,6 +68,7 @@ public class SingletonManager
 				var types = new List<Type>();
 				foreach (var x in assembly.GetTypes())
 				{
+						if (x.IsInterface || x.IsAbstract) continue;
 						if (@interface.IsAssignableFrom(x))
 						{
 								types.Add(x);
