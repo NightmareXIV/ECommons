@@ -77,7 +77,8 @@ var type = "unknown build";
     public static void Dispose()
     {
         Disposed = true;
-        GenericHelpers.Safe(PluginLoader.Dispose);
+				GenericHelpers.Safe(SingletonServiceManager.DisposeAll);
+				GenericHelpers.Safe(PluginLoader.Dispose);
         GenericHelpers.Safe(CmdManager.Dispose);
         if (EzConfig.Config != null)
         {
@@ -125,7 +126,6 @@ var type = "unknown build";
         GenericHelpers.Safe(EzHookCommon.DisposeAll);
         GenericHelpers.Safe(EzSharedData.Dispose);
         GenericHelpers.Safe(EzIPC.Dispose);
-        GenericHelpers.Safe(SingletonServiceManager.DisposeAll);
         //SingletonManager.Dispose();
         Chat.instance = null;
         Instance = null;
