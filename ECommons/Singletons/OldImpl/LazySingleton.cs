@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ECommons.Singletons;
+﻿/*namespace ECommons.Singletons;
 public static class LazySingleton
 {
 		/// <summary>
@@ -21,3 +15,4 @@ public static class LazySingleton
 				return SingletonT<T>.Instance!;
 		}
 }
+*/

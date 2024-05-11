@@ -1,13 +1,4 @@
-﻿using ECommons.Logging;
-using ECommons.Reflection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ECommons.Singletons;
+﻿/*namespace ECommons.Singletons;
 public static class Singleton
 {
 		/// <summary>
@@ -20,3 +11,4 @@ public static class Singleton
 				return SingletonT<T>.Instance;
 		}
 }
+*/

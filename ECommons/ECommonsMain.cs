@@ -20,8 +20,10 @@ using ECommons.EzHookManager;
 using ECommons.EzSharedDataManager;
 using Serilog.Events;
 using ECommons.EzIpcManager;
-using ECommons.Singletons;
 using System;
+using System.Reflection;
+using ECommons.Singletons;
+
 
 #nullable disable
 
@@ -123,12 +125,8 @@ var type = "unknown build";
         GenericHelpers.Safe(EzHookCommon.DisposeAll);
         GenericHelpers.Safe(EzSharedData.Dispose);
         GenericHelpers.Safe(EzIPC.Dispose);
-        foreach(var x in SingletonManager.Disposables)
-        {
-            PluginLog.Debug($"Disposing {x.GetType().FullName}");
-            GenericHelpers.Safe(() => x.Dispose());
-        }
-        SingletonManager.Disposables = null;
+        GenericHelpers.Safe(SingletonServiceManager.DisposeAll);
+        //SingletonManager.Dispose();
         Chat.instance = null;
         Instance = null;
     }

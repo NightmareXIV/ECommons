@@ -1,10 +1,12 @@
-﻿using ECommons.Logging;
+﻿/*
+ While the concept is maybe good, I decided that I do not want to do something like this yet.
+ */
+
+/*using ECommons.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommons.Singletons;
 /// <summary>
@@ -12,7 +14,8 @@ namespace ECommons.Singletons;
 /// </summary>
 public class SingletonManager
 {
-		internal static List<IDisposable> Disposables = [];
+		private static List<IDisposable> Disposables = [];
+		private static List<Type> SingletonHolders = [];
 		/// <summary>
 		/// Initializes singleton instance for a single specified <paramref name="type"/>.
 		/// </summary>
@@ -34,6 +37,7 @@ public class SingletonManager
 								Disposables.Insert(0, disposable);
 								PluginLog.Debug($"→Will be auto-disposed");
 						}
+						SingletonHolders.Add(singletonT);
 				}
 				catch (Exception ex)
 				{
@@ -79,4 +83,20 @@ public class SingletonManager
 						InitializeForType(x);
 				}
 		}
+
+		internal static void Dispose()
+		{
+				foreach (var x in SingletonManager.Disposables)
+				{
+						PluginLog.Debug($"Disposing {x.GetType().FullName}");
+						GenericHelpers.Safe(() => x.Dispose());
+				}
+				foreach (var x in SingletonManager.SingletonHolders)
+				{
+						GenericHelpers.Safe(() => x.GetFields(BindingFlags.Static | BindingFlags.NonPublic)[0]!.SetValue(null, null));
+				}
+				Disposables = null!;
+				SingletonHolders = null!;
+		}
 }
+*/
