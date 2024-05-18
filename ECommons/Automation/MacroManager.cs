@@ -16,11 +16,6 @@ public unsafe static class MacroManager
         Execute(multilineString.Replace("\r", "").Split("\n"));
     }
 
-    public static void Execute(params string[] commands)
-    {
-        Execute(commands);
-    }
-
     public static void Execute(IEnumerable<string> commands)
     {
         var macroPtr = IntPtr.Zero;
