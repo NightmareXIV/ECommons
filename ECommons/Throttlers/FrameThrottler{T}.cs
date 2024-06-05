@@ -8,40 +8,45 @@ namespace ECommons.Throttlers;
 
 public class FrameThrottler<T>
 {
-    Dictionary<T, long> throttlers = new();
+    Dictionary<T, long> Throttlers = new();
     long SFrameCount => (long)Svc.PluginInterface.UiBuilder.FrameCount;
 
-    public IReadOnlyCollection<T> ThrottleNames => throttlers.Keys;
+    public IReadOnlyCollection<T> ThrottleNames => Throttlers.Keys;
 
     public bool Throttle(T name, int frames = 60, bool rethrottle = false)
     {
-        if (!throttlers.ContainsKey(name))
+        if (!Throttlers.ContainsKey(name))
         {
-            throttlers[name] = SFrameCount + frames;
+            Throttlers[name] = SFrameCount + frames;
             return true;
         }
-        if (SFrameCount > throttlers[name])
+        if (SFrameCount > Throttlers[name])
         {
-            throttlers[name] = SFrameCount + frames;
+            Throttlers[name] = SFrameCount + frames;
             return true;
         }
         else
         {
-            if (rethrottle) throttlers[name] = SFrameCount + frames;
+            if (rethrottle) Throttlers[name] = SFrameCount + frames;
             return false;
         }
     }
 
+    public void Reset(T name)
+    {
+        Throttlers.Remove(name);
+    }
+
     public bool Check(T name)
     {
-        if (!throttlers.ContainsKey(name)) return true;
-        return SFrameCount > throttlers[name];
+        if (!Throttlers.ContainsKey(name)) return true;
+        return SFrameCount > Throttlers[name];
     }
 
     public long GetRemainingTime(T name, bool allowNegative = false)
     {
-        if (!throttlers.ContainsKey(name)) return allowNegative ? -SFrameCount : 0;
-        var ret = throttlers[name] - SFrameCount;
+        if (!Throttlers.ContainsKey(name)) return allowNegative ? -SFrameCount : 0;
+        var ret = Throttlers[name] - SFrameCount;
         if (allowNegative)
         {
             return ret;
@@ -54,7 +59,7 @@ public class FrameThrottler<T>
 
     public void ImGuiPrintDebugInfo()
     {
-        foreach (var x in throttlers)
+        foreach (var x in Throttlers)
         {
             ImGuiEx.Text(Check(x.Key) ? ImGuiColors.HealerGreen : ImGuiColors.DalamudRed, $"{x.Key}: [{GetRemainingTime(x.Key)} frames remains] ({x.Value})");
         }
