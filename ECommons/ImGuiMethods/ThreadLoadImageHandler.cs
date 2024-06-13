@@ -17,17 +17,17 @@ namespace ECommons.ImGuiMethods;
 public class ThreadLoadImageHandler
 {
     internal static ConcurrentDictionary<string, ImageLoadingResult> CachedTextures = new();
-    internal static ConcurrentDictionary<(uint ID, bool HQ), ImageLoadingResult> CachedIcons = new();
+    internal static ConcurrentDictionary<(uint ID, IconFlags HQ), ImageLoadingResult> CachedIcons = new();
 
     private static readonly List<Func<byte[], byte[]>> _conversionsToBitmap = new() { b => b, };
 
     static volatile bool ThreadRunning = false;
-    internal static HttpClient httpClient = new()
-    {
-        Timeout = TimeSpan.FromSeconds(10),
-    };
+    internal static HttpClient httpClient = null;
 
-    internal static void Dispose()
+    /// <summary>
+    /// Clears and disposes all cached resources. You can use it to free up memory once you think textures that you have previously loaded won't be needed for a while or to trigger a complete reload.
+    /// </summary>
+    public static void ClearAll()
     {
         foreach (var x in CachedTextures)
         {
@@ -41,7 +41,14 @@ public class ThreadLoadImageHandler
         Safe(CachedIcons.Clear);
     }
 
+    public static bool TryGetIconTextureWrap(int icon, bool hq, out IDalamudTextureWrap textureWrap) => TryGetIconTextureWrap((uint)icon, hq, out textureWrap);
+    public static bool TryGetIconTextureWrap(int icon, IconFlags hq, out IDalamudTextureWrap textureWrap) => TryGetIconTextureWrap((uint)icon, hq, out textureWrap);
+
     public static bool TryGetIconTextureWrap(uint icon, bool hq, out IDalamudTextureWrap textureWrap)
+    {
+        return TryGetIconTextureWrap(icon, hq ? IconFlags.HiRes : IconFlags.None, out textureWrap);
+    }
+    public static bool TryGetIconTextureWrap(uint icon, IconFlags hq, out IDalamudTextureWrap textureWrap)
     {
         ImageLoadingResult result;
         if (!CachedIcons.TryGetValue((icon, hq), out result))
@@ -69,8 +76,12 @@ public class ThreadLoadImageHandler
 
     internal static void BeginThreadIfNotRunning()
     {
+        httpClient ??= new()
+        {
+            Timeout = TimeSpan.FromSeconds(10),
+        };
         if (ThreadRunning) return;
-        PluginLog.Information("Starting ThreadLoadImageHandler");
+        PluginLog.Verbose("Starting ThreadLoadImageHandler");
         ThreadRunning = true;
         new Thread(() =>
         {
@@ -86,7 +97,7 @@ public class ThreadLoadImageHandler
                             {
                                 idleTicks = 0;
                                 keyValuePair.Value.isCompleted = true;
-                                PluginLog.Information("Loading image " + keyValuePair.Key);
+                                PluginLog.Verbose("Loading image " + keyValuePair.Key);
                                 if (keyValuePair.Key.StartsWith("http:", StringComparison.OrdinalIgnoreCase) || keyValuePair.Key.StartsWith("https:", StringComparison.OrdinalIgnoreCase))
                                 {
                                     var result = httpClient.GetAsync(keyValuePair.Key).Result;
@@ -114,7 +125,7 @@ public class ThreadLoadImageHandler
                                 {
                                     if (File.Exists(keyValuePair.Key))
                                     {
-                                        keyValuePair.Value.texture = Svc.PluginInterface.UiBuilder.LoadImage(keyValuePair.Key);
+                                        keyValuePair.Value.texture = Svc.Texture.GetTextureFromFile(new FileInfo(keyValuePair.Key));
                                     }
                                     else
                                     {
@@ -128,8 +139,8 @@ public class ThreadLoadImageHandler
                             {
                                 idleTicks = 0;
                                 keyValuePair.Value.isCompleted = true;
-                                PluginLog.Information($"Loading icon {keyValuePair.Key.ID}, hq={keyValuePair.Key.HQ}");
-                                keyValuePair.Value.texture = Svc.Texture.GetIcon(keyValuePair.Key.ID, keyValuePair.Key.HQ?IconFlags.HiRes:IconFlags.None);
+                                PluginLog.Verbose($"Loading icon {keyValuePair.Key.ID}, hq={keyValuePair.Key.HQ}");
+                                keyValuePair.Value.texture = Svc.Texture.GetIcon(keyValuePair.Key.ID, keyValuePair.Key.HQ);
                             }
                         }
                     });
@@ -137,7 +148,7 @@ public class ThreadLoadImageHandler
                     if(!CachedTextures.Any(x => x.Value.isCompleted) && !CachedIcons.Any(x => x.Value.isCompleted)) Thread.Sleep(100);
                 }
             });
-            PluginLog.Information($"Stopping ThreadLoadImageHandler, ticks={idleTicks}");
+            PluginLog.Verbose($"Stopping ThreadLoadImageHandler, ticks={idleTicks}");
             ThreadRunning = false;
         }).Start();
     }

@@ -15,7 +15,8 @@ public static class DuoLog
         {
             Svc.Chat.Print(new()
             {
-                Message = new SeStringBuilder().AddUiForeground(str, 3).Build()
+                Message = new SeStringBuilder().AddUiForeground(str, 3).Build(),
+                Type = Svc.PluginInterface.GeneralChatType
             });
         });
     }
@@ -28,7 +29,8 @@ public static class DuoLog
         {
             Svc.Chat.Print(new()
             {
-                Message = new SeStringBuilder().AddUiForeground(str, 4).Build()
+                Message = new SeStringBuilder().AddUiForeground(str, 4).Build(),
+                Type = Svc.PluginInterface.GeneralChatType
             });
         });
     }
@@ -41,7 +43,8 @@ public static class DuoLog
         {
             Svc.Chat.Print(new()
             {
-                Message = new SeStringBuilder().AddUiForeground(str, 5).Build()
+                Message = new SeStringBuilder().AddUiForeground(str, 5).Build(),
+                Type = Svc.PluginInterface.GeneralChatType
             });
         });
     }
@@ -54,7 +57,8 @@ public static class DuoLog
         {
             Svc.Chat.Print(new()
             {
-                Message = new SeStringBuilder().AddUiForeground(str, 540).Build()
+                Message = new SeStringBuilder().AddUiForeground(str, 540).Build(),
+                Type = Svc.PluginInterface.GeneralChatType,
             });
         });
     }
@@ -67,7 +71,8 @@ public static class DuoLog
         {
             Svc.Chat.Print(new()
             {
-                Message = new SeStringBuilder().AddUiForeground(str, 17).Build()
+                Message = new SeStringBuilder().AddUiForeground(str, 17).Build(),
+                Type = Svc.PluginInterface.GeneralChatType,
             });
         });
     }
@@ -80,7 +85,8 @@ public static class DuoLog
         {
             Svc.Chat.Print(new()
             {
-                Message = new SeStringBuilder().AddUiForeground(str, 19).Build()
+                Message = new SeStringBuilder().AddUiForeground(str, 19).Build(),
+                Type = Svc.PluginInterface.GeneralChatType,
             });
         });
     }

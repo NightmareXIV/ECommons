@@ -18,6 +18,13 @@ using ECommons.Throttlers;
 using ECommons.EzEventManager;
 using ECommons.EzHookManager;
 using ECommons.EzSharedDataManager;
+using Serilog.Events;
+using ECommons.EzIpcManager;
+using System;
+using System.Reflection;
+using ECommons.Singletons;
+
+
 #nullable disable
 
 namespace ECommons;
@@ -31,7 +38,19 @@ public static class ECommonsMain
     {
         Instance = instance;
         GenericHelpers.Safe(() => Svc.Init(pluginInterface));
-        PluginLog.Information($"This is ECommons v{typeof(ECommonsMain).Assembly.GetName().Version} and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}. Hello!");
+#if DEBUG
+var type = "debug build without forms";
+#elif RELEASE
+var type = "release build without forms";
+#elif DEBUGFORMS
+var type = "debug build with forms";
+#elif RELEASEFORMS
+var type = "release build with forms";
+#else
+var type = "unknown build";
+#endif
+        PluginLog.Information($"This is ECommons v{typeof(ECommonsMain).Assembly.GetName().Version} ({type}) and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}. Hello!");
+        Svc.Log.MinimumLogLevel = LogEventLevel.Verbose;
         GenericHelpers.Safe(CmdManager.Init);
         if (modules.ContainsAny(Module.All, Module.ObjectFunctions))
         {
@@ -41,7 +60,7 @@ public static class ECommonsMain
         if (modules.ContainsAny(Module.All, Module.DalamudReflector, Module.SplatoonAPI))
         {
             PluginLog.Information("Advanced Dalamud reflection module has been requested");
-            GenericHelpers.Safe(() => DalamudReflector.Init(true));
+            GenericHelpers.Safe(() => DalamudReflector.Init());
         }
         if (modules.ContainsAny(Module.All, Module.ObjectLife))
         {
@@ -58,13 +77,15 @@ public static class ECommonsMain
     public static void Dispose()
     {
         Disposed = true;
-        GenericHelpers.Safe(PluginLoader.Dispose);
+				GenericHelpers.Safe(SingletonServiceManager.DisposeAll);
+				GenericHelpers.Safe(PluginLoader.Dispose);
         GenericHelpers.Safe(CmdManager.Dispose);
         if (EzConfig.Config != null)
         {
             GenericHelpers.Safe(EzConfig.Save);
         }
-        GenericHelpers.Safe(ThreadLoadImageHandler.Dispose);
+        GenericHelpers.Safe(EzConfig.Dispose);
+        GenericHelpers.Safe(ThreadLoadImageHandler.ClearAll);
         GenericHelpers.Safe(ObjectLife.Dispose);
         GenericHelpers.Safe(DalamudReflector.Dispose);
         if (EzConfigGui.WindowSystem != null)
@@ -93,7 +114,8 @@ public static class ECommonsMain
         GenericHelpers.Safe(ActionEffect.Dispose);
         GenericHelpers.Safe(MapEffect.Dispose);
         GenericHelpers.Safe(SendAction.Dispose);
-        GenericHelpers.Safe(TaskManager.DisposeAll);
+        GenericHelpers.Safe(Automation.LegacyTaskManager.TaskManager.DisposeAll);
+        GenericHelpers.Safe(Automation.NeoTaskManager.TaskManager.DisposeAll);
         GenericHelpers.Safe(EqualStrings.Dispose);
         GenericHelpers.Safe(AutoCutsceneSkipper.Dispose);
         GenericHelpers.Safe(() => ThreadLoadImageHandler.httpClient?.Dispose());
@@ -103,6 +125,8 @@ public static class ECommonsMain
         GenericHelpers.Safe(EzEvent.DisposeAll);
         GenericHelpers.Safe(EzHookCommon.DisposeAll);
         GenericHelpers.Safe(EzSharedData.Dispose);
+        GenericHelpers.Safe(EzIPC.Dispose);
+        //SingletonManager.Dispose();
         Chat.instance = null;
         Instance = null;
     }

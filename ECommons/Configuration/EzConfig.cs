@@ -2,11 +2,9 @@
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.CodeDom;
+using System.Threading.Tasks;
 
 namespace ECommons.Configuration;
 
@@ -30,6 +28,8 @@ public static class EzConfig
     public static IEzConfig? Config { get; private set; }
 
     private static bool WasCalled = false;
+
+    public static event Action? OnSave;
 
     /// <summary>
     /// Default serialization factory. Create a class that extends SerializationFactory, implement your own serializer and deserializer and assign DefaultSerializationFactory to it before loading any configurations to change serializer to your own liking.
@@ -93,6 +93,10 @@ public static class EzConfig
         if (Config != null)
         {
             SaveConfiguration(Config, DefaultSerializationFactory.DefaultConfigFileName, true);
+            if(OnSave != null)
+            {
+                GenericHelpers.Safe(OnSave.Invoke);
+            }
         }
     }
 
@@ -104,25 +108,48 @@ public static class EzConfig
     /// <param name="prettyPrint">Inform serializer that you want pretty-print your configuration</param>
     /// <param name="appendConfigDirectory">If true, plugin configuration directory will be added to path</param>
     /// <param name="serializationFactory">If null, then default factory will be used.</param>
-    public static void SaveConfiguration(this IEzConfig Configuration, string path, bool prettyPrint = false, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null)
+    /// <param name="writeFileAsync">Whether to perform writing operation in a separate thread. Serialization is performed in current thread.</param>
+    public static void SaveConfiguration(this IEzConfig Configuration, string path, bool prettyPrint = false, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null, bool writeFileAsync = false)
     {
         WasCalled = true;
         serializationFactory ??= DefaultSerializationFactory;
-        if (appendConfigDirectory) path = Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), path);
-        var antiCorruptionPath = $"{path}.new";
-        if (File.Exists(antiCorruptionPath))
+        var serialized = serializationFactory.Serialize(Configuration, prettyPrint);
+        void Write()
         {
-            var saveTo = $"{antiCorruptionPath}.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
-            PluginLog.Warning($"Detected unsuccessfully saved file {antiCorruptionPath}: moving to {saveTo}");
-            Notify.Warning("Detected unsuccessfully saved configuration file.");
-            File.Move(antiCorruptionPath, saveTo);
-            PluginLog.Warning($"Success. Please manually check {saveTo} file contents.");
+            try
+            {
+                lock (Configuration)
+                {
+                    if (appendConfigDirectory) path = Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), path);
+                    var antiCorruptionPath = $"{path}.new";
+                    if (File.Exists(antiCorruptionPath))
+                    {
+                        var saveTo = $"{antiCorruptionPath}.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
+                        PluginLog.Warning($"Detected unsuccessfully saved file {antiCorruptionPath}: moving to {saveTo}");
+                        Notify.Warning("Detected unsuccessfully saved configuration file.");
+                        File.Move(antiCorruptionPath, saveTo);
+                        PluginLog.Warning($"Success. Please manually check {saveTo} file contents.");
+                    }
+                    PluginLog.Verbose($"From caller {GenericHelpers.GetCallStackID(999)} engaging anti-corruption mechanism, writing file to {antiCorruptionPath}");
+                    File.WriteAllText(antiCorruptionPath, serialized, Encoding.UTF8);
+                    PluginLog.Verbose($"Now moving {antiCorruptionPath} to {path}");
+                    File.Move(antiCorruptionPath, path, true);
+                    PluginLog.Verbose($"Configuration successfully saved.");
+                }
+            }
+            catch(Exception e)
+            {
+                e.Log();
+            }
         }
-        PluginLog.Verbose($"From caller {GenericHelpers.GetCallStackID(999)} engaging anti-corruption mechanism, writing file to {antiCorruptionPath}");
-        File.WriteAllText(antiCorruptionPath, serializationFactory.Serialize(Configuration, prettyPrint), Encoding.UTF8);
-        PluginLog.Verbose($"Now moving {antiCorruptionPath} to {path}");
-        File.Move(antiCorruptionPath, path, true);
-        PluginLog.Verbose($"Configuration successfully saved.");
+        if (writeFileAsync)
+        {
+            Task.Run(Write);
+        }
+        else
+        {
+            Write();
+        }
     }
 
     /// <summary>
@@ -143,5 +170,10 @@ public static class EzConfig
             return new T();
         }
         return serializationFactory.Deserialize<T>(File.ReadAllText(path, Encoding.UTF8)) ?? new T();
+    }
+
+    internal static void Dispose()
+    {
+        OnSave = null;
     }
 }

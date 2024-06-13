@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using ECommons.Logging;
+using ECommons.Reflection;
+using Newtonsoft.Json;
+using System.Reflection;
 
 namespace ECommons.Configuration;
 /// <summary>
@@ -16,10 +19,21 @@ public class DefaultSerializationFactory : ISerializationFactory
     /// <returns></returns>
     public virtual T? Deserialize<T>(string inputData)
     {
-        return JsonConvert.DeserializeObject<T>(inputData, new JsonSerializerSettings()
+        var type = typeof(T).GetFieldPropertyUnion("JsonSerializerSettings", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+        JsonSerializerSettings settings;
+        if (type != null && type.GetValue(null) is JsonSerializerSettings s)
         {
-            ObjectCreationHandling = ObjectCreationHandling.Replace,
-        });
+            settings = s;
+            PluginLog.Debug($"Using JSON serializer settings from object to perform deserialization");
+        }
+        else
+        {
+            settings = new JsonSerializerSettings()
+            {
+                ObjectCreationHandling = ObjectCreationHandling.Replace,
+            };
+        }
+        return JsonConvert.DeserializeObject<T>(inputData, settings);
     }
 
     /// <summary>
@@ -30,10 +44,21 @@ public class DefaultSerializationFactory : ISerializationFactory
     /// <returns></returns>
     public virtual string Serialize(object config, bool prettyPrint)
     {
-        return JsonConvert.SerializeObject(config, new JsonSerializerSettings()
+        var type = config.GetType().GetFieldPropertyUnion("JsonSerializerSettings", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+        JsonSerializerSettings settings;
+        if (type != null && type.GetValue(null) is JsonSerializerSettings s)
         {
-            Formatting = prettyPrint ? Formatting.Indented : Formatting.None,
-            DefaultValueHandling = config.GetType().IsDefined(typeof(IgnoreDefaultValueAttribute), false) ? DefaultValueHandling.Ignore : DefaultValueHandling.Include
-        });
+            settings = s;
+            PluginLog.Debug($"Using JSON serializer settings from object to perform serialization");
+        }
+        else
+        {
+            settings = new JsonSerializerSettings()
+            {
+                Formatting = prettyPrint ? Formatting.Indented : Formatting.None,
+                DefaultValueHandling = config.GetType().IsDefined(typeof(IgnoreDefaultValueAttribute), false) ? DefaultValueHandling.Ignore : DefaultValueHandling.Include
+            };
+        }
+        return JsonConvert.SerializeObject(config, settings);
     }
 }

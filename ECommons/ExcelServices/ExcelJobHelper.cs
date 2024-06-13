@@ -27,6 +27,16 @@ public static class ExcelJobHelper
         return j;
     }
 
+    public static Job GetDowngradedJob(this Job j)
+    {
+        var dj = Upgrades.FindKeysByValue(j);
+        if(dj.TryGetFirst(out var ret))
+        {
+            return ret;
+        }
+        return j;
+    }
+
     public static bool IsUpgradeable(this Job j) => Upgrades.ContainsKey(j);
 
     public static int GetIcon(this Job j)

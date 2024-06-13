@@ -23,14 +23,95 @@ using Dalamud.Memory;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.MathHelpers;
 using PInvoke;
-using System.Windows.Forms;
 using ECommons.Interop;
+using System.Globalization;
+using System.Collections;
+using Dalamud.Interface.Windowing;
+using ECommons.ExcelServices;
 #nullable disable
 
 namespace ECommons;
 
-public static unsafe class GenericHelpers
+public static unsafe partial class GenericHelpers
 {
+    public static bool IsScreenReady()
+    {
+        { if (TryGetAddonByName<AtkUnitBase>("NowLoading", out var addon) && addon->IsVisible) return false; }
+        { if (TryGetAddonByName<AtkUnitBase>("FadeMiddle", out var addon) && addon->IsVisible) return false; }
+        { if (TryGetAddonByName<AtkUnitBase>("FadeBack", out var addon) && addon->IsVisible) return false; }
+        return true;
+    }
+
+    public static bool AddressEquals(this GameObject obj, GameObject other)
+    {
+        return obj?.Address == other?.Address;
+    }
+
+    public static V SafeSelect<K, V>(this IDictionary<K, V> dictionary, K key) => SafeSelect(dictionary, key, default);
+    public static V SafeSelect<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue)
+		{
+				if (dictionary == null) return default;
+				if (key == null) return default;
+				if (dictionary.TryGetValue(key, out var ret))
+        {
+            return ret;
+        }
+        return defaultValue;
+    }
+
+    /// <summary>
+    /// Safely selects an entry of the list at a specified index, returning default value if index is out of range.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public static T SafeSelect<T>(this IList<T> list, int index)
+    {
+        if (list == null) return default;
+        if (index < 0 || index >= list.Count) return default;
+        return list[index];
+    }
+
+    /// <summary>
+    /// Safely selects an entry of the array at a specified index, returning default value if index is out of range.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public static T SafeSelect<T>(this T[] list, int index)
+    {
+        if (index < 0 || index >= list.Length) return default;
+        return list[index];
+    }
+
+    /// <summary>
+    /// Attempts to parse byte array string separated by specified character.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="output"></param>
+    /// <param name="separator"></param>
+    /// <returns></returns>
+    public static bool TryParseByteArray(string input, out byte[] output, char separator = ' ')
+    {
+        var str = input.Split(separator);
+        output = new byte[str.Length];
+        for (int i = 0; i < str.Length; i++)
+        {
+            if (!byte.TryParse(str[i], NumberStyles.HexNumber, null, out output[i]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Retrieves entries from call stack in a form of single string.
+    /// </summary>
+    /// <param name="maxFrames"></param>
+    /// <returns></returns>
     public static string GetCallStackID(int maxFrames = 3) 
     {
         try
@@ -57,77 +138,46 @@ public static unsafe class GenericHelpers
     }
 
     /// <summary>
-    /// Copies text into user's clipboard using WinForms. Does not throws exceptions.
+    /// Converts byte array to hex string where bytes are separated by a specified character
     /// </summary>
-    /// <param name="text">Text to copy</param>
-    /// <param name="silent">Whether to display success/failure popup</param>
-    /// <returns>Whether operation succeeded</returns>
-    public static bool Copy(string text, bool silent = false)
+    /// <param name="bytes"></param>
+    /// <param name="separator"></param>
+    /// <returns></returns>
+    public static string ToHexString(this IEnumerable<byte> bytes, char separator = ' ')
     {
-        try
+        var first = true;
+        var sb = new StringBuilder();
+        foreach(var x in bytes)
         {
-            if (text.IsNullOrEmpty())
+            if (first)
             {
-                Clipboard.Clear();
-                if (!silent) Notify.Success("Clipboard cleared");
+                first = false;
             }
             else
             {
-                Clipboard.SetText(text);
-                if (!silent) Notify.Success("Text copied to clipboard");
+                sb.Append(separator);
             }
-            return true;
+            sb.Append($"{x:X2}");
         }
-        catch(Exception e)
-        {
-            if (!silent)
-            {
-                Notify.Error($"Error copying to clipboard:\n{e.Message}\nPlease try again");
-            }
-            PluginLog.Warning($"Error copying to clipboard:");
-            e.LogWarning();
-            return false;
-        }
+        return sb.ToString();
     }
+
+    [Obsolete($"Use {nameof(SafeSelect)}")]
+    public static T GetOrDefault<T>(this IList<T> List, int index) => SafeSelect(List, index);
+
+    [Obsolete($"Use {nameof(SafeSelect)}")]
+    public static T GetOrDefault<T>(this T[] Array, int index) => SafeSelect(Array, index);
 
     /// <summary>
-    /// Reads text from user's clipboard
+    /// Treats list as a queue, removing and returning element at index 0.
     /// </summary>
-    /// <param name="silent">Whether to display popup when error occurs.</param>
-    /// <returns>Contents of the clipboard; null if clipboard couldn't be read.</returns>
-    public static string Paste(bool silent = false)
-    {
-        try
-        {
-            return Clipboard.GetText();
-        }
-        catch(Exception e)
-        {
-            if (!silent)
-            {
-                Notify.Error($"Error pasting from clipboard:\n{e.Message}\nPlease try again");
-            }
-            PluginLog.Warning($"Error pasting from clipboard:");
-            e.LogWarning();
-            return null;
-        }
-    }
-
-    public static T GetOrDefault<T>(this IList<T> List, int index)
-    {
-        if (index < List.Count) return List[index];
-        return default;
-    }
-
-    public static T GetOrDefault<T>(this T[] Array, int index)
-    {
-        if (index < Array.Length) return Array[index];
-        return default;
-    }
-
+    /// <typeparam name="T"></typeparam>
+    /// <param name="List"></param>
+    /// <param name="result"></param>
+    /// <returns></returns>
     public static bool TryDequeue<T>(this IList<T> List, out T result)
     {
-        if(List.Count > 0)
+        if (List.Count > 0)
         {
             result = List[0];
             List.RemoveAt(0);
@@ -140,15 +190,52 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Treats list as a queue, removing and returning element at index 0.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="List"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public static T Dequeue<T>(this IList<T> List)
     {
-        if(List.TryDequeue(out var ret))
+        if (List.TryDequeue(out var ret))
         {
             return ret;
         }
         throw new InvalidOperationException("Sequence contains no elements");
     }
 
+    public static bool TryDequeueLast<T>(this IList<T> List, out T result)
+    {
+        if (List.Count > 0)
+        {
+            result = List[List.Count-1];
+            List.RemoveAt(List.Count - 1);
+            return true;
+        }
+        else
+        {
+            result = default;
+            return false;
+        }
+    }
+
+    public static T DequeueLast<T>(this IList<T> List)
+    {
+        if (List.TryDequeueLast(out var ret))
+        {
+            return ret;
+        }
+        throw new InvalidOperationException("Sequence contains no elements");
+    }
+
+    /// <summary>
+    /// Treats list as a queue, removing and returning element at index 0 or default value if there's nothing to dequeue.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="List"></param>
+    /// <returns></returns>
     public static T DequeueOrDefault<T>(this IList<T> List)
     {
         if (List.Count > 0)
@@ -163,6 +250,12 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Dequeues element from queue or returns default value if there's nothing to dequeue.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="Queue"></param>
+    /// <returns></returns>
     public static T DequeueOrDefault<T>(this Queue<T> Queue)
     {
         if(Queue.Count > 0)
@@ -172,6 +265,13 @@ public static unsafe class GenericHelpers
         return default;
     }
 
+    /// <summary>
+    /// Searches index of first element in IEnumerable that matches the predicate.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="values"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
     public static int IndexOf<T>(this IEnumerable<T> values, Predicate<T> predicate)
     {
         var ret = -1;
@@ -259,9 +359,11 @@ public static unsafe class GenericHelpers
         }
     }
 
+#pragma warning disable
     /// <summary>
     /// Sets whether <see cref="User32.GetKeyState"/> or <see cref="User32.GetAsyncKeyState"/> will be used when calling <see cref="IsKeyPressed(Keys)"/> or <see cref="IsKeyPressed(LimitedKeys)"/>
     /// </summary>
+#pragma warning restore
     public static bool UseAsyncKeyCheck = false;
 
     /// <summary>
@@ -269,16 +371,16 @@ public static unsafe class GenericHelpers
     /// </summary>
     /// <param name="key">Key</param>
     /// <returns>Whether the key is currently pressed</returns>
-    public static bool IsKeyPressed(Keys key)
+    public static bool IsKeyPressed(int key)
     {
-        if (key == Keys.None) return false;
+        if (key == 0) return false;
         if (UseAsyncKeyCheck)
         {
-            return Bitmask.IsBitSet(User32.GetKeyState((int)key), 15);
+            return Bitmask.IsBitSet(User32.GetKeyState(key), 15);
         }
         else
         {
-            return Bitmask.IsBitSet(User32.GetAsyncKeyState((int)key), 15);
+            return Bitmask.IsBitSet(User32.GetAsyncKeyState(key), 15);
         }
     }
 
@@ -287,18 +389,10 @@ public static unsafe class GenericHelpers
     /// </summary>
     /// <param name="key">Key</param>
     /// <returns>Whether the key is currently pressed</returns>
-    public static bool IsKeyPressed(LimitedKeys key)
-    {
-        if (key == LimitedKeys.None) return false;
-        if (UseAsyncKeyCheck)
-        {
-            return Bitmask.IsBitSet(User32.GetKeyState((int)key), 15);
-        }
-        else
-        {
-            return Bitmask.IsBitSet(User32.GetAsyncKeyState((int)key), 15);
-        }
-    }
+    public static bool IsKeyPressed(LimitedKeys key) => IsKeyPressed((int)key);
+
+    public static bool IsAnyKeyPressed(IEnumerable<LimitedKeys> keys) => keys.Any(IsKeyPressed);
+
     public static bool IsKeyPressed(IEnumerable<LimitedKeys> keys)
     {
         foreach (var x in keys)
@@ -308,7 +402,7 @@ public static unsafe class GenericHelpers
         return false;
     }
 
-    public static bool IsKeyPressed(IEnumerable<Keys> keys)
+    public static bool IsKeyPressed(IEnumerable<int> keys)
     {
         foreach (var x in keys)
         {
@@ -521,7 +615,6 @@ public static unsafe class GenericHelpers
                || Svc.Condition[ConditionFlag.CarryingItem]
                || Svc.Condition[ConditionFlag.CarryingObject]
                || Svc.Condition[ConditionFlag.BeingMoved]
-               || Svc.Condition[ConditionFlag.Emoting]
                || Svc.Condition[ConditionFlag.Mounted2]
                || Svc.Condition[ConditionFlag.Mounting]
                || Svc.Condition[ConditionFlag.Mounting71]
@@ -753,16 +846,8 @@ public static unsafe class GenericHelpers
         }
     }
 
-    public static bool TryGetWorldByName(string world, out Lumina.Excel.GeneratedSheets.World worldId) 
-    {
-        if(Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.World>().TryGetFirst(x => x.Name.ToString().Equals(world, StringComparison.OrdinalIgnoreCase), out var w))
-        {
-            worldId = w;
-            return true;
-        }
-        worldId = default;
-        return false;
-    }
+    [Obsolete($"Please use ExcelWorldHelper.TryGetWorldByName")]
+    public static bool TryGetWorldByName(string world, out Lumina.Excel.GeneratedSheets.World worldId) => ExcelWorldHelper.TryGetWorldByName(world, out worldId);
 
     public static Vector4 Invert(this Vector4 v)
     {
@@ -803,6 +888,18 @@ public static unsafe class GenericHelpers
     public static void Log(this Exception e)
     {
         PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
+    }
+    public static void LogVerbose(this Exception e)
+    {
+        PluginLog.LogVerbose($"{e.Message}\n{e.StackTrace ?? ""}");
+    }
+    public static void LogInternal(this Exception e)
+    {
+        InternalLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
+    }
+    public static void LogInfo(this Exception e)
+    {
+        PluginLog.Information($"{e.Message}\n{e.StackTrace ?? ""}");
     }
 
     public static void Log(this Exception e, string ErrorMessage)
@@ -1110,34 +1207,84 @@ public static unsafe class GenericHelpers
         }
     }
 
-    public static bool TryGetFirst<K>(this IEnumerable<K> enumerable, out K value)
+    /// <summary>
+    /// Attempts to get first element of <see cref="IEnumerable"/>.
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool TryGetFirst<TSource>(this IEnumerable<TSource> source, out TSource value)
     {
-        try
-        {
-            value = enumerable.First();
-            return true;
-        }
-        catch (Exception)
+        if (source == null)
         {
             value = default;
             return false;
         }
+        var list = source as IList<TSource>;
+        if (list != null)
+        {
+            if (list.Count > 0)
+            {
+                value = list[0];
+                return true;
+            }
+        }
+        else
+        {
+            using (var e = source.GetEnumerator())
+            {
+                if (e.MoveNext())
+                {
+                    value = e.Current;
+                    return true;
+                }
+            }
+        }
+        value = default;
+        return false;
     }
 
-    public static bool TryGetFirst<K>(this IEnumerable<K> enumerable, Func<K, bool> predicate, out K value)
+    /// <summary>
+    /// Attempts to get first element of IEnumerable
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="predicate">Function to test elements.</param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool TryGetFirst<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, out TSource value)
     {
-        try
-        {
-            value = enumerable.First(predicate);
-            return true;
-        }
-        catch (Exception)
+        if (source == null)
         {
             value = default;
             return false;
         }
+        if (predicate == null)
+        {
+            value = default;
+            return false;
+        }
+        foreach (TSource element in source)
+        {
+            if (predicate(element))
+            {
+                value = element;
+                return true;
+            }
+        }
+        value = default;
+        return false;
     }
 
+    /// <summary>
+    /// Attempts to get last element of <see cref="IEnumerable"/>.
+    /// </summary>
+    /// <typeparam name="K"></typeparam>
+    /// <param name="enumerable"></param>
+    /// <param name="predicate">Function to test elements.</param>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public static bool TryGetLast<K>(this IEnumerable<K> enumerable, Func<K, bool> predicate, out K value)
     {
         try
@@ -1152,6 +1299,13 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Attempts to get first instance of addon by name.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="Addon"></param>
+    /// <param name="AddonPtr"></param>
+    /// <returns></returns>
     public static bool TryGetAddonByName<T>(string Addon, out T* AddonPtr) where T : unmanaged
     {
         var a = Svc.GameGui.GetAddonByName(Addon, 1);
@@ -1167,6 +1321,11 @@ public static unsafe class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Attempts to find out whether SelectString entry is enabled based on text color. 
+    /// </summary>
+    /// <param name="textNodePtr"></param>
+    /// <returns></returns>
     public static bool IsSelectItemEnabled(AtkTextNode* textNodePtr)
     {
         var col = textNodePtr->TextColor;
@@ -1177,6 +1336,43 @@ public static unsafe class GenericHelpers
             || (col.A == 0xFF && col.R == 0xFF && col.G == 0xFF && col.B == 0xFF)
             // EEE1C5FF
             || (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5);
+    }
+
+    public static void MoveItemToPosition<T>(List<T> list, Func<T, bool> sourceItemSelector, int targetedIndex)
+    {
+        int sourceIndex = -1;
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (sourceItemSelector(list[i]))
+            {
+                sourceIndex = i;
+                break;
+            }
+        }
+        if (sourceIndex == targetedIndex) return;
+        var item = list[sourceIndex];
+        list.RemoveAt(sourceIndex);
+        list.Insert(targetedIndex, item);
+    }
+
+    public static void SetMinSize(this Window window, float width = 100, float height = 100) => SetMinSize(window, new Vector2(width, height));
+
+    public static void SetMinSize(this Window window, Vector2 minSize)
+    {
+        window.SizeConstraints = new()
+        {
+            MinimumSize = minSize,
+            MaximumSize = new Vector2(float.MaxValue)
+        };
+    }
+
+    public static void SetSizeConstraints(this Window window, Vector2 minSize, Vector2 maxSize)
+    {
+        window.SizeConstraints = new()
+        {
+            MinimumSize = minSize,
+            MaximumSize = maxSize
+        };
     }
 
 
@@ -1196,4 +1392,5 @@ public static unsafe class GenericHelpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete($"Use MemoryHelper.ReadRaw")]
     public static byte[] ReadRaw(IntPtr memoryAddress, int length) => MemoryHelper.ReadRaw(memoryAddress, length);
+
 }
