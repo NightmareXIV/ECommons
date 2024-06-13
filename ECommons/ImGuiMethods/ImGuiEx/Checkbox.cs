@@ -65,7 +65,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="label"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static bool? Checkbox(string label, ref bool? value)
+    public static bool Checkbox(string label, ref bool? value)
     {
         if(value != null)
         {
