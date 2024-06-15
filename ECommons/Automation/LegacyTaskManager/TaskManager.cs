@@ -110,6 +110,7 @@ public partial class TaskManager : IDisposable
         Tasks.Clear();
         ImmediateTasks.Clear();
         CurrentTask = null;
+        MaxTasks = 0;
     }
 
     void Tick(object _)
