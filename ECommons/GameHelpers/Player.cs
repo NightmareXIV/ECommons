@@ -6,6 +6,9 @@ using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using System.Runtime.CompilerServices;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using System.Numerics;
+using ECommons.GameFunctions;
+using FFXIVClientStructs.FFXIV.Client.Game;
 #nullable disable
 
 namespace ECommons.GameHelpers;
@@ -29,10 +32,10 @@ public unsafe static class Player
     public static uint Territory => Svc.ClientState.TerritoryType;
     public static Job Job => GetJob(Svc.ClientState.LocalPlayer);
     public static GrandCompany GrandCompany => (GrandCompany)PlayerState.Instance()->GrandCompany;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string GetNameWithWorld(this PlayerCharacter pc) => pc == null?null:(pc.Name.ToString() + "@" + pc.HomeWorld.GameData.Name);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Job GetJob(this PlayerCharacter pc) => (Job)pc.ClassJob.Id;
+    public static Vector3 Position => Object.Position;
+    public static float Rotation => Object.Rotation;
+    public static float AnimationLock => *(float*)((nint)ActionManager.Instance() + 8);
+    public static bool IsAnimationLocked => AnimationLock > 0;
 }
