@@ -170,7 +170,7 @@ public static unsafe partial class ImGuiEx
         if (ImGui.BeginCombo(id, preview))
         {
             if(ImGui.IsWindowAppearing() && options?.Contains(JobSelectorOption.ClearFilterOnOpen) == true)
-            ImGuiEx.SetNextItemWidthScaled(150f);
+            ImGui.SetNextItemWidth(150f);
             ImGui.InputTextWithHint("##filter", "Filter...", ref JobSelectorFilter, 50);
             foreach (var cond in Enum.GetValues<Job>().Where(x => baseJobs || !x.IsUpgradeable()).OrderByDescending(x => Svc.Data.GetExcelSheet<ClassJob>().GetRow((uint)x).Role))
             {
@@ -181,7 +181,7 @@ public static unsafe partial class ImGuiEx
                 {
                     if (ThreadLoadImageHandler.TryGetIconTextureWrap((uint)cond.GetIcon(), false, out var texture))
                     {
-                        ImGui.Image(texture.ImGuiHandle, new Vector2(24f.Scale()));
+                        ImGui.Image(texture.ImGuiHandle, new Vector2(24f));
                         ImGui.SameLine();
                     }
                     if (ImGuiEx.CollectionCheckbox(name, cond, selectedJobs)) ret = true;
