@@ -24,6 +24,7 @@ public unsafe static class Player
     public static string NameWithWorld => GetNameWithWorld(Svc.ClientState.LocalPlayer);
     public static int Level => Svc.ClientState.LocalPlayer?.Level ?? 0;
     public static bool IsInHomeWorld => Svc.ClientState.LocalPlayer.HomeWorld.Id == Svc.ClientState.LocalPlayer.CurrentWorld.Id;
+    public static bool IsInHomeDC => Svc.ClientState.LocalPlayer.CurrentWorld.GameData.DataCenter.Row == Svc.ClientState.LocalPlayer.HomeWorld.GameData.DataCenter.Row;
     public static string HomeWorld => Svc.ClientState.LocalPlayer?.HomeWorld.GameData.Name.ToString();
     public static string CurrentWorld => Svc.ClientState.LocalPlayer?.CurrentWorld.GameData.Name.ToString();
     public static Character* Character => (Character*)Svc.ClientState.LocalPlayer.Address;

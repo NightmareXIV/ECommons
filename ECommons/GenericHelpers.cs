@@ -34,6 +34,11 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static T GetRandom<T>(this IEnumerable<T> enumerable)
+    {
+        return enumerable.ElementAt(Random.Shared.Next(enumerable.Count()));
+    }
+
     public static bool IsScreenReady()
     {
         { if (TryGetAddonByName<AtkUnitBase>("NowLoading", out var addon) && addon->IsVisible) return false; }
