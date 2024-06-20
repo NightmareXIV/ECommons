@@ -10,6 +10,8 @@ public static class FrameThrottler
 
     public static bool Throttle(string name, int frames = 60, bool rethrottle = false) => Throttler.Throttle(name, frames, rethrottle);
 
+    public static void Reset(string name) => Throttler.Reset(name);
+
     public static bool Check(string name) => Throttler.Check(name);
 
     public static long GetRemainingTime(string name, bool allowNegative = false) => Throttler.GetRemainingTime(name, allowNegative);
