@@ -539,7 +539,7 @@ public static unsafe partial class GenericHelpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Print<T>(this IEnumerable<T> x, string separator = ", ")
     {
-        return x.Select(x => x.ToString()).Join(separator);
+        return x.Select(x => (x?.ToString() ?? "")).Join(separator);
     }
 
     public static void DeleteFileToRecycleBin(string path)
