@@ -50,6 +50,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Reference Include="Mono.Cecil">
+            <HintPath>$(DalamudLibPath)Mono.Cecil.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
         <Reference Include="Newtonsoft.Json">
             <HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
             <Private>False</Private>
