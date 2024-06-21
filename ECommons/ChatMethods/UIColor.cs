@@ -57,7 +57,7 @@ public enum UIColor : short
     _color48 = 48,
     _color49 = 49,
     _color50 = 50,
-    _color52 = 52,
+    WarmSeaBlue = 52,
     _color53 = 53,
     _color54 = 54,
     _color55 = 55,
