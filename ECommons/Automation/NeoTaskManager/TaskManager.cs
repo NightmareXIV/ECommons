@@ -29,6 +29,8 @@ public partial class TaskManager : IDisposable
     public int MaxTasks { get; private set; } = 0;
     public int NumQueuedTasks => Tasks.Count + (CurrentTask == null ? 0 : 1);
 
+    public float Progress => MaxTasks == 0 ? 0 : (float)(MaxTasks - NumQueuedTasks) / (float)MaxTasks;
+
     /// <summary>
     /// Indicates whether TaskManager is currently executing tasks
     /// </summary>
