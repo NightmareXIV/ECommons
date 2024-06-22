@@ -170,7 +170,7 @@ public static unsafe partial class ImGuiEx
         if (ImGui.BeginCombo(id, preview))
         {
             if(ImGui.IsWindowAppearing() && options?.Contains(JobSelectorOption.ClearFilterOnOpen) == true)
-            ImGuiEx.SetNextItemWidthScaled(150f);
+            ImGui.SetNextItemWidth(150f);
             ImGui.InputTextWithHint("##filter", "Filter...", ref JobSelectorFilter, 50);
             foreach (var cond in Enum.GetValues<Job>().Where(x => baseJobs || !x.IsUpgradeable()).OrderByDescending(x => Svc.Data.GetExcelSheet<ClassJob>().GetRow((uint)x).Role))
             {
@@ -181,7 +181,7 @@ public static unsafe partial class ImGuiEx
                 {
                     if (ThreadLoadImageHandler.TryGetIconTextureWrap((uint)cond.GetIcon(), false, out var texture))
                     {
-                        ImGui.Image(texture.ImGuiHandle, new Vector2(24f.Scale()));
+                        ImGui.Image(texture.ImGuiHandle, new Vector2(24f));
                         ImGui.SameLine();
                     }
                     if (ImGuiEx.CollectionCheckbox(name, cond, selectedJobs)) ret = true;
@@ -743,7 +743,7 @@ public static unsafe partial class ImGuiEx
     public static float Scale(this float f)
     {
         // Dalamud global scale and font size are now indepedent from each other, so both need to factored in.
-        return f * ImGuiHelpers.GlobalScale * (ImGui.GetFontSize() / 12f);
+        return f * ImGuiHelpers.GlobalScale * (Svc.PluginInterface.UiBuilder.DefaultFontSpec.SizePt / 12f);
     }
 
     public static void SetTooltip(string text)
@@ -990,9 +990,10 @@ public static unsafe partial class ImGuiEx
 
     public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, null, tabs);
     public static void EzTabBar(string id, string KoFiTransparent, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, KoFiTransparent, null, tabs);
-    public static void EzTabBar(string id, string KoFiTransparent, string openTabName, params (string name, Action function, Vector4? color, bool child)[] tabs)
+    public static void EzTabBar(string id, string KoFiTransparent, string openTabName, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, KoFiTransparent, openTabName, ImGuiTabBarFlags.None, tabs);
+    public static void EzTabBar(string id, string KoFiTransparent, string openTabName, ImGuiTabBarFlags flags, params (string name, Action function, Vector4? color, bool child)[] tabs)
     {
-        ImGui.BeginTabBar(id);
+        ImGui.BeginTabBar(id, flags);
         foreach (var x in tabs)
         {
             if (x.name == null) continue;
