@@ -743,7 +743,7 @@ public static unsafe partial class ImGuiEx
     public static float Scale(this float f)
     {
         // Dalamud global scale and font size are now indepedent from each other, so both need to factored in.
-        return f * ImGuiHelpers.GlobalScale * (ImGui.GetFontSize() / 12f);
+        return f * ImGuiHelpers.GlobalScale * (Svc.PluginInterface.UiBuilder.DefaultFontSpec.SizePt / 12f);
     }
 
     public static void SetTooltip(string text)
