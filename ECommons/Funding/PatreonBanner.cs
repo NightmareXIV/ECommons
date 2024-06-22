@@ -1,6 +1,7 @@
 ﻿using Dalamud.Interface.Utility;
 using ECommons.EzSharedDataManager;
 using ECommons.ImGuiMethods;
+using ECommons.Resources;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
@@ -11,8 +12,8 @@ using System.Threading.Tasks;
 namespace ECommons.Funding;
 public static class PatreonBanner
 {
-		public static bool IsOfficialPlugin = false;
-		public const string Text = "Join Patreon";
+		public static Func<bool> IsOfficialPlugin = () => false;
+		public static string Text = Lang.JoinPatreon;
 		public static string DonateLink => "https://www.patreon.com/NightmareXIV";
 		public static void DrawRaw()
 		{
@@ -35,7 +36,6 @@ public static class PatreonBanner
 						GenericHelpers.ShellStart(DonateLink);
 				}
 				Popup();
-				ImGuiEx.Tooltip("Join Patreon to support the plugin's developer and access various benefits like priority support, current and future private exclusive testing builds and plugins and more!");
 				if (ImGui.IsItemHovered())
 				{
 						ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
@@ -71,7 +71,7 @@ public static class PatreonBanner
         {
             ImGui.BeginTooltip();
             ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
-            ImGuiEx.Text($"If you like this plugin, please consider supporting it via NightmareXIV Patreon or via other means! This will help the developer to keep it updated and maintained. And you will get additional benefits, such as priority support and priority feature requests as well.\n\nLeft click - to go to Patreon;\nRight click - see all options");
+            ImGuiEx.Text(IsOfficialPlugin()?Lang.SmallPatreonButtonTooltip:Lang.PatreonButtonTooltip);
             ImGui.PopTextWrapPos();
             ImGui.EndTooltip();
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
@@ -82,25 +82,25 @@ public static class PatreonBanner
         }
         if (ImGui.BeginPopup("NXPS"))
         {
-            if (ImGui.Selectable("Subscribe on Patreon"))
+            if (ImGui.Selectable(Lang.Context_Subscribe))
             {
                 GenericHelpers.ShellStart("https://subscribe.nightmarexiv.com");
             }
-            if (ImGui.Selectable("Donate one-time via Ko-Fi"))
+            if (ImGui.Selectable(Lang.Context_OneTimeDonate))
             {
                 GenericHelpers.ShellStart("https://donate.nightmarexiv.com");
             }
-            if (ImGui.Selectable("Donate via Cryptocurrency"))
+            if (ImGui.Selectable(Lang.Context_CryptoDonation))
             {
                 GenericHelpers.ShellStart("https://crypto.nightmarexiv.com");
             }
-						if (!IsOfficialPlugin)
+						if (!IsOfficialPlugin())
 						{
-								if (ImGui.Selectable("Join NightmareXIV Discord"))
+								if (ImGui.Selectable(Lang.Context_JoinDiscord))
 								{
 										GenericHelpers.ShellStart("https://discord.nightmarexiv.com");
 								}
-								if (ImGui.Selectable("Explore other NightmareXIV plugins"))
+								if (ImGui.Selectable(Lang.Context_ExploreOtherPlugins))
 								{
 										GenericHelpers.ShellStart("https://explore.nightmarexiv.com");
 								}

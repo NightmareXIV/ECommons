@@ -34,6 +34,24 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static string ParamsPlaceholderPrefix = "$";
+    public static string Params(this string? defaultValue, params object?[] objects)
+    {
+        defaultValue ??= "";
+        var guid = Guid.NewGuid().ToString();
+        defaultValue = defaultValue.Replace($"{ParamsPlaceholderPrefix}{ParamsPlaceholderPrefix}", guid);
+        for (int i = 0; i < objects.Length; i++)
+        {
+            var str = objects[i]?.ToString() ?? "";
+            defaultValue = defaultValue.Replace($"{ParamsPlaceholderPrefix}{i}", str);
+        }
+        foreach (var obj in objects)
+        {
+            defaultValue = defaultValue.ReplaceFirst(ParamsPlaceholderPrefix, obj?.ToString() ?? "");
+        }
+        return defaultValue.Replace(guid, ParamsPlaceholderPrefix);
+    }
+
     public static T GetRandom<T>(this IEnumerable<T> enumerable)
     {
         return enumerable.ElementAt(Random.Shared.Next(enumerable.Count()));
@@ -521,7 +539,7 @@ public static unsafe partial class GenericHelpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Print<T>(this IEnumerable<T> x, string separator = ", ")
     {
-        return x.Select(x => x.ToString()).Join(separator);
+        return x.Select(x => (x?.ToString() ?? "")).Join(separator);
     }
 
     public static void DeleteFileToRecycleBin(string path)
