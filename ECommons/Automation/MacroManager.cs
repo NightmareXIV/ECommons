@@ -18,7 +18,7 @@ public unsafe static class MacroManager
 
     public static void Execute(params string[] commands)
     {
-        Execute(commands);
+        Execute((IEnumerable<string>)commands);
     }
 
     public static void Execute(IEnumerable<string> commands)

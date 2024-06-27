@@ -36,9 +36,9 @@ public static class KoFiButton
         ImGui.PopStyleColor(4);
     }
 
-    public static void RightTransparentTab()
+    public static void RightTransparentTab(string text)
     {
-        var textWidth = ImGui.CalcTextSize(KoFiButton.Text).X;
+        var textWidth = ImGui.CalcTextSize(text).X;
         var spaceWidth = ImGui.CalcTextSize(" ").X;
         ImGui.BeginDisabled();
         ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0f);

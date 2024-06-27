@@ -1,9 +1,7 @@
 ﻿using Dalamud.Configuration;
 using Dalamud.Interface.Windowing;
-using ECommons.Configuration;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
-using Newtonsoft.Json.Linq;
 using System;
 
 namespace ECommons.SimpleGui;
@@ -40,6 +38,7 @@ public static class EzConfigGui
         }
         WindowSystem = new($"ECommons@{DalamudReflector.GetPluginName()}");
         Config = config;
+        configWindow ??= new();
         WindowSystem.AddWindow(configWindow);
         Svc.PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
         Svc.PluginInterface.UiBuilder.OpenConfigUi += Open;

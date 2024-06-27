@@ -1,5 +1,4 @@
-﻿using Dalamud.Game.Text;
-using Dalamud.Game.Text.SeStringHandling;
+﻿using Dalamud.Game.Text.SeStringHandling;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using ECommons.Schedulers;
@@ -59,7 +58,7 @@ public static class DuoLog
             Svc.Chat.Print(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(str, 540).Build(),
-                Type = XivChatType.ErrorMessage
+                Type = Svc.PluginInterface.GeneralChatType,
             });
         });
     }
@@ -73,7 +72,7 @@ public static class DuoLog
             Svc.Chat.Print(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(str, 17).Build(),
-                Type = XivChatType.ErrorMessage
+                Type = Svc.PluginInterface.GeneralChatType,
             });
         });
     }
@@ -87,7 +86,7 @@ public static class DuoLog
             Svc.Chat.Print(new()
             {
                 Message = new SeStringBuilder().AddUiForeground(str, 19).Build(),
-                Type = XivChatType.ErrorMessage
+                Type = Svc.PluginInterface.GeneralChatType,
             });
         });
     }

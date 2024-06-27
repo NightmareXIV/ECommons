@@ -26,7 +26,8 @@ public unsafe static class UniversalParty
                     Name = Player.Name,
                     HomeWorld = new(Player.Object.HomeWorld),
                     CurrentWorld = new(Player.Object.CurrentWorld),
-                    GameObjectInternal = Player.Object
+                    GameObjectInternal = Player.Object,
+                    ContentID = Player.CID,
                 }
             };
             if (IsCrossWorldParty)
@@ -46,6 +47,7 @@ public unsafe static class UniversalParty
                                 Name = name,
                                 HomeWorld = new((uint)x.HomeWorld),
                                 CurrentWorld = new((uint)x.CurrentWorld),
+                                ContentID = x.ContentId,
                             });
                         }
                     }
@@ -62,7 +64,8 @@ public unsafe static class UniversalParty
                             Name = x.Name.ToString(),
                             HomeWorld = new(x.World),
                             CurrentWorld = new(Player.Object!.CurrentWorld),
-                            GameObjectInternal = x.GameObject
+                            GameObjectInternal = x.GameObject,
+                            ContentID = (ulong)x.ContentId,
                         });
                     }
                 }

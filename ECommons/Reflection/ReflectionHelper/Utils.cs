@@ -1,12 +1,9 @@
 ﻿using ECommons.Reflection.FieldPropertyUnion;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommons.Reflection;
 #nullable disable
@@ -178,7 +175,7 @@ public static partial class ReflectionHelper
             return new UnionField(f);
         }
         var p = type.GetProperty(name, bindingFlags);
-        if (p == null)
+        if (p != null)
         {
             return new UnionProperty(p);
         }

@@ -1,11 +1,7 @@
-﻿using ECommons.Schedulers;
-using ImGuiNET;
+﻿using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommons.ImGuiMethods;
 public static unsafe partial class ImGuiEx
@@ -22,7 +18,6 @@ public static unsafe partial class ImGuiEx
     /// <returns></returns>
     public static bool CollectionCheckbox<T>(string label, IEnumerable<T> values, ICollection<T> collection, bool inverted = false, bool delayedOperation = false)
     {
-        if (inverted) throw new NotImplementedException("Inverted argument is not implemented yet");
         if (!values.Any()) throw new InvalidOperationException("values can not be empty");
         void RemoveAll()
         {
@@ -39,22 +34,46 @@ public static unsafe partial class ImGuiEx
                 collection.Add(el);
             }
         }
-        if (collection.ContainsAll(values))
+        if (!inverted)
         {
-            var x = true;
-            if (ImGui.Checkbox(label, ref x))
+            if (collection.ContainsAll(values))
             {
-                Execute(RemoveAll, delayedOperation);
-                return true;
+                var x = true;
+                if (ImGui.Checkbox(label, ref x))
+                {
+                    Execute(RemoveAll, delayedOperation);
+                    return true;
+                }
+            }
+            else
+            {
+                var x = collection.ContainsAny(values);
+                if (ImGuiEx.CheckboxBullet(label, ref x))
+                {
+                    Execute(AddAll, delayedOperation);
+                    return true;
+                }
             }
         }
         else
         {
-            var x = collection.ContainsAny(values);
-            if (ImGuiEx.CheckboxBullet(label, ref x))
+            if (!collection.ContainsAny(values))
             {
-                Execute(AddAll, delayedOperation);
-                return true;
+                var x = true;
+                if (ImGui.Checkbox(label, ref x))
+                {
+                    Execute(AddAll, delayedOperation);
+                    return true;
+                }
+            }
+            else
+            {
+                var x = !collection.ContainsAll(values);
+                if (ImGuiEx.CheckboxBullet(label, ref x))
+                {
+                    Execute(RemoveAll, delayedOperation);
+                    return true;
+                }
             }
         }
         return false;
