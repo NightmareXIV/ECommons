@@ -1,8 +1,5 @@
 ﻿#nullable disable
 
-using ECommons;
-using ECommons.ExcelServices.TerritoryEnumeration;
-
 namespace ECommons.ExcelServices;
 
 public enum TerritoryIntendedUseEnum : uint

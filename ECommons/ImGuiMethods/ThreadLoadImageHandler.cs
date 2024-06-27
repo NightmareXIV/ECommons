@@ -22,12 +22,12 @@ public class ThreadLoadImageHandler
     private static readonly List<Func<byte[], byte[]>> _conversionsToBitmap = new() { b => b, };
 
     static volatile bool ThreadRunning = false;
-    internal static HttpClient httpClient = new()
-    {
-        Timeout = TimeSpan.FromSeconds(10),
-    };
+    internal static HttpClient httpClient = null;
 
-    internal static void Dispose()
+    /// <summary>
+    /// Clears and disposes all cached resources. You can use it to free up memory once you think textures that you have previously loaded won't be needed for a while or to trigger a complete reload.
+    /// </summary>
+    public static void ClearAll()
     {
         foreach (var x in CachedTextures)
         {
@@ -76,6 +76,10 @@ public class ThreadLoadImageHandler
 
     internal static void BeginThreadIfNotRunning()
     {
+        httpClient ??= new()
+        {
+            Timeout = TimeSpan.FromSeconds(10),
+        };
         if (ThreadRunning) return;
         PluginLog.Verbose("Starting ThreadLoadImageHandler");
         ThreadRunning = true;
@@ -121,7 +125,7 @@ public class ThreadLoadImageHandler
                                 {
                                     if (File.Exists(keyValuePair.Key))
                                     {
-                                        keyValuePair.Value.texture = Svc.PluginInterface.UiBuilder.LoadImage(keyValuePair.Key);
+                                        keyValuePair.Value.texture = Svc.Texture.GetTextureFromFile(new FileInfo(keyValuePair.Key));
                                     }
                                     else
                                     {

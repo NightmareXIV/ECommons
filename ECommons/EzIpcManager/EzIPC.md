@@ -5,7 +5,7 @@ public class IPCProvider()
     //Internal plugin name is MyPlugin
     public IPCProvider()
     {
-        EzIPC.Init();
+        EzIPC.Init(this);
     }
 
     [EzIPC]
@@ -31,7 +31,7 @@ public class IPCSubscriber()
 {
     public IPCSubscriber()
     {
-        EzIPC.Init("MyPlugin");
+        EzIPC.Init(this, "MyPlugin");
     }
 
     [EzIPC] public readonly Action MyIPCAction; //retrieves delegate for MyPlugin.MyIPCAction

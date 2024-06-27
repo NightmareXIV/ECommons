@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 
 namespace ECommons.EzIpcManager;
+[Obfuscation(Exclude = true)]
 public enum SafeWrapper
 {
     /// <summary>
@@ -19,8 +16,10 @@ public enum SafeWrapper
     /// Catch and discard all exceptions
     /// </summary>
     AnyException,
+#pragma warning disable
     /// <summary>
     /// Inherit default setting from <see cref="EzIPC.Init"/> call
     /// </summary>
+#pragma warning restore
     Inherit = 255
 }

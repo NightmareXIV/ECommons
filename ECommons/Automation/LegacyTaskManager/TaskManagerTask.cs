@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ECommons.Automation;
+namespace ECommons.Automation.LegacyTaskManager;
 
 internal record class TaskManagerTask
 {
