@@ -11,8 +11,10 @@ namespace ECommons.GameFunctions;
 
 public static unsafe class ObjectFunctions
 {
-    public delegate long GetNameplateColorDelegate(nint ptr);
+    public delegate byte GetNameplateColorDelegate(nint ptr);
     public static GetNameplateColorDelegate GetNameplateColor;
+
+    public static string GetNameplateColorSig = "48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 48 8B 35 ?? ?? ?? ?? 48 8B F9";
 
     public static FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject* Struct(this GameObject o)
     {
@@ -21,6 +23,7 @@ public static unsafe class ObjectFunctions
 
     internal static void Init()
     {
+        GetNameplateColor ??= EzDelegate.Get<GetNameplateColorDelegate>(GetNameplateColorSig);
     }
 
     [Obsolete($"Use {nameof(GameObject.IsTargetable)}")]
@@ -31,7 +34,7 @@ public static unsafe class ObjectFunctions
 
     public static bool IsHostile(this GameObject a)
     {
-        GetNameplateColor ??= EzDelegate.Get<GetNameplateColorDelegate>("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 48 8B 35 ?? ?? ?? ?? 48 8B F9");
+        GetNameplateColor ??= EzDelegate.Get<GetNameplateColorDelegate>(GetNameplateColorSig);
         var plateType = GetNameplateColor(a.Address);
         //7: yellow, can be attacked, not engaged
         //8: dead
