@@ -82,7 +82,7 @@ public static class ObjectLife
         else
         {
             PluginLog.Warning($"Warning: object life data could not be found\n" +
-                $"Object addr: {o.Address:X16} ID: {o.ObjectId:X8} Name: {o.Name}");
+                $"Object addr: {o.Address:X16} ID: {o.EntityId:X8} Name: {o.Name}");
             return 0;
         }
     }

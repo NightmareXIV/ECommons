@@ -49,7 +49,7 @@ public static unsafe class FakePronoun
             }
             else
             {
-                return FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->GetUiModule()->GetPronounModule()->ResolvePlaceholder($"{pronoun}", 0, 0);
+                return FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->GetUIModule()->GetPronounModule()->ResolvePlaceholder($"{pronoun}", 0, 0);
             }
         }
         catch(Exception e)

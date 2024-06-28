@@ -4,6 +4,7 @@ using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.UI.Info;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ECommons.PartyFunctions;
 
@@ -35,11 +36,11 @@ public unsafe static class UniversalParty
                 var proxy = InfoProxyCrossRealm.Instance();
                 for (int i = 0; i < proxy->GroupCount; i++)
                 {
-                    var group = proxy->CrossRealmGroupArraySpan[i];
+                    var group = proxy->CrossRealmGroups[i];
                     for (int c = 0; c < group.GroupMemberCount; c++)
                     {
-                        var x = group.GroupMembersSpan[c];
-                        var name = MemoryHelper.ReadStringNullTerminated((nint)x.Name);
+                        var x = group.GroupMembers[c];
+                        var name = Encoding.UTF8.GetString(x.Name);
                         if (!(name == Player.Name && x.HomeWorld == Player.Object.HomeWorld.Id))
                         {
                             span.Add(new()

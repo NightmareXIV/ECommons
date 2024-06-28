@@ -96,7 +96,7 @@ public static unsafe class ActionEffect
     {
         try
         {
-            if(doLogging) PluginLog.Verbose($"--- source actor: {sourceCharacter->GameObject.ObjectID}, action id {effectHeader->ActionID}, anim id {effectHeader->AnimationId} numTargets: {effectHeader->TargetCount} ---");
+            if(doLogging) PluginLog.Verbose($"--- source actor: {sourceCharacter->GameObject.EntityId}, action id {effectHeader->ActionID}, anim id {effectHeader->AnimationId} numTargets: {effectHeader->TargetCount} ---");
 
             // TODO: Reimplement opcode logging, if it's even useful. Original code follows
             // ushort op = *((ushort*) effectHeader.ToPointer() - 0x7);

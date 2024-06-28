@@ -1,5 +1,4 @@
 ﻿using Dalamud.Interface.ImGuiNotification;
-using Dalamud.Interface.Internal.Notifications;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using ECommons.Schedulers;

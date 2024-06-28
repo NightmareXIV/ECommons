@@ -25,7 +25,6 @@ public class Svc
     [PluginService] public static IGameNetwork GameNetwork { get; private set; }
     [PluginService] public static IJobGauges Gauges { get; private set; }
     [PluginService] public static IKeyState KeyState { get; private set; }
-    [PluginService] public static ILibcFunction LibcFunction { get; private set; }
     [PluginService] public static IObjectTable Objects { get; private set; }
     [PluginService] public static IPartyFinderGui PfGui { get; private set; }
     [PluginService] public static IPartyList Party { get; private set; }

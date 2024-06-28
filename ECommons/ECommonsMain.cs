@@ -23,6 +23,7 @@ using ECommons.EzIpcManager;
 using System;
 using System.Reflection;
 using ECommons.Singletons;
+using System.Linq;
 
 
 #nullable disable
