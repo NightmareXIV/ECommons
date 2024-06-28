@@ -23,6 +23,80 @@ public static unsafe partial class ImGuiEx
 {
     public const ImGuiWindowFlags OverlayFlags = ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoMouseInputs | ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing;
 
+    public readonly record struct RequiredPluginInfo
+    {
+        public readonly string InternalName;
+        public readonly string? VanityName;
+        public readonly Version? MinVersion;
+
+				public RequiredPluginInfo(string internalName) : this()
+				{
+						InternalName = internalName;
+				}
+
+				public RequiredPluginInfo(string internalName, string vanityName) : this()
+				{
+						InternalName = internalName;
+						VanityName = vanityName;
+				}
+
+				public RequiredPluginInfo(string internalName, Version minVersion) : this()
+				{
+						InternalName = internalName;
+						MinVersion = minVersion;
+				}
+
+				public RequiredPluginInfo(string internalName, string vanityName, Version minVersion)
+				{
+						InternalName = internalName;
+						VanityName = vanityName;
+						MinVersion = minVersion;
+				}
+		}
+    public static void PluginAvailabilityIndicator(IEnumerable<RequiredPluginInfo> pluginInfos, string prependText = "The following plugins are required to be installed and enabled:")
+    {
+				var pass = pluginInfos.All(info => Svc.PluginInterface.InstalledPlugins.Any(x => x.IsLoaded && x.InternalName == info.InternalName && (info.MinVersion == null || x.Version >= info.MinVersion)));
+
+        ImGui.SameLine();
+				ImGui.PushFont(UiBuilder.IconFont);
+				ImGuiEx.Text(pass?ImGuiColors.ParsedGreen : ImGuiColors.DalamudRed, pass?FontAwesomeIcon.Check.ToIconString():"\uf00d");
+				ImGui.PopFont();
+				if (ImGui.IsItemHovered())
+				{
+						ImGui.BeginTooltip();
+						ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
+            ImGuiEx.Text(prependText);
+						ImGui.PopTextWrapPos();
+						foreach (var info in pluginInfos)
+            {
+                var plugin = Svc.PluginInterface.InstalledPlugins.FirstOrDefault(x => x.IsLoaded && x.InternalName == info.InternalName);
+                if(plugin != null)
+                {
+                    if(info.MinVersion == null || plugin.Version >= info.MinVersion)
+                    {
+                        ImGuiEx.Text(ImGuiColors.ParsedGreen, $"- {info.VanityName ?? info.InternalName}" + (info.MinVersion == null?"":$" {info.MinVersion}+"));
+                    }
+                    else
+                    {
+												ImGuiEx.Text(ImGuiColors.ParsedGreen, $"- {info.VanityName ?? info.InternalName} ");
+                        ImGui.SameLine(0, 0);
+												ImGuiEx.Text(ImGuiColors.DalamudRed, $"{info.MinVersion}+ ");
+												ImGui.SameLine(0, 0);
+                        ImGuiEx.Text($"(outdated)");
+										}
+                }
+                else
+                {
+										ImGuiEx.Text(ImGuiColors.DalamudRed, $"- {info.VanityName ?? info.InternalName} " + (info.MinVersion == null?"":$"{info.MinVersion}+ "));
+										ImGui.SameLine(0, 0);
+										ImGuiEx.Text($"(not installed)");
+								}
+            }
+						ImGui.EndTooltip();
+				}
+				
+    }
+
     public static bool Selectable(Vector4? color, string id)
     {
         var ret = ImGuiEx.TreeNode(color, id, ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.Leaf);
@@ -95,7 +169,7 @@ public static unsafe partial class ImGuiEx
         if (ImGui.BeginCombo(id, preview))
         {
             if(ImGui.IsWindowAppearing() && options?.Contains(JobSelectorOption.ClearFilterOnOpen) == true)
-            ImGuiEx.SetNextItemWidthScaled(150f);
+            ImGui.SetNextItemWidth(150f);
             ImGui.InputTextWithHint("##filter", "Filter...", ref JobSelectorFilter, 50);
             foreach (var cond in Enum.GetValues<Job>().Where(x => baseJobs || !x.IsUpgradeable()).OrderByDescending(x => Svc.Data.GetExcelSheet<ClassJob>().GetRow((uint)x).Role))
             {
@@ -106,7 +180,7 @@ public static unsafe partial class ImGuiEx
                 {
                     if (ThreadLoadImageHandler.TryGetIconTextureWrap((uint)cond.GetIcon(), false, out var texture))
                     {
-                        ImGui.Image(texture.ImGuiHandle, new Vector2(24f.Scale()));
+                        ImGui.Image(texture.ImGuiHandle, new Vector2(24f));
                         ImGui.SameLine();
                     }
                     if (ImGuiEx.CollectionCheckbox(name, cond, selectedJobs)) ret = true;
@@ -668,7 +742,7 @@ public static unsafe partial class ImGuiEx
     public static float Scale(this float f)
     {
         // Dalamud global scale and font size are now indepedent from each other, so both need to factored in.
-        return f * ImGuiHelpers.GlobalScale * (ImGui.GetFontSize() / 12f);
+        return f * ImGuiHelpers.GlobalScale * (Svc.PluginInterface.UiBuilder.DefaultFontSpec.SizePt / 12f);
     }
 
     public static void SetTooltip(string text)
@@ -913,11 +987,12 @@ public static unsafe partial class ImGuiEx
         }
     }
 
-    public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, false, tabs);
-    public static void EzTabBar(string id, bool KoFiTransparent, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, KoFiTransparent, null, tabs);
-    public static void EzTabBar(string id, bool KoFiTransparent, string openTabName, params (string name, Action function, Vector4? color, bool child)[] tabs)
+    public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, null, tabs);
+    public static void EzTabBar(string id, string KoFiTransparent, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, KoFiTransparent, null, tabs);
+    public static void EzTabBar(string id, string KoFiTransparent, string openTabName, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, KoFiTransparent, openTabName, ImGuiTabBarFlags.None, tabs);
+    public static void EzTabBar(string id, string KoFiTransparent, string openTabName, ImGuiTabBarFlags flags, params (string name, Action function, Vector4? color, bool child)[] tabs)
     {
-        ImGui.BeginTabBar(id);
+        ImGui.BeginTabBar(id, flags);
         foreach (var x in tabs)
         {
             if (x.name == null) continue;
@@ -944,7 +1019,7 @@ public static unsafe partial class ImGuiEx
                 }
             }
         }
-        if (KoFiTransparent) KoFiButton.RightTransparentTab();
+        if (KoFiTransparent != null) KoFiButton.RightTransparentTab(KoFiTransparent);
         ImGui.EndTabBar();
     }
 

@@ -74,6 +74,14 @@ var type = "unknown build";
         }
     }
 
+    public static void CheckForObfuscation()
+    {
+        if(Assembly.GetCallingAssembly().GetTypes().FirstOrDefault(x => x.IsAssignableTo(typeof(IDalamudPlugin))).Name == Svc.PluginInterface.InternalName)
+        {
+            DuoLog.Error($"{Svc.PluginInterface.InternalName} name match error!");
+        }
+    }
+
     public static void Dispose()
     {
         Disposed = true;

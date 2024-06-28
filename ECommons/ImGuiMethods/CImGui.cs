@@ -21,4 +21,8 @@ public partial class CImGui
     [LibraryImport("cimgui")]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(CallConvCdecl) })]
     public static partial int igFindWindowDisplayIndex(nint ptr);
+
+    [LibraryImport("cimgui")]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(CallConvCdecl) })]
+    public static partial void igClosePopupToLevel(int remaining, [MarshalAs(UnmanagedType.Bool)] bool restore_focus_to_window_under_popup);
 }
