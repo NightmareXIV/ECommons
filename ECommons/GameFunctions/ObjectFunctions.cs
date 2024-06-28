@@ -64,14 +64,14 @@ public static unsafe class ObjectFunctions
 
     public static bool TryGetPartyMemberObjectByObjectId(uint objectId, out GameObject partyMemberObject)
     {
-        if (objectId == Svc.ClientState.LocalPlayer?.ObjectId)
+        if (objectId == Svc.ClientState.LocalPlayer?.GameObjectId)
         {
             partyMemberObject = Svc.ClientState.LocalPlayer;
             return true;
         }
         foreach (var p in Svc.Party)
         {
-            if (p.GameObject?.ObjectId == objectId)
+            if (p.GameObject?.GameObjectId == objectId)
             {
                 partyMemberObject = p.GameObject;
                 return true;

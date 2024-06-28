@@ -66,7 +66,7 @@ public unsafe static class Callback
         var ret = AtkUnitBase_FireCallbackHook?.Original(Base, valueCount, values, updateState);
         try
         {
-            PluginLog.Debug($"Callback on {MemoryHelper.ReadStringNullTerminated((nint)Base->Name)}, valueCount={valueCount}, updateState={updateState}\n{DecodeValues(valueCount, values).Select(x => $"    {x}").Join("\n")}");
+            PluginLog.Debug($"Callback on {Encoding.UTF8.GetString(Base->Name)}, valueCount={valueCount}, updateState={updateState}\n{DecodeValues(valueCount, values).Select(x => $"    {x}").Join("\n")}");
         }
         catch(Exception e)
         {
@@ -133,7 +133,7 @@ public unsafe static class Callback
             {
                 CallbackValues.Add($"    Value {i}: [input: {values[i]}/{values[i]?.GetType().Name}] -> {DecodeValue(atkValues[i])})");
             }
-            PluginLog.Verbose($"Firing callback: {MemoryHelper.ReadStringNullTerminated((nint)Base->Name)}, valueCount = {values.Length}, updateStatte = {updateState}, values:\n");
+            PluginLog.Verbose($"Firing callback: {Encoding.UTF8.GetString(Base->Name)}, valueCount = {values.Length}, updateStatte = {updateState}, values:\n");
             FireRaw(Base, values.Length, atkValues, (byte)(updateState ?1:0));
         }
         finally

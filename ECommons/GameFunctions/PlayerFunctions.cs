@@ -12,8 +12,8 @@ public unsafe static class PlayerFunctions
     {
         for(var i = 1; i <= 8; i++)
         {
-            var optr = Framework.Instance()->GetUiModule()->GetPronounModule()->ResolvePlaceholder($"<{i}>", 0, 0);
-            if(verbose) PluginLog.Debug($"Placeholder {i} value {(optr == null ? "null" : optr->ObjectID)}");
+            var optr = Framework.Instance()->GetUIModule()->GetPronounModule()->ResolvePlaceholder($"<{i}>", 0, 0);
+            if(verbose) PluginLog.Debug($"Placeholder {i} value {(optr == null ? "null" : optr->EntityId)}");
             if (pc.Address == (IntPtr)optr)
             {
                 number = i;

@@ -1,5 +1,6 @@
 ﻿using Dalamud.Interface.Internal;
 using ECommons.DalamudServices;
+using ECommons.ImGuiMethods.ImageLoading;
 using ECommons.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -17,7 +18,7 @@ namespace ECommons.ImGuiMethods;
 public class ThreadLoadImageHandler
 {
     internal static ConcurrentDictionary<string, ImageLoadingResult> CachedTextures = new();
-    internal static ConcurrentDictionary<(uint ID, IconFlags HQ), ImageLoadingResult> CachedIcons = new();
+    internal static ConcurrentDictionary<(uint ID, bool HQ), ImageLoadingResult> CachedIcons = new();
 
     private static readonly List<Func<byte[], byte[]>> _conversionsToBitmap = new() { b => b, };
 
@@ -31,24 +32,19 @@ public class ThreadLoadImageHandler
     {
         foreach (var x in CachedTextures)
         {
-            Safe(() => { x.Value.texture?.Dispose(); });
+            Safe(() => { x.Value.TextureWrap?.Dispose(); });
         }
         Safe(CachedTextures.Clear);
         foreach (var x in CachedIcons)
         {
-            Safe(() => { x.Value.texture?.Dispose(); });
+            Safe(() => { x.Value.TextureWrap?.Dispose(); });
         }
         Safe(CachedIcons.Clear);
     }
 
     public static bool TryGetIconTextureWrap(int icon, bool hq, out IDalamudTextureWrap textureWrap) => TryGetIconTextureWrap((uint)icon, hq, out textureWrap);
-    public static bool TryGetIconTextureWrap(int icon, IconFlags hq, out IDalamudTextureWrap textureWrap) => TryGetIconTextureWrap((uint)icon, hq, out textureWrap);
 
     public static bool TryGetIconTextureWrap(uint icon, bool hq, out IDalamudTextureWrap textureWrap)
-    {
-        return TryGetIconTextureWrap(icon, hq ? IconFlags.HiRes : IconFlags.None, out textureWrap);
-    }
-    public static bool TryGetIconTextureWrap(uint icon, IconFlags hq, out IDalamudTextureWrap textureWrap)
     {
         ImageLoadingResult result;
         if (!CachedIcons.TryGetValue((icon, hq), out result))
@@ -57,8 +53,8 @@ public class ThreadLoadImageHandler
             CachedIcons[(icon, hq)] = result;
             BeginThreadIfNotRunning();
         }
-        textureWrap = result.texture;
-        return result.texture != null;
+        textureWrap = result.Texture;
+        return result.Texture != null;
     }
 
     public static bool TryGetTextureWrap(string url, out IDalamudTextureWrap textureWrap)
@@ -70,8 +66,8 @@ public class ThreadLoadImageHandler
             CachedTextures[url] = result;
             BeginThreadIfNotRunning();
         }
-        textureWrap = result.texture;
-        return result.texture != null;
+        textureWrap = result.Texture;
+        return result.Texture != null;
     }
 
     internal static void BeginThreadIfNotRunning()
@@ -93,10 +89,10 @@ public class ThreadLoadImageHandler
                     Safe(delegate
                     {
                         {
-                            if (CachedTextures.TryGetFirst(x => x.Value.isCompleted == false, out var keyValuePair))
+                            if (CachedTextures.TryGetFirst(x => x.Value.IsCompleted == false, out var keyValuePair))
                             {
                                 idleTicks = 0;
-                                keyValuePair.Value.isCompleted = true;
+                                keyValuePair.Value.IsCompleted = true;
                                 PluginLog.Verbose("Loading image " + keyValuePair.Key);
                                 if (keyValuePair.Key.StartsWith("http:", StringComparison.OrdinalIgnoreCase) || keyValuePair.Key.StartsWith("https:", StringComparison.OrdinalIgnoreCase))
                                 {
@@ -111,7 +107,7 @@ public class ThreadLoadImageHandler
 
                                         try
                                         {
-                                            texture = Svc.PluginInterface.UiBuilder.LoadImage(conversion(content));
+                                            texture = Svc.Texture.CreateFromImageAsync(conversion(content)).Result;
                                             if (texture != null) break;
                                         }
                                         catch (Exception ex)
@@ -119,33 +115,33 @@ public class ThreadLoadImageHandler
                                             ex.Log();
                                         }
                                     }
-                                    keyValuePair.Value.texture = texture;
+                                    keyValuePair.Value.TextureWrap = texture;
                                 }
                                 else
                                 {
                                     if (File.Exists(keyValuePair.Key))
                                     {
-                                        keyValuePair.Value.texture = Svc.Texture.GetTextureFromFile(new FileInfo(keyValuePair.Key));
+                                        keyValuePair.Value.ImmediateTexture = Svc.Texture.GetFromFile(keyValuePair.Key);
                                     }
                                     else
                                     {
-                                        keyValuePair.Value.texture = Svc.Texture.GetTextureFromGame(keyValuePair.Key);
+                                        keyValuePair.Value.ImmediateTexture = Svc.Texture.GetFromGame(keyValuePair.Key);
                                     }
                                 }
                             }
                         }
                         {
-                            if (CachedIcons.TryGetFirst(x => x.Value.isCompleted == false, out var keyValuePair))
+                            if (CachedIcons.TryGetFirst(x => x.Value.IsCompleted == false, out var keyValuePair))
                             {
                                 idleTicks = 0;
-                                keyValuePair.Value.isCompleted = true;
+                                keyValuePair.Value.IsCompleted = true;
                                 PluginLog.Verbose($"Loading icon {keyValuePair.Key.ID}, hq={keyValuePair.Key.HQ}");
-                                keyValuePair.Value.texture = Svc.Texture.GetIcon(keyValuePair.Key.ID, keyValuePair.Key.HQ);
+                                keyValuePair.Value.ImmediateTexture = Svc.Texture.GetFromGameIcon(new(keyValuePair.Key.ID, hiRes:keyValuePair.Key.HQ));
                             }
                         }
                     });
                     idleTicks++;
-                    if(!CachedTextures.Any(x => x.Value.isCompleted) && !CachedIcons.Any(x => x.Value.isCompleted)) Thread.Sleep(100);
+                    if(!CachedTextures.Any(x => x.Value.IsCompleted) && !CachedIcons.Any(x => x.Value.IsCompleted)) Thread.Sleep(100);
                 }
             });
             PluginLog.Verbose($"Stopping ThreadLoadImageHandler, ticks={idleTicks}");
