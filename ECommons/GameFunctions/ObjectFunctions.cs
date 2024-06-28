@@ -1,5 +1,7 @@
 ﻿using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.DalamudServices;
+using ECommons.EzHookManager;
+using ECommons.Logging;
 using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -9,8 +11,7 @@ namespace ECommons.GameFunctions;
 
 public static unsafe class ObjectFunctions
 {
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-    public delegate long GetNameplateColorDelegate(IntPtr ptr);
+    public delegate long GetNameplateColorDelegate(nint ptr);
     public static GetNameplateColorDelegate GetNameplateColor;
 
     public static FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject* Struct(this GameObject o)
@@ -20,7 +21,6 @@ public static unsafe class ObjectFunctions
 
     internal static void Init()
     {
-        GetNameplateColor = Marshal.GetDelegateForFunctionPointer<GetNameplateColorDelegate>(Svc.SigScanner.ScanText("48 89 74 24 ?? 57 48 83 EC 20 48 8B 35 ?? ?? ?? ?? 48 8B F9 48 85 F6 75 0D"));
     }
 
     [Obsolete($"Use {nameof(GameObject.IsTargetable)}")]
@@ -31,10 +31,7 @@ public static unsafe class ObjectFunctions
 
     public static bool IsHostile(this GameObject a)
     {
-        if (GetNameplateColor == null)
-        {
-            throw new Exception("GetNameplateColor is null. Have you initialised the ObjectFunctions module on ECommons initialisation?");
-        }
+        GetNameplateColor ??= EzDelegate.Get<GetNameplateColorDelegate>("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 48 8B 35 ?? ?? ?? ?? 48 8B F9");
         var plateType = GetNameplateColor(a.Address);
         //7: yellow, can be attacked, not engaged
         //8: dead
