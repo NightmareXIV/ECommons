@@ -176,6 +176,9 @@ public unsafe static class Callback
                     str.Append(a.Int);
                     break;
                 }
+            case ValueType.String8:
+            case ValueType.WideString:
+            case ValueType.ManagedString:
             case ValueType.String:
                 {
                     str.Append(Marshal.PtrToStringUTF8(new IntPtr(a.String)));
