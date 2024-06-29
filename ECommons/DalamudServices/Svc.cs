@@ -11,7 +11,7 @@ namespace ECommons.DalamudServices;
 
 public class Svc
 {
-    [PluginService] public static DalamudPluginInterface PluginInterface { get; private set; }
+    [PluginService] public static IDalamudPluginInterface PluginInterface { get; private set; }
     [PluginService] public static IBuddyList Buddies { get; private set; }
     [PluginService] public static IChatGui Chat { get; private set; }
     [PluginService] public static IClientState ClientState { get; private set; }
@@ -25,7 +25,6 @@ public class Svc
     [PluginService] public static IGameNetwork GameNetwork { get; private set; }
     [PluginService] public static IJobGauges Gauges { get; private set; }
     [PluginService] public static IKeyState KeyState { get; private set; }
-    [PluginService] public static ILibcFunction LibcFunction { get; private set; }
     [PluginService] public static IObjectTable Objects { get; private set; }
     [PluginService] public static IPartyFinderGui PfGui { get; private set; }
     [PluginService] public static IPartyList Party { get; private set; }
@@ -52,7 +51,7 @@ public class Svc
 
 
 		internal static bool IsInitialized = false;
-    public static void Init(DalamudPluginInterface pi)
+    public static void Init(IDalamudPluginInterface pi)
     {
         if (IsInitialized)
         {

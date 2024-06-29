@@ -4,6 +4,7 @@ using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.UI.Info;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ECommons.PartyFunctions;
 
@@ -26,7 +27,7 @@ public unsafe static class UniversalParty
                     Name = Player.Name,
                     HomeWorld = new(Player.Object.HomeWorld),
                     CurrentWorld = new(Player.Object.CurrentWorld),
-                    GameObjectInternal = Player.Object,
+                    IGameObjectInternal = Player.Object,
                     ContentID = Player.CID,
                 }
             };
@@ -35,11 +36,11 @@ public unsafe static class UniversalParty
                 var proxy = InfoProxyCrossRealm.Instance();
                 for (int i = 0; i < proxy->GroupCount; i++)
                 {
-                    var group = proxy->CrossRealmGroupArraySpan[i];
+                    var group = proxy->CrossRealmGroups[i];
                     for (int c = 0; c < group.GroupMemberCount; c++)
                     {
-                        var x = group.GroupMembersSpan[c];
-                        var name = MemoryHelper.ReadStringNullTerminated((nint)x.Name);
+                        var x = group.GroupMembers[c];
+                        var name = GenericHelpers.Read(x.Name);
                         if (!(name == Player.Name && x.HomeWorld == Player.Object.HomeWorld.Id))
                         {
                             span.Add(new()
@@ -64,7 +65,7 @@ public unsafe static class UniversalParty
                             Name = x.Name.ToString(),
                             HomeWorld = new(x.World),
                             CurrentWorld = new(Player.Object!.CurrentWorld),
-                            GameObjectInternal = x.GameObject,
+                            IGameObjectInternal = x.GameObject,
                             ContentID = (ulong)x.ContentId,
                         });
                     }

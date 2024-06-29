@@ -1,7 +1,6 @@
 ﻿using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
-using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Utility;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
@@ -656,7 +655,7 @@ public static unsafe partial class ImGuiEx
                 pressed = true;
 #pragma warning disable
             if (options.ToastTooltipOnClick && ImGui.IsMouseReleased(options.ToastTooltipOnClickButton))
-                Svc.PluginInterface.UiBuilder.AddNotification(options.Tooltip!, null, NotificationType.Info);
+                Notify.Info(options.Tooltip!);
 #pragma warning restore
         }
 

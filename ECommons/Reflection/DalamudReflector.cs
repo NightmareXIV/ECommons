@@ -84,7 +84,7 @@ public static class DalamudReflector
                 GetMethod("Get").Invoke(null, BindingFlags.Default, null, Array.Empty<object>(), null);
     }
 
-    static InstalledPluginState[] PrevInstalledPluginState = [];
+    static IExposedPlugin[] PrevInstalledPluginState = [];
     static void MonitorPlugins(object _)
     {
         if(!Svc.PluginInterface.InstalledPlugins.SequenceEqual(PrevInstalledPluginState))
@@ -205,7 +205,7 @@ public static class DalamudReflector
         }
     }
     
-    public static bool TryGetDalamudStartInfo(out DalamudStartInfo dalamudStartInfo, DalamudPluginInterface pluginInterface = null)
+    public static bool TryGetDalamudStartInfo(out DalamudStartInfo dalamudStartInfo, IDalamudPluginInterface pluginInterface = null)
     {
         try
         {

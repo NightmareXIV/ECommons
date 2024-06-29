@@ -19,7 +19,7 @@ public static unsafe class FakePronoun
                     var i = 0;
                     foreach (var x in Svc.Objects)
                     {
-                        if (x is PlayerCharacter pc)
+                        if (x is IPlayerCharacter pc)
                         {
                             i++;
                             if (i == pos)
@@ -49,7 +49,7 @@ public static unsafe class FakePronoun
             }
             else
             {
-                return FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->GetUiModule()->GetPronounModule()->ResolvePlaceholder($"{pronoun}", 0, 0);
+                return FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->GetUIModule()->GetPronounModule()->ResolvePlaceholder($"{pronoun}", 0, 0);
             }
         }
         catch(Exception e)
@@ -64,7 +64,7 @@ public static unsafe class FakePronoun
         var i = 0;
         foreach (var x in Svc.Objects)
         {
-            if (x is PlayerCharacter pc)
+            if (x is IPlayerCharacter pc)
             {
                 if (pc.GetRole() == role)
                 {

@@ -28,12 +28,31 @@ using System.Globalization;
 using System.Collections;
 using Dalamud.Interface.Windowing;
 using ECommons.ExcelServices;
+using System.Runtime.InteropServices;
 #nullable disable
 
 namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static string Read(this Span<byte> bytes)
+    {
+        for (int i = 0; i < bytes.Length; i++)
+        {
+            if (bytes[i] == 0)
+            {
+                fixed (byte* ptr = bytes)
+                {
+                    return Marshal.PtrToStringUTF8((nint)ptr, i);
+                }
+            }
+        }
+        fixed (byte* ptr = bytes)
+        {
+            return Marshal.PtrToStringUTF8((nint)ptr, bytes.Length);
+        }
+    }
+
     public static string ParamsPlaceholderPrefix = "$";
     public static string Params(this string? defaultValue, params object?[] objects)
     {
@@ -65,7 +84,7 @@ public static unsafe partial class GenericHelpers
         return true;
     }
 
-    public static bool AddressEquals(this GameObject obj, GameObject other)
+    public static bool AddressEquals(this IGameObject obj, IGameObject other)
     {
         return obj?.Address == other?.Address;
     }
@@ -439,7 +458,7 @@ public static unsafe partial class GenericHelpers
     /// </summary>
     /// <param name="obj">Object to check</param>
     /// <returns>Whether you are targeting object <paramref name="obj"/>; <see langword="false"/> if <paramref name="obj"/> is <see langword="null"/></returns>
-    public static bool IsTarget(this GameObject obj)
+    public static bool IsTarget(this IGameObject obj)
     {
         return Svc.Targets.Target != null && Svc.Targets.Target.Address == obj.Address;
     }
@@ -693,13 +712,13 @@ public static unsafe partial class GenericHelpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAddonReady(AtkUnitBase* Addon)
     {
-        return Addon->IsVisible && Addon->UldManager.LoadedState == AtkLoadState.Loaded;
+        return Addon->IsVisible && Addon->UldManager.LoadedState == AtkLoadState.Loaded && Addon->IsFullyLoaded();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAddonReady(AtkComponentNode* Addon)
     {
-        return Addon->AtkResNode.IsVisible && Addon->Component->UldManager.LoadedState == AtkLoadState.Loaded;
+        return Addon->AtkResNode.IsVisible() && Addon->Component->UldManager.LoadedState == AtkLoadState.Loaded;
     }
 
     /// <summary>

@@ -8,12 +8,12 @@ namespace ECommons.GameFunctions;
 
 public unsafe static class PlayerFunctions
 {
-    public static bool TryGetPlaceholder(this GameObject pc, out int number, bool verbose = false)
+    public static bool TryGetPlaceholder(this IGameObject pc, out int number, bool verbose = false)
     {
         for(var i = 1; i <= 8; i++)
         {
-            var optr = Framework.Instance()->GetUiModule()->GetPronounModule()->ResolvePlaceholder($"<{i}>", 0, 0);
-            if(verbose) PluginLog.Debug($"Placeholder {i} value {(optr == null ? "null" : optr->ObjectID)}");
+            var optr = Framework.Instance()->GetUIModule()->GetPronounModule()->ResolvePlaceholder($"<{i}>", 0, 0);
+            if(verbose) PluginLog.Debug($"Placeholder {i} value {(optr == null ? "null" : optr->EntityId)}");
             if (pc.Address == (IntPtr)optr)
             {
                 number = i;
@@ -24,17 +24,17 @@ public unsafe static class PlayerFunctions
         return false;
     }
 
-    public static FFXIVClientStructs.FFXIV.Client.Game.Character.BattleChara* BattleChara(this PlayerCharacter o)
+    public static FFXIVClientStructs.FFXIV.Client.Game.Character.BattleChara* BattleChara(this IPlayerCharacter o)
     {
         return (FFXIVClientStructs.FFXIV.Client.Game.Character.BattleChara*)o.Address;
     }
 
-    public static FFXIVClientStructs.FFXIV.Client.Game.Character.Character* Character(this PlayerCharacter o)
+    public static FFXIVClientStructs.FFXIV.Client.Game.Character.Character* Character(this IPlayerCharacter o)
     {
         return (FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)o.Address;
     }
 
-    public static FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject* GameObject(this PlayerCharacter o)
+    public static FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject* IGameObject(this IPlayerCharacter o)
     {
         return (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)o.Address;
     }

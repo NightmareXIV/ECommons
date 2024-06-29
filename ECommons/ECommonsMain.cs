@@ -23,6 +23,7 @@ using ECommons.EzIpcManager;
 using System;
 using System.Reflection;
 using ECommons.Singletons;
+using System.Linq;
 
 
 #nullable disable
@@ -34,7 +35,7 @@ public static class ECommonsMain
     public static IDalamudPlugin Instance = null;
     public static bool Disposed { get; private set; } = false;
     //test
-    public static void Init(DalamudPluginInterface pluginInterface, IDalamudPlugin instance, params Module[] modules)
+    public static void Init(IDalamudPluginInterface pluginInterface, IDalamudPlugin instance, params Module[] modules)
     {
         Instance = instance;
         GenericHelpers.Safe(() => Svc.Init(pluginInterface));
