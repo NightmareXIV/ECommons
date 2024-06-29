@@ -2,7 +2,7 @@
 using Lumina.Excel;
 using Lumina;
 
-namespace AutoRetainer.Sheets;
+namespace ECommons.ExcelServices.Sheets;
 
 //This code is authored by Caraxi https://github.com/Caraxi/SimpleTweaksPlugin/
 [Sheet("BaseParam")]
