@@ -712,7 +712,7 @@ public static unsafe partial class GenericHelpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAddonReady(AtkUnitBase* Addon)
     {
-        return Addon->IsVisible && Addon->UldManager.LoadedState == AtkLoadState.Loaded;
+        return Addon->IsVisible && Addon->UldManager.LoadedState == AtkLoadState.Loaded && Addon->IsFullyLoaded();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
