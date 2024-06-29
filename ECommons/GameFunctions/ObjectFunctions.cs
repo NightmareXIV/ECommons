@@ -16,7 +16,7 @@ public static unsafe class ObjectFunctions
 
     public static string GetNameplateColorSig = "48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 48 8B 35 ?? ?? ?? ?? 48 8B F9";
 
-    public static FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject* Struct(this GameObject o)
+    public static FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject* Struct(this IGameObject o)
     {
         return (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)o.Address;
     }
@@ -26,13 +26,13 @@ public static unsafe class ObjectFunctions
         GetNameplateColor ??= EzDelegate.Get<GetNameplateColorDelegate>(GetNameplateColorSig);
     }
 
-    [Obsolete($"Use {nameof(GameObject.IsTargetable)}")]
-    public static bool IsTargetable(this GameObject o)
+    [Obsolete($"Use {nameof(IGameObject.IsTargetable)}")]
+    public static bool IsTargetable(this IGameObject o)
     {
         return o.Struct()->GetIsTargetable();
     }
 
-    public static bool IsHostile(this GameObject a)
+    public static bool IsHostile(this IGameObject a)
     {
         GetNameplateColor ??= EzDelegate.Get<GetNameplateColorDelegate>(GetNameplateColorSig);
         var plateType = GetNameplateColor(a.Address);
@@ -49,7 +49,7 @@ public static unsafe class ObjectFunctions
         int num = 0;
         foreach(var o in Svc.Objects)
         {
-            if(o is BattleNpc)
+            if(o is IBattleNpc)
             {
                 var oStruct = (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)o.Address;
                 if(oStruct->GetIsTargetable() && o.IsHostile()
@@ -62,7 +62,7 @@ public static unsafe class ObjectFunctions
         return num;
     }
 
-    public static bool TryGetPartyMemberObjectByObjectId(uint objectId, out GameObject partyMemberObject)
+    public static bool TryGetPartyMemberObjectByObjectId(uint objectId, out IGameObject partyMemberObject)
     {
         if (objectId == Svc.ClientState.LocalPlayer?.GameObjectId)
         {
@@ -81,7 +81,7 @@ public static unsafe class ObjectFunctions
         return false;
     }
 
-    public static bool TryGetPartyMemberObjectByAddress(IntPtr address, out GameObject partyMemberObject)
+    public static bool TryGetPartyMemberObjectByAddress(IntPtr address, out IGameObject partyMemberObject)
     {
         if (address == Svc.ClientState.LocalPlayer?.Address)
         {

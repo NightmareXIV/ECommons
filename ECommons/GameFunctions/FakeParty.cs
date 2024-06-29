@@ -7,13 +7,13 @@ namespace ECommons.GameFunctions;
 
 public static class FakeParty
 {
-    public static IEnumerable<PlayerCharacter> Get()
+    public static IEnumerable<IPlayerCharacter> Get()
     {
         if (Svc.Condition[ConditionFlag.DutyRecorderPlayback])
         {
             foreach (var x in Svc.Objects)
             {
-                if (x is PlayerCharacter pc)
+                if (x is IPlayerCharacter pc)
                 {
                     yield return pc;
                 }
@@ -23,7 +23,7 @@ public static class FakeParty
         {
             foreach(var x in Svc.Party)
             {
-                if(x.GameObject is PlayerCharacter pc)
+                if(x.GameObject is IPlayerCharacter pc)
                 {
                     yield return pc;
                 }

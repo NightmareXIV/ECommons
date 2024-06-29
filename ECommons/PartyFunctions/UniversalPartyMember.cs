@@ -15,18 +15,18 @@ public class UniversalPartyMember
     public string NameWithWorld => $"{Name}@{HomeWorld.GameData.Name}";
     public ulong ContentID { get; init; }
 
-    internal GameObject GameObjectInternal = null;
-    public GameObject GameObject
+    internal IGameObject IGameObjectInternal = null;
+    public IGameObject IGameObject
     {
         get
         {
             if (UniversalParty.IsCrossWorldParty)
             {
-                return Svc.Objects.FirstOrDefault(x => x is PlayerCharacter pc && pc.HomeWorld.Id == this.HomeWorld.Id && x.Name.ToString() == this.Name);
+                return Svc.Objects.FirstOrDefault(x => x is IPlayerCharacter pc && pc.HomeWorld.Id == this.HomeWorld.Id && x.Name.ToString() == this.Name);
             }
             else
             {
-                return GameObjectInternal;
+                return IGameObjectInternal;
             }
         }
     }

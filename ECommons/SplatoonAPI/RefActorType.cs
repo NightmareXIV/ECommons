@@ -5,7 +5,7 @@
 /// 2: Targeted enemy
 public enum RefActorType
 {
-    GameObjectWithSpecifiedAttribute=0,
+    IGameObjectWithSpecifiedAttribute=0,
     Self=1,
     TargetedEnemy=2
 }

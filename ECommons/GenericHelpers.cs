@@ -65,7 +65,7 @@ public static unsafe partial class GenericHelpers
         return true;
     }
 
-    public static bool AddressEquals(this GameObject obj, GameObject other)
+    public static bool AddressEquals(this IGameObject obj, IGameObject other)
     {
         return obj?.Address == other?.Address;
     }
@@ -439,7 +439,7 @@ public static unsafe partial class GenericHelpers
     /// </summary>
     /// <param name="obj">Object to check</param>
     /// <returns>Whether you are targeting object <paramref name="obj"/>; <see langword="false"/> if <paramref name="obj"/> is <see langword="null"/></returns>
-    public static bool IsTarget(this GameObject obj)
+    public static bool IsTarget(this IGameObject obj)
     {
         return Svc.Targets.Target != null && Svc.Targets.Target.Address == obj.Address;
     }

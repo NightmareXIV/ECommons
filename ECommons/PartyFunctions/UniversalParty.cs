@@ -27,7 +27,7 @@ public unsafe static class UniversalParty
                     Name = Player.Name,
                     HomeWorld = new(Player.Object.HomeWorld),
                     CurrentWorld = new(Player.Object.CurrentWorld),
-                    GameObjectInternal = Player.Object,
+                    IGameObjectInternal = Player.Object,
                     ContentID = Player.CID,
                 }
             };
@@ -65,7 +65,7 @@ public unsafe static class UniversalParty
                             Name = x.Name.ToString(),
                             HomeWorld = new(x.World),
                             CurrentWorld = new(Player.Object!.CurrentWorld),
-                            GameObjectInternal = x.GameObject,
+                            IGameObjectInternal = x.GameObject,
                             ContentID = (ulong)x.ContentId,
                         });
                     }
