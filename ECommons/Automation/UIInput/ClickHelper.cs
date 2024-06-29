@@ -38,10 +38,20 @@ public unsafe class ClickHelper
 
     public static void ClickAddonComponent(AtkComponentBase* unitbase, AtkComponentNode* target, uint which, EventType type, EventData? eventData = null, InputData? inputData = null)
     {
-        eventData ??= EventData.ForNormalTarget(target, unitbase);
-        inputData ??= InputData.Empty();
+        EventData? newEventData = null;
+        InputData? newInputData = null;
+        if(eventData == null)
+        {
+            newEventData = EventData.ForNormalTarget(target, unitbase);
+        }
+        if (inputData == null)
+        {
+            newInputData = InputData.Empty();
+        }
 
-        InvokeReceiveEvent(&unitbase->AtkEventListener, type, which, eventData, inputData);
+        InvokeReceiveEvent(&unitbase->AtkEventListener, type, which, eventData ?? newEventData!, inputData ?? newInputData!);
+        newEventData?.Dispose();
+        newInputData?.Dispose();
     }
 }
 
