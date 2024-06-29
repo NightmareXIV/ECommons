@@ -1,6 +1,7 @@
-﻿using ECommons.Logging;
+﻿using Dalamud.Hooking;
 using Dalamud.Memory;
 using ECommons.DalamudServices;
+using ECommons.Logging;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Generic;
@@ -8,17 +9,16 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
-using Dalamud.Hooking;
 #nullable disable
 
 namespace ECommons.Automation;
 
-public unsafe static class Callback
+public static unsafe class Callback
 {
-    const string Sig = "E8 ?? ?? ?? ?? 8B 4C 24 20 0F B6 D8";
+    private static readonly string Sig = "48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 44 24 ?? 0F B7 81";
     internal delegate byte AtkUnitBase_FireCallbackDelegate(AtkUnitBase* Base, int valueCount, AtkValue* values, byte updateState);
     internal static AtkUnitBase_FireCallbackDelegate FireCallback = null;
-    static Hook<AtkUnitBase_FireCallbackDelegate> AtkUnitBase_FireCallbackHook;
+    private static Hook<AtkUnitBase_FireCallbackDelegate> AtkUnitBase_FireCallbackHook;
 
     public static readonly AtkValue ZeroAtkValue = new() { Type = 0, Int = 0 };
 
@@ -61,14 +61,14 @@ public unsafe static class Callback
         }
     }
 
-    static byte AtkUnitBase_FireCallbackDetour(AtkUnitBase* Base, int valueCount, AtkValue* values, byte updateState)
+    private static byte AtkUnitBase_FireCallbackDetour(AtkUnitBase* Base, int valueCount, AtkValue* values, byte updateState)
     {
         var ret = AtkUnitBase_FireCallbackHook?.Original(Base, valueCount, values, updateState);
         try
         {
-            PluginLog.Debug($"Callback on {Encoding.UTF8.GetString(Base->Name)}, valueCount={valueCount}, updateState={updateState}\n{DecodeValues(valueCount, values).Select(x => $"    {x}").Join("\n")}");
+            PluginLog.Debug($"Callback on {Base->Name.Read()}, valueCount={valueCount}, updateState={updateState}\n{DecodeValues(valueCount, values).Select(x => $"    {x}").Join("\n")}");
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             e.Log();
         }
@@ -80,7 +80,7 @@ public unsafe static class Callback
         if (FireCallback == null) Initialize();
         FireCallback(Base, valueCount, values, updateState);
     }
-    
+
     public static void Fire(AtkUnitBase* Base, bool updateState, params object[] values)
     {
         if (Base == null) throw new Exception("Null UnitBase");
@@ -128,13 +128,13 @@ public unsafe static class Callback
                         throw new ArgumentException($"Unable to convert type {v.GetType()} to AtkValue");
                 }
             }
-            List<string> CallbackValues = new();
-            for(var i = 0; i < values.Length; i++)
+            List<string> CallbackValues = [];
+            for (var i = 0; i < values.Length; i++)
             {
                 CallbackValues.Add($"    Value {i}: [input: {values[i]}/{values[i]?.GetType().Name}] -> {DecodeValue(atkValues[i])})");
             }
-            PluginLog.Verbose($"Firing callback: {Encoding.UTF8.GetString(Base->Name)}, valueCount = {values.Length}, updateStatte = {updateState}, values:\n");
-            FireRaw(Base, values.Length, atkValues, (byte)(updateState ?1:0));
+            PluginLog.Verbose($"Firing callback: {Base->Name.Read()}, valueCount = {values.Length}, updateStatte = {updateState}, values:\n");
+            FireRaw(Base, values.Length, atkValues, (byte)(updateState ? 1 : 0));
         }
         finally
         {

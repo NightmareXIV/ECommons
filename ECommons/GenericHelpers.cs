@@ -28,12 +28,31 @@ using System.Globalization;
 using System.Collections;
 using Dalamud.Interface.Windowing;
 using ECommons.ExcelServices;
+using System.Runtime.InteropServices;
 #nullable disable
 
 namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static string Read(this Span<byte> bytes)
+    {
+        for (int i = 0; i < bytes.Length; i++)
+        {
+            if (bytes[i] == 0)
+            {
+                fixed (byte* ptr = bytes)
+                {
+                    return Marshal.PtrToStringUTF8((nint)ptr, i);
+                }
+            }
+        }
+        fixed (byte* ptr = bytes)
+        {
+            return Marshal.PtrToStringUTF8((nint)ptr, bytes.Length);
+        }
+    }
+
     public static string ParamsPlaceholderPrefix = "$";
     public static string Params(this string? defaultValue, params object?[] objects)
     {

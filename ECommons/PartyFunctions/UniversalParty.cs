@@ -40,7 +40,7 @@ public unsafe static class UniversalParty
                     for (int c = 0; c < group.GroupMemberCount; c++)
                     {
                         var x = group.GroupMembers[c];
-                        var name = Encoding.UTF8.GetString(x.Name);
+                        var name = GenericHelpers.Read(x.Name);
                         if (!(name == Player.Name && x.HomeWorld == Player.Object.HomeWorld.Id))
                         {
                             span.Add(new()
