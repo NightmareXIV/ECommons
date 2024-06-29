@@ -5,6 +5,7 @@ using ECommons.DalamudServices;
 using System;
 using ECommons.DalamudServices.Legacy;
 using ECommons.Logging;
+using Dalamud.Game.ClientState.Conditions;
 
 namespace ECommons.Automation;
 #nullable disable
@@ -14,11 +15,13 @@ namespace ECommons.Automation;
 /// </summary>
 public unsafe class AutoCutsceneSkipper
 {
-    delegate void CutsceneHandleInputDelegate(nint a1);
-    [Signature("40 53 48 83 EC 20 80 79 29 00 48 8B D9 0F 85", DetourName = nameof(CutsceneHandleInputDetour))]
+    delegate byte CutsceneHandleInputDelegate(nint a1, float a2);
+    //[Signature("40 53 48 83 EC 20 80 79 29 00 48 8B D9 0F 85", DetourName = nameof(CutsceneHandleInputDetour))]
+    [Signature("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 40 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 44 24 ?? 80 79 27 00", DetourName = nameof(CutsceneHandleInputDetour))]
     static Hook<CutsceneHandleInputDelegate> CutsceneHandleInputHook;
 
-    static readonly string ConditionSig = "75 11 BA ?? ?? ?? ?? 48 8B CF E8 ?? ?? ?? ?? 84 C0 74 52";
+    //static readonly string ConditionSig = "75 11 BA ?? ?? ?? ?? 48 8B CF E8 ?? ?? ?? ?? 84 C0 74 52";
+    static readonly string ConditionSig = "75 11 BA ?? ?? ?? ?? 48 8B CF E8 ?? ?? ?? ?? 84 C0 74 4C";
     static int ConditionOriginalValuesLen => ConditionSig.Split(" ").Length;
     static nint ConditionAddr;
     /// <summary>
@@ -57,9 +60,14 @@ public unsafe class AutoCutsceneSkipper
         CutsceneHandleInputHook?.Dispose();
     }
 
-    internal static void CutsceneHandleInputDetour(nint a1)
+    internal static byte CutsceneHandleInputDetour(nint a1, float a2)
     {
+        if (!Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent])
+        {
+            return CutsceneHandleInputHook.Original(a1, a2);
+        }
         var called = false;
+        byte ret = 0;
         try
         {
             if (Condition?.Invoke(a1) != false)
@@ -68,7 +76,7 @@ public unsafe class AutoCutsceneSkipper
                 if (skippable)
                 {
                     SafeMemory.WriteBytes(ConditionAddr, [0xEB]);
-                    CutsceneHandleInputHook.Original(a1);
+                    ret = CutsceneHandleInputHook.Original(a1, a2);
                     called = true;
                     SafeMemory.WriteBytes(ConditionAddr, [0x75]);
                 }
@@ -80,7 +88,8 @@ public unsafe class AutoCutsceneSkipper
         }
         if (!called)
         {
-            CutsceneHandleInputHook.Original(a1);
+            ret = CutsceneHandleInputHook.Original(a1, a2);
         }
+        return ret;
     }
 }
