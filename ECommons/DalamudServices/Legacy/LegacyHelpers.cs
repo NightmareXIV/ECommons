@@ -9,7 +9,7 @@ public static class LegacyHelpers
 {
     public static void PrintChat(this IChatGui chatGui, XivChatEntry entry) => Svc.Chat.Print(entry);
 
-    public static void SetTarget(this ITargetManager targetManager, GameObject obj)
+    public static void SetTarget(this ITargetManager targetManager, IGameObject obj)
     {
         targetManager.Target = obj;
     }

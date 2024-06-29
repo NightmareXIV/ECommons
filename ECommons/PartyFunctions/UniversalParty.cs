@@ -27,7 +27,7 @@ public unsafe static class UniversalParty
                     Name = Player.Name,
                     HomeWorld = new(Player.Object.HomeWorld),
                     CurrentWorld = new(Player.Object.CurrentWorld),
-                    GameObjectInternal = Player.Object,
+                    IGameObjectInternal = Player.Object,
                     ContentID = Player.CID,
                 }
             };
@@ -40,7 +40,7 @@ public unsafe static class UniversalParty
                     for (int c = 0; c < group.GroupMemberCount; c++)
                     {
                         var x = group.GroupMembers[c];
-                        var name = Encoding.UTF8.GetString(x.Name);
+                        var name = GenericHelpers.Read(x.Name);
                         if (!(name == Player.Name && x.HomeWorld == Player.Object.HomeWorld.Id))
                         {
                             span.Add(new()
@@ -65,7 +65,7 @@ public unsafe static class UniversalParty
                             Name = x.Name.ToString(),
                             HomeWorld = new(x.World),
                             CurrentWorld = new(Player.Object!.CurrentWorld),
-                            GameObjectInternal = x.GameObject,
+                            IGameObjectInternal = x.GameObject,
                             ContentID = (ulong)x.ContentId,
                         });
                     }

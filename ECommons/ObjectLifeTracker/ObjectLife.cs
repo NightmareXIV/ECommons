@@ -10,43 +10,43 @@ namespace ECommons.ObjectLifeTracker;
 
 public static class ObjectLife
 {
-    delegate IntPtr GameObject_ctor(IntPtr obj);
-    static Hook<GameObject_ctor> GameObject_ctor_hook = null;
-    static Dictionary<IntPtr, long> GameObjectLifeTime = null;
+    delegate IntPtr IGameObject_ctor(IntPtr obj);
+    static Hook<IGameObject_ctor> IGameObject_ctor_hook = null;
+    static Dictionary<IntPtr, long> IGameObjectLifeTime = null;
     public static Action<nint> OnObjectCreation = null;
 
     internal static void Init()
     {
-        GameObjectLifeTime = new();
+        IGameObjectLifeTime = new();
 #pragma warning disable CS0618 // Type or member is obsolete
-        GameObject_ctor_hook = Svc.Hook.HookFromAddress<GameObject_ctor>(Svc.SigScanner.ScanText("48 8D 05 ?? ?? ?? ?? C7 81 ?? ?? ?? ?? ?? ?? ?? ?? 48 89 01 48 8B C1 C3"), GameObject_ctor_detour);
+        IGameObject_ctor_hook = Svc.Hook.HookFromAddress<IGameObject_ctor>(Svc.SigScanner.ScanText("48 8D 05 ?? ?? ?? ?? C7 81 ?? ?? ?? ?? ?? ?? ?? ?? 48 89 01 48 8B C1 C3"), IGameObject_ctor_detour);
 #pragma warning restore CS0618 // Type or member is obsolete
-        GameObject_ctor_hook.Enable();
+        IGameObject_ctor_hook.Enable();
         foreach (var x in Svc.Objects)
         {
-            GameObjectLifeTime[x.Address] = Environment.TickCount64;
+            IGameObjectLifeTime[x.Address] = Environment.TickCount64;
         }
     }
 
     internal static void Dispose()
     {
-        if (GameObject_ctor_hook != null)
+        if (IGameObject_ctor_hook != null)
         {
-            GameObject_ctor_hook.Disable();
-            GameObject_ctor_hook.Dispose();
-            GameObject_ctor_hook = null;
+            IGameObject_ctor_hook.Disable();
+            IGameObject_ctor_hook.Dispose();
+            IGameObject_ctor_hook = null;
         }
-        GameObjectLifeTime = null;
+        IGameObjectLifeTime = null;
     }
 
-    static IntPtr GameObject_ctor_detour(IntPtr ptr)
+    static IntPtr IGameObject_ctor_detour(IntPtr ptr)
     {
-        if (GameObjectLifeTime == null)
+        if (IGameObjectLifeTime == null)
         {
-            throw new Exception("GameObjectLifeTime is null. Have you initialised the ObjectLife module on ECommons initialisation?");
+            throw new Exception("IGameObjectLifeTime is null. Have you initialised the ObjectLife module on ECommons initialisation?");
         }
-        GameObjectLifeTime[ptr] = Environment.TickCount64;
-        var ret = GameObject_ctor_hook.Original(ptr);
+        IGameObjectLifeTime[ptr] = Environment.TickCount64;
+        var ret = IGameObject_ctor_hook.Original(ptr);
 
         if (OnObjectCreation != null)
         {
@@ -56,26 +56,26 @@ public static class ObjectLife
             }
             catch (Exception e)
             {
-                e.Log($"Exception in GameObject_ctor_detour");
+                e.Log($"Exception in IGameObject_ctor_detour");
             }
         }
         return ret;
     }
 
-    public static long GetLifeTime(this GameObject o)
+    public static long GetLifeTime(this IGameObject o)
     {
         return Environment.TickCount64 - GetSpawnTime(o);
     }
 
-    public static float GetLifeTimeSeconds(this GameObject o)
+    public static float GetLifeTimeSeconds(this IGameObject o)
     {
         return (float)o.GetLifeTime() / 1000f;
     }
 
-    public static long GetSpawnTime(this GameObject o)
+    public static long GetSpawnTime(this IGameObject o)
     {
-        if (GameObject_ctor_hook == null) throw new Exception("Object life tracker was not initialized");
-        if (GameObjectLifeTime.TryGetValue(o.Address, out var result))
+        if (IGameObject_ctor_hook == null) throw new Exception("Object life tracker was not initialized");
+        if (IGameObjectLifeTime.TryGetValue(o.Address, out var result))
         {
             return result;
         }

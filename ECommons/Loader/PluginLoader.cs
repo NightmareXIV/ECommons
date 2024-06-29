@@ -173,7 +173,7 @@ public static class PluginLoader
             ImGuiEx.TextWrapped("This means that there is an issue that can cause problems. Usually, updated version either already available or will be available as soon as possible. ");
             if (ImGui.Button("Open plugin installer"))
             {
-                MicroServices.PluginInterface.OpenPluginInstaller();
+                MicroServices.PluginInterface.OpenPluginInstallerTo();
             }
             if (ImGui.Button("Close this window"))
             {

@@ -24,9 +24,9 @@ public unsafe struct ActionEffectSet
 
     public string Name { get; }
 
-    public GameObject Target { get; }
+    public IGameObject Target { get; }
 
-    public GameObject Source { get; }
+    public IGameObject Source { get; }
 
     public Character SourceCharacter { get; }
 
