@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 #nullable disable
 
-namespace ECommons.UIHelpers.Implementations;
+namespace ECommons.UIHelpers.AtkReaderImplementations;
 
 public unsafe class ReaderRetainerList(AtkUnitBase* Addon) : AtkReader(Addon)
 {
-    public uint VentureCount => this.ReadUInt(2) ?? 0;
-    public List<Retainer> Retainers => this.Loop<Retainer>(3, 9, 10);
+    public uint VentureCount => ReadUInt(2) ?? 0;
+    public List<Retainer> Retainers => Loop<Retainer>(3, 9, 10);
 
     public unsafe class Retainer(nint Addon, int start) : AtkReader(Addon, start)
     {

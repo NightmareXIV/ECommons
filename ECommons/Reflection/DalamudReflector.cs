@@ -205,7 +205,7 @@ public static class DalamudReflector
         }
     }
     
-    public static bool TryGetDalamudStartInfo(out DalamudStartInfo dalamudStartInfo, DalamudPluginInterface pluginInterface = null)
+    public static bool TryGetDalamudStartInfo(out DalamudStartInfo dalamudStartInfo, IDalamudPluginInterface pluginInterface = null)
     {
         try
         {

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace ECommons;
+namespace ECommons.CircularBuffers;
 
 public class CircularArray<T> : IEnumerable<T>
 {

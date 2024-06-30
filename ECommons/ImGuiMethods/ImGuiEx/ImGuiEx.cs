@@ -1168,6 +1168,14 @@ public static unsafe partial class ImGuiEx
         return IconButton(icon.ToIconString(), id, size, enabled);
     }
 
+    public static bool SmallButton(string label, bool enabled = true)
+    {
+        if (!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        var ret = ImGui.SmallButton(label) && enabled;
+        if (!enabled) ImGui.PopStyleVar();
+        return ret;
+    }
+
     public static bool Button(string label, bool enabled = true)
     {
         if (!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);

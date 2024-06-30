@@ -7,7 +7,7 @@ namespace ECommons.Loader;
 
 internal class MicroServices
 {
-    [PluginService] static internal DalamudPluginInterface PluginInterface { get; private set; }
+    [PluginService] static internal IDalamudPluginInterface PluginInterface { get; private set; }
     //[PluginService] static internal BuddyList Buddies { get; private set; }
     //[PluginService] static internal ChatGui Chat { get; private set; }
     //[PluginService] static internal ChatHandlers ChatHandlers { get; private set; }
