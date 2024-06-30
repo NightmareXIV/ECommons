@@ -44,7 +44,7 @@ public static unsafe class ObjectFunctions
         return plateType == 7 || plateType == 9 || plateType == 11 || plateType == 10;
     }
 
-    public static float GetTargetDistance(this GameObject a)
+    public static float GetTargetDistance(this IGameObject a)
     {
         if (a == null) return 0;
         return Vector3.Distance(a.Position, Svc.ClientState.LocalPlayer.Position);

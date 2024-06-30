@@ -27,7 +27,7 @@ public static class PluginLoader
 
     static Vector2 Pos = Vector2.Zero;
 
-    public static void Init(ILoadable plugin, DalamudPluginInterface pluginInterface, string blacklistURL, Action success)
+    public static void Init(ILoadable plugin, IDalamudPluginInterface pluginInterface, string blacklistURL, Action success)
     {
         if (IsUsed)
         {
