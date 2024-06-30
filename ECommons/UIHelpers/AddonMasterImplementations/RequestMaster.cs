@@ -1,6 +1,7 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using ECommons.Automation.UIInput;
 using ECommons.Logging;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 
@@ -10,15 +11,18 @@ public unsafe class RequestMaster : AddonMasterBase<AddonRequest>
 
     public RequestMaster(void* addon) : base(addon) { }
 
+    public AtkComponentButton* Button => Base->GetButtonNodeById(14);
+
     public void HandOver()
     {
         //var btn = Addon->HandOverButton;
-        var btn = Base->GetButtonNodeById(14);
-        if (btn->IsEnabled)
+        if (IsHandOverEnabled)
         {
-            btn->ClickAddonButton(Base);
+            Button->ClickAddonButton(Base);
         }
     }
+
+    public bool IsHandOverEnabled => Button->IsEnabled;
 
     public bool IsFilled
     {
