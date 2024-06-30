@@ -1,7 +1,7 @@
 ﻿using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Collections.Generic;
 
-namespace ECommons.UIHelpers.Implementations;
+namespace ECommons.UIHelpers.AtkReaderImplementations;
 #nullable disable
 
 public unsafe class ReaderContextMenu(AtkUnitBase* Addon) : AtkReader(Addon)
