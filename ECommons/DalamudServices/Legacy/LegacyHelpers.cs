@@ -2,6 +2,7 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Text;
 using Dalamud.Interface;
+using Dalamud.Interface.ImGuiNotification;
 using Dalamud.Plugin.Services;
 using System;
 
@@ -16,13 +17,14 @@ public static class LegacyHelpers
         targetManager.Target = obj;
     }
 
-    public static void AddNotification(this IUiBuilder builder, string message, string? pluginName = null, int timeout = 3000)
+    public static void AddNotification(this IUiBuilder builder, string message, string? pluginName = null, NotificationType type = NotificationType.Info, int timeout = 3000)
     {
         Svc.NotificationManager.AddNotification(new()
         {
             Content = message,
             Title = pluginName ?? Svc.PluginInterface.InternalName,
             InitialDuration = TimeSpan.FromMilliseconds(timeout),
+            Type = type,
         });
     }
 }
