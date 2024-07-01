@@ -209,4 +209,14 @@ public enum Job : uint
     /// Sage 
     /// </summary>
     SGE = 40,
+
+    /// <summary>
+    /// Viper 
+    /// </summary>
+    VPR = 41,
+
+    /// <summary>
+    /// Pictomancer 
+    /// </summary>
+    PCT = 42,
 }
