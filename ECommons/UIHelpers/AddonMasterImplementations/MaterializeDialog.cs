@@ -14,14 +14,7 @@ public partial class AddonMaster
 
         public MaterializeDialog(void* addon) : base(addon) { }
 
-        public void Materialize()
-        {
-            var btn = Addon->YesButton;
-            if (btn->IsEnabled)
-            {
-                btn->ClickAddonButton(Base);
-            }
-        }
+        public void Materialize() => ClickButtonIfEnabled(Addon->YesButton);
     }
 }
 

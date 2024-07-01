@@ -13,14 +13,7 @@ public partial class AddonMaster
 
         public Repair(void* addon) : base(addon) { }
 
-        public void RepairAll()
-        {
-            var btn = Addon->RepairAllButton;
-            if (btn->IsEnabled)
-            {
-                btn->ClickAddonButton(Base);
-            }
-        }
+        public void RepairAll() => ClickButtonIfEnabled(Addon->RepairAllButton);
     }
 }
 

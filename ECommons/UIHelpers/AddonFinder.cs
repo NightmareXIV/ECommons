@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace ECommons.UIHelpers;
 public unsafe class AddonFinder
 {
-    public static IEnumerable<SelectStringMaster> SelectString
+    public static IEnumerable<AddonMaster.SelectString> SelectString
     {
         get
         {
@@ -23,7 +23,7 @@ public unsafe class AddonFinder
         }
     }
 
-    public static IEnumerable<SelectYesnoMaster> YesNo
+    public static IEnumerable<AddonMaster.SelectYesno> YesNo
     {
         get
         {

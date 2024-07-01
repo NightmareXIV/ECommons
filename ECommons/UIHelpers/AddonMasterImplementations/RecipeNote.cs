@@ -15,32 +15,11 @@ public partial class AddonMaster
 
         public RecipeNote(void* addon) : base(addon) { }
 
-        public void Synthesize()
-        {
-            var btn = Addon->SynthesizeButton;
-            if (btn->IsEnabled)
-            {
-                btn->ClickAddonButton(Base);
-            }
-        }
+        public void Synthesize() => ClickButtonIfEnabled(Addon->SynthesizeButton);
 
-        public void QuickSynthesis()
-        {
-            var btn = Addon->QuickSynthesisButton;
-            if (btn->IsEnabled)
-            {
-                btn->ClickAddonButton(Base);
-            }
-        }
+        public void QuickSynthesis() => ClickButtonIfEnabled(Addon->QuickSynthesisButton);
 
-        public void TrialSynthesis()
-        {
-            var btn = Addon->TrialSynthesisButton;
-            if (btn->IsEnabled)
-            {
-                btn->ClickAddonButton(Base);
-            }
-        }
+        public void TrialSynthesis() => ClickButtonIfEnabled(Addon->TrialSynthesisButton);
 
         public void Material(uint index, bool hq)
         {

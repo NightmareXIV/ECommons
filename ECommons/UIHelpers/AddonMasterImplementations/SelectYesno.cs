@@ -23,23 +23,9 @@ public partial class AddonMaster
         public SeString SeString => MemoryHelper.ReadSeString(&Addon->PromptText->NodeText);
         public string Text => SeString.ExtractText();
 
-        public void Yes()
-        {
-            var btn = Addon->YesButton;
-            if (btn->IsEnabled)
-            {
-                btn->ClickAddonButton(Base);
-            }
-        }
+        public void Yes() => ClickButtonIfEnabled(Addon->YesButton);
 
-        public void No()
-        {
-            var btn = Addon->NoButton;
-            if (btn->IsEnabled)
-            {
-                btn->ClickAddonButton(Base);
-            }
-        }
+        public void No() => ClickButtonIfEnabled(Addon->NoButton);
     }
 }
 
