@@ -19,4 +19,6 @@ public unsafe abstract class AddonMasterBase<T> where T : unmanaged
 
     public T* Addon { get; }
     public AtkUnitBase* Base => (AtkUnitBase*)Addon;
+    public bool IsVisible => Base->IsVisible;
+    public bool IsReady => GenericHelpers.IsAddonReady(Base);
 }
