@@ -35,14 +35,3 @@ public partial class AddonMaster
         }
     }
 }
-
-public unsafe class TalkMaster : AddonMaster.Talk
-{
-    public TalkMaster(nint addon) : base(addon)
-    {
-    }
-
-    public TalkMaster(void* addon) : base(addon)
-    {
-    }
-}
