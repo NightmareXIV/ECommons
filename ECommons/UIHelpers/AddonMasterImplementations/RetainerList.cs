@@ -37,6 +37,7 @@ public partial class AddonMaster
 
         public class Entry(AtkUnitBase* Base, ReaderRetainerList.Retainer handle, int index) : ReaderRetainerList.Retainer(handle.AtkReaderParams.UnitBase, handle.AtkReaderParams.BeginOffset)
         {
+            public int Index => index;
             public bool Select()
             {
                 if (IsActive)
