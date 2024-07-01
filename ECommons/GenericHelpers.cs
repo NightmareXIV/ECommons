@@ -1351,9 +1351,20 @@ public static unsafe partial class GenericHelpers
     /// <param name="addon"></param>
     /// <param name="addonMaster"></param>
     /// <returns></returns>
-    public static bool TryGetAddonMaster<T>(string addon, out T addonMaster) where T:IAddonMasterBase
+    public static bool TryGetAddonMaster<T>(string addon, out T addonMaster) where T : IAddonMasterBase
     {
-        if(TryGetAddonByName<AtkUnitBase>(addon, out var ptr))
+        if (TryGetAddonByName<AtkUnitBase>(addon, out var ptr))
+        {
+            addonMaster = (T)Activator.CreateInstance(typeof(T), (nint)ptr);
+            return true;
+        }
+        addonMaster = default;
+        return false;
+    }
+
+    public static bool TryGetAddonMaster<T>(out T addonMaster) where T : IAddonMasterBase
+    {
+        if (TryGetAddonByName<AtkUnitBase>(typeof(T).Name.Split(".")[^1], out var ptr))
         {
             addonMaster = (T)Activator.CreateInstance(typeof(T), (nint)ptr);
             return true;

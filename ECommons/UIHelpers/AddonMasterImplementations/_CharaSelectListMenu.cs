@@ -22,7 +22,6 @@ public unsafe partial class AddonMaster{
         }
 
         public bool TemporarilyLocked => AgentLobby.Instance()->TemporaryLocked;
-        public int SelectedWorld => AgentLobby.Instance()->WorldId;
 
         public Character[] Characters
         {
@@ -55,6 +54,11 @@ public unsafe partial class AddonMaster{
             }
 
             public void Select()
+            {
+                Callback.Fire(Base, true, 21, Index);
+            }
+
+            public void Login()
             {
                 Callback.Fire(Base, true, 29, 0, Index);
             }
