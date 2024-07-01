@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.UIHelpers;
-public unsafe class AddonMaster
+public unsafe class AddonFinder
 {
     public static IEnumerable<SelectStringMaster> SelectString
     {
