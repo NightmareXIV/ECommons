@@ -32,4 +32,14 @@ public unsafe abstract class AddonMasterBase<T> where T : unmanaged
         }
         return false;
     }
+
+    protected AtkEvent CreateAtkEvent(byte flags = 0)
+    {
+        return new()
+        {
+            Listener = (AtkEventListener*)Base,
+            Flags = flags,
+            Target = &AtkStage.Instance()->AtkEventTarget
+        };
+    }
 }
