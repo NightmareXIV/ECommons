@@ -1,4 +1,5 @@
-﻿using FFXIVClientStructs.FFXIV.Component.GUI;
+﻿using ECommons.Automation.UIInput;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,4 +22,14 @@ public unsafe abstract class AddonMasterBase<T> where T : unmanaged
     public AtkUnitBase* Base => (AtkUnitBase*)Addon;
     public bool IsVisible => Base->IsVisible;
     public bool IsReady => GenericHelpers.IsAddonReady(Base);
+
+    protected bool ClickButtonIfEnabled(AtkComponentButton* button)
+    {
+        if (button->IsEnabled)
+        {
+            button->ClickAddonButton(Base);
+            return true;
+        }
+        return false;
+    }
 }
