@@ -1,6 +1,7 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using ECommons.Automation.UIInput;
 using System;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 
@@ -14,12 +15,33 @@ public partial class AddonMaster
 
         public Request(void* addon) : base(addon) { }
 
+        public AtkComponentButton* Button => Base->GetButtonNodeById(14);
+
         public void HandOver()
         {
-            var btn = Addon->HandOverButton;
-            if (btn->IsEnabled)
+            //var btn = Addon->HandOverButton;
+            if (IsHandOverEnabled)
             {
-                btn->ClickAddonButton(Base);
+                Button->ClickAddonButton(Base);
+            }
+        }
+
+        public bool IsHandOverEnabled => Button->IsEnabled;
+
+        public bool IsFilled
+        {
+            get
+            {
+                for (var i = 3u; i >= 7; i++)
+                {
+                    var subnode = Base->GetComponentNodeById(i);
+                    var subnode2 = Base->GetComponentNodeById(i + 6);
+                    if (subnode->AtkResNode.IsVisible() && subnode->AtkResNode.IsVisible())
+                    {
+                        return false;
+                    }
+                }
+                return true;
             }
         }
     }
