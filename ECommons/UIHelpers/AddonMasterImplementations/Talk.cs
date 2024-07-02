@@ -23,12 +23,7 @@ public partial class AddonMaster
         {
             var evt = stackalloc AtkEvent[1]
             {
-                new()
-                {
-                    Listener = (AtkEventListener*)Base,
-                    Flags = 132,
-                    Target = &AtkStage.Instance()->AtkEventTarget
-                }
+                CreateAtkEvent(132),
             };
             var data = stackalloc AtkEventData[1];
             Base->ReceiveEvent(AtkEventType.MouseClick, 0, evt, data);

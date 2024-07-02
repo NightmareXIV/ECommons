@@ -47,7 +47,8 @@ public static unsafe class CharacterFunctions
 
     public static byte GetTransformationID(this ICharacter chr)
     {
-        return *(byte*)(chr.Address + 3120);
+        return (byte)chr.Struct()->TransformationId;
+        //return *(byte*)(chr.Address + 3120);
     }
 
     public static bool IsInWater(this ICharacter chr)

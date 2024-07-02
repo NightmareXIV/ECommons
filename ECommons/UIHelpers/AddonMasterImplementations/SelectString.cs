@@ -20,6 +20,9 @@ public partial class AddonMaster
 
         public SelectString(void* addon) : base(addon) { }
 
+        public SeString SeString => MemoryHelper.ReadSeString(&Base->GetTextNodeById(2)->NodeText);
+        public string Text => SeString.ExtractText();
+
         public Entry[] Entries
         {
             get

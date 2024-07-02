@@ -24,9 +24,6 @@ public partial class AddonMaster
 
         public bool IsEnabled => DeliverButton->IsEnabled;
 
-        public void Deliver()
-        {
-            if (IsEnabled) DeliverButton->ClickAddonButton(Base);
-        }
+        public void Deliver() => ClickButtonIfEnabled(DeliverButton);
     }
 }

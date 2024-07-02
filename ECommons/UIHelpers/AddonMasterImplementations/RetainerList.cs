@@ -1,6 +1,7 @@
 ﻿using ECommons.Automation;
 using ECommons.UIHelpers.AtkReaderImplementations;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
-public partial class AddonMaster{
+public partial class AddonMaster
+{
     public unsafe class RetainerList : AddonMasterBase<AddonRetainerList>
     {
         public RetainerList(nint addon) : base(addon)
@@ -19,30 +21,32 @@ public partial class AddonMaster{
         {
         }
 
-        public bool Select(int retainerIndex)
+        public Entry[] Retainers
         {
-            if (retainerIndex < 0 || retainerIndex > 9) throw new ArgumentOutOfRangeException(nameof(retainerIndex));
-            var reader = new ReaderRetainerList(Base);
-            if (reader.Retainers.Count < retainerIndex && reader.Retainers[retainerIndex].IsActive)
+            get
             {
-                Callback.Fire(Base, true, 2, (uint)retainerIndex, Callback.ZeroAtkValue, Callback.ZeroAtkValue);
-                return true;
+                var reader = new ReaderRetainerList(Base);
+                var entries = new Entry[reader.Retainers.Count];
+                for (var i = 0; i < entries.Length; i++)
+                {
+                    entries[i] = new(Base, reader.Retainers[i], i);
+                }
+                return entries;
             }
-            return false;
         }
 
-        public bool Select(string retainerName)
+        public class Entry(AtkUnitBase* Base, ReaderRetainerList.Retainer handle, int index) : ReaderRetainerList.Retainer(handle.AtkReaderParams.UnitBase, handle.AtkReaderParams.BeginOffset)
         {
-            var reader = new ReaderRetainerList(Base);
-            for (int i = 0; i < reader.Retainers.Count; i++)
+            public int Index => index;
+            public bool Select()
             {
-                var r = reader.Retainers[i];
-                if(r.IsActive && r.Name == retainerName)
+                if (IsActive)
                 {
-                    return Select(i);
+                    Callback.Fire(Base, true, 2, (uint)index, Callback.ZeroAtkValue, Callback.ZeroAtkValue);
+                    return true;
                 }
+                return false;
             }
-            return false;
         }
     }
 }
