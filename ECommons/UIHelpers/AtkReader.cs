@@ -25,6 +25,8 @@ public unsafe abstract class AtkReader(AtkUnitBase* UnitBase, int BeginOffset = 
 
     public AtkReader(nint UnitBasePtr, int BeginOffset = 0) : this((AtkUnitBase*)UnitBasePtr, BeginOffset) { }
 
+    public (nint UnitBase, int BeginOffset) AtkReaderParams => ((nint)UnitBase, BeginOffset);
+
     public bool IsNull 
     {
         get 
