@@ -20,10 +20,10 @@ public static class EzCmd
             HelpMessage = helpMessage ?? "",
             ShowInHelp = helpMessage != null
         };
-        GenericHelpers.Safe(delegate
+        /*GenericHelpers.Safe(delegate
         {
             cInfo.SetFoP("LoaderAssemblyName", Svc.PluginInterface.InternalName);
-        });
+        });*/
         Svc.Commands.AddHandler(command, cInfo);
     }
 }
