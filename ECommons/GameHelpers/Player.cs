@@ -15,6 +15,7 @@ namespace ECommons.GameHelpers;
 
 public unsafe static class Player
 {
+    public const int MaxLevel = 100;
     public static IPlayerCharacter Object => Svc.ClientState.LocalPlayer;
     public static bool Available => Svc.ClientState.LocalPlayer != null;
     public static bool Interactable => Available && Object.IsTargetable;
