@@ -460,7 +460,7 @@ public static unsafe partial class GenericHelpers
     /// <returns>Whether you are targeting object <paramref name="obj"/>; <see langword="false"/> if <paramref name="obj"/> is <see langword="null"/></returns>
     public static bool IsTarget(this IGameObject obj)
     {
-        return Svc.Targets.Target != null && Svc.Targets.Target.Address == obj.Address;
+        return Svc.Targets.Target != null && obj != null && Svc.Targets.Target.Address == obj.Address;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
