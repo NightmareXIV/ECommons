@@ -13,7 +13,7 @@ public unsafe class ClickHelper
 {
     private static InvokeListener? ListenerInternal;
     public delegate nint InvokeListener(nint a1, AtkEventType a2, uint a3, AtkEvent* a4);
-    public static InvokeListener Listener 
+    public static InvokeListener Listener
     {
         get
         {
@@ -40,7 +40,7 @@ public unsafe class ClickHelper
     {
         EventData? newEventData = null;
         InputData? newInputData = null;
-        if(eventData == null)
+        if (eventData == null)
         {
             newEventData = EventData.ForNormalTarget(target, unitbase);
         }
@@ -79,8 +79,8 @@ public static unsafe class ClickHelperExtensions
         var evt = btnRes.AtkEventManager.Event;
 
         addon->ReceiveEvent(evt->Type, (int)evt->Param, btnRes.AtkEventManager.Event);
-
     }
+
     public static void ClickAddonButton(this AtkCollisionNode target, AtkUnitBase* addon)
     {
         var btnRes = target.AtkResNode;
