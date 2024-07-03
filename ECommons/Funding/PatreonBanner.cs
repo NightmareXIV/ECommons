@@ -1,6 +1,7 @@
 ﻿using Dalamud.Interface.Utility;
 using ECommons.EzSharedDataManager;
 using ECommons.ImGuiMethods;
+using ECommons.Logging;
 using ECommons.Resources;
 using ImGuiNET;
 using System;
@@ -20,7 +21,23 @@ public static class PatreonBanner
 				DrawButton();
 		}
 
-		static uint ColorNormal => EzSharedData.GetOrCreate<uint[]>("ECommonsPatreonBannerRandomColor", [GradientColor.Get(ImGuiEx.Vector4FromRGB(0x022594), ImGuiEx.Vector4FromRGB(0x940238)).ToUint()])[0];
+		static uint ColorNormal 
+		{
+				get
+				{
+						var vector1 = ImGuiEx.Vector4FromRGB(0x022594);
+						var vector2 = ImGuiEx.Vector4FromRGB(0x940238);
+
+            var gen = GradientColor.Get(vector1, vector2).ToUint();
+            var data = EzSharedData.GetOrCreate<uint[]>("ECommonsPatreonBannerRandomColor", [gen]);
+						if (!GradientColor.IsColorInRange(data[0].ToVector4(), vector1, vector2))
+						{
+								data[0] = gen;
+						}
+						return data[0];
+        }
+		}
+
     static uint ColorHovered => ColorNormal;
     static uint ColorActive => ColorNormal;
     static readonly uint ColorText = 0xFFFFFFFF;
