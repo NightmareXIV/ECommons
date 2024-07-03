@@ -11,6 +11,7 @@ using System.Linq;
 using System.Runtime.Loader;
 using Newtonsoft.Json;
 using System.IO;
+using CapturedPluginState = (string InternalName, System.Version Version, bool IsLoaded);
 #nullable disable
 
 namespace ECommons.Reflection;
@@ -84,13 +85,30 @@ public static class DalamudReflector
                 GetMethod("Get").Invoke(null, BindingFlags.Default, null, Array.Empty<object>(), null);
     }
 
-    static IExposedPlugin[] PrevInstalledPluginState = [];
+    static CapturedPluginState[] PrevInstalledPluginState = [];
     static void MonitorPlugins(object _)
     {
-        if(!Svc.PluginInterface.InstalledPlugins.SequenceEqual(PrevInstalledPluginState))
+        if(!Svc.PluginInterface.InstalledPlugins.ExposedPluginsEqual(PrevInstalledPluginState))
         {
-            PrevInstalledPluginState = Svc.PluginInterface.InstalledPlugins.ToArray();
+            PrevInstalledPluginState = Svc.PluginInterface.InstalledPlugins.Select(x => new CapturedPluginState(x.InternalName, x.Version, x.IsLoaded)).ToArray();
             OnInstalledPluginsChanged();
+        }
+    }
+
+    static bool ExposedPluginsEqual(this IEnumerable<IExposedPlugin> plugins, IEnumerable<CapturedPluginState> other)
+    {
+        if (plugins.Count() != other.Count()) return false;
+        var enumeratorOriginal = plugins.GetEnumerator();
+        var enumeratorOther = other.GetEnumerator();
+        while (true)
+        {
+            var move1 = enumeratorOriginal.MoveNext();
+            var move2 = enumeratorOther.MoveNext();
+            if(move1 != move2) return false;
+            if (move1 == false) return true;
+            if (enumeratorOriginal.Current.IsLoaded != enumeratorOther.Current.IsLoaded) return false;
+            if (enumeratorOriginal.Current.Version != enumeratorOther.Current.Version) return false;
+            if (enumeratorOriginal.Current.InternalName != enumeratorOther.Current.InternalName) return false;
         }
     }
 
