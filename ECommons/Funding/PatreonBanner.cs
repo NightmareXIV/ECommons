@@ -60,9 +60,10 @@ public static class PatreonBanner
 				ImGui.PopStyleColor(4);
 		}
 
-		public static void RightTransparentTab()
+		public static void RightTransparentTab(string? text = null)
 		{
-				var textWidth = ImGui.CalcTextSize(KoFiButton.Text).X;
+				text ??= Text;
+        var textWidth = ImGui.CalcTextSize(text).X;
 				var spaceWidth = ImGui.CalcTextSize(" ").X;
 				ImGui.BeginDisabled();
 				ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0f);
