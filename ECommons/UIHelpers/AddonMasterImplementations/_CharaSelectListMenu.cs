@@ -10,7 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
-public unsafe partial class AddonMaster{
+public unsafe partial class AddonMaster
+{
     public class _CharaSelectListMenu : AddonMasterBase
     {
         public _CharaSelectListMenu(nint addon) : base(addon)
@@ -21,7 +22,7 @@ public unsafe partial class AddonMaster{
         {
         }
 
-        public bool TemporarilyLocked => AgentLobby.Instance()->TemporaryLocked;
+        public bool TemporarilyLocked => false;// AgentLobby.Instance()->TemporaryLocked;
 
         public Character[] Characters
         {
@@ -45,6 +46,7 @@ public unsafe partial class AddonMaster{
             public CharaSelectCharacterEntry* Entry { get; init; }
             public string Name => Entry->NameString;
             public uint HomeWorld => Entry->HomeWorldId;
+            public bool IsSelected => AgentLobby.Instance()->HoveredCharacterContentId == Entry->ContentId;
 
             public Character(AtkUnitBase* @base, int index, CharaSelectCharacterEntry* entry)
             {
