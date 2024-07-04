@@ -1,12 +1,11 @@
 ﻿using ECommons.DalamudServices;
 using ECommons.EzHookManager;
+using ECommons.UIHelpers.AddonMasterImplementations;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommons.Automation.UIInput;
 public unsafe class ClickHelper
@@ -52,6 +51,59 @@ public unsafe class ClickHelper
         InvokeReceiveEvent(&unitbase->AtkEventListener, type, which, eventData ?? newEventData!, inputData ?? newInputData!);
         newEventData?.Dispose();
         newInputData?.Dispose();
+    }
+
+    /// <summary>
+    /// Invoke a click by name. Intended for calling clicks via user-entered strings.
+    /// </summary>
+    /// <param name="clickName">Name of the click, which is ClassName_MethodName.</param>
+    /// <param name="addon">Addon instance.</param>
+    public static void SendClick(string clickName, nint addon = default)
+    {
+        var classAndMethodNames = GetAvailableClicks();
+
+        foreach (var classAndMethod in classAndMethodNames)
+        {
+            if (classAndMethod.Equals(clickName))
+            {
+                var className = clickName[..clickName.IndexOf('_')];
+                var type = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == className);
+                if (type != null)
+                {
+                    var constructor = type.GetConstructor([typeof(nint)]);
+                    if (constructor != null)
+                    {
+                        var instance = constructor.Invoke([addon]);
+                        var methodName = clickName[(className.Length + 1)..];
+                        var method = type.GetMethod(methodName);
+
+                        if (method != null)
+                        {
+                            method.Invoke(instance, null);
+                            return;
+                        }
+                        else
+                            Svc.Log.Debug($"Method {methodName} not found for {clickName}");
+                    }
+                }
+                Svc.Log.Debug($"Click class {className} not found.");
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// Return all the click names that can be passed to <see cref="SendClick(string, nint)"/>.
+    /// </summary>
+    public static string[] GetAvailableClicks()
+    {
+        var classesAndMethods = Assembly.GetExecutingAssembly().GetTypes()
+        .Where(type => type.FullName!.StartsWith($"{typeof(AddonMaster).FullName}+"))
+            .SelectMany(type => type.GetMethods()
+            .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName)
+            .Select(method => $"{type.Name}_{method.Name}"));
+
+        return classesAndMethods.ToArray();
     }
 }
 
