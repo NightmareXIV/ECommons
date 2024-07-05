@@ -1,13 +1,8 @@
 ﻿using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Memory;
-using ECommons.Automation;
+using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ECommons.Automation.UIInput;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -23,7 +18,16 @@ public partial class AddonMaster
         public SeString SeString => MemoryHelper.ReadSeString(&Addon->PromptText->NodeText);
         public string Text => SeString.ExtractText();
 
-        public void Yes() => ClickButtonIfEnabled(Addon->YesButton);
+        public void Yes()
+        {
+            if (Addon->YesButton != null && !Addon->YesButton->IsEnabled)
+            {
+                Svc.Log.Debug($"{nameof(AddonSelectYesno)}: Force enabling yes button");
+                var flagsPtr = (ushort*)&Addon->YesButton->AtkComponentBase.OwnerNode->AtkResNode.NodeFlags;
+                *flagsPtr ^= 1 << 5;
+            }
+            ClickButtonIfEnabled(Addon->YesButton);
+        }
 
         public void No() => ClickButtonIfEnabled(Addon->NoButton);
     }
