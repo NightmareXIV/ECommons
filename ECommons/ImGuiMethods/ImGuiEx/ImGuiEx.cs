@@ -4,6 +4,7 @@ using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
+using ECommons.Funding;
 using ECommons.Logging;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
@@ -1019,7 +1020,7 @@ public static unsafe partial class ImGuiEx
                 }
             }
         }
-        if (KoFiTransparent != null) KoFiButton.RightTransparentTab(KoFiTransparent);
+        if (KoFiTransparent != null) PatreonBanner.RightTransparentTab();
         ImGui.EndTabBar();
     }
 
