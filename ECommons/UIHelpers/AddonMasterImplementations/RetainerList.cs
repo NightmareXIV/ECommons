@@ -58,5 +58,6 @@ public partial class AddonMaster
         public void Retainer7() => Retainers[6].Select();
         public void Retainer8() => Retainers[7].Select();
         public void Retainer9() => Retainers[8].Select();
+        public void Retainer10() => Retainers[9].Select();
     }
 }
