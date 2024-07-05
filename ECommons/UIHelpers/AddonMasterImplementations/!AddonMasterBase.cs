@@ -42,6 +42,11 @@ public unsafe abstract class AddonMasterBase<T> : IAddonMasterBase where T : unm
             Target = &AtkStage.Instance()->AtkEventTarget
         };
     }
+
+    protected AtkEventDataBuilder CreateAtkEventData()
+    {
+        return new();
+    }
 }
 
 public unsafe abstract class AddonMasterBase : AddonMasterBase<AtkUnitBase>

@@ -32,7 +32,7 @@ public unsafe partial class AddonMaster{
                     var str = stringArray->StringArray[i];
                     var worldName = MemoryHelper.ReadStringNullTerminated((nint)str).Trim();
                     if (worldName.IsNullOrEmpty()) break;
-                    ret.Add(new(i, worldName, Base));
+                    ret.Add(new(this, i, worldName));
                 }
                 return [.. ret];
             }
@@ -40,21 +40,28 @@ public unsafe partial class AddonMaster{
 
         public class World
         {
+            public readonly _CharaSelectWorldServer Master;
             public readonly int Index;
             public readonly string Name;
-            public readonly AtkUnitBase* Base;
 
-            public World(int index, string name, AtkUnitBase* @base)
+            public World(_CharaSelectWorldServer master, int index, string name)
             {
                 ArgumentOutOfRangeException.ThrowIfNegative(index);
                 Index = index;
                 Name = name ?? throw new ArgumentNullException(nameof(name));
-                Base = @base;
+                Master = master;
             }
 
             public void Select()
             {
-                Callback.Fire(Base, true, 25, 0, Index);
+                /*var evt = Master.CreateAtkEvent();
+                var data = Master.CreateAtkEventData()
+                    .Write<byte>(0x10, (byte)Index)
+                    .Write<byte>(0x16, (byte)Index)
+                    .Build();
+                Master.Base->ReceiveEvent((AtkEventType)35, 0, &evt, &data);
+                Master.Base->ReceiveEvent((AtkEventType)37, 0, &evt, &data);*/
+                Callback.Fire(Master.Base, true, 25, 0, Index);
             }
         }
     }
