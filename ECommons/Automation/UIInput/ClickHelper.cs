@@ -98,8 +98,8 @@ public unsafe class ClickHelper
     public static string[] GetAvailableClicks()
     {
         var classesAndMethods = Assembly.GetExecutingAssembly().GetTypes()
-        .Where(type => type.FullName!.StartsWith($"{typeof(AddonMaster).FullName}+"))
-            .SelectMany(type => type.GetMethods()
+        .Where(type => type.FullName!.StartsWith($"{typeof(AddonMaster).FullName}+") && type.DeclaringType == typeof(AddonMaster))
+        .SelectMany(type => type.GetMethods()
             .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName)
             .Select(method => $"{type.Name}_{method.Name}"));
 
