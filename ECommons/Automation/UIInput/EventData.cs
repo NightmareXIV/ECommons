@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FFXIVClientStructs.FFXIV.Component.GUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -19,20 +20,16 @@ public unsafe sealed class EventData : IDisposable
     /// </summary>
     private EventData()
     {
-        Bytes = Marshal.AllocHGlobal(0x18);
-        this.Data = (void**)Bytes;
+        Bytes = Marshal.AllocHGlobal(sizeof(AtkEvent));
+        this.Data = (AtkEvent*)Bytes;
         if (this.Data == null)
             throw new ArgumentNullException("EventData could not be created, null");
-
-        this.Data[0] = null;
-        this.Data[1] = null;
-        this.Data[2] = null;
     }
 
     /// <summary>
     /// Gets the data pointer.
     /// </summary>
-    public void** Data { get; }
+    public AtkEvent* Data { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EventData"/> class.
@@ -43,8 +40,8 @@ public unsafe sealed class EventData : IDisposable
     public static EventData ForNormalTarget(void* target, void* listener)
     {
         var data = new EventData();
-        data.Data[1] = target;
-        data.Data[2] = listener;
+        data.Data->Target = (AtkEventTarget*)target;
+        data.Data->Listener = (AtkEventListener*)listener;
         return data;
     }
 
