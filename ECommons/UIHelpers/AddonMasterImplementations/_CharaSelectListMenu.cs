@@ -10,7 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
-public unsafe partial class AddonMaster{
+public unsafe partial class AddonMaster
+{
     public class _CharaSelectListMenu : AddonMasterBase
     {
         public _CharaSelectListMenu(nint addon) : base(addon)
@@ -21,7 +22,14 @@ public unsafe partial class AddonMaster{
         {
         }
 
-        public bool TemporarilyLocked => AgentLobby.Instance()->TemporaryLocked;
+        public bool TemporarilyLocked => false;// AgentLobby.Instance()->TemporaryLocked;
+
+        public void SelectWorld()
+        {
+            var evt = CreateAtkEvent(1);
+            var data = CreateAtkEventData().Build();
+            Base->ReceiveEvent((AtkEventType)25, 1, &evt, &data);
+        }
 
         public Character[] Characters
         {
@@ -32,7 +40,7 @@ public unsafe partial class AddonMaster{
                 for (var i = 0; i < charaSpan.Length; i++)
                 {
                     var s = charaSpan[i];
-                    ret.Add(new(Base, i, s));
+                    ret.Add(new(this, i, s));
                 }
                 return [.. ret];
             }
@@ -40,32 +48,35 @@ public unsafe partial class AddonMaster{
 
         public class Character
         {
-            public AtkUnitBase* Base { get; init; }
+            private _CharaSelectListMenu Master;
             public int Index { get; init; }
             public CharaSelectCharacterEntry* Entry { get; init; }
             public string Name => Entry->NameString;
             public uint HomeWorld => Entry->HomeWorldId;
+            public bool IsSelected => AgentLobby.Instance()->HoveredCharacterContentId == Entry->ContentId;
 
-            public Character(AtkUnitBase* @base, int index, CharaSelectCharacterEntry* entry)
+            public Character(_CharaSelectListMenu master, int index, CharaSelectCharacterEntry* entry)
             {
-                Base = @base;
+                Master = master;
                 Index = index;
                 Entry = entry;
             }
 
             public void Select()
             {
-                Callback.Fire(Base, true, 21, Index);
+                Callback.Fire(Master.Base, true, 21, Index);
             }
 
-            public void Login()
-            {
-                Callback.Fire(Base, true, 29, 0, Index);
-            }
+            public void Login() => Click(false);
 
-            public void OpenContextMenu()
+            public void OpenContextMenu() => Click(true);
+
+            private void Click(bool right)
             {
-                Callback.Fire(Base, true, 29, 1, Index);
+                var eventIndex = (byte)(5 + Index);
+                var evt = stackalloc AtkEvent[] { Master.CreateAtkEvent(eventIndex) };
+                var data = stackalloc AtkEventData[] { Master.CreateAtkEventData().Write<byte>(6, (byte)(right ? 1 : 0)).Build() };
+                Master.Base->ReceiveEvent(AtkEventType.MouseClick, eventIndex, evt, data);
             }
 
             public override string? ToString()

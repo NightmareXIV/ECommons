@@ -48,5 +48,16 @@ public partial class AddonMaster
                 return false;
             }
         }
+
+        public void Retainer1() => Retainers[0].Select();
+        public void Retainer2() => Retainers[1].Select();
+        public void Retainer3() => Retainers[2].Select();
+        public void Retainer4() => Retainers[3].Select();
+        public void Retainer5() => Retainers[4].Select();
+        public void Retainer6() => Retainers[5].Select();
+        public void Retainer7() => Retainers[6].Select();
+        public void Retainer8() => Retainers[7].Select();
+        public void Retainer9() => Retainers[8].Select();
+        public void Retainer10() => Retainers[9].Select();
     }
 }
