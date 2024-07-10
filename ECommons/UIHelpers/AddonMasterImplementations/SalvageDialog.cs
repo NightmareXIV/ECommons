@@ -1,5 +1,4 @@
-﻿using ECommons.Automation;
-using FFXIVClientStructs.FFXIV.Client.UI;
+﻿using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
@@ -13,6 +12,7 @@ public partial class AddonMaster
 
         public SalvageDialog(void* addon) : base(addon) { }
 
+        // this has no bearing on the checkbox
         public bool BulkDesynthEnabled { get => Addon->BulkDesynthEnabled; set => Addon->BulkDesynthEnabled = value; }
 
         public AtkComponentButton* DesynthesizeButton => Addon->GetButtonNodeById(24);
@@ -22,7 +22,10 @@ public partial class AddonMaster
         public void Checkbox()
         {
             if (Addon->CheckBox != null && !Addon->CheckBox->IsChecked)
-                Callback.Fire(&Addon->AtkUnitBase, true, 13, true);
+            {
+                Addon->CheckBox->IsChecked = true;
+                DesynthesizeButton->SetEnabledState(true);
+            }
         }
     }
 }
