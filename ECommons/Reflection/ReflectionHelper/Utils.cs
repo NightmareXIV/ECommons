@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace ECommons.Reflection;
 #nullable disable
@@ -158,10 +159,12 @@ public static partial class ReflectionHelper
         var ret = new List<IFieldPropertyUnion>();
         foreach (var item in type.GetFields(bindingFlags))
         {
+            if (item.GetCustomAttribute<CompilerGeneratedAttribute>() != null) continue;
             ret.Add(new UnionField(item));
         }
         foreach (var item in type.GetProperties(bindingFlags))
         {
+            if (item.GetCustomAttribute<CompilerGeneratedAttribute>() != null) continue;
             ret.Add(new UnionProperty(item));
         }
         return [.. ret];

@@ -33,6 +33,8 @@ public class UnionProperty : IFieldPropertyUnion
     public object[] GetCustomAttributes(bool inherit) => PropertyInfo.GetCustomAttributes(inherit);
 
     public object[] GetCustomAttributes(Type attributeType, bool inherit) => PropertyInfo.GetCustomAttributes(attributeType, inherit);
+    public T? GetCustomAttribute<T>() where T : Attribute => PropertyInfo.GetCustomAttribute<T>();
+    public IEnumerable<T> GetCustomAttributes<T>() where T : Attribute => PropertyInfo.GetCustomAttributes<T>();
 
     public object? GetRawConstantValue() => PropertyInfo.GetRawConstantValue();
 

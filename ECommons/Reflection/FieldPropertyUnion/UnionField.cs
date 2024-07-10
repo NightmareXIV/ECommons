@@ -34,6 +34,9 @@ public class UnionField : IFieldPropertyUnion
 
     public object[] GetCustomAttributes(Type attributeType, bool inherit) => FieldInfo.GetCustomAttributes(attributeType, inherit);
 
+    public T? GetCustomAttribute<T>() where T : Attribute => FieldInfo.GetCustomAttribute<T>();
+    public IEnumerable<T> GetCustomAttributes<T>() where T : Attribute => FieldInfo.GetCustomAttributes<T>();
+
     public object? GetRawConstantValue() => FieldInfo.GetRawConstantValue();
 
     public object? GetValue(object? obj) => FieldInfo.GetValue(obj);

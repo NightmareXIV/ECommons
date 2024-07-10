@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using ECommons;
 using System.Reflection;
 using System.Linq;
+using ECommons.Reflection.FieldPropertyUnion;
 
 namespace ECommons.Singletons;
 /// <summary>
@@ -15,47 +16,71 @@ public static class SingletonServiceManager
 		internal static List<Type> Types = [];
 
 		internal static void DisposeAll()
-		{
-				foreach(var x in Types)
+    {
+        List<(Action Action, int Priority)> Queue = [];
+        foreach (var x in Types)
 				{
 						foreach (var t in x.GetFieldPropertyUnions(ReflectionHelper.AllFlags).Reverse())
 						{
 								var value = t.GetValue(null);
-								if (value is IDisposable disposable)
+								var prio = t.GetCustomAttribute<PriorityAttribute>()?.Priority ?? 0;
+                Queue.Add((() =>
 								{
-										try
+										if (value is IDisposable disposable)
 										{
-												PluginLog.Debug($"Disposing singleton instance of {t.UnionType.FullName}");
-												disposable.Dispose();
+												try
+												{
+														PluginLog.Debug($"Disposing singleton instance of {t.UnionType.FullName}, priority={prio}");
+														disposable.Dispose();
+												}
+												catch (Exception e)
+												{
+														e.Log();
+												}
 										}
-										catch (Exception e)
-										{
-												e.Log();
-										}
-								}
-								t.SetValue(null, null);
+										t.SetValue(null, null);
+								}, prio));
 						}
 				}
-				Types = null!;
+        foreach (var x in Queue.Select(s => s.Priority).Distinct().Order())
+        {
+            foreach (var a in Queue)
+            {
+                if (a.Priority == x) a.Action();
+            }
+        }
+        Types = null!;
 		}
 
 		public static void Initialize(Type staticType)
 		{
 				Types.Add(staticType);
-				foreach (var x in staticType.GetFieldPropertyUnions(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
+				List<(Action Action, int Priority)> Queue = [];
+        foreach (var x in staticType.GetFieldPropertyUnions(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
 				{
 						var value = x.GetValue(null);
 						if(value == null)
 						{
-								try
+								var prio = x.GetCustomAttribute<PriorityAttribute>()?.Priority ?? 0;
+                Queue.Add((() =>
 								{
-										PluginLog.Debug($"Creating singleton instance of {x.UnionType.FullName}");
-										x.SetValue(null, Activator.CreateInstance(x.UnionType, true));
-								}
-								catch(Exception e)
-								{
-										e.Log();
-								}
+										try
+										{
+												PluginLog.Debug($"Creating singleton instance of {x.UnionType.FullName}, priority={prio}");
+												x.SetValue(null, Activator.CreateInstance(x.UnionType, true));
+										}
+										catch (Exception e)
+										{
+												e.Log();
+										}
+								}, prio));
+						}
+				}
+				foreach(var prio in Queue.Select(s => s.Priority).Distinct().OrderDescending())
+				{
+						foreach(var a in Queue)
+						{
+								if (a.Priority == prio) a.Action();
 						}
 				}
 		}
