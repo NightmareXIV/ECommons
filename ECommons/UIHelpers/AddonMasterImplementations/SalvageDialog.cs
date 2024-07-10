@@ -1,4 +1,5 @@
 ﻿using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -11,9 +12,20 @@ public partial class AddonMaster
 
         public SalvageDialog(void* addon) : base(addon) { }
 
+        // this has no bearing on the checkbox
         public bool BulkDesynthEnabled { get => Addon->BulkDesynthEnabled; set => Addon->BulkDesynthEnabled = value; }
 
-        public void Desynthesize() => ClickButtonIfEnabled(Addon->DesynthesizeButton);
-        //public void Checkbox() => ClickCheckbox(Addon->CheckBox);
+        public AtkComponentButton* DesynthesizeButton => Addon->GetButtonNodeById(24);
+
+        public void Desynthesize() => ClickButtonIfEnabled(DesynthesizeButton);
+
+        public void Checkbox()
+        {
+            if (Addon->CheckBox != null && !Addon->CheckBox->IsChecked)
+            {
+                Addon->CheckBox->IsChecked = true;
+                DesynthesizeButton->SetEnabledState(true);
+            }
+        }
     }
 }
