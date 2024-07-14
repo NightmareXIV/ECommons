@@ -204,7 +204,20 @@ public static class DalamudReflector
             return false;
         }
     }
-    
+
+    public static bool IsPluginInstalled(string internalName)
+    {
+        var pluginManager = GetPluginManager();
+        var installedPlugins = (System.Collections.IList)pluginManager.GetType().GetProperty("InstalledPlugins").GetValue(pluginManager);
+        foreach (var t in installedPlugins)
+        {
+            if ((string)t.GetType().GetProperty("InternalName").GetValue(t) == internalName)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public static bool TryGetDalamudStartInfo(out DalamudStartInfo dalamudStartInfo, IDalamudPluginInterface pluginInterface = null)
     {
         try
