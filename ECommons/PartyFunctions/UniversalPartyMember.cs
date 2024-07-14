@@ -15,7 +15,7 @@ public class UniversalPartyMember
     public string NameWithWorld => $"{Name}@{HomeWorld.GameData.Name}";
     public ulong ContentID { get; init; }
 
-    internal IGameObject IGameObjectInternal = null;
+    internal IGameObject GameObjectInternal = null;
     public IGameObject IGameObject
     {
         get
@@ -26,7 +26,7 @@ public class UniversalPartyMember
             }
             else
             {
-                return IGameObjectInternal;
+                return GameObjectInternal;
             }
         }
     }

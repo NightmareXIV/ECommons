@@ -1,13 +1,10 @@
 ﻿using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Memory;
-using ECommons.Automation;
+using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ECommons.Automation.UIInput;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -21,25 +18,22 @@ public partial class AddonMaster
         public SelectYesno(void* addon) : base(addon) { }
 
         public SeString SeString => MemoryHelper.ReadSeString(&Addon->PromptText->NodeText);
+        public SeString SeStringNullTerminated => MemoryHelper.ReadSeStringNullTerminated(new nint(Addon->AtkValues[0].String));
         public string Text => SeString.ExtractText();
+        public string TextLegacy => string.Join(string.Empty, SeStringNullTerminated.Payloads.OfType<TextPayload>().Select(t => t.Text)).Replace('\n', ' ').Trim();
 
         public void Yes()
         {
-            var btn = Addon->YesButton;
-            if (btn->IsEnabled)
+            if (Addon->YesButton != null && !Addon->YesButton->IsEnabled)
             {
-                btn->ClickAddonButton(Base);
+                Svc.Log.Debug($"{nameof(AddonSelectYesno)}: Force enabling yes button");
+                var flagsPtr = (ushort*)&Addon->YesButton->AtkComponentBase.OwnerNode->AtkResNode.NodeFlags;
+                *flagsPtr ^= 1 << 5;
             }
+            ClickButtonIfEnabled(Addon->YesButton);
         }
 
-        public void No()
-        {
-            var btn = Addon->NoButton;
-            if (btn->IsEnabled)
-            {
-                btn->ClickAddonButton(Base);
-            }
-        }
+        public void No() => ClickButtonIfEnabled(Addon->NoButton);
     }
 }
 

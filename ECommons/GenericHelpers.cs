@@ -29,6 +29,7 @@ using System.Collections;
 using Dalamud.Interface.Windowing;
 using ECommons.ExcelServices;
 using System.Runtime.InteropServices;
+using ECommons.UIHelpers.AddonMasterImplementations;
 #nullable disable
 
 namespace ECommons;
@@ -460,7 +461,7 @@ public static unsafe partial class GenericHelpers
     /// <returns>Whether you are targeting object <paramref name="obj"/>; <see langword="false"/> if <paramref name="obj"/> is <see langword="null"/></returns>
     public static bool IsTarget(this IGameObject obj)
     {
-        return Svc.Targets.Target != null && Svc.Targets.Target.Address == obj.Address;
+        return Svc.Targets.Target != null && obj != null && Svc.Targets.Target.Address == obj.Address;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1341,6 +1342,35 @@ public static unsafe partial class GenericHelpers
             value = default;
             return false;
         }
+    }
+
+    /// <summary>
+    /// Slower than <see cref="TryGetAddonByName"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="addon"></param>
+    /// <param name="addonMaster"></param>
+    /// <returns></returns>
+    public static bool TryGetAddonMaster<T>(string addon, out T addonMaster) where T : IAddonMasterBase
+    {
+        if (TryGetAddonByName<AtkUnitBase>(addon, out var ptr))
+        {
+            addonMaster = (T)Activator.CreateInstance(typeof(T), (nint)ptr);
+            return true;
+        }
+        addonMaster = default;
+        return false;
+    }
+
+    public static bool TryGetAddonMaster<T>(out T addonMaster) where T : IAddonMasterBase
+    {
+        if (TryGetAddonByName<AtkUnitBase>(typeof(T).Name.Split(".")[^1], out var ptr))
+        {
+            addonMaster = (T)Activator.CreateInstance(typeof(T), (nint)ptr);
+            return true;
+        }
+        addonMaster = default;
+        return false;
     }
 
     /// <summary>

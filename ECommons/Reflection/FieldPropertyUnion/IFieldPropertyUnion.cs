@@ -25,6 +25,9 @@ public interface IFieldPropertyUnion
     public bool IsDefined(Type attributeType, bool inherit);
     public object[] GetCustomAttributes(bool inherit);
     public object[] GetCustomAttributes(Type attributeType, bool inherit);
+    public T? GetCustomAttribute<T>() where T : Attribute;
+    public IEnumerable<T> GetCustomAttributes<T>() where T : Attribute;
+
     public IEnumerable<CustomAttributeData> CustomAttributes { get; }
     public bool IsCollectible { get; }
 }

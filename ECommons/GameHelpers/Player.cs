@@ -9,12 +9,14 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using System.Numerics;
 using ECommons.GameFunctions;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using System;
 #nullable disable
 
 namespace ECommons.GameHelpers;
 
 public unsafe static class Player
 {
+    public const int MaxLevel = 100;
     public static IPlayerCharacter Object => Svc.ClientState.LocalPlayer;
     public static bool Available => Svc.ClientState.LocalPlayer != null;
     public static bool Interactable => Available && Object.IsTargetable;
@@ -29,6 +31,8 @@ public unsafe static class Player
     public static string CurrentWorld => Svc.ClientState.LocalPlayer?.CurrentWorld.GameData.Name.ToString();
     public static Character* Character => (Character*)Svc.ClientState.LocalPlayer.Address;
     public static BattleChara* BattleChara => (BattleChara*)Svc.ClientState.LocalPlayer.Address;
+    public static GameObject* GameObject => (GameObject*)Svc.ClientState.LocalPlayer.Address;
+    [Obsolete("Please use GameObject")]
     public static GameObject* IGameObject => (GameObject*)Svc.ClientState.LocalPlayer.Address;
     public static uint Territory => Svc.ClientState.TerritoryType;
     public static Job Job => GetJob(Svc.ClientState.LocalPlayer);

@@ -25,6 +25,8 @@ public unsafe abstract class AtkReader(AtkUnitBase* UnitBase, int BeginOffset = 
 
     public AtkReader(nint UnitBasePtr, int BeginOffset = 0) : this((AtkUnitBase*)UnitBasePtr, BeginOffset) { }
 
+    public (nint UnitBase, int BeginOffset) AtkReaderParams => ((nint)UnitBase, BeginOffset);
+
     public bool IsNull 
     {
         get 
@@ -88,7 +90,6 @@ public unsafe abstract class AtkReader(AtkUnitBase* UnitBase, int BeginOffset = 
         if (!value.Type.EqualsAny(ValueType.String, ValueType.String8, ValueType.WideString, ValueType.ManagedString)) throw new InvalidCastException($"Value {num} from Addon {GenericHelpers.Read(UnitBase->Name)} was requested as SeString but it was {value.Type}");
         return MemoryHelper.ReadSeStringNullTerminated((nint)value.String);
     }
-
 
     protected string ReadString(int n)
     {
