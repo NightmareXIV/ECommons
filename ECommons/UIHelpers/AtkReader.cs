@@ -91,7 +91,6 @@ public unsafe abstract class AtkReader(AtkUnitBase* UnitBase, int BeginOffset = 
         return MemoryHelper.ReadSeStringNullTerminated((nint)value.String);
     }
 
-
     protected string ReadString(int n)
     {
         var num = n + BeginOffset;

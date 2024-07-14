@@ -24,6 +24,7 @@ using System;
 using System.Reflection;
 using ECommons.Singletons;
 using System.Linq;
+using ECommons.EzContextMenu;
 
 
 #nullable disable
@@ -135,6 +136,7 @@ var type = "unknown build";
         GenericHelpers.Safe(EzHookCommon.DisposeAll);
         GenericHelpers.Safe(EzSharedData.Dispose);
         GenericHelpers.Safe(EzIPC.Dispose);
+        GenericHelpers.Safe(ContextMenuPrefixRemover.Dispose);
         //SingletonManager.Dispose();
         Chat.instance = null;
         Instance = null;
