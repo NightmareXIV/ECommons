@@ -104,10 +104,10 @@ public static class PatreonBanner
             {
                 GenericHelpers.ShellStart("https://subscribe.nightmarexiv.com");
             }
-            if (ImGui.Selectable(Lang.Context_OneTimeDonate))
+            /*if (ImGui.Selectable(Lang.Context_OneTimeDonate))
             {
                 GenericHelpers.ShellStart("https://donate.nightmarexiv.com");
-            }
+            }*/
             if (ImGui.Selectable(Lang.Context_CryptoDonation))
             {
                 GenericHelpers.ShellStart("https://crypto.nightmarexiv.com");
