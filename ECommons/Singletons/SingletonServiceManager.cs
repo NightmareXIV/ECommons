@@ -32,6 +32,11 @@ public static class SingletonServiceManager
                         PluginLog.Debug($"Disposing singleton instance of {t.UnionType.FullName}, priority={prio}");
                         disposable.Dispose();
                     }
+                    catch (TargetInvocationException tie)
+                    {
+                        tie.Log();
+                        tie.InnerException.Log();
+                    }
                     catch (Exception e)
                     {
                         e.Log();
@@ -56,6 +61,11 @@ public static class SingletonServiceManager
                 {
                     PluginLog.Debug($"Creating singleton instance of {x.UnionType.FullName}");
                     x.SetValue(null, Activator.CreateInstance(x.UnionType, true));
+                }
+                catch(TargetInvocationException tie)
+                {
+                    tie.Log();
+                    tie.InnerException.Log();
                 }
                 catch (Exception e)
                 {
