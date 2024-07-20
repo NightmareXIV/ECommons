@@ -24,7 +24,7 @@ public class DefaultSerializationFactory : ISerializationFactory
         if (type != null && type.GetValue(null) is JsonSerializerSettings s)
         {
             settings = s;
-            PluginLog.Debug($"Using JSON serializer settings from object to perform deserialization");
+            PluginLog.Verbose($"Using JSON serializer settings from object to perform deserialization");
         }
         else
         {
@@ -49,7 +49,7 @@ public class DefaultSerializationFactory : ISerializationFactory
         if (type != null && type.GetValue(null) is JsonSerializerSettings s)
         {
             settings = s;
-            PluginLog.Debug($"Using JSON serializer settings from object to perform serialization");
+            PluginLog.Verbose($"Using JSON serializer settings from object to perform serialization");
         }
         else
         {
