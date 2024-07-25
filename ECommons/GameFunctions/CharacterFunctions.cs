@@ -1,5 +1,6 @@
 ﻿using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.MathHelpers;
+using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using System;
 using System.Collections.Generic;
 
@@ -51,9 +52,10 @@ public static unsafe class CharacterFunctions
         //return *(byte*)(chr.Address + 2480 + 704);
     }
 
+    [Obsolete("Use static address from 44 38 35 ?? ?? ?? ?? 74 19 with offset=2 to determine if local player is in water", true)]
     public static bool IsInWater(this ICharacter chr)
     {
-        return *(byte*)(chr.Address + 528 + 940) == 1;
+        return false;
     }
 
     public static CombatRole GetRole(this ICharacter c)
