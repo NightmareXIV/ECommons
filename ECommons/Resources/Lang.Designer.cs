@@ -106,7 +106,7 @@ namespace ECommons.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Join Patreon.
+        ///   Looks up a localized string similar to Support on Patreon.
         /// </summary>
         internal static string JoinPatreon {
             get {

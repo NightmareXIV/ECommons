@@ -36,6 +36,26 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static uint[] Range(uint inclusiveStart, uint inclusiveEnd)
+    {
+        var ret = new uint[inclusiveEnd - inclusiveStart + 1];
+        for (int i = 0; i < ret.Length; i++)
+        {
+            ret[i] = (uint)(inclusiveStart + i);
+        }
+        return ret;
+    }
+
+    public static int[] Range(int inclusiveStart, int inclusiveEnd)
+    {
+        var ret = new int[inclusiveEnd - inclusiveStart + 1];
+        for (int i = 0; i < ret.Length; i++)
+        {
+            ret[i] = (int)(inclusiveStart + i);
+        }
+        return ret;
+    }
+
     public static string Read(this Span<byte> bytes)
     {
         for (int i = 0; i < bytes.Length; i++)

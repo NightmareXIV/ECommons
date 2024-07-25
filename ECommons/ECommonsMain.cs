@@ -25,6 +25,7 @@ using System.Reflection;
 using ECommons.Singletons;
 using System.Linq;
 using ECommons.EzContextMenu;
+using ECommons.LazyDataHelpers;
 
 
 #nullable disable
@@ -126,7 +127,9 @@ var type = "unknown build";
         GenericHelpers.Safe(SendAction.Dispose);
         GenericHelpers.Safe(Automation.LegacyTaskManager.TaskManager.DisposeAll);
         GenericHelpers.Safe(Automation.NeoTaskManager.TaskManager.DisposeAll);
+#pragma warning disable CS0618 // Type or member is obsolete
         GenericHelpers.Safe(EqualStrings.Dispose);
+#pragma warning restore CS0618 // Type or member is obsolete
         GenericHelpers.Safe(AutoCutsceneSkipper.Dispose);
         GenericHelpers.Safe(() => ThreadLoadImageHandler.httpClient?.Dispose());
         EzThrottler.Throttler = null;
@@ -137,6 +140,7 @@ var type = "unknown build";
         GenericHelpers.Safe(EzSharedData.Dispose);
         GenericHelpers.Safe(EzIPC.Dispose);
         GenericHelpers.Safe(ContextMenuPrefixRemover.Dispose);
+        GenericHelpers.Safe(Purgatory.Purge);
         //SingletonManager.Dispose();
         Chat.instance = null;
         Instance = null;

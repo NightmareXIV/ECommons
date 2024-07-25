@@ -5,6 +5,7 @@ using System.Linq;
 namespace ECommons.StringHelpers;
 #nullable disable
 
+[Obsolete("Scheduled to be removed. Please contact the developer if you have an use for it.")]
 public static class EqualStrings
 {
     static List<HashSet<string>> Equalities = new();

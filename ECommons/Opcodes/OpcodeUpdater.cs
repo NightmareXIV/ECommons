@@ -8,6 +8,7 @@ using System.Threading;
 
 namespace ECommons.Opcodes;
 
+[Obsolete("Scheduled to be removed. Please contact the developer if you have an use for it.")]
 public static class OpcodeUpdater
 {
     static HttpClient? client;

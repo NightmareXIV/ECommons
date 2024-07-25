@@ -6,6 +6,8 @@ using ECommons.DalamudServices;
 using ECommons.ExcelServices;
 using ECommons.Funding;
 using ECommons.Logging;
+using ECommons.MathHelpers;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using System;
@@ -23,6 +25,122 @@ namespace ECommons.ImGuiMethods;
 public static unsafe partial class ImGuiEx
 {
     public const ImGuiWindowFlags OverlayFlags = ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoMouseInputs | ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing;
+
+    static Dictionary<string, int> SelectedPages = [];
+
+    public static Action[] Pagination(Action[] actions, int perPage = 0, int maxPages = 0) => Pagination(GenericHelpers.GetCallStackID(), actions, perPage, maxPages);
+
+    public static Action[] Pagination(string id, Action[] actions, int perPage = 0, int maxPages = 0)
+    {
+        var ret = Pagination(id, actions, out var paginator, perPage, maxPages);
+        paginator?.Invoke();
+        return ret;
+    }
+
+    public static Action[] Pagination(Action[] actions, out Action? paginator, int perPage = 0, int maxPages = 0) => Pagination(GenericHelpers.GetCallStackID(), actions, out paginator, perPage, maxPages);
+
+    public static Action[] Pagination(string id, Action[] actions, out Action? paginator, int perPage = 0, int maxPages = 0)
+    {
+        if (actions.Length == 0)
+        {
+            paginator = null;
+            return [];
+        }
+        if(perPage <= 0)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxPages);
+            perPage = (int)MathF.Ceiling((float)actions.Length / (float)maxPages);
+        }
+        else
+        {
+            var newMaxPages = (int)MathF.Ceiling((float)actions.Length / (float)perPage);
+            if(maxPages > 0 && newMaxPages > maxPages)
+            {
+                perPage = (int)MathF.Ceiling((float)actions.Length / (float)maxPages);
+            }
+            else
+            {
+                maxPages = newMaxPages;
+            }
+        }
+        if(perPage >= actions.Length)
+        {
+            paginator = null; 
+            return actions;
+        }
+        if (!SelectedPages.ContainsKey(id)) SelectedPages[id] = 0;
+        if (!SelectedPages[id].InRange(0, maxPages, false)) SelectedPages[id] = 0;
+        void Paginator()
+        {
+            ImGui.PushID(id);
+            var width = ImGui.GetContentRegionAvail().X / maxPages;
+            ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 0f);
+            ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(0, 1));
+            for (int i = 0; i < maxPages; i++)
+            {
+                if (i == maxPages - 1) width = ImGui.GetContentRegionAvail().X;
+                var act = SelectedPages[id] == i;
+                if (act)
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Button, ImGui.GetStyle().Colors[(int)ImGuiCol.ButtonActive]);
+                    ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ImGui.GetStyle().Colors[(int)ImGuiCol.ButtonActive]);
+                }
+                if (ImGui.Button($"{i + 1}", new(width, ImGui.GetFrameHeight())))
+                {
+                    SelectedPages[id] = i;
+                }
+                if (act) ImGui.PopStyleColor(2);
+                if (i != maxPages - 1) ImGui.SameLine(0, 0);
+            }
+            ImGui.PopStyleVar(2);
+            ImGui.PopID();
+        }
+        var rangeMin = SelectedPages[id] * perPage;
+        var rangeMax = (SelectedPages[id] + 1) * perPage - 1;
+        if (rangeMax > actions.Length) rangeMax = actions.Length;
+        paginator = Paginator;
+        return actions[rangeMin..rangeMax];
+    }
+
+    public static void TreeNodeCollapsingHeader(string name, Action action)
+    {
+        ImGui.PushID("CollapsingHeaderHelperTable");
+        ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, Vector2.Zero);
+        if (ImGui.BeginTable($"{name}", 1, ImGuiTableFlags.Borders | ImGuiTableFlags.NoSavedSettings))
+        {
+            ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthStretch);
+            ImGui.TableNextRow();
+            ImGui.TableNextColumn();
+            var ret = ImGuiEx.TreeNode(name, ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.Selected);
+            ImGui.PopStyleVar();
+            if (ret)
+            {
+                ImGui.TableNextRow();
+                ImGui.TableNextColumn();
+                if (ImGui.BeginTable($"2{name}", 1, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.PadOuterX))
+                {
+                    ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthStretch);
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+                    try
+                    {
+                        action();
+                    }
+                    catch (Exception e)
+                    {
+                        e.Log();
+                    }
+                    ImGui.EndTable();
+                }
+            }
+            ImGui.EndTable();
+        }
+        else
+        {
+            ImGui.PopStyleVar();
+        }
+        ImGui.PopID();
+    }
 
     public readonly record struct RequiredPluginInfo
     {
@@ -475,9 +593,9 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
-    public static bool CollectionButtonCheckbox<T>(string name, T value, HashSet<T> collection, bool smallButton = false) => CollectionButtonCheckbox(name, value, collection, EColor.Red, smallButton);
+    public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, bool smallButton = false) => CollectionButtonCheckbox(name, value, collection, EColor.Red, smallButton);
 
-    public static bool CollectionButtonCheckbox<T>(string name, T value, HashSet<T> collection, Vector4 color, bool smallButton = false)
+    public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, Vector4 color, bool smallButton = false)
     {
         var col = collection.Contains(value);
         var ret = false;
