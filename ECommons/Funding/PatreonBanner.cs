@@ -121,7 +121,7 @@ public static class PatreonBanner
             }*/
             if (ImGui.Selectable("Donate via Cryptocurrency"))
             {
-                GenericHelpers.ShellStart("https://crypto.nightmarexiv.com");
+                GenericHelpers.ShellStart($"https://crypto.nightmarexiv.com/{(IsOfficialPlugin()?"?"+Svc.PluginInterface.Manifest.Name:"")}");
             }
 						if (!IsOfficialPlugin())
 						{
