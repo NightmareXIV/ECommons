@@ -36,6 +36,11 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static SeString Read(this Utf8String str)
+    {
+        return MemoryHelper.ReadSeString(&str);
+    }
+
     public static string Read(this Span<byte> bytes)
     {
         for (int i = 0; i < bytes.Length; i++)
@@ -762,6 +767,10 @@ public static unsafe partial class GenericHelpers
             {
                 sb.Append(tp.Text);
                 if (onlyFirst) break;
+            }
+            if(x.Type == PayloadType.Unknown && x.Encode().SequenceEqual<byte>([0x02, 0x1d, 0x01, 0x03]))
+            {
+                sb.Append(' ');
             }
         }
         return sb.ToString();
