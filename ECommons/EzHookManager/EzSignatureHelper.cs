@@ -21,6 +21,11 @@ public static class EzSignatureHelper
                     x.SetValue(obj, hook);
                 }
             }
+            catch(TargetInvocationException te)
+            {
+                te.Log();
+                te.InnerException.Log();
+            }
             catch(Exception e)
             {
                 e.Log();

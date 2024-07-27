@@ -1,4 +1,4 @@
-﻿using ECommons.Reflection.FieldPropertyUnion;
+using ECommons.Reflection.FieldPropertyUnion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -159,12 +159,12 @@ public static partial class ReflectionHelper
         var ret = new List<IFieldPropertyUnion>();
         foreach (var item in type.GetFields(bindingFlags))
         {
-            if (item.GetCustomAttribute<CompilerGeneratedAttribute>() != null) continue;
+            //if (item.GetCustomAttribute<CompilerGeneratedAttribute>() != null) continue;
             ret.Add(new UnionField(item));
         }
         foreach (var item in type.GetProperties(bindingFlags))
         {
-            if (item.GetCustomAttribute<CompilerGeneratedAttribute>() != null) continue;
+            //if (item.GetCustomAttribute<CompilerGeneratedAttribute>() != null) continue;
             ret.Add(new UnionProperty(item));
         }
         return [.. ret];

@@ -21,8 +21,8 @@ public partial class AddonMaster
         public string ItemNameText => ItemName.ExtractText();
         public string DescriptionText => Description.ExtractText();
 
-        public AtkComponentButton* NextButton => Base->GetButtonNodeById(73);
-        public AtkComponentButton* CloseButton => Base->GetButtonNodeById(74);
+        public AtkComponentButton* NextButton => Base->GetButtonNodeById(74);
+        public AtkComponentButton* CloseButton => Base->GetButtonNodeById(73);
 
         public void Next() => ClickButtonIfEnabled(NextButton);
         public void Close() => ClickButtonIfEnabled(CloseButton);

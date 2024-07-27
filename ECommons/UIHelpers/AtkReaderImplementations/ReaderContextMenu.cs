@@ -1,4 +1,5 @@
-﻿using FFXIVClientStructs.FFXIV.Component.GUI;
+﻿using Dalamud.Game.Text.SeStringHandling;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Collections.Generic;
 
 namespace ECommons.UIHelpers.AtkReaderImplementations;
@@ -12,5 +13,6 @@ public unsafe class ReaderContextMenu(AtkUnitBase* Addon) : AtkReader(Addon)
     public unsafe class ContextMenuEntry(nint Addon, int start) : AtkReader(Addon, start)
     {
         public string Name => ReadString(0);
+        public SeString NameSeString => ReadSeString(0);
     }
 }
