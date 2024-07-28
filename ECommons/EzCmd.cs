@@ -9,7 +9,7 @@ namespace ECommons;
 
 public static class EzCmd
 {
-    internal static List<string> RegisteredCommands = new();
+    internal static List<string> RegisteredCommands = [];
 
     //[Obsolete("Please use Cmd Attribute to the method in IDalamudPlugin to Add your command.")]
     public static void Add(string command, IReadOnlyCommandInfo.HandlerDelegate action, string helpMessage = null)

@@ -27,7 +27,7 @@ public partial class AddonMaster
             {
                 var reader = new ReaderRetainerList(Base);
                 var entries = new Entry[reader.Retainers.Count];
-                for (var i = 0; i < entries.Length; i++)
+                for(var i = 0; i < entries.Length; i++)
                 {
                     entries[i] = new(Base, reader.Retainers[i], i);
                 }
@@ -40,7 +40,7 @@ public partial class AddonMaster
             public int Index => index;
             public bool Select()
             {
-                if (IsActive)
+                if(IsActive)
                 {
                     Callback.Fire(Base, true, 2, (uint)index, Callback.ZeroAtkValue, Callback.ZeroAtkValue);
                     return true;

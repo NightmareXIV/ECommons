@@ -15,17 +15,17 @@ public struct Int2
 
     public Int2(Vector2 v)
     {
-        this.X = (int)v.X;
-        this.Y = (int)v.Y;
+        X = (int)v.X;
+        Y = (int)v.Y;
     }
 
-    public static Int2 operator+(Int2 v1, Int2 v2)
+    public static Int2 operator +(Int2 v1, Int2 v2)
     {
         return new(v1.X + v2.X, v1.Y + v2.Y);
     }
 
-    public Vector2 ToVector2() 
-    { 
-        return new Vector2(X, Y); 
+    public Vector2 ToVector2()
+    {
+        return new Vector2(X, Y);
     }
 }

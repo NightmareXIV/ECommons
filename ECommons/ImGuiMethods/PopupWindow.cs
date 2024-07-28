@@ -7,8 +7,8 @@ namespace ECommons.ImGuiMethods;
 public class PopupWindow : IDisposable
 {
     public string Text = "";
-    public PopupWindow(string Text) 
-    { 
+    public PopupWindow(string Text)
+    {
         this.Text = Text;
         Svc.PluginInterface.UiBuilder.Draw += UiBuilder_Draw;
     }

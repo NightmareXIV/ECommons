@@ -20,9 +20,9 @@ public class UniversalPartyMember
     {
         get
         {
-            if (UniversalParty.IsCrossWorldParty)
+            if(UniversalParty.IsCrossWorldParty)
             {
-                return Svc.Objects.FirstOrDefault(x => x is IPlayerCharacter pc && pc.HomeWorld.Id == this.HomeWorld.Id && x.Name.ToString() == this.Name);
+                return Svc.Objects.FirstOrDefault(x => x is IPlayerCharacter pc && pc.HomeWorld.Id == HomeWorld.Id && x.Name.ToString() == Name);
             }
             else
             {

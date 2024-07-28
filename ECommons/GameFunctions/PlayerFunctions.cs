@@ -6,7 +6,7 @@ using System;
 
 namespace ECommons.GameFunctions;
 
-public unsafe static class PlayerFunctions
+public static unsafe class PlayerFunctions
 {
     public static bool TryGetPlaceholder(this IGameObject pc, out int number, bool verbose = false)
     {
@@ -14,7 +14,7 @@ public unsafe static class PlayerFunctions
         {
             var optr = Framework.Instance()->GetUIModule()->GetPronounModule()->ResolvePlaceholder($"<{i}>", 0, 0);
             if(verbose) PluginLog.Debug($"Placeholder {i} value {(optr == null ? "null" : optr->EntityId)}");
-            if (pc.Address == (IntPtr)optr)
+            if(pc.Address == (IntPtr)optr)
             {
                 number = i;
                 return true;

@@ -11,8 +11,8 @@ public static unsafe partial class ImGuiEx
     /// <returns></returns>
     public static bool CheckboxBullet(string label, ref bool value)
     {
-        int flags = value ? 1 : 0;
-        if (ImGui.CheckboxFlags(label, ref flags, int.MaxValue))
+        var flags = value ? 1 : 0;
+        if(ImGui.CheckboxFlags(label, ref flags, int.MaxValue))
         {
             value = !value;
             return true;
@@ -29,7 +29,7 @@ public static unsafe partial class ImGuiEx
     public static bool CheckboxInverted(string label, ref bool value)
     {
         var inv = !value;
-        if (ImGui.Checkbox(label, ref inv))
+        if(ImGui.Checkbox(label, ref inv))
         {
             value = !inv;
             return true;
@@ -46,7 +46,7 @@ public static unsafe partial class ImGuiEx
     public static bool Checkbox(string label, ref int value)
     {
         var b = value != 0;
-        if (ImGui.Checkbox(label, ref b))
+        if(ImGui.Checkbox(label, ref b))
         {
             value = b ? 1 : 0;
             return true;

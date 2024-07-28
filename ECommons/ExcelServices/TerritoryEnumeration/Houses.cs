@@ -43,13 +43,12 @@ public static class Houses
     public const ushort Company_Workshop_Empyreum = 984;
     public const ushort Ingleside_Apartment_Lobby = 985;
     public const ushort Ingleside_Apartment = 999;
-
-    static ushort[] list = null;
+    private static ushort[] list = null;
     public static ushort[] List
     {
         get
         {
-            if (list == null)
+            if(list == null)
             {
                 var s = new List<ushort>();
                 typeof(Houses).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).Each(x => s.Add((ushort)x.GetValue(null)));

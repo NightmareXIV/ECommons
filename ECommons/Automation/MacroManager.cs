@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 namespace ECommons.Automation;
 #nullable disable
 
-public unsafe static class MacroManager
+public static unsafe class MacroManager
 {
     private static Chat chat = null;
 
@@ -29,15 +29,15 @@ public unsafe static class MacroManager
         GenericHelpers.Safe(delegate
         {
             var count = (byte)Math.Max(Macro.numLines, commands.Count());
-            if (count > Macro.numLines)
+            if(count > Macro.numLines)
             {
                 throw new InvalidOperationException("Macro was more than 15 lines!");
             }
-            if (commands.Any(x => x.Length > 180))
+            if(commands.Any(x => x.Length > 180))
             {
                 throw new InvalidOperationException("Macro contained lines more than 180 symbols!");
             }
-            if (commands.Any(x => x.Contains("\n") || x.Contains("\r") || x.Contains("\0") || chat.SanitiseText(x).Length != x.Length))
+            if(commands.Any(x => x.Contains("\n") || x.Contains("\r") || x.Contains("\0") || chat.SanitiseText(x).Length != x.Length))
             {
                 throw new InvalidOperationException("Macro contained invalid symbols!");
             }

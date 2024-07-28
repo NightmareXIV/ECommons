@@ -8,8 +8,8 @@ public abstract class EzFullscreenOverlayWindow : Window
 {
     public EzFullscreenOverlayWindow(string name) : base(name, ImGuiEx.OverlayFlags, true)
     {
-        this.RespectCloseHotkey = false;
-        this.IsOpen = true;
+        RespectCloseHotkey = false;
+        IsOpen = true;
     }
 
     public virtual void PreDrawAction() { }

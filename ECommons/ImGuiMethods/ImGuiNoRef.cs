@@ -8,7 +8,7 @@ public static class ImGuiNoRef
     {
         if(ImGui.Checkbox(label, ref value))
         {
-            newResult = value; 
+            newResult = value;
             return true;
         }
         newResult = default;

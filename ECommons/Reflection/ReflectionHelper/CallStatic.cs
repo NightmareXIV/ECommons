@@ -30,7 +30,7 @@ public static partial class ReflectionHelper
     /// <param name="values">Method's parameters</param>
     /// <returns></returns>
     public static T CallStatic<T>(this object obj, string type, string name, object[] values) => (T)CallStatic(obj, type, name, values);
-    
+
     /// <summary>
     /// Ultimate static method calling method.
     /// </summary>
@@ -53,7 +53,7 @@ public static partial class ReflectionHelper
         {
             transformedMethodTypeArguments = [.. FindTypesInAssemblies(assemblies, methodTypeArguments)];
         }
-        
+
         var method = FindStaticMethodInAssemblies(assemblies, typeName, transformedTypeArguments, methodName, transformedMethodTypeArguments, parameters.GetTypes());
         return method?.Invoke(null, parameters);
     }

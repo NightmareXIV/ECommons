@@ -1,5 +1,5 @@
-using FFXIVClientStructs.FFXIV.Client.UI;
 using ECommons.Automation.UIInput;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using System;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;

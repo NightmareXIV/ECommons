@@ -39,11 +39,11 @@ public unsafe class ClickHelper
     {
         EventData? newEventData = null;
         InputData? newInputData = null;
-        if (eventData == null)
+        if(eventData == null)
         {
             newEventData = EventData.ForNormalTarget(target, unitbase);
         }
-        if (inputData == null)
+        if(inputData == null)
         {
             newInputData = InputData.Empty();
         }
@@ -62,22 +62,22 @@ public unsafe class ClickHelper
     {
         var classAndMethodNames = GetAvailableClicks();
 
-        foreach (var classAndMethod in classAndMethodNames)
+        foreach(var classAndMethod in classAndMethodNames)
         {
-            if (classAndMethod.Equals(clickName))
+            if(classAndMethod.Equals(clickName))
             {
                 var className = clickName[..clickName.IndexOf('_')];
                 var type = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == className);
-                if (type != null)
+                if(type != null)
                 {
                     var constructor = type.GetConstructor([typeof(nint)]);
-                    if (constructor != null)
+                    if(constructor != null)
                     {
                         var instance = constructor.Invoke([addon]);
                         var methodName = clickName[(className.Length + 1)..];
                         var method = type.GetMethod(methodName);
 
-                        if (method != null)
+                        if(method != null)
                         {
                             method.Invoke(instance, null);
                             return;
@@ -138,7 +138,7 @@ public static unsafe class ClickHelperExtensions
         var btnRes = target.AtkResNode;
         var evt = btnRes.AtkEventManager.Event;
 
-        while (evt->Type != AtkEventType.MouseClick)
+        while(evt->Type != AtkEventType.MouseClick)
             evt = evt->NextEvent;
 
         addon->ReceiveEvent(evt->Type, (int)evt->Param, btnRes.AtkEventManager.Event);

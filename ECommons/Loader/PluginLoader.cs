@@ -1,8 +1,8 @@
 ﻿using Dalamud.Game.Command;
 using Dalamud.Interface.Utility;
-using ECommons.Logging;
 using Dalamud.Plugin;
 using ECommons.ImGuiMethods;
+using ECommons.Logging;
 using ECommons.Reflection;
 using ImGuiNET;
 using System;
@@ -24,12 +24,11 @@ public static class PluginLoader
     private static Action Success = null;
     private static string PluginLoadCommand = null;
     private static ILoadable Plugin;
-
-    static Vector2 Pos = Vector2.Zero;
+    private static Vector2 Pos = Vector2.Zero;
 
     public static void Init(ILoadable plugin, IDalamudPluginInterface pluginInterface, string blacklistURL, Action success)
     {
-        if (IsUsed)
+        if(IsUsed)
         {
             throw new Exception($"Loader has been already called before");
         }
@@ -45,7 +44,7 @@ public static class PluginLoader
         });
         MicroServices.Commands.AddHandler(PluginLoadCommand, cInfo);
 
-        var currentVersion = AssemblyName.GetAssemblyName(MicroServices.PluginInterface.AssemblyLocation.FullName).Version ?? new Version(0,0,0,0);
+        var currentVersion = AssemblyName.GetAssemblyName(MicroServices.PluginInterface.AssemblyLocation.FullName).Version ?? new Version(0, 0, 0, 0);
 
         Task.Run(delegate
         {
@@ -79,7 +78,7 @@ public static class PluginLoader
                         }
                         else if(versions.Length > 1)
                         {
-                            if (currentVersion >= versions[0] && currentVersion <= versions[1])
+                            if(currentVersion >= versions[0] && currentVersion <= versions[1])
                             {
                                 verdict = false;
                                 PluginLog.Debug($"Blacklisted current version from line {x} (match {versions[0]}-{versions[1]})");
@@ -99,7 +98,7 @@ public static class PluginLoader
                 PluginLog.Error($"Error during loader call");
                 e.Log();
             }
-            if (verdict)
+            if(verdict)
             {
                 MicroServices.Framework.Update += CallLoad;
             }
@@ -112,22 +111,22 @@ public static class PluginLoader
 
     private static void Load(object _, object __)
     {
-        if (Plugin.IsDisposed)
+        if(Plugin.IsDisposed)
         {
             PluginLog.Error($"Plugin is already disposed, won't call load");
             return;
         }
-        if (IsLoaded)
+        if(IsLoaded)
         {
             PluginLog.Error($"Loading already called before, won't load again");
         }
-        else 
+        else
         {
             try
             {
                 Success();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 e.Log();
             }
@@ -136,29 +135,29 @@ public static class PluginLoader
 
     private static void CallLoad(object _)
     {
-        if (Plugin.IsDisposed)
+        if(Plugin.IsDisposed)
         {
             PluginLog.Error($"Plugin is already disposed, won't call load");
             return;
-        } 
+        }
         Load(null, null);
         Dispose();
     }
 
     public static void Dispose()
     {
-        if (IsUsed)
+        if(IsUsed)
         {
             MicroServices.Framework.Update -= CallLoad;
             MicroServices.PluginInterface.UiBuilder.Draw -= Draw;
-            if (PluginLoadCommand != null) MicroServices.Commands.RemoveHandler(PluginLoadCommand);
+            if(PluginLoadCommand != null) MicroServices.Commands.RemoveHandler(PluginLoadCommand);
             Plugin = null;
         }
     }
 
     private static void Draw()
     {
-        if (Plugin.IsDisposed)
+        if(Plugin.IsDisposed)
         {
             PluginLog.Error($"Plugin is already disposed, won't show UI");
             Dispose();
@@ -167,15 +166,15 @@ public static class PluginLoader
         ImGui.SetNextWindowSizeConstraints(new(500, 100), new(500, 500));
         ImGuiHelpers.SetNextWindowPosRelativeMainViewport(Pos);
         ImGuiHelpers.ForceNextWindowMainViewport();
-        if (ImGui.Begin($"{MicroServices.PluginInterface.InternalName} - version revoked", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoSavedSettings))
+        if(ImGui.Begin($"{MicroServices.PluginInterface.InternalName} - version revoked", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoSavedSettings))
         {
             ImGuiEx.TextWrapped("Current version of the plugin has been marked as revoked.");
             ImGuiEx.TextWrapped("This means that there is an issue that can cause problems. Usually, updated version either already available or will be available as soon as possible. ");
-            if (ImGui.Button("Open plugin installer"))
+            if(ImGui.Button("Open plugin installer"))
             {
                 MicroServices.PluginInterface.OpenPluginInstallerTo();
             }
-            if (ImGui.Button("Close this window"))
+            if(ImGui.Button("Close this window"))
             {
                 MicroServices.PluginInterface.UiBuilder.Draw -= Draw;
             }

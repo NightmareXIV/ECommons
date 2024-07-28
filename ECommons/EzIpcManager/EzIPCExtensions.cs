@@ -16,7 +16,7 @@ public static class EzIPCExtensions
             action(a1, a2, a3, a4, a5, a6, a7, a8);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             return false;
         }
@@ -32,7 +32,7 @@ public static class EzIPCExtensions
             action(a1, a2, a3, a4, a5, a6, a7);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             return false;
         }
@@ -48,7 +48,7 @@ public static class EzIPCExtensions
             action(a1, a2, a3, a4, a5, a6);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             return false;
         }
@@ -64,7 +64,7 @@ public static class EzIPCExtensions
             action(a1, a2, a3, a4, a5);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             return false;
         }
@@ -80,7 +80,7 @@ public static class EzIPCExtensions
             action(a1, a2, a3, a4);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             return false;
         }
@@ -96,7 +96,7 @@ public static class EzIPCExtensions
             action(a1, a2, a3);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             return false;
         }
@@ -112,7 +112,7 @@ public static class EzIPCExtensions
             action(a1, a2);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             return false;
         }
@@ -128,7 +128,7 @@ public static class EzIPCExtensions
             action(a1);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             return false;
         }
@@ -144,7 +144,7 @@ public static class EzIPCExtensions
             action();
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             return false;
         }
@@ -162,7 +162,7 @@ public static class EzIPCExtensions
             ret = function(a1, a2, a3, a4, a5, a6, a7, a8);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             ret = default;
             return false;
@@ -180,7 +180,7 @@ public static class EzIPCExtensions
             ret = function(a1, a2, a3, a4, a5, a6, a7);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             ret = default;
             return false;
@@ -198,7 +198,7 @@ public static class EzIPCExtensions
             ret = function(a1, a2, a3, a4, a5, a6);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             ret = default;
             return false;
@@ -216,7 +216,7 @@ public static class EzIPCExtensions
             ret = function(a1, a2, a3, a4, a5);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             ret = default;
             return false;
@@ -234,7 +234,7 @@ public static class EzIPCExtensions
             ret = function(a1, a2, a3, a4);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             ret = default;
             return false;
@@ -252,7 +252,7 @@ public static class EzIPCExtensions
             ret = function(a1, a2, a3);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             ret = default;
             return false;
@@ -270,7 +270,7 @@ public static class EzIPCExtensions
             ret = function(a1, a2);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             ret = default;
             return false;
@@ -288,7 +288,7 @@ public static class EzIPCExtensions
             ret = function(a1);
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             ret = default;
             return false;
@@ -306,7 +306,7 @@ public static class EzIPCExtensions
             ret = function();
             return true;
         }
-        catch (IpcNotReadyError)
+        catch(IpcNotReadyError)
         {
             ret = default;
             return false;

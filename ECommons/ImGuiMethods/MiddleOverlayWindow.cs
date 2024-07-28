@@ -1,20 +1,20 @@
-﻿using System;
-using System.Numerics;
-using Dalamud.Interface.Utility;
+﻿using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
 using ECommons.DalamudServices;
 using ImGuiNET;
+using System;
+using System.Numerics;
 
 namespace ECommons.ImGuiMethods;
 
-public class MiddleOverlayWindow:Window, IDisposable
+public class MiddleOverlayWindow : Window, IDisposable
 {
-    int? TopOffset = null;
-    Vector4? bgCol = null;
-    Vector2 pos = Vector2.Zero;
-    WindowSystem ws = new();
-    Action draw;
-    bool disposed = false;
+    private int? TopOffset = null;
+    private Vector4? bgCol = null;
+    private Vector2 pos = Vector2.Zero;
+    private WindowSystem ws = new();
+    private Action draw;
+    private bool disposed = false;
     public MiddleOverlayWindow(string name, Action draw, int? topOffset = null, Vector4? bgCol = null) : base(name, ImGuiWindowFlags.NoInputs
         | ImGuiWindowFlags.NoNav
         | ImGuiWindowFlags.NoTitleBar
@@ -27,7 +27,7 @@ public class MiddleOverlayWindow:Window, IDisposable
         this.bgCol = bgCol;
         this.draw = draw;
         ws.AddWindow(this);
-        this.IsOpen = true;
+        IsOpen = true;
         Svc.PluginInterface.UiBuilder.Draw += ws.Draw;
     }
 
@@ -38,7 +38,7 @@ public class MiddleOverlayWindow:Window, IDisposable
 
     public override void Draw()
     {
-        this.draw();
+        draw();
         pos = ImGui.GetWindowSize();
     }
 
@@ -47,18 +47,18 @@ public class MiddleOverlayWindow:Window, IDisposable
         base.PreDraw();
         ImGui.SetNextWindowPos(new Vector2(ImGuiHelpers.MainViewport.Size.X / 2 - pos.X / 2,
             TopOffset ?? ImGuiHelpers.MainViewport.Size.Y / 3));
-        if (bgCol.HasValue) ImGui.PushStyleColor(ImGuiCol.WindowBg, bgCol.Value);
+        if(bgCol.HasValue) ImGui.PushStyleColor(ImGuiCol.WindowBg, bgCol.Value);
     }
 
     public override void PostDraw()
     {
         base.PostDraw();
-        if (bgCol.HasValue) ImGui.PopStyleColor();
+        if(bgCol.HasValue) ImGui.PopStyleColor();
     }
 
     public void Dispose()
     {
-        if (!disposed)
+        if(!disposed)
         {
             disposed = true;
             Svc.PluginInterface.UiBuilder.Draw -= ws.Draw;

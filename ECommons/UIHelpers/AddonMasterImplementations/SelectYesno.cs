@@ -24,7 +24,7 @@ public partial class AddonMaster
 
         public void Yes()
         {
-            if (Addon->YesButton != null && !Addon->YesButton->IsEnabled)
+            if(Addon->YesButton != null && !Addon->YesButton->IsEnabled)
             {
                 Svc.Log.Debug($"{nameof(AddonSelectYesno)}: Force enabling yes button");
                 var flagsPtr = (ushort*)&Addon->YesButton->AtkComponentBase.OwnerNode->AtkResNode.NodeFlags;

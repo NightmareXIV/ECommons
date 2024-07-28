@@ -16,8 +16,8 @@ public class EzIPCEventAttribute : Attribute
     /// /// <param name="actionLastGenericType">Dummy return type used as a last generic argument for actions. When omitted, typeof(object) is used.</param>
     public EzIPCEventAttribute(string? iPCName = null, bool applyPrefix = true, Type? actionLastGenericType = null)
     {
-        this.IPCName = iPCName;
-        this.ApplyPrefix = applyPrefix;
-        this.ActionLastGenericType = actionLastGenericType ?? typeof(object);
+        IPCName = iPCName;
+        ApplyPrefix = applyPrefix;
+        ActionLastGenericType = actionLastGenericType ?? typeof(object);
     }
 }

@@ -14,7 +14,7 @@ public static class EzConfigGui
     internal static Action OnClose = null;
     internal static Action OnOpen = null;
     internal static IPluginConfiguration Config;
-    static ConfigWindow configWindow;
+    private static ConfigWindow configWindow;
     public static Window Window { get { return configWindow; } }
 
     public static void Init(Action draw, IPluginConfiguration config = null)
@@ -23,16 +23,16 @@ public static class EzConfigGui
         Init(config);
     }
 
-    public static T Init<T>(T window, IPluginConfiguration config = null) where T:ConfigWindow
+    public static T Init<T>(T window, IPluginConfiguration config = null) where T : ConfigWindow
     {
         configWindow = window;
         Init(config);
         return window;
     }
 
-    static void Init(IPluginConfiguration config)
+    private static void Init(IPluginConfiguration config)
     {
-        if (WindowSystem != null)
+        if(WindowSystem != null)
         {
             throw new Exception("ConfigGui already initialized");
         }
@@ -48,7 +48,7 @@ public static class EzConfigGui
     {
         configWindow.IsOpen = true;
     }
-    
+
     public static void Open(string cmd = null, string args = null)
     {
         Open();

@@ -1,20 +1,20 @@
-﻿using ECommons.ExcelServices;
-using Dalamud.Game.ClientState.Objects.SubKinds;
+﻿using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Statuses;
 using ECommons.DalamudServices;
-using FFXIVClientStructs.FFXIV.Client.Game.Character;
-using FFXIVClientStructs.FFXIV.Client.Game.Object;
-using System.Runtime.CompilerServices;
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using System.Numerics;
+using ECommons.ExcelServices;
 using ECommons.GameFunctions;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.Object;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using System;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 #nullable disable
 
 namespace ECommons.GameHelpers;
 
-public unsafe static class Player
+public static unsafe class Player
 {
     public const int MaxLevel = 100;
     public static IPlayerCharacter Object => Svc.ClientState.LocalPlayer;
@@ -37,7 +37,7 @@ public unsafe static class Player
     public static uint Territory => Svc.ClientState.TerritoryType;
     public static Job Job => GetJob(Svc.ClientState.LocalPlayer);
     public static GrandCompany GrandCompany => (GrandCompany)PlayerState.Instance()->GrandCompany;
-    public static string GetNameWithWorld(this IPlayerCharacter pc) => pc == null?null:(pc.Name.ToString() + "@" + pc.HomeWorld.GameData.Name);
+    public static string GetNameWithWorld(this IPlayerCharacter pc) => pc == null ? null : (pc.Name.ToString() + "@" + pc.HomeWorld.GameData.Name);
     public static Job GetJob(this IPlayerCharacter pc) => (Job)pc.ClassJob.Id;
     public static Vector3 Position => Object.Position;
     public static float Rotation => Object.Rotation;

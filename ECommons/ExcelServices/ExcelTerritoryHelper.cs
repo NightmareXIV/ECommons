@@ -1,18 +1,18 @@
-﻿using ECommons.Logging;
+﻿using ECommons.DalamudServices;
 using ECommons.ExcelServices.TerritoryEnumeration;
+using ECommons.Logging;
+using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ECommons.DalamudServices;
-using Lumina.Excel.GeneratedSheets;
 #nullable disable
 
 namespace ECommons.ExcelServices;
 
 public static class ExcelTerritoryHelper
 {
-    static uint[] Sanctuaries = null;
+    private static uint[] Sanctuaries = null;
 
     /// <summary>
     /// Checks if territory belongs to main cities, inns, residential areas or houses. 
@@ -35,7 +35,7 @@ public static class ExcelTerritoryHelper
                 s.Add(v);
                 PluginLog.Verbose($"Sanctuary territory added: {x.Name} = {v}");
             });
-            
+
             Sanctuaries = s.ToArray();
         }
 
@@ -45,7 +45,7 @@ public static class ExcelTerritoryHelper
     public static bool NameExists(uint TerritoryType)
     {
         var data = Svc.Data.GetExcelSheet<TerritoryType>().GetRow(TerritoryType);
-        if (data != null) return NameExists(data);
+        if(data != null) return NameExists(data);
         return false;
     }
 
@@ -64,13 +64,13 @@ public static class ExcelTerritoryHelper
     public static string GetName(uint TerritoryType, bool includeID = false)
     {
         var data = Svc.Data.GetExcelSheet<TerritoryType>().GetRow(TerritoryType);
-        string id = includeID?$"#{TerritoryType} | ":"";
-        if (data == null) return $"#{TerritoryType}";
+        var id = includeID ? $"#{TerritoryType} | " : "";
+        if(data == null) return $"#{TerritoryType}";
         var tname = data.PlaceName.Value?.Name?.ToString();
         var cfc = data.ContentFinderCondition.Value.Name?.ToString();
-        if (cfc.IsNullOrEmpty())
+        if(cfc.IsNullOrEmpty())
         {
-            if (tname.IsNullOrEmpty())
+            if(tname.IsNullOrEmpty())
             {
                 return $"#{TerritoryType}";
             }

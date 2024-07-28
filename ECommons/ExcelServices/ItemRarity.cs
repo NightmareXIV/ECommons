@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.ExcelServices;
-[Obfuscation(Exclude =true)]
-public enum ItemRarity:byte
+[Obfuscation(Exclude = true)]
+public enum ItemRarity : byte
 {
     White = 1,
     Green = 2,

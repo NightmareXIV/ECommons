@@ -10,7 +10,7 @@ namespace ECommons.Automation.UIInput;
 /// <summary>
 /// Input data.
 /// </summary>
-public unsafe sealed class InputData : IDisposable
+public sealed unsafe class InputData : IDisposable
 {
     private nint Bytes;
     private bool disposedValue;
@@ -21,18 +21,18 @@ public unsafe sealed class InputData : IDisposable
     private InputData()
     {
         Bytes = Marshal.AllocHGlobal(0x40);
-        this.Data = (void**)Bytes;
-        if (this.Data == null)
+        Data = (void**)Bytes;
+        if(Data == null)
             throw new ArgumentNullException("InputData could not be created, null");
 
-        this.Data[0] = null;
-        this.Data[1] = null;
-        this.Data[2] = null;
-        this.Data[3] = null;
-        this.Data[4] = null;
-        this.Data[5] = null;
-        this.Data[6] = null;
-        this.Data[7] = null;
+        Data[0] = null;
+        Data[1] = null;
+        Data[2] = null;
+        Data[3] = null;
+        Data[4] = null;
+        Data[5] = null;
+        Data[6] = null;
+        Data[7] = null;
     }
 
     /// <summary>
@@ -65,9 +65,9 @@ public unsafe sealed class InputData : IDisposable
 
     private void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if(!disposedValue)
         {
-            if (disposing)
+            if(disposing)
             {
                 // TODO: dispose managed state (managed objects)
             }

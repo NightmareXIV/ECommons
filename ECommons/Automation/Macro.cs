@@ -22,7 +22,7 @@ public readonly struct Macro : IDisposable
         key = 1;
         title = new UTF8String(loc + 0x8, t);
         lines = new UTF8String[numLines];
-        for (int i = 0; i < numLines; i++)
+        for(var i = 0; i < numLines; i++)
         {
             var command = (commands.Count > i) ? commands[i] : string.Empty;
             lines[i] = new UTF8String(loc + 0x8 + (UTF8String.size * (i + 1)), command);
@@ -32,7 +32,7 @@ public readonly struct Macro : IDisposable
     public void Dispose()
     {
         title.Dispose();
-        for (int i = 0; i < numLines; i++)
+        for(var i = 0; i < numLines; i++)
             lines[i].Dispose();
     }
 }

@@ -11,7 +11,7 @@ public class UnionField : IFieldPropertyUnion
     {
         FieldInfo = fieldInfo;
     }
-    
+
     public string Name => FieldInfo.Name;
 
     public Type UnionType => FieldInfo.FieldType;

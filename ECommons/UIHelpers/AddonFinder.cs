@@ -14,10 +14,10 @@ public unsafe class AddonFinder
     {
         get
         {
-            for (int i = 1; true; i++)
+            for(var i = 1; true; i++)
             {
                 var addon = Svc.GameGui.GetAddonByName("SelectString", i);
-                if (addon == 0) yield break;
+                if(addon == 0) yield break;
                 yield return new(addon);
             }
         }
@@ -27,10 +27,10 @@ public unsafe class AddonFinder
     {
         get
         {
-            for (int i = 1; true; i++)
+            for(var i = 1; true; i++)
             {
                 var addon = Svc.GameGui.GetAddonByName("SelectYesno", i);
-                if (addon == 0) yield break;
+                if(addon == 0) yield break;
                 yield return new(addon);
             }
         }

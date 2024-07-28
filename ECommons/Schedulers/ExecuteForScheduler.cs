@@ -1,14 +1,14 @@
-﻿using ECommons.Logging;
-using ECommons.DalamudServices;
+﻿using ECommons.DalamudServices;
+using ECommons.Logging;
 using System;
 
 namespace ECommons.Schedulers;
 
 public class ExecuteForScheduler : IScheduler
 {
-    long stopExecAt;
-    Action function;
-    bool disposed = false;
+    private long stopExecAt;
+    private Action function;
+    private bool disposed = false;
 
     public ExecuteForScheduler(Action function, long executeForMS)
     {
@@ -19,24 +19,24 @@ public class ExecuteForScheduler : IScheduler
 
     public void Dispose()
     {
-        if (!disposed)
+        if(!disposed)
         {
             Svc.Framework.Update -= Execute;
         }
         disposed = true;
     }
 
-    void Execute(object _)
+    private void Execute(object _)
     {
         try
         {
             function();
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             PluginLog.Error(e.Message + "\n" + e.StackTrace ?? "");
         }
-        if (Environment.TickCount64 > stopExecAt)
+        if(Environment.TickCount64 > stopExecAt)
         {
             Dispose();
         }

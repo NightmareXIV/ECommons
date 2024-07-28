@@ -1,6 +1,6 @@
-﻿using ECommons.Logging;
-using Dalamud.Plugin;
+﻿using Dalamud.Plugin;
 using ECommons.DalamudServices;
+using ECommons.Logging;
 using ECommons.Reflection;
 using System;
 using System.Linq;
@@ -20,7 +20,7 @@ public static class Splatoon
     {
         try
         {
-            if (Svc.PluginInterface.GetIpcSubscriber<bool>("Splatoon.IsLoaded").InvokeFunc())
+            if(Svc.PluginInterface.GetIpcSubscriber<bool>("Splatoon.IsLoaded").InvokeFunc())
             {
                 Connect();
             }
@@ -39,7 +39,7 @@ public static class Splatoon
         OnConnect = action;
         try
         {
-            if (Svc.PluginInterface.GetIpcSubscriber<bool>("Splatoon.IsLoaded").InvokeFunc())
+            if(Svc.PluginInterface.GetIpcSubscriber<bool>("Splatoon.IsLoaded").InvokeFunc())
             {
                 OnConnect();
             }
@@ -59,11 +59,11 @@ public static class Splatoon
         PluginLog.Information("Disconnected from Splatoon");
     }
 
-    static void Connect()
+    private static void Connect()
     {
         try
         {
-            if (DalamudReflector.TryGetDalamudPlugin("Splatoon", out var plugin, false, true) && (bool)plugin.GetType().GetField("Init").GetValue(plugin))
+            if(DalamudReflector.TryGetDalamudPlugin("Splatoon", out var plugin, false, true) && (bool)plugin.GetType().GetField("Init").GetValue(plugin))
             {
                 Instance = plugin;
                 Version++;
@@ -75,7 +75,7 @@ public static class Splatoon
                 throw new Exception("Splatoon is not initialized");
             }
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             PluginLog.Error("Can't find Splatoon plugin: " + e.Message);
             PluginLog.Error(e.StackTrace);
@@ -182,17 +182,17 @@ public static class Splatoon
     /// <returns>Whether operation was successful</returns>
     public static bool AddDynamicElements(string name, Element[] e, long[] DestroyCondition)
     {
-        if (!IsConnected())
+        if(!IsConnected())
         {
             PluginLog.Warning("Not connected to Splatoon");
             return false;
         }
-        if (!e.All(x => x.IsValid()))
+        if(!e.All(x => x.IsValid()))
         {
             PluginLog.Warning("Elements are no longer valid");
             return false;
         }
-        if (e.Length == 0)
+        if(e.Length == 0)
         {
             PluginLog.Warning("There are no elements");
             return false;
@@ -200,14 +200,14 @@ public static class Splatoon
         try
         {
             var array = Array.CreateInstance(e[0].Instance.GetType(), e.Length);
-            for (var i = 0; i < e.Length; i++)
+            for(var i = 0; i < e.Length; i++)
             {
                 array.SetValue(e[i].Instance, i);
             }
             Instance.GetType().GetMethod("AddDynamicElements").Invoke(Instance, new object[] { name, array, DestroyCondition });
             return true;
         }
-        catch (Exception ex)
+        catch(Exception ex)
         {
             ex.Log();
             return false;
@@ -221,12 +221,12 @@ public static class Splatoon
     /// <returns>Whether operation was successful</returns>
     public static bool DisplayOnce(Element e)
     {
-        if (!IsConnected())
+        if(!IsConnected())
         {
             PluginLog.Warning("Not connected to Splatoon");
             return false;
         }
-        if (!e.IsValid())
+        if(!e.IsValid())
         {
             PluginLog.Warning("Elements are no longer valid");
             return false;
@@ -236,7 +236,7 @@ public static class Splatoon
             Instance.GetType().GetMethod("InjectElement").Invoke(Instance, new object[] { e.Instance });
             return true;
         }
-        catch (Exception ex)
+        catch(Exception ex)
         {
             ex.Log();
             return false;
@@ -250,7 +250,7 @@ public static class Splatoon
     /// <returns>Whether operation was successful</returns>
     public static bool RemoveDynamicElements(string name)
     {
-        if (!IsConnected())
+        if(!IsConnected())
         {
             PluginLog.Warning("Not connected to Splatoon");
             return false;
@@ -260,7 +260,7 @@ public static class Splatoon
             Instance.GetType().GetMethod("RemoveDynamicElements").Invoke(Instance, new object[] { name });
             return true;
         }
-        catch (Exception ex)
+        catch(Exception ex)
         {
             ex.Log();
             return false;
@@ -277,7 +277,7 @@ public static class Splatoon
         var method = Instance.GetType().Assembly.GetType("Splatoon.SplatoonScripting.ScriptingEngine", true).GetMethod("TryDecodeElement", BindingFlags.Public | BindingFlags.Static);
         var parameters = new object[] { input, null };
         var result = (bool)method.Invoke(null, parameters);
-        if (result)
+        if(result)
         {
             return new Element(parameters[1]);
         }
@@ -298,7 +298,7 @@ public static class Splatoon
         var method = Instance.GetType().Assembly.GetType("Splatoon.SplatoonScripting.ScriptingEngine", true).GetMethod("TryDecodeLayout", BindingFlags.Public | BindingFlags.Static);
         var parameters = new object[] { input, null };
         var result = (bool)method.Invoke(null, parameters);
-        if (result)
+        if(result)
         {
             return parameters[1];
         }

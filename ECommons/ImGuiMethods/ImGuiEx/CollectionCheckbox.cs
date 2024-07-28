@@ -18,28 +18,28 @@ public static unsafe partial class ImGuiEx
     /// <returns></returns>
     public static bool CollectionCheckbox<T>(string label, IEnumerable<T> values, ICollection<T> collection, bool inverted = false, bool delayedOperation = false)
     {
-        if (!values.Any()) throw new InvalidOperationException("values can not be empty");
+        if(!values.Any()) throw new InvalidOperationException("values can not be empty");
         void RemoveAll()
         {
-            foreach (var el in values)
+            foreach(var el in values)
             {
                 collection.Remove(el);
             }
         }
         void AddAll()
         {
-            foreach (var el in values)
+            foreach(var el in values)
             {
                 collection.Remove(el);
                 collection.Add(el);
             }
         }
-        if (!inverted)
+        if(!inverted)
         {
-            if (collection.ContainsAll(values))
+            if(collection.ContainsAll(values))
             {
                 var x = true;
-                if (ImGui.Checkbox(label, ref x))
+                if(ImGui.Checkbox(label, ref x))
                 {
                     Execute(RemoveAll, delayedOperation);
                     return true;
@@ -48,7 +48,7 @@ public static unsafe partial class ImGuiEx
             else
             {
                 var x = collection.ContainsAny(values);
-                if (ImGuiEx.CheckboxBullet(label, ref x))
+                if(ImGuiEx.CheckboxBullet(label, ref x))
                 {
                     Execute(AddAll, delayedOperation);
                     return true;
@@ -57,10 +57,10 @@ public static unsafe partial class ImGuiEx
         }
         else
         {
-            if (!collection.ContainsAny(values))
+            if(!collection.ContainsAny(values))
             {
                 var x = true;
-                if (ImGui.Checkbox(label, ref x))
+                if(ImGui.Checkbox(label, ref x))
                 {
                     Execute(AddAll, delayedOperation);
                     return true;
@@ -69,7 +69,7 @@ public static unsafe partial class ImGuiEx
             else
             {
                 var x = !collection.ContainsAll(values);
-                if (ImGuiEx.CheckboxBullet(label, ref x))
+                if(ImGuiEx.CheckboxBullet(label, ref x))
                 {
                     Execute(RemoveAll, delayedOperation);
                     return true;
@@ -99,21 +99,21 @@ public static unsafe partial class ImGuiEx
     public static bool CollectionCore<T>(CollectionCoreDelegate draw, T value, ICollection<T> collection, bool inverted = false, bool delayedOperation = false)
     {
         var x = collection.Contains(value);
-        if (inverted) x = !x;
-        if (draw(ref x))
+        if(inverted) x = !x;
+        if(draw(ref x))
         {
             Execute(delegate
             {
-                if (inverted) x = !x;
-                if (x)
+                if(inverted) x = !x;
+                if(x)
                 {
                     collection.Add(value);
                 }
                 else
                 {
-                    while (collection.Contains(value))
+                    while(collection.Contains(value))
                     {
-                        if (!collection.Remove(value)) break;
+                        if(!collection.Remove(value)) break;
                     }
                 }
             }, delayedOperation);

@@ -7,7 +7,7 @@ namespace ECommons.SplatoonAPI;
 
 public class Element
 {
-    int Version;
+    private int Version;
     internal object Instance;
     public Element(ElementType type)
     {
@@ -28,16 +28,16 @@ public class Element
 
     public void SetRefCoord(Vector3 v)
     {
-        this.refX = v.X;
-        this.refY = v.Z;
-        this.refZ = v.Y;
+        refX = v.X;
+        refY = v.Z;
+        refZ = v.Y;
     }
 
     public void SetOffCoord(Vector3 v)
     {
-        this.offX = v.X;
-        this.offY = v.Z;
-        this.offZ = v.Y;
+        offX = v.X;
+        offY = v.Z;
+        offZ = v.Y;
     }
 
     public ElementType type

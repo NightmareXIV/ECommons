@@ -10,7 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
-public unsafe partial class AddonMaster{
+public unsafe partial class AddonMaster
+{
     public class _CharaSelectWorldServer : AddonMasterBase
     {
         public _CharaSelectWorldServer(nint addon) : base(addon)
@@ -27,11 +28,11 @@ public unsafe partial class AddonMaster{
             {
                 var ret = new List<World>();
                 var stringArray = RaptureAtkModule.Instance()->AtkArrayDataHolder.StringArrays[1];
-                for (int i = 0; i < 16; i++)
+                for(var i = 0; i < 16; i++)
                 {
                     var str = stringArray->StringArray[i];
                     var worldName = MemoryHelper.ReadStringNullTerminated((nint)str).Trim();
-                    if (worldName.IsNullOrEmpty()) break;
+                    if(worldName.IsNullOrEmpty()) break;
                     ret.Add(new(this, i, worldName));
                 }
                 return [.. ret];

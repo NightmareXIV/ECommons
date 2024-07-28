@@ -9,7 +9,7 @@ public static class GradientColor
     {
         var delta = (end - start) / (int)Milliseconds;
         var time = Environment.TickCount64 % (Milliseconds * 2);
-        if (time < Milliseconds)
+        if(time < Milliseconds)
         {
             return start + delta * (float)(time % Milliseconds);
         }

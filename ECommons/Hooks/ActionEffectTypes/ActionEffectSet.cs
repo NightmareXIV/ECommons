@@ -38,7 +38,7 @@ public unsafe struct ActionEffectSet
 
     public ActionEffectSet(uint sourceID, Character* sourceCharacter, Vector3* pos, EffectHeader* effectHeader, EffectEntry* effectArray, ulong* effectTail)
     {
-        switch (effectHeader->ActionType)
+        switch(effectHeader->ActionType)
         {
             case ActionType.KeyItem:
                 EventItem = Svc.Data.GetExcelSheet<EventItem>().GetRow(effectHeader->ActionID);
@@ -78,7 +78,7 @@ public unsafe struct ActionEffectSet
         Header = *effectHeader;
 
         TargetEffects = new TargetEffect[effectHeader->TargetCount];
-        for (int i = 0; i < effectHeader->TargetCount; i++)
+        for(var i = 0; i < effectHeader->TargetCount; i++)
         {
             TargetEffects[i] = new TargetEffect(effectTail[i], effectArray + 8 * i);
         }
@@ -87,9 +87,9 @@ public unsafe struct ActionEffectSet
     public Dictionary<ulong, uint> GetSpecificTypeEffect(ActionEffectType type)
     {
         var result = new Dictionary<ulong, uint>();
-        foreach (var effect in TargetEffects)
+        foreach(var effect in TargetEffects)
         {
-            if (effect.GetSpecificTypeEffect(type, out var e))
+            if(effect.GetSpecificTypeEffect(type, out var e))
             {
                 //Is this value or Damage? IDK about it.
                 result[effect.TargetID] = e.value;
@@ -102,9 +102,9 @@ public unsafe struct ActionEffectSet
     {
         var str = $"S:{Source?.Name}, T:{Target?.Name}, Lock:{Header.AnimationLockTime}";
         str += $"\nType: {Header.ActionType}, Name: {Action?.Name}({Action?.RowId})";
-        if (TargetEffects != null)
+        if(TargetEffects != null)
         {
-            foreach (var effect in TargetEffects)
+            foreach(var effect in TargetEffects)
             {
                 str += "\n" + effect.ToString();
             }

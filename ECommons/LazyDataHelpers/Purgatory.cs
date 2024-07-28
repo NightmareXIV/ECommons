@@ -30,7 +30,7 @@ public static class Purgatory
             {
                 x();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 e.Log();
             }
@@ -40,15 +40,15 @@ public static class Purgatory
             try
             {
                 var fpu = x.GetFieldPropertyUnions(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-                foreach (var f in fpu)
+                foreach(var f in fpu)
                 {
-                    if (f.UnionType.IsClass)
+                    if(f.UnionType.IsClass)
                     {
                         try
                         {
                             f.SetValue(null, null);
                         }
-                        catch (Exception e)
+                        catch(Exception e)
                         {
                             e.Log();
                         }

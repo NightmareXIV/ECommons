@@ -29,15 +29,15 @@ public static partial class ReflectionHelper
     public static object Call(this object obj, IEnumerable<Assembly>? assemblies, string methodName, IEnumerable<string>? methodTypeArguments, object[] parameters)
     {
         var methodInfo = obj.GetType().GetMethod(methodName, AllFlags, parameters.Select(x => x.GetType()).ToArray());
-        if (methodInfo != null)
+        if(methodInfo != null)
         {
-            if (methodTypeArguments != null && methodTypeArguments.Any())
+            if(methodTypeArguments != null && methodTypeArguments.Any())
             {
                 try
                 {
                     methodInfo = methodInfo.MakeGenericMethod([.. FindTypesInAssemblies(assemblies, methodTypeArguments)]);
                 }
-                catch (Exception)
+                catch(Exception)
                 {
                     methodInfo = null;
                 }

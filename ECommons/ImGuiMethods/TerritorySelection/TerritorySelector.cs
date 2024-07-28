@@ -26,20 +26,18 @@ public unsafe class TerritorySelector : Window
         ["Trial"] = [TerritoryIntendedUseEnum.Trial],
         ["Deep Dungeon"] = [TerritoryIntendedUseEnum.Deep_Dungeon],
     };
-    public readonly static List<TerritorySelector> Selectors = [];
-
-    readonly Dictionary<string, List<TerritoryType>> Cache = [];
+    public static readonly List<TerritorySelector> Selectors = [];
+    private readonly Dictionary<string, List<TerritoryType>> Cache = [];
 
     public bool OnlySelected = false;
     public string Filter = "";
-
-    WindowSystem WindowSystem;
-    HashSet<uint> SelectedTerritories;
-    uint SelectedTerritory;
-    bool IsSingleSelection = false;
-    Action<TerritorySelector, HashSet<uint>> Callback;
-    Action<TerritorySelector, uint> CallbackSingle;
-    static bool? VisibleAction = null;
+    private WindowSystem WindowSystem;
+    private HashSet<uint> SelectedTerritories;
+    private uint SelectedTerritory;
+    private bool IsSingleSelection = false;
+    private Action<TerritorySelector, HashSet<uint>> Callback;
+    private Action<TerritorySelector, uint> CallbackSingle;
+    private static bool? VisibleAction = null;
 
     public Action<TerritoryType, Vector4?, string> ActionDrawPlaceName = (TerritoryType t, Vector4? col, string name) =>
     {
@@ -66,19 +64,19 @@ public unsafe class TerritorySelector : Window
         Setup([], Callback, null);
     }
 
-    void Setup(HashSet<uint> SelectedTerritories, Action<TerritorySelector, HashSet<uint>> Callback, Action<TerritorySelector, uint> CallbackSingle)
+    private void Setup(HashSet<uint> SelectedTerritories, Action<TerritorySelector, HashSet<uint>> Callback, Action<TerritorySelector, uint> CallbackSingle)
     {
-        this.WindowName ??= "Select zones";
-        this.IsSingleSelection = CallbackSingle != null;
-        this.SelectedTerritory = SelectedTerritories.FirstOrDefault();
-        if (Singleton)
+        WindowName ??= "Select zones";
+        IsSingleSelection = CallbackSingle != null;
+        SelectedTerritory = SelectedTerritories.FirstOrDefault();
+        if(Singleton)
         {
             Selectors.Each(x => x.Close());
             Selectors.Clear();
         }
         else
         {
-            if(Selectors.Any(x => x.WindowName == this.WindowName))
+            if(Selectors.Any(x => x.WindowName == WindowName))
             {
                 Notify.Error("Territory selector is already open");
                 return;
@@ -93,13 +91,13 @@ public unsafe class TerritorySelector : Window
         Svc.PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
         base.IsOpen = true;
         //yes I know it's not optimized but it's one-time call so whatever okay?
-        foreach (var c in Categories)
+        foreach(var c in Categories)
         {
-            foreach (var x in Svc.Data.GetExcelSheet<TerritoryType>())
+            foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>())
             {
-                if (c.Value.Contains((TerritoryIntendedUseEnum)x.TerritoryIntendedUse) && x.PlaceName.Value?.Name.ExtractText().IsNullOrEmpty() == false)
+                if(c.Value.Contains((TerritoryIntendedUseEnum)x.TerritoryIntendedUse) && x.PlaceName.Value?.Name.ExtractText().IsNullOrEmpty() == false)
                 {
-                    if (!Cache.TryGetValue(c.Key, out List<TerritoryType> value))
+                    if(!Cache.TryGetValue(c.Key, out var value))
                     {
                         value = ([]);
                         Cache[c.Key] = value;
@@ -118,9 +116,9 @@ public unsafe class TerritorySelector : Window
             }
         }
         Cache["All"] = [];
-        foreach (var x in Svc.Data.GetExcelSheet<TerritoryType>())
+        foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>())
         {
-            if (x.PlaceName.Value?.Name.ExtractText().IsNullOrEmpty() == false)
+            if(x.PlaceName.Value?.Name.ExtractText().IsNullOrEmpty() == false)
             {
                 Cache["All"].Add(x);
             }
@@ -130,53 +128,53 @@ public unsafe class TerritorySelector : Window
     public override void Draw()
     {
         VisibleAction = null;
-        if (ImGui.BeginTabBar("##TerritorySelectorBar"))
+        if(ImGui.BeginTabBar("##TerritorySelectorBar"))
         {
-            foreach (var x in Cache)
+            foreach(var x in Cache)
             {
-                if (ImGui.BeginTabItem(x.Key))
+                if(ImGui.BeginTabItem(x.Key))
                 {
                     ImGui.SetNextItemWidth(200f);
                     ImGui.InputTextWithHint($"##search", "Filter...", ref Filter, 50);
                     ImGui.SameLine();
                     ImGui.Checkbox("Only selected", ref OnlySelected);
-                    if (Player.Available)
+                    if(Player.Available)
                     {
                         ImGui.SameLine();
-                        if (!this.IsSingleSelection)
+                        if(!IsSingleSelection)
                         {
-                            if (ImGuiEx.CollectionCheckbox($"Current: {ExcelTerritoryHelper.GetName(Svc.ClientState.TerritoryType)}", Svc.ClientState.TerritoryType, SelectedTerritories))
+                            if(ImGuiEx.CollectionCheckbox($"Current: {ExcelTerritoryHelper.GetName(Svc.ClientState.TerritoryType)}", Svc.ClientState.TerritoryType, SelectedTerritories))
                             {
                                 try
                                 {
                                     Callback(this, SelectedTerritories);
                                 }
-                                catch (Exception e)
+                                catch(Exception e)
                                 {
                                     e.Log();
                                 }
                             }
                             ImGui.SameLine();
-                            if (ImGui.Button("Add all visible"))
+                            if(ImGui.Button("Add all visible"))
                             {
                                 VisibleAction = true;
                             }
                             ImGui.SameLine();
-                            if (ImGui.Button("Remove all visible"))
+                            if(ImGui.Button("Remove all visible"))
                             {
                                 VisibleAction = false;
                             }
                         }
                         else
                         {
-                            if (ImGui.RadioButton($"Current zone: {ExcelTerritoryHelper.GetName(Svc.ClientState.TerritoryType)}", SelectedTerritory == Svc.ClientState.TerritoryType))
+                            if(ImGui.RadioButton($"Current zone: {ExcelTerritoryHelper.GetName(Svc.ClientState.TerritoryType)}", SelectedTerritory == Svc.ClientState.TerritoryType))
                             {
                                 SelectedTerritory = Svc.ClientState.TerritoryType;
                                 try
                                 {
                                     CallbackSingle(this, SelectedTerritory);
                                 }
-                                catch (Exception e)
+                                catch(Exception e)
                                 {
                                     e.Log();
                                 }
@@ -184,9 +182,9 @@ public unsafe class TerritorySelector : Window
                         }
                     }
 
-                    if (ImGui.BeginChild("##ChildTable"))
+                    if(ImGui.BeginChild("##ChildTable"))
                     {
-                        if (ImGui.BeginTable("##TSelector", 7, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.SizingFixedFit))
+                        if(ImGui.BeginTable("##TSelector", 7, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.SizingFixedFit))
                         {
                             ImGui.TableSetupColumn(" ");
                             ImGui.TableSetupColumn("ID");
@@ -198,7 +196,7 @@ public unsafe class TerritorySelector : Window
 
                             ImGui.TableHeadersRow();
 
-                            foreach (var t in x.Value)
+                            foreach(var t in x.Value)
                             {
                                 var cfc = t.ContentFinderCondition.Value?.Name.ExtractText() ?? "";
                                 var questBattle = Svc.Data.GetExcelSheet<Quest>().GetRow((uint)t.QuestBattle.Value.Quest)?.Name?.ExtractText() ?? "";
@@ -228,25 +226,25 @@ public unsafe class TerritorySelector : Window
 
                                 ImGui.TableNextRow();
                                 ImGui.TableNextColumn();//checkbox
-                                if (!this.IsSingleSelection)
+                                if(!IsSingleSelection)
                                 {
-                                    if (ImGuiEx.CollectionCheckbox($"##sel{t.RowId}", t.RowId, SelectedTerritories))
+                                    if(ImGuiEx.CollectionCheckbox($"##sel{t.RowId}", t.RowId, SelectedTerritories))
                                     {
                                         try
                                         {
                                             Callback(this, SelectedTerritories);
                                         }
-                                        catch (Exception e)
+                                        catch(Exception e)
                                         {
                                             e.Log();
                                         }
                                     }
-                                    if (VisibleAction == true && !SelectedTerritories.Contains(t.RowId))
+                                    if(VisibleAction == true && !SelectedTerritories.Contains(t.RowId))
                                     {
                                         SelectedTerritories.Add(t.RowId);
                                         Callback(this, SelectedTerritories);
                                     }
-                                    if (VisibleAction == false && SelectedTerritories.Contains(t.RowId))
+                                    if(VisibleAction == false && SelectedTerritories.Contains(t.RowId))
                                     {
                                         SelectedTerritories.Remove(t.RowId);
                                         Callback(this, SelectedTerritories);
@@ -254,14 +252,14 @@ public unsafe class TerritorySelector : Window
                                 }
                                 else
                                 {
-                                    if (ImGui.RadioButton($"##sel{t.RowId}", t.RowId == SelectedTerritory))
+                                    if(ImGui.RadioButton($"##sel{t.RowId}", t.RowId == SelectedTerritory))
                                     {
                                         SelectedTerritory = t.RowId;
                                         try
                                         {
                                             CallbackSingle(this, SelectedTerritory);
                                         }
-                                        catch (Exception e)
+                                        catch(Exception e)
                                         {
                                             e.Log();
                                         }
@@ -275,11 +273,11 @@ public unsafe class TerritorySelector : Window
                                 ActionDrawPlaceName(t, col ? ImGuiColors.DalamudOrange : ImGuiColors.DalamudYellow, name);
 
                                 ImGui.TableNextColumn(); //Duty
-                                if (!cfc.IsNullOrEmpty())
+                                if(!cfc.IsNullOrEmpty())
                                 {
                                     ImGuiEx.Text($"{cfc}");
                                 }
-                                else if (!questBattle.IsNullOrEmpty())
+                                else if(!questBattle.IsNullOrEmpty())
                                 {
                                     ImGuiEx.Text($"{questBattle}");
                                 }
@@ -318,7 +316,7 @@ public unsafe class TerritorySelector : Window
     }
 
     [Obsolete("Do not reopen existing TerritorySelector. You should create new TerritorySelector every time.", true)]
-    new bool IsOpen => throw new Exception("You should create new TerritorySelector every time.");
+    private new bool IsOpen => throw new Exception("You should create new TerritorySelector every time.");
 
     public void Close()
     {

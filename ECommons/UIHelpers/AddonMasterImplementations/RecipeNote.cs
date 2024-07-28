@@ -1,7 +1,7 @@
-﻿using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
+﻿using ECommons.Automation;
 using ECommons.Automation.UIInput;
-using ECommons.Automation;
+using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 
@@ -23,7 +23,7 @@ public partial class AddonMaster
 
         public void Material(uint index, bool hq)
         {
-            if (hq) index += 0x10_000;
+            if(hq) index += 0x10_000;
             Callback.Fire(Base, false, 6, index, 0);
         }
     }

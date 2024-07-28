@@ -1,9 +1,9 @@
 ﻿using Dalamud;
+using Dalamud.Game;
+using ECommons.DalamudServices;
 using Lumina.Excel;
 using System;
 using System.Collections.Generic;
-using ECommons.DalamudServices;
-using Dalamud.Game;
 
 #nullable enable
 namespace ECommons;
@@ -20,12 +20,12 @@ public class ExcelResolver<T> : IEquatable<ExcelResolver<T>> where T : ExcelRow
     /// <param name="id">The ID of the classJob.</param>
     public ExcelResolver(uint id)
     {
-        this.Id = id;
+        Id = id;
     }
 
     public ExcelResolver(Dalamud.Game.ClientState.Resolvers.ExcelResolver<T> dalamudResolver)
     {
-        this.Id = dalamudResolver.Id;
+        Id = dalamudResolver.Id;
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ public class ExcelResolver<T> : IEquatable<ExcelResolver<T>> where T : ExcelRow
     /// <summary>
     /// Gets GameData linked to this excel row.
     /// </summary>
-    public T? GameData => Svc.Data.GetExcelSheet<T>()?.GetRow(this.Id);
+    public T? GameData => Svc.Data.GetExcelSheet<T>()?.GetRow(Id);
 
     public override bool Equals(object? obj)
     {
@@ -58,7 +58,7 @@ public class ExcelResolver<T> : IEquatable<ExcelResolver<T>> where T : ExcelRow
     /// </summary>
     /// <param name="language">The language.</param>
     /// <returns>The ExcelRow in the specified language.</returns>
-    public T? GetWithLanguage(ClientLanguage language) => Svc.Data.GetExcelSheet<T>(language)?.GetRow(this.Id);
+    public T? GetWithLanguage(ClientLanguage language) => Svc.Data.GetExcelSheet<T>(language)?.GetRow(Id);
 
     public static bool operator ==(ExcelResolver<T>? left, ExcelResolver<T>? right)
     {

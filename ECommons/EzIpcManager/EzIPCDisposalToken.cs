@@ -19,13 +19,14 @@ public sealed class EzIPCDisposalToken
     /// Whether the token was already disposed
     /// </summary>
     public bool IsDisposed { get; private set; } = false;
-    readonly Action DisposeAction;
+
+    private readonly Action DisposeAction;
 
     internal EzIPCDisposalToken(string name, bool isEvent, Action disposeAction)
     {
-        this.IpcTag = name ?? throw new ArgumentNullException(nameof(name));
-        this.IsEvent = isEvent;
-        this.DisposeAction = disposeAction ?? throw new ArgumentNullException(nameof(disposeAction));
+        IpcTag = name ?? throw new ArgumentNullException(nameof(name));
+        IsEvent = isEvent;
+        DisposeAction = disposeAction ?? throw new ArgumentNullException(nameof(disposeAction));
     }
 
     /// <summary>
@@ -34,7 +35,7 @@ public sealed class EzIPCDisposalToken
     /// </summary>
     public void Dispose()
     {
-        if (!IsDisposed)
+        if(!IsDisposed)
         {
             IsDisposed = true;
             try

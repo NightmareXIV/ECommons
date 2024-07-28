@@ -46,7 +46,7 @@ public static unsafe class ObjectFunctions
 
     public static int GetAttackableEnemyCountAroundPoint(Vector3 point, float radius)
     {
-        int num = 0;
+        var num = 0;
         foreach(var o in Svc.Objects)
         {
             if(o is IBattleNpc)
@@ -64,14 +64,14 @@ public static unsafe class ObjectFunctions
 
     public static bool TryGetPartyMemberObjectByObjectId(uint objectId, out IGameObject partyMemberObject)
     {
-        if (objectId == Svc.ClientState.LocalPlayer?.GameObjectId)
+        if(objectId == Svc.ClientState.LocalPlayer?.GameObjectId)
         {
             partyMemberObject = Svc.ClientState.LocalPlayer;
             return true;
         }
-        foreach (var p in Svc.Party)
+        foreach(var p in Svc.Party)
         {
-            if (p.GameObject?.GameObjectId == objectId)
+            if(p.GameObject?.GameObjectId == objectId)
             {
                 partyMemberObject = p.GameObject;
                 return true;
@@ -83,14 +83,14 @@ public static unsafe class ObjectFunctions
 
     public static bool TryGetPartyMemberObjectByAddress(IntPtr address, out IGameObject partyMemberObject)
     {
-        if (address == Svc.ClientState.LocalPlayer?.Address)
+        if(address == Svc.ClientState.LocalPlayer?.Address)
         {
             partyMemberObject = Svc.ClientState.LocalPlayer;
             return true;
         }
-        foreach (var p in Svc.Party)
+        foreach(var p in Svc.Party)
         {
-            if (p.GameObject?.Address == address)
+            if(p.GameObject?.Address == address)
             {
                 partyMemberObject = p.GameObject;
                 return true;

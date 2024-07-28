@@ -1,11 +1,11 @@
-﻿using Dalamud.Hooking;
+﻿using Dalamud;
+using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
-using Dalamud;
 using ECommons.DalamudServices;
-using System;
 using ECommons.DalamudServices.Legacy;
 using ECommons.Logging;
-using Dalamud.Game.ClientState.Conditions;
+using System;
 
 namespace ECommons.Automation;
 #nullable disable
@@ -15,15 +15,17 @@ namespace ECommons.Automation;
 /// </summary>
 public unsafe class AutoCutsceneSkipper
 {
-    delegate byte CutsceneHandleInputDelegate(nint a1, float a2);
+    private delegate byte CutsceneHandleInputDelegate(nint a1, float a2);
     //[Signature("40 53 48 83 EC 20 80 79 29 00 48 8B D9 0F 85", DetourName = nameof(CutsceneHandleInputDetour))]
     [Signature("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 40 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 44 24 ?? 80 79 27 00", DetourName = nameof(CutsceneHandleInputDetour))]
-    static Hook<CutsceneHandleInputDelegate> CutsceneHandleInputHook;
+    private static Hook<CutsceneHandleInputDelegate> CutsceneHandleInputHook;
 
     //static readonly string ConditionSig = "75 11 BA ?? ?? ?? ?? 48 8B CF E8 ?? ?? ?? ?? 84 C0 74 52";
-    static readonly string ConditionSig = "75 11 BA ?? ?? ?? ?? 48 8B CF E8 ?? ?? ?? ?? 84 C0 74 4C";
-    static int ConditionOriginalValuesLen => ConditionSig.Split(" ").Length;
-    static nint ConditionAddr;
+    private static readonly string ConditionSig = "75 11 BA ?? ?? ?? ?? 48 8B CF E8 ?? ?? ?? ?? 84 C0 74 4C";
+
+    private static int ConditionOriginalValuesLen => ConditionSig.Split(" ").Length;
+
+    private static nint ConditionAddr;
     /// <summary>
     /// Condition which will be checked to determine if the cutscene should be skipped. Can be null to skip everything unconditionally.
     /// </summary>
@@ -36,7 +38,7 @@ public unsafe class AutoCutsceneSkipper
     /// <exception cref="Exception">If already initialized</exception>
     public static void Init(Func<nint, bool> cutsceneSkipCondition)
     {
-        if (CutsceneHandleInputHook != null) throw new Exception($"{nameof(AutoCutsceneSkipper)} module is already initialized!");
+        if(CutsceneHandleInputHook != null) throw new Exception($"{nameof(AutoCutsceneSkipper)} module is already initialized!");
         PluginLog.Information($"AutoCutsceneSkipper requested");
         Condition = cutsceneSkipCondition;
         SignatureHelper.Initialise(new AutoCutsceneSkipper());
@@ -62,7 +64,7 @@ public unsafe class AutoCutsceneSkipper
 
     internal static byte CutsceneHandleInputDetour(nint a1, float a2)
     {
-        if (!Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent])
+        if(!Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent])
         {
             return CutsceneHandleInputHook.Original(a1, a2);
         }
@@ -70,10 +72,10 @@ public unsafe class AutoCutsceneSkipper
         byte ret = 0;
         try
         {
-            if (Condition?.Invoke(a1) != false)
+            if(Condition?.Invoke(a1) != false)
             {
                 var skippable = *(nint*)(a1 + 56) != 0;
-                if (skippable)
+                if(skippable)
                 {
                     SafeMemory.WriteBytes(ConditionAddr, [0xEB]);
                     ret = CutsceneHandleInputHook.Original(a1, a2);
@@ -82,11 +84,11 @@ public unsafe class AutoCutsceneSkipper
                 }
             }
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             e.Log();
         }
-        if (!called)
+        if(!called)
         {
             ret = CutsceneHandleInputHook.Original(a1, a2);
         }

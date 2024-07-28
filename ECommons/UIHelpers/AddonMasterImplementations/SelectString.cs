@@ -27,10 +27,10 @@ public partial class AddonMaster
         {
             get
             {
-                var ret = new Entry[this.Addon->PopupMenu.PopupMenu.EntryCount];
-                for (int i = 0; i < ret.Length; i++)
+                var ret = new Entry[Addon->PopupMenu.PopupMenu.EntryCount];
+                for(var i = 0; i < ret.Length; i++)
                 {
-                    ret[i] = new(this.Addon, i);
+                    ret[i] = new(Addon, i);
                 }
                 return ret;
             }
@@ -47,12 +47,12 @@ public partial class AddonMaster
                 Index = index;
             }
 
-            public SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)this.Addon->PopupMenu.PopupMenu.EntryNames[Index]);
+            public SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->PopupMenu.PopupMenu.EntryNames[Index]);
             public string Text => SeString.ExtractText();
 
             public readonly void Select()
             {
-                Callback.Fire((AtkUnitBase*)this.Addon, true, Index);
+                Callback.Fire((AtkUnitBase*)Addon, true, Index);
             }
 
             public override string? ToString()

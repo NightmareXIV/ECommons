@@ -10,7 +10,7 @@ public static unsafe class CharacterFunctions
 {
     public static ushort GetVFXId(void* VfxData)
     {
-        if (VfxData == null) return 0;
+        if(VfxData == null) return 0;
         return *(ushort*)((IntPtr)(VfxData) + 8);
     }
 
@@ -42,7 +42,7 @@ public static unsafe class CharacterFunctions
     public static bool IsCharacterVisible(this ICharacter chr)
     {
         var v = (IntPtr)(((FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)chr.Address)->GameObject.DrawObject);
-        if (v == IntPtr.Zero) return false;
+        if(v == IntPtr.Zero) return false;
         return Bitmask.IsBitSet(*(byte*)(v + 136), 0);
     }
 
@@ -60,10 +60,10 @@ public static unsafe class CharacterFunctions
 
     public static CombatRole GetRole(this ICharacter c)
     {
-        if (c.ClassJob.GameData?.Role == 1) return CombatRole.Tank;
-        if (c.ClassJob.GameData?.Role == 2) return CombatRole.DPS;
-        if (c.ClassJob.GameData?.Role == 3) return CombatRole.DPS;
-        if (c.ClassJob.GameData?.Role == 4) return CombatRole.Healer;
+        if(c.ClassJob.GameData?.Role == 1) return CombatRole.Tank;
+        if(c.ClassJob.GameData?.Role == 2) return CombatRole.DPS;
+        if(c.ClassJob.GameData?.Role == 3) return CombatRole.DPS;
+        if(c.ClassJob.GameData?.Role == 4) return CombatRole.Healer;
         return CombatRole.NonCombat;
     }
 

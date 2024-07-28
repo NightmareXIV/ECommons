@@ -21,7 +21,7 @@ public partial class AddonMaster
 
         public void Checkbox()
         {
-            if (Addon->CheckBox != null && !Addon->CheckBox->IsChecked)
+            if(Addon->CheckBox != null && !Addon->CheckBox->IsChecked)
             {
                 Addon->CheckBox->IsChecked = true;
                 DesynthesizeButton->SetEnabledState(true);

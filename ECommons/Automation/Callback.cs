@@ -31,9 +31,9 @@ public static unsafe class Callback
 
     public static void InstallHook()
     {
-        if (FireCallback == null) Initialize();
+        if(FireCallback == null) Initialize();
         AtkUnitBase_FireCallbackHook ??= Svc.Hook.HookFromSignature<AtkUnitBase_FireCallbackDelegate>(Sig, AtkUnitBase_FireCallbackDetour);
-        if (AtkUnitBase_FireCallbackHook.IsEnabled)
+        if(AtkUnitBase_FireCallbackHook.IsEnabled)
         {
             PluginLog.Error("AtkUnitBase_FireCallbackHook is already enabled");
         }
@@ -46,11 +46,11 @@ public static unsafe class Callback
 
     public static void UninstallHook()
     {
-        if (FireCallback == null)
+        if(FireCallback == null)
         {
             PluginLog.Error("AtkUnitBase_FireCallbackHook not initialized yet");
         }
-        if (!AtkUnitBase_FireCallbackHook.IsEnabled)
+        if(!AtkUnitBase_FireCallbackHook.IsEnabled)
         {
             PluginLog.Error("AtkUnitBase_FireCallbackHook is already disabled");
         }
@@ -68,7 +68,7 @@ public static unsafe class Callback
         {
             PluginLog.Debug($"Callback on {Base->Name.Read()}, valueCount={valueCount}, updateState={updateState}\n{DecodeValues(valueCount, values).Select(x => $"    {x}").Join("\n")}");
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             e.Log();
         }
@@ -77,21 +77,21 @@ public static unsafe class Callback
 
     public static void FireRaw(AtkUnitBase* Base, int valueCount, AtkValue* values, byte updateState = 0)
     {
-        if (FireCallback == null) Initialize();
+        if(FireCallback == null) Initialize();
         FireCallback(Base, valueCount, values, updateState);
     }
 
     public static void Fire(AtkUnitBase* Base, bool updateState, params object[] values)
     {
-        if (Base == null) throw new Exception("Null UnitBase");
+        if(Base == null) throw new Exception("Null UnitBase");
         var atkValues = (AtkValue*)Marshal.AllocHGlobal(values.Length * sizeof(AtkValue));
-        if (atkValues == null) return;
+        if(atkValues == null) return;
         try
         {
-            for (var i = 0; i < values.Length; i++)
+            for(var i = 0; i < values.Length; i++)
             {
                 var v = values[i];
-                switch (v)
+                switch(v)
                 {
                     case uint uintValue:
                         atkValues[i].Type = ValueType.UInt;
@@ -129,7 +129,7 @@ public static unsafe class Callback
                 }
             }
             List<string> CallbackValues = [];
-            for (var i = 0; i < values.Length; i++)
+            for(var i = 0; i < values.Length; i++)
             {
                 CallbackValues.Add($"    Value {i}: [input: {values[i]}/{values[i]?.GetType().Name}] -> {DecodeValue(atkValues[i])})");
             }
@@ -138,9 +138,9 @@ public static unsafe class Callback
         }
         finally
         {
-            for (var i = 0; i < values.Length; i++)
+            for(var i = 0; i < values.Length; i++)
             {
-                if (atkValues[i].Type == ValueType.String)
+                if(atkValues[i].Type == ValueType.String)
                 {
                     Marshal.FreeHGlobal(new IntPtr(atkValues[i].String));
                 }
@@ -154,12 +154,12 @@ public static unsafe class Callback
         var atkValueList = new List<string>();
         try
         {
-            for (var i = 0; i < cnt; i++)
+            for(var i = 0; i < cnt; i++)
             {
                 atkValueList.Add(DecodeValue(values[i]));
             }
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             e.Log();
         }
@@ -169,7 +169,7 @@ public static unsafe class Callback
     public static string DecodeValue(AtkValue a)
     {
         var str = new StringBuilder(a.Type.ToString()).Append(": ");
-        switch (a.Type)
+        switch(a.Type)
         {
             case ValueType.Int:
                 {

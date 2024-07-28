@@ -16,7 +16,7 @@ public unsafe class AtkEventDataBuilder
         Data = new();
     }
 
-    public AtkEventDataBuilder Write<T>(int pos, T data) where T:unmanaged
+    public AtkEventDataBuilder Write<T>(int pos, T data) where T : unmanaged
     {
         fixed(AtkEventData* eventDataPtr = &Data)
         {

@@ -25,7 +25,7 @@ public unsafe struct TargetEffect
     {
         get
         {
-            if (index < 0 || index > 7) return default;
+            if(index < 0 || index > 7) return default;
             return _effects[index];
         }
     }
@@ -39,11 +39,11 @@ public unsafe struct TargetEffect
 
     public bool GetSpecificTypeEffect(ActionEffectType type, out EffectEntry effect)
     {
-        bool find = false;
+        var find = false;
         EffectEntry result = default;
         ForEach(e =>
         {
-            if (!find && e.type == type)
+            if(!find && e.type == type)
             {
                 find = true;
                 result = e;
@@ -55,8 +55,8 @@ public unsafe struct TargetEffect
 
     public void ForEach(Action<EffectEntry> act)
     {
-        if (act == null) return;
-        for (int i = 0; i < 8; i++)
+        if(act == null) return;
+        for(var i = 0; i < 8; i++)
         {
             var e = this[i];
             act(e);

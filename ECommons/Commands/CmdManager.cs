@@ -8,22 +8,22 @@ namespace ECommons.Commands;
 
 public static class CmdManager
 {
-    static Dictionary<CmdAttribute, SubCmdAttribute[]> _commandsAttribute = new Dictionary<CmdAttribute, SubCmdAttribute[]>();
+    private static Dictionary<CmdAttribute, SubCmdAttribute[]> _commandsAttribute = [];
 
     internal static void Init()
     {
         var plugin = ECommonsMain.Instance;
-        if (plugin == null) return;
+        if(plugin == null) return;
 
-        foreach (var m in plugin.GetType().GetRuntimeMethods())
+        foreach(var m in plugin.GetType().GetRuntimeMethods())
         {
             var types = m.GetParameters();
-            if (types.Length != 2
+            if(types.Length != 2
                 || types[0].ParameterType != typeof(string)
                 || types[1].ParameterType != typeof(string)) continue;
 
             var cmdAttr = m.GetCustomAttribute<CmdAttribute>();
-            if (cmdAttr == null) continue;
+            if(cmdAttr == null) continue;
 
             Svc.Commands.AddHandler(cmdAttr.Command, new Dalamud.Game.Command.CommandInfo((string command, string arguments) =>
             {
@@ -44,19 +44,19 @@ public static class CmdManager
     /// <param name="indent">The indent of value. 0 means no index, -1 means next line.</param>
     public static void DrawHelp(float indent = 0)
     {
-        bool isFirst = true;
-        foreach (var pair in _commandsAttribute)
+        var isFirst = true;
+        foreach(var pair in _commandsAttribute)
         {
-            if (isFirst) isFirst = false;
+            if(isFirst) isFirst = false;
             else ImGui.Spacing();
 
-            if (pair.Key.ShowInHelpPanel)
+            if(pair.Key.ShowInHelpPanel)
             {
                 DisplayCommandHelp(pair.Key.Command, "", pair.Key.HelpMessage, indent);
             }
-            foreach (var sub in pair.Value)
+            foreach(var sub in pair.Value)
             {
-                if (sub == null) continue;
+                if(sub == null) continue;
                 DisplayCommandHelp(pair.Key.Command, sub.SubCommand, sub.HelpMessage, indent);
             }
         }
@@ -64,36 +64,36 @@ public static class CmdManager
 
     public static void DisplayCommandHelp(string command, string extraCommand = "", string helpMessage = "", float indent = 0)
     {
-        if (string.IsNullOrEmpty(command)) return;
-        if (!string.IsNullOrEmpty(extraCommand))
+        if(string.IsNullOrEmpty(command)) return;
+        if(!string.IsNullOrEmpty(extraCommand))
         {
             command += " " + extraCommand;
         }
 
-        if (ImGui.Button(command))
+        if(ImGui.Button(command))
         {
             Svc.Commands.ProcessCommand(command);
         }
-        if (ImGui.IsItemHovered())
+        if(ImGui.IsItemHovered())
         {
             ImGui.SetTooltip($"Click to execute the command: {command}\nRight-click to copy the command: {command}");
 
-            if (ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+            if(ImGui.IsMouseClicked(ImGuiMouseButton.Right))
             {
                 ImGui.SetClipboardText(command);
             }
         }
 
-        if (!string.IsNullOrEmpty(helpMessage))
+        if(!string.IsNullOrEmpty(helpMessage))
         {
-            if (indent > 0)
+            if(indent > 0)
             {
                 ImGui.SameLine();
                 ImGui.Indent(indent);
             }
             else
             {
-                if (indent < 0)
+                if(indent < 0)
                 {
                     ImGui.Text("    ");
                 }
@@ -104,7 +104,7 @@ public static class CmdManager
             ImGui.SameLine();
             ImGui.TextWrapped(helpMessage);
 
-            if (indent > 0)
+            if(indent > 0)
             {
                 ImGui.Unindent(indent);
             }
@@ -113,7 +113,7 @@ public static class CmdManager
 
     internal static void Dispose()
     {
-        foreach (var cmd in _commandsAttribute.Keys)
+        foreach(var cmd in _commandsAttribute.Keys)
         {
             Svc.Commands.RemoveHandler(cmd.Command);
         }

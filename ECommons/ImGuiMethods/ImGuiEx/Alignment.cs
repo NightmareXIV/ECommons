@@ -6,7 +6,7 @@ using System.Numerics;
 namespace ECommons.ImGuiMethods;
 public static unsafe partial class ImGuiEx
 {
-    static Dictionary<string, float> RightFloatWidthCache = [];
+    private static Dictionary<string, float> RightFloatWidthCache = [];
     /// <summary>
     /// Draws a line on the right side of the window. Without specifying ID explicitly, you may only draw one line per unique action.
     /// </summary>
@@ -56,11 +56,11 @@ public static unsafe partial class ImGuiEx
         }
     }
 
-    static readonly Dictionary<string, float> CenteredLineWidths = new();
+    private static readonly Dictionary<string, float> CenteredLineWidths = [];
     public static void LineCentered(Action func) => LineCentered(GenericHelpers.GetCallStackID(), func);
     public static void LineCentered(string id, Action func)
     {
-        if (CenteredLineWidths.TryGetValue(id, out var dims))
+        if(CenteredLineWidths.TryGetValue(id, out var dims))
         {
             ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X / 2 - dims / 2);
         }
@@ -71,9 +71,7 @@ public static unsafe partial class ImGuiEx
         ImGui.Dummy(Vector2.Zero);
     }
 
-
-
-    static Dictionary<string, float> InputWithRightButtonsAreaValues = new();
+    private static Dictionary<string, float> InputWithRightButtonsAreaValues = [];
     public static void InputWithRightButtonsArea(Action inputAction, Action rightAction) => InputWithRightButtonsArea(GenericHelpers.GetCallStackID(), inputAction, rightAction);
     /// <summary>
     /// Convenient way to display stretched input with button or other elements on it's right side.
@@ -83,7 +81,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="rightAction">A line of elements on the right side. Can contain multiple elements but only one line.</param>
     public static void InputWithRightButtonsArea(string id, Action inputAction, Action rightAction)
     {
-        if (InputWithRightButtonsAreaValues.ContainsKey(id))
+        if(InputWithRightButtonsAreaValues.ContainsKey(id))
         {
             ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - InputWithRightButtonsAreaValues[id]);
         }

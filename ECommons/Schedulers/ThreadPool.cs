@@ -42,7 +42,7 @@ public class ThreadPool : IDisposable
     {
         TaskQueue.Enqueue((task, onCompletion));
         var num = Math.Max(1, Math.Min(MaxThreads, TaskQueue.Count + BusyThreads));
-        if (ThreadNum < num)
+        if(ThreadNum < num)
         {
             PluginLog.Verbose($"{ThreadNum} threads running, {BusyThreads} are busy, requested {num} threads, Creating new thread to deal with tasks...");
             ThreadNum++;
@@ -59,9 +59,9 @@ public class ThreadPool : IDisposable
         var uniqueID = $"{Random.Shared.Next():X8}";
         PluginLog.Verbose($"Thread {uniqueID} begins!");
         var idleTicks = 0;
-        while (!Disposed)
+        while(!Disposed)
         {
-            if (TaskQueue.TryDequeue(out var result))
+            if(TaskQueue.TryDequeue(out var result))
             {
                 BusyThreads++;
                 idleTicks = 0;
@@ -70,9 +70,9 @@ public class ThreadPool : IDisposable
                 {
                     result.Action();
                 }
-                catch (Exception ex)
+                catch(Exception ex)
                 {
-                    if (result.OnCompletion == null)
+                    if(result.OnCompletion == null)
                     {
                         ex.Log();
                     }
@@ -81,13 +81,13 @@ public class ThreadPool : IDisposable
                         exc = ex;
                     }
                 }
-                if (result.OnCompletion != null)
+                if(result.OnCompletion != null)
                 {
                     try
                     {
                         result.OnCompletion(exc);
                     }
-                    catch (Exception ex)
+                    catch(Exception ex)
                     {
                         ex.Log();
                     }
@@ -98,7 +98,7 @@ public class ThreadPool : IDisposable
             {
                 idleTicks++;
                 Thread.Sleep(100);
-                if (idleTicks > 100 || Disposed)
+                if(idleTicks > 100 || Disposed)
                 {
                     ThreadNum--;
                     break;

@@ -43,13 +43,13 @@ public partial class TaskManager
     /// <param name="tasks">Sequence of tasks to enqueue</param>
     public void EnqueueMulti(params TaskManagerTask?[] tasks)
     {
-        foreach (var task in tasks)
+        foreach(var task in tasks)
         {
-            if (task == null) continue;
-            if (this.IsStackActive)
-						{
-								Log($"(stack) Enqueued task {task.Name}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
-								Stack.Add(task);
+            if(task == null) continue;
+            if(IsStackActive)
+            {
+                Log($"(stack) Enqueued task {task.Name}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
+                Stack.Add(task);
             }
             else
             {

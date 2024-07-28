@@ -20,13 +20,12 @@ public static class AllianceRaids
     public const ushort the_Puppets_Bunker = 917;
     public const ushort The_Tower_at_Paradigms_Breach = 966;
     public const ushort Aglaia = 1054;
-
-    static ushort[] list = null;
+    private static ushort[] list = null;
     public static ushort[] List
     {
         get
         {
-            if (list == null)
+            if(list == null)
             {
                 var s = new List<ushort>();
                 typeof(AllianceRaids).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).Each(x => s.Add((ushort)x.GetValue(null)));

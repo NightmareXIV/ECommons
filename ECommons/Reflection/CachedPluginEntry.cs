@@ -9,7 +9,7 @@ internal class CachedPluginEntry
 
     internal CachedPluginEntry(IDalamudPlugin plugin, AssemblyLoadContext context)
     {
-        this.Plugin = plugin;
-        this.Context = context;
+        Plugin = plugin;
+        Context = context;
     }
 }

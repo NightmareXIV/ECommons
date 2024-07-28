@@ -13,6 +13,6 @@ public record struct InternalLogMessage
     {
         this.Message = Message;
         this.Level = Level;
-        this.Time = DateTimeOffset.Now;
+        Time = DateTimeOffset.Now;
     }
 }

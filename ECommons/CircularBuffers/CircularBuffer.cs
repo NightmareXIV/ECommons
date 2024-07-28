@@ -62,16 +62,16 @@ public class CircularBuffer<T> : IEnumerable<T>
     /// </param>
     public CircularBuffer(int capacity, T[] items)
     {
-        if (capacity < 1)
+        if(capacity < 1)
         {
             throw new ArgumentException(
                 "Circular buffer cannot have negative or zero capacity.", nameof(capacity));
         }
-        if (items == null)
+        if(items == null)
         {
             throw new ArgumentNullException(nameof(items));
         }
-        if (items.Length > capacity)
+        if(items.Length > capacity)
         {
             throw new ArgumentException(
                 "Too many items to fit circular buffer", nameof(items));
@@ -153,28 +153,28 @@ public class CircularBuffer<T> : IEnumerable<T>
     {
         get
         {
-            if (IsEmpty)
+            if(IsEmpty)
             {
                 throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer is empty", index));
             }
-            if (index >= _size)
+            if(index >= _size)
             {
                 throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer size is {1}", index, _size));
             }
-            int actualIndex = InternalIndex(index);
+            var actualIndex = InternalIndex(index);
             return _buffer[actualIndex];
         }
         set
         {
-            if (IsEmpty)
+            if(IsEmpty)
             {
                 throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer is empty", index));
             }
-            if (index >= _size)
+            if(index >= _size)
             {
                 throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer size is {1}", index, _size));
             }
-            int actualIndex = InternalIndex(index);
+            var actualIndex = InternalIndex(index);
             _buffer[actualIndex] = value;
         }
     }
@@ -189,7 +189,7 @@ public class CircularBuffer<T> : IEnumerable<T>
     /// <param name="item">Item to push to the back of the buffer</param>
     public void PushBack(T item)
     {
-        if (IsFull)
+        if(IsFull)
         {
             _buffer[_end] = item;
             Increment(ref _end);
@@ -213,7 +213,7 @@ public class CircularBuffer<T> : IEnumerable<T>
     /// <param name="item">Item to push to the front of the buffer</param>
     public void PushFront(T item)
     {
-        if (IsFull)
+        if(IsFull)
         {
             Decrement(ref _start);
             _end = _start;
@@ -272,10 +272,10 @@ public class CircularBuffer<T> : IEnumerable<T>
     /// <returns>A new array with a copy of the buffer contents.</returns>
     public T[] ToArray()
     {
-        T[] newArray = new T[Size];
-        int newArrayOffset = 0;
+        var newArray = new T[Size];
+        var newArrayOffset = 0;
         var segments = ToArraySegments();
-        foreach (ArraySegment<T> segment in segments)
+        foreach(var segment in segments)
         {
             Array.Copy(segment.Array, segment.Offset, newArray, newArrayOffset, segment.Count);
             newArrayOffset += segment.Count;
@@ -308,9 +308,9 @@ public class CircularBuffer<T> : IEnumerable<T>
     public IEnumerator<T> GetEnumerator()
     {
         var segments = ToArraySegments();
-        foreach (ArraySegment<T> segment in segments)
+        foreach(var segment in segments)
         {
-            for (int i = 0; i < segment.Count; i++)
+            for(var i = 0; i < segment.Count; i++)
             {
                 yield return segment.Array[segment.Offset + i];
             }
@@ -326,7 +326,7 @@ public class CircularBuffer<T> : IEnumerable<T>
 
     private void ThrowIfEmpty(string message = "Cannot access an empty buffer.")
     {
-        if (IsEmpty)
+        if(IsEmpty)
         {
             throw new InvalidOperationException(message);
         }
@@ -339,7 +339,7 @@ public class CircularBuffer<T> : IEnumerable<T>
     /// <param name="index"></param>
     private void Increment(ref int index)
     {
-        if (++index == Capacity)
+        if(++index == Capacity)
         {
             index = 0;
         }
@@ -352,7 +352,7 @@ public class CircularBuffer<T> : IEnumerable<T>
     /// <param name="index"></param>
     private void Decrement(ref int index)
     {
-        if (index == 0)
+        if(index == 0)
         {
             index = Capacity;
         }
@@ -384,11 +384,11 @@ public class CircularBuffer<T> : IEnumerable<T>
 
     private ArraySegment<T> ArrayOne()
     {
-        if (IsEmpty)
+        if(IsEmpty)
         {
             return new ArraySegment<T>(new T[0]);
         }
-        else if (_start < _end)
+        else if(_start < _end)
         {
             return new ArraySegment<T>(_buffer, _start, _end - _start);
         }
@@ -400,11 +400,11 @@ public class CircularBuffer<T> : IEnumerable<T>
 
     private ArraySegment<T> ArrayTwo()
     {
-        if (IsEmpty)
+        if(IsEmpty)
         {
             return new ArraySegment<T>(new T[0]);
         }
-        else if (_start < _end)
+        else if(_start < _end)
         {
             return new ArraySegment<T>(_buffer, _end, 0);
         }

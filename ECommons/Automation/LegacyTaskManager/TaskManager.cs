@@ -10,7 +10,7 @@ namespace ECommons.Automation.LegacyTaskManager;
 
 public partial class TaskManager : IDisposable
 {
-    private static readonly List<TaskManager> Instances = new();
+    private static readonly List<TaskManager> Instances = [];
     /// <summary>
     /// Number of tasks that were registered in current cycle. Increases each time a task is enqueued and resets once there are no more tasks.
     /// </summary>
@@ -27,7 +27,8 @@ public partial class TaskManager : IDisposable
     /// Tick count (<see cref="Environment.TickCount64"/>) at which current task will be aborted
     /// </summary>
     public long AbortAt { get; private set; } = 0;
-    TaskManagerTask CurrentTask = null;
+
+    private TaskManagerTask CurrentTask = null;
     public string CurrentTaskName => CurrentTask?.Name;
     public List<string> TaskStack => ImmediateTasks.Select(x => x.Name).Union(Tasks.Select(x => x.Name)).ToList();
     /// <summary>
@@ -42,10 +43,11 @@ public partial class TaskManager : IDisposable
     /// Whether to output debug information into PluginLog
     /// </summary>
     public bool ShowDebug = true;
-    Action<string> LogTimeout => TimeoutSilently ? PluginLog.Verbose : PluginLog.Warning;
 
-    List<TaskManagerTask> Tasks = new();
-    List<TaskManagerTask> ImmediateTasks = new();
+    private Action<string> LogTimeout => TimeoutSilently ? PluginLog.Verbose : PluginLog.Warning;
+
+    private List<TaskManagerTask> Tasks = [];
+    private List<TaskManagerTask> ImmediateTasks = [];
 
     /// <summary>
     /// Initializes new instance of <see cref="TaskManager"/>.
@@ -64,7 +66,7 @@ public partial class TaskManager : IDisposable
     public void SetStepMode(bool enabled)
     {
         Svc.Framework.Update -= Tick;
-        if (!enabled)
+        if(!enabled)
         {
             Svc.Framework.Update += Tick;
         }
@@ -87,13 +89,13 @@ public partial class TaskManager : IDisposable
 
     internal static void DisposeAll()
     {
-        int i = 0;
-        foreach (var manager in Instances)
+        var i = 0;
+        foreach(var manager in Instances)
         {
             i++;
             Svc.Framework.Update -= manager.Tick;
         }
-        if (i > 0)
+        if(i > 0)
         {
             PluginLog.Debug($"Auto-disposing {i} task managers");
         }
@@ -113,19 +115,19 @@ public partial class TaskManager : IDisposable
         MaxTasks = 0;
     }
 
-    void Tick(object _)
+    private void Tick(object _)
     {
-        if (CurrentTask == null)
+        if(CurrentTask == null)
         {
-            if (ImmediateTasks.TryDequeue(out CurrentTask))
+            if(ImmediateTasks.TryDequeue(out CurrentTask))
             {
-                if (ShowDebug)
+                if(ShowDebug)
                     PluginLog.Debug($"Starting to execute immediate task: {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name}");
                 AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
             }
-            else if (Tasks.TryDequeue(out CurrentTask))
+            else if(Tasks.TryDequeue(out CurrentTask))
             {
-                if (ShowDebug)
+                if(ShowDebug)
                     PluginLog.Debug($"Starting to execute task: {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name}");
                 AbortAt = Environment.TickCount64 + CurrentTask.TimeLimitMS;
             }
@@ -139,17 +141,17 @@ public partial class TaskManager : IDisposable
             try
             {
                 var result = CurrentTask.Action();
-                if (result == true)
+                if(result == true)
                 {
-                    if (ShowDebug)
+                    if(ShowDebug)
                         PluginLog.Debug($"Task {CurrentTask.Name ?? CurrentTask.Action.GetMethodInfo()?.Name} completed successfully");
                     CurrentTask = null;
                 }
-                else if (result == false)
+                else if(result == false)
                 {
-                    if (Environment.TickCount64 > AbortAt)
+                    if(Environment.TickCount64 > AbortAt)
                     {
-                        if (CurrentTask.AbortOnTimeout)
+                        if(CurrentTask.AbortOnTimeout)
                         {
                             LogTimeout($"Clearing {Tasks.Count} remaining tasks because of timeout");
                             Tasks.Clear();
@@ -164,12 +166,12 @@ public partial class TaskManager : IDisposable
                     Abort();
                 }
             }
-            catch (TimeoutException e)
+            catch(TimeoutException e)
             {
                 LogTimeout($"{e.Message}\n{e.StackTrace}");
                 CurrentTask = null;
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 e.Log();
                 CurrentTask = null;

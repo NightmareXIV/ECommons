@@ -1,17 +1,17 @@
-﻿using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Game.Addon.Lifecycle;
-using Dalamud.Memory;
-using FFXIVClientStructs.FFXIV.Client.UI;
-using System.Linq;
-using System;
-using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
-using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Game.Text;
+﻿using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Gui.ContextMenu;
+using Dalamud.Game.Text;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Memory;
 using ECommons.DalamudServices;
-using ECommons.Logging;
 using ECommons.EzSharedDataManager;
+using ECommons.Logging;
+using FFXIVClientStructs.FFXIV.Client.UI;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace ECommons.EzContextMenu;
 /// <summary>
@@ -31,7 +31,7 @@ public static unsafe class ContextMenuPrefixRemover
     {
         try
         {
-            if (!Initialized)
+            if(!Initialized)
             {
                 Initialized = true;
                 var data = EzSharedData.GetOrCreate<HashSet<(int, ushort)>>("ECommons.ContextMenuPrefixRemover.TakenContextMenuPrefixes", []);
@@ -43,10 +43,10 @@ public static unsafe class ContextMenuPrefixRemover
                         iterations++;
                         DalamudPrefix = (SeIconChar)Random.Shared.Next(1, int.MaxValue);
                     }
-                    while (Enum.GetValues<SeIconChar>().Contains(DalamudPrefix) && iterations < 100000);
+                    while(Enum.GetValues<SeIconChar>().Contains(DalamudPrefix) && iterations < 100000);
                     DalamudPrefixColor = (ushort)Random.Shared.Next(1, ushort.MaxValue);
                 }
-                while (data.Contains(((int)DalamudPrefix, DalamudPrefixColor)));
+                while(data.Contains(((int)DalamudPrefix, DalamudPrefixColor)));
                 data.Add(((int)DalamudPrefix, DalamudPrefixColor));
                 PluginLog.Debug($"Initialized prefix remover with prefix={(int)DalamudPrefix}, color={DalamudPrefixColor}, iterations={iterations}");
                 Svc.AddonLifecycle.RegisterListener(AddonEvent.PreRequestedUpdate, "ContextMenu", OnContextMenuUpdate);
@@ -80,17 +80,17 @@ public static unsafe class ContextMenuPrefixRemover
     {
         var addon = (AddonContextMenu*)args.Addon;
         var numEntries = addon->AtkValues[0].UInt;
-        for (int i = 0; i < numEntries; i++)
+        for(var i = 0; i < numEntries; i++)
         {
             var entry = addon->AtkValues[7 + i];
-            if (entry.Type.EqualsAny(ValueType.String, ValueType.ManagedString, ValueType.String8))
+            if(entry.Type.EqualsAny(ValueType.String, ValueType.ManagedString, ValueType.String8))
             {
                 var seString = MemoryHelper.ReadSeStringNullTerminated((nint)entry.String);
-                if (seString.Payloads.Count < 2) continue;
-                for (int x = 1; x < seString.Payloads.Count; x++)
+                if(seString.Payloads.Count < 2) continue;
+                for(var x = 1; x < seString.Payloads.Count; x++)
                 {
                     {
-                        if (seString.Payloads[x-1] is UIForegroundPayload fg && fg.ColorKey == DalamudPrefixColor && seString.Payloads[x] is TextPayload payload && payload.Text != null && payload.Text.Length >= 1 && payload.Text[0] == (char)DalamudPrefix)
+                        if(seString.Payloads[x - 1] is UIForegroundPayload fg && fg.ColorKey == DalamudPrefixColor && seString.Payloads[x] is TextPayload payload && payload.Text != null && payload.Text.Length >= 1 && payload.Text[0] == (char)DalamudPrefix)
                         {
                             seString.Payloads.RemoveAt(x);
                             seString.Payloads.Add(new TextPayload("\0"));

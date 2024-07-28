@@ -10,10 +10,10 @@
 /// </summary>
 public enum ElementType : int
 {
-    CircleAtFixedCoordinates=0,
+    CircleAtFixedCoordinates = 0,
     CircleRelativeToActorPosition = 1,
-    LineBetweenTwoFixedCoordinates=2,
-    LineRelativeToObjectPosition=3,
-    ConeRelativeToObjectPosition=4,
-    ConeAtFixedCoordinates=5
+    LineBetweenTwoFixedCoordinates = 2,
+    LineRelativeToObjectPosition = 3,
+    ConeRelativeToObjectPosition = 4,
+    ConeAtFixedCoordinates = 5
 }

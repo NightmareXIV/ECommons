@@ -50,10 +50,10 @@ public class Svc
 
 
 
-		internal static bool IsInitialized = false;
+    internal static bool IsInitialized = false;
     public static void Init(IDalamudPluginInterface pi)
     {
-        if (IsInitialized)
+        if(IsInitialized)
         {
             PluginLog.Debug("Services already initialized, skipping");
         }

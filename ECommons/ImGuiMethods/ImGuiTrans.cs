@@ -14,9 +14,9 @@ public class ImGuiTrans
 
     public static void PushTransparency(float v)
     {
-        foreach (var c in Enum.GetValues<ImGuiCol>())
+        foreach(var c in Enum.GetValues<ImGuiCol>())
         {
-            if (c == ImGuiCol.COUNT) continue;
+            if(c == ImGuiCol.COUNT) continue;
             var col = ImGui.GetStyle().Colors[(int)c];
             ImGui.PushStyleColor(c, col with { W = col.W * v });
         }

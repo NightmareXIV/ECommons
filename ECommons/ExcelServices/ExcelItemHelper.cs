@@ -24,13 +24,13 @@ public static class ExcelItemHelper
     {
         var ret = new HashSet<Job>();
         var param = item.BaseParam[0];
-        if (param.BaseParam.Row.EqualsAny<uint>(3, 19)) ret.Add(Tanks);
-        if (param.BaseParam.Row.EqualsAny<uint>(5, 6)) ret.Add(Healers);
-        if (param.BaseParam.Row.EqualsAny<uint>(1)) ret.Add(StrengthDPS);
-        if (param.BaseParam.Row.EqualsAny<uint>(2)) ret.Add(DexterityDPS);
-        if (param.BaseParam.Row.EqualsAny<uint>(4)) ret.Add(MagicalDPS);
-        if (param.BaseParam.Row.EqualsAny<uint>(72, 73, 10)) ret.Add(Gatherers);
-        if (param.BaseParam.Row.EqualsAny<uint>(70,71,11)) ret.Add(MagicalDPS);
+        if(param.BaseParam.Row.EqualsAny<uint>(3, 19)) ret.Add(Tanks);
+        if(param.BaseParam.Row.EqualsAny<uint>(5, 6)) ret.Add(Healers);
+        if(param.BaseParam.Row.EqualsAny<uint>(1)) ret.Add(StrengthDPS);
+        if(param.BaseParam.Row.EqualsAny<uint>(2)) ret.Add(DexterityDPS);
+        if(param.BaseParam.Row.EqualsAny<uint>(4)) ret.Add(MagicalDPS);
+        if(param.BaseParam.Row.EqualsAny<uint>(72, 73, 10)) ret.Add(Gatherers);
+        if(param.BaseParam.Row.EqualsAny<uint>(70, 71, 11)) ret.Add(MagicalDPS);
         return ret;
     }
 
@@ -41,15 +41,15 @@ public static class ExcelItemHelper
     public static string GetName(uint id, bool includeID = false)
     {
         var data = Svc.Data.GetExcelSheet<Item>().GetRow(id);
-        if (data == null) return $"#{id}";
+        if(data == null) return $"#{id}";
         return GetName(data);
     }
 
-    static Dictionary<uint, string> ItemNameCache = [];
+    private static Dictionary<uint, string> ItemNameCache = [];
     public static string GetName(this Item item, bool includeID = false)
     {
-        if (item == null) return "? Unknown ?";
-        if (!ItemNameCache.TryGetValue(item.RowId, out string name))
+        if(item == null) return "? Unknown ?";
+        if(!ItemNameCache.TryGetValue(item.RowId, out var name))
         {
             name = item.Name.ExtractText();
             ItemNameCache[item.RowId] = name;

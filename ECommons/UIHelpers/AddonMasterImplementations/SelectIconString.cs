@@ -20,7 +20,7 @@ public partial class AddonMaster
             get
             {
                 var ret = new Entry[Addon->PopupMenu.PopupMenu.EntryCount];
-                for (var i = 0; i < ret.Length; i++)
+                for(var i = 0; i < ret.Length; i++)
                     ret[i] = new(Addon, i);
                 return ret;
             }

@@ -18,9 +18,9 @@ public class EzIPCAttribute : Attribute
     /// <param name="wrapper">Wrapper type</param>
     public EzIPCAttribute(string? iPCName = null, bool applyPrefix = true, Type? actionLastGenericType = null, SafeWrapper wrapper = SafeWrapper.Inherit)
     {
-        this.IPCName = iPCName;
-        this.ApplyPrefix = applyPrefix;
-        this.ActionLastGenericType = actionLastGenericType ?? typeof(object);
-        this.Wrapper = wrapper;
+        IPCName = iPCName;
+        ApplyPrefix = applyPrefix;
+        ActionLastGenericType = actionLastGenericType ?? typeof(object);
+        Wrapper = wrapper;
     }
 }

@@ -9,7 +9,7 @@ public static class GamePad
     /// <summary>
     /// Dictionary containing a mapping of <see cref="GamepadButtons"/> to Playstation / Xbox button names.
     /// </summary>
-    public static Dictionary<GamepadButtons, string> ControllerButtons = new Dictionary<GamepadButtons, string>()
+    public static Dictionary<GamepadButtons, string> ControllerButtons = new()
     {
         { GamepadButtons.None, "None" },
         { GamepadButtons.DpadUp, "D-Pad Up"},

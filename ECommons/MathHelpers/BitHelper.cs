@@ -29,7 +29,7 @@ public static class BitHelper
     public static unsafe bool HasFlag(uint value, int n)
     {
         // Read the n-th bit, downcast to byte
-        byte flag = (byte)((value >> n) & 1);
+        var flag = (byte)((value >> n) & 1);
 
         // Reinterpret the byte to avoid the test, setnz and
         // movzx instructions (asm x64). This is because the JIT
@@ -86,15 +86,15 @@ public static class BitHelper
         // the final value anyway. This result is then unchecked-cast to a byte (as
         // it is guaranteed to always be either 1 or 0), and then reinterpreted
         // as a bool just like in the HasFlag method above, and then returned.
-        int i = x - min;
-        bool isInRange = (uint)i < 32u;
-        byte byteFlag = *(byte*)&isInRange;
-        int negativeFlag = byteFlag - 1;
-        int mask = ~negativeFlag;
-        int shift = unchecked((int)((table >> i) & 1));
-        int and = shift & mask;
-        byte result = unchecked((byte)and);
-        bool valid = *(bool*)&result;
+        var i = x - min;
+        var isInRange = (uint)i < 32u;
+        var byteFlag = *(byte*)&isInRange;
+        var negativeFlag = byteFlag - 1;
+        var mask = ~negativeFlag;
+        var shift = unchecked((int)((table >> i) & 1));
+        var and = shift & mask;
+        var result = unchecked((byte)and);
+        var valid = *(bool*)&result;
 
         return valid;
     }
@@ -190,19 +190,19 @@ public static class BitHelper
         // Shift a bit left to the n-th position, negate the
         // resulting value and perform an AND with the input value.
         // This effectively clears the n-th bit of our input.
-        uint bit = 1u << n;
-        uint not = ~bit;
-        uint and = value & not;
+        var bit = 1u << n;
+        var not = ~bit;
+        var and = value & not;
 
         // Reinterpret the flag as 1 or 0, and cast to uint,
         // then we left shift the uint flag to the right position
         // and perform an OR with the resulting value of the previous
         // operation. This will always guaranteed to work, thanks to the
         // initial code clearing that bit before setting it again.
-        bool copy = flag;
+        var copy = flag;
         uint flag32 = *(byte*)&copy;
-        uint shift = flag32 << n;
-        uint or = and | shift;
+        var shift = flag32 << n;
+        var or = and | shift;
 
         return or;
     }
@@ -225,7 +225,7 @@ public static class BitHelper
     public static uint ExtractRange(uint value, byte start, byte length)
     {
 #if NET6_0_OR_GREATER
-        if (Bmi1.IsSupported)
+        if(Bmi1.IsSupported)
         {
             return Bmi1.BitFieldExtract(value, start, length);
         }
@@ -266,12 +266,12 @@ public static class BitHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint SetRange(uint value, byte start, byte length, uint flags)
     {
-        uint highBits = (1u << length) - 1u;
-        uint loadMask = highBits << start;
-        uint storeMask = (flags & highBits) << start;
+        var highBits = (1u << length) - 1u;
+        var loadMask = highBits << start;
+        var storeMask = (flags & highBits) << start;
 
 #if NET6_0_OR_GREATER
-        if (Bmi1.IsSupported)
+        if(Bmi1.IsSupported)
         {
             return Bmi1.AndNot(loadMask, value) | storeMask;
         }
@@ -295,7 +295,7 @@ public static class BitHelper
     public static unsafe bool HasFlag(ulong value, int n)
     {
         // Same logic as the uint version, see that for more info
-        byte flag = (byte)((value >> n) & 1);
+        var flag = (byte)((value >> n) & 1);
 
         return *(bool*)&flag;
     }
@@ -315,15 +315,15 @@ public static class BitHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe bool HasLookupFlag(ulong table, int x, int min = 0)
     {
-        int i = x - min;
-        bool isInRange = (uint)i < 64u;
-        byte byteFlag = *(byte*)&isInRange;
-        int negativeFlag = byteFlag - 1;
-        int mask = ~negativeFlag;
-        int shift = unchecked((int)((table >> i) & 1));
-        int and = shift & mask;
-        byte result = unchecked((byte)and);
-        bool valid = *(bool*)&result;
+        var i = x - min;
+        var isInRange = (uint)i < 64u;
+        var byteFlag = *(byte*)&isInRange;
+        var negativeFlag = byteFlag - 1;
+        var mask = ~negativeFlag;
+        var shift = unchecked((int)((table >> i) & 1));
+        var and = shift & mask;
+        var result = unchecked((byte)and);
+        var valid = *(bool*)&result;
 
         return valid;
     }
@@ -358,13 +358,13 @@ public static class BitHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe ulong SetFlag(ulong value, int n, bool flag)
     {
-        ulong bit = 1ul << n;
-        ulong not = ~bit;
-        ulong and = value & not;
-        bool copy = flag;
+        var bit = 1ul << n;
+        var not = ~bit;
+        var and = value & not;
+        var copy = flag;
         ulong flag64 = *(byte*)&copy;
-        ulong shift = flag64 << n;
-        ulong or = and | shift;
+        var shift = flag64 << n;
+        var or = and | shift;
 
         return or;
     }
@@ -387,7 +387,7 @@ public static class BitHelper
     public static ulong ExtractRange(ulong value, byte start, byte length)
     {
 #if NET6_0_OR_GREATER
-        if (Bmi1.X64.IsSupported)
+        if(Bmi1.X64.IsSupported)
         {
             return Bmi1.X64.BitFieldExtract(value, start, length);
         }
@@ -428,12 +428,12 @@ public static class BitHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong SetRange(ulong value, byte start, byte length, ulong flags)
     {
-        ulong highBits = (1ul << length) - 1ul;
-        ulong loadMask = highBits << start;
-        ulong storeMask = (flags & highBits) << start;
+        var highBits = (1ul << length) - 1ul;
+        var loadMask = highBits << start;
+        var storeMask = (flags & highBits) << start;
 
 #if NET6_0_OR_GREATER
-        if (Bmi1.X64.IsSupported)
+        if(Bmi1.X64.IsSupported)
         {
             return Bmi1.X64.AndNot(loadMask, value) | storeMask;
         }

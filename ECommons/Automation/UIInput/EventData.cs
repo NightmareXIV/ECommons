@@ -10,7 +10,7 @@ namespace ECommons.Automation.UIInput;
 /// <summary>
 /// Event data.
 /// </summary>
-public unsafe sealed class EventData : IDisposable
+public sealed unsafe class EventData : IDisposable
 {
     private nint Bytes;
     private bool disposedValue;
@@ -21,8 +21,8 @@ public unsafe sealed class EventData : IDisposable
     private EventData()
     {
         Bytes = Marshal.AllocHGlobal(sizeof(AtkEvent));
-        this.Data = (AtkEvent*)Bytes;
-        if (this.Data == null)
+        Data = (AtkEvent*)Bytes;
+        if(Data == null)
             throw new ArgumentNullException("EventData could not be created, null");
     }
 
@@ -47,9 +47,9 @@ public unsafe sealed class EventData : IDisposable
 
     private void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if(!disposedValue)
         {
-            if (disposing)
+            if(disposing)
             {
                 // TODO: dispose managed state (managed objects)
             }
@@ -60,7 +60,7 @@ public unsafe sealed class EventData : IDisposable
         }
     }
 
-     // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+    // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
     ~EventData()
     {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method

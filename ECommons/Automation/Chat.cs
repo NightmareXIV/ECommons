@@ -18,12 +18,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-using System;
-using System.Runtime.InteropServices;
-using System.Text;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.String;
+using System;
+using System.Runtime.InteropServices;
+using System.Text;
 using Framework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
 namespace ECommons.Automation;
 #nullable disable
@@ -54,13 +54,13 @@ public class Chat
 
     public Chat()
     {
-        if (Svc.SigScanner.TryScanText(Signatures.SendChat, out var processChatBoxPtr))
+        if(Svc.SigScanner.TryScanText(Signatures.SendChat, out var processChatBoxPtr))
         {
             ProcessChatBox = Marshal.GetDelegateForFunctionPointer<ProcessChatBoxDelegate>(processChatBoxPtr);
         }
         unsafe
         {
-            if (Svc.SigScanner.TryScanText(Signatures.SanitiseString, out var sanitisePtr))
+            if(Svc.SigScanner.TryScanText(Signatures.SanitiseString, out var sanitisePtr))
             {
                 _sanitiseString = (delegate* unmanaged<Utf8String*, int, IntPtr, void>)sanitisePtr;
             }
@@ -82,7 +82,7 @@ public class Chat
     [Obsolete("Use safe message sending")]
     public unsafe void SendMessageUnsafe(byte[] message)
     {
-        if (ProcessChatBox == null)
+        if(ProcessChatBox == null)
         {
             throw new InvalidOperationException("Could not find signature for chat sending");
         }
@@ -109,15 +109,15 @@ public class Chat
     public void SendMessage(string message)
     {
         var bytes = Encoding.UTF8.GetBytes(message);
-        if (bytes.Length == 0)
+        if(bytes.Length == 0)
         {
             throw new ArgumentException("message is empty", nameof(message));
         }
-        if (bytes.Length > 500)
+        if(bytes.Length > 500)
         {
             throw new ArgumentException("message is longer than 500 bytes", nameof(message));
         }
-        if (message.Length != SanitiseText(message).Length)
+        if(message.Length != SanitiseText(message).Length)
         {
             throw new ArgumentException("message contained invalid characters", nameof(message));
         }
@@ -133,8 +133,8 @@ public class Chat
     /// <exception cref="InvalidOperationException">If you didn't prefixed it with a slash.</exception>
     public void ExecuteCommand(string message)
     {
-        if (!message.StartsWith("/")) throw new InvalidOperationException($"Attempted to execute command but was not prefixed with a slash: {message}");
-        this.SendMessage(message);
+        if(!message.StartsWith("/")) throw new InvalidOperationException($"Attempted to execute command but was not prefixed with a slash: {message}");
+        SendMessage(message);
     }
 
     /// <summary>
@@ -152,7 +152,7 @@ public class Chat
     /// <exception cref="InvalidOperationException">If the signature for this function could not be found</exception>
     public unsafe string SanitiseText(string text)
     {
-        if (_sanitiseString == null)
+        if(_sanitiseString == null)
         {
             throw new InvalidOperationException("Could not find signature for chat sanitisation");
         }

@@ -1,6 +1,6 @@
-﻿using Lumina.Data;
+﻿using Lumina;
+using Lumina.Data;
 using Lumina.Excel;
-using Lumina;
 using Lumina.Excel.GeneratedSheets;
 
 namespace ECommons.ExcelServices.Sheets;
@@ -28,19 +28,23 @@ public class ExtendedItem : Item
         LevelSyncFlag = parser.ReadColumn<byte>(89);
 
         BaseParam = new BaseParamStruct[6];
-        for (var i = 0; i < 6; i++)
+        for(var i = 0; i < 6; i++)
         {
-            BaseParam[i] = new BaseParamStruct();
-            BaseParam[i].BaseParam = new LazyRow<ExtendedBaseParam>(gameData, parser.ReadColumn<byte>(59 + i * 2 + 0), language);
-            BaseParam[i].Value = parser.ReadColumn<short>(59 + i * 2 + 1);
+            BaseParam[i] = new BaseParamStruct
+            {
+                BaseParam = new LazyRow<ExtendedBaseParam>(gameData, parser.ReadColumn<byte>(59 + i * 2 + 0), language),
+                Value = parser.ReadColumn<short>(59 + i * 2 + 1)
+            };
         }
 
         BaseParamSpecial = new BaseParamStruct[6];
-        for (var i = 0; i < 6; i++)
+        for(var i = 0; i < 6; i++)
         {
-            BaseParamSpecial[i] = new BaseParamStruct();
-            BaseParamSpecial[i].BaseParam = new LazyRow<ExtendedBaseParam>(gameData, parser.ReadColumn<byte>(73 + i * 2 + 0), language);
-            BaseParamSpecial[i].Value = parser.ReadColumn<short>(73 + i * 2 + 1);
+            BaseParamSpecial[i] = new BaseParamStruct
+            {
+                BaseParam = new LazyRow<ExtendedBaseParam>(gameData, parser.ReadColumn<byte>(73 + i * 2 + 0), language),
+                Value = parser.ReadColumn<short>(73 + i * 2 + 1)
+            };
         }
 
     }

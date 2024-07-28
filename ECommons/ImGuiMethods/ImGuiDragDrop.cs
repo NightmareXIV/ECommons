@@ -15,7 +15,7 @@ public static class ImGuiDragDrop
     public static unsafe void SetDragDropPayload<T>(string type, T data, ImGuiCond cond = 0)
     where T : unmanaged
     {
-        void* ptr = Unsafe.AsPointer(ref data);
+        var ptr = Unsafe.AsPointer(ref data);
         ImGui.SetDragDropPayload(type, new IntPtr(ptr), (uint)Unsafe.SizeOf<T>(), cond);
     }
 
@@ -29,10 +29,10 @@ public static class ImGuiDragDrop
 
     public static unsafe void SetDragDropPayload(string type, string data, ImGuiCond cond = 0)
     {
-        fixed (char* chars = data)
+        fixed(char* chars = data)
         {
-            int byteCount = Encoding.Default.GetByteCount(data);
-            byte* bytes = stackalloc byte[byteCount];
+            var byteCount = Encoding.Default.GetByteCount(data);
+            var bytes = stackalloc byte[byteCount];
             Encoding.Default.GetBytes(chars, data.Length, bytes, byteCount);
 
             ImGui.SetDragDropPayload(type, new IntPtr(bytes), (uint)byteCount, cond);

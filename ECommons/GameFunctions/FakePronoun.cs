@@ -12,17 +12,17 @@ public static unsafe class FakePronoun
     {
         try
         {
-            if (Svc.Condition[ConditionFlag.DutyRecorderPlayback])
+            if(Svc.Condition[ConditionFlag.DutyRecorderPlayback])
             {
-                if (uint.TryParse(pronoun[1..2], out var pos))
+                if(uint.TryParse(pronoun[1..2], out var pos))
                 {
                     var i = 0;
-                    foreach (var x in Svc.Objects)
+                    foreach(var x in Svc.Objects)
                     {
-                        if (x is IPlayerCharacter pc)
+                        if(x is IPlayerCharacter pc)
                         {
                             i++;
-                            if (i == pos)
+                            if(i == pos)
                             {
                                 return (GameObject*)pc.Address;
                             }
@@ -32,15 +32,15 @@ public static unsafe class FakePronoun
                 }
                 else
                 {
-                    if (pronoun.StartsWith("<t") && int.TryParse(pronoun[2..3], out var n))
+                    if(pronoun.StartsWith("<t") && int.TryParse(pronoun[2..3], out var n))
                     {
                         return GetRolePlaceholder(CombatRole.Tank, n);
                     }
-                    else if (pronoun.StartsWith("<h") && int.TryParse(pronoun[2..3], out n))
+                    else if(pronoun.StartsWith("<h") && int.TryParse(pronoun[2..3], out n))
                     {
                         return GetRolePlaceholder(CombatRole.Healer, n);
                     }
-                    else if (pronoun.StartsWith("<d") && int.TryParse(pronoun[2..3], out n))
+                    else if(pronoun.StartsWith("<d") && int.TryParse(pronoun[2..3], out n))
                     {
                         return GetRolePlaceholder(CombatRole.DPS, n);
                     }
@@ -59,17 +59,17 @@ public static unsafe class FakePronoun
         }
     }
 
-    static GameObject* GetRolePlaceholder(CombatRole role, int pos)
+    private static GameObject* GetRolePlaceholder(CombatRole role, int pos)
     {
         var i = 0;
-        foreach (var x in Svc.Objects)
+        foreach(var x in Svc.Objects)
         {
-            if (x is IPlayerCharacter pc)
+            if(x is IPlayerCharacter pc)
             {
-                if (pc.GetRole() == role)
+                if(pc.GetRole() == role)
                 {
                     i++;
-                    if (i == pos)
+                    if(i == pos)
                     {
                         return (GameObject*)pc.Address;
                     }

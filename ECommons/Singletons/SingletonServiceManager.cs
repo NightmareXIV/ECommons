@@ -18,32 +18,32 @@ public static class SingletonServiceManager
 
     internal static void DisposeAll()
     {
-        foreach (var x in Types)
+        foreach(var x in Types)
         {
-            foreach (var t in x.GetFieldPropertyUnions(ReflectionHelper.AllFlags).Reverse())
+            foreach(var t in x.GetFieldPropertyUnions(ReflectionHelper.AllFlags).Reverse())
             {
                 var value = t.GetValue(null);
                 var prio = t.GetCustomAttribute<PriorityAttribute>()?.Priority ?? 0;
-                
-                if (value is IDisposable disposable)
+
+                if(value is IDisposable disposable)
                 {
                     try
                     {
                         PluginLog.Debug($"Disposing singleton instance of {t.UnionType.FullName}, priority={prio}");
                         disposable.Dispose();
                     }
-                    catch (TargetInvocationException tie)
+                    catch(TargetInvocationException tie)
                     {
                         tie.Log();
                         tie.InnerException.Log();
                     }
-                    catch (Exception e)
+                    catch(Exception e)
                     {
                         e.Log();
                     }
                 }
                 t.SetValue(null, null);
-                
+
             }
         }
         Types = null!;
@@ -52,10 +52,10 @@ public static class SingletonServiceManager
     public static void Initialize(Type staticType)
     {
         Types.Add(staticType);
-        foreach (var x in staticType.GetFieldPropertyUnions(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
+        foreach(var x in staticType.GetFieldPropertyUnions(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
         {
             var value = x.GetValue(null);
-            if (value == null)
+            if(value == null)
             {
                 try
                 {
@@ -67,7 +67,7 @@ public static class SingletonServiceManager
                     tie.Log();
                     tie.InnerException.Log();
                 }
-                catch (Exception e)
+                catch(Exception e)
                 {
                     e.Log();
                 }

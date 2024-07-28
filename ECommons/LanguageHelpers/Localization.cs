@@ -1,11 +1,11 @@
 ﻿using Dalamud;
-using ECommons.Logging;
+using Dalamud.Game;
 using ECommons.DalamudServices;
+using ECommons.Logging;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Dalamud.Game;
 
 namespace ECommons.LanguageHelpers;
 #nullable disable
@@ -14,7 +14,7 @@ public static class Localization
 {
     public static string PararmeterSymbol = "??";
     public static string Separator = "==";
-    internal static Dictionary<string, string> CurrentLocalization = new();
+    internal static Dictionary<string, string> CurrentLocalization = [];
     internal static List<string> AvailableLanguages;
     public static string CurrentLanguage { get; internal set; } = null;
     public static bool Logging = false;
@@ -23,21 +23,21 @@ public static class Localization
     {
         CurrentLocalization.Clear();
         CurrentLanguage = null;
-        if (Language != null)
+        if(Language != null)
         {
             var file = GetLocFileLocation(Language);
-            if (File.Exists(file))
+            if(File.Exists(file))
             {
                 CurrentLanguage = Language;
                 var text = File.ReadAllText(file, Encoding.UTF8);
                 var list = text.Replace("\r\n", "\n").Replace("\r", "").Split("\n");
-                for (var i = 0; i < list.Length; i++)
+                for(var i = 0; i < list.Length; i++)
                 {
                     var x = list[i].Replace("\\n", "\n");
                     var e = x.Split(Separator);
-                    if (e.Length == 2)
+                    if(e.Length == 2)
                     {
-                        if (CurrentLocalization.ContainsKey(e[0]))
+                        if(CurrentLocalization.ContainsKey(e[0]))
                         {
                             PluginLog.Warning($"[Localization] Duplicate localization entry {e[0]} found in localization file {file}");
                         }
@@ -65,11 +65,11 @@ public static class Localization
     {
         if(AvailableLanguages == null || rescan)
         {
-            AvailableLanguages = new() { "English" };
-            foreach (var x in Directory.GetFiles(Svc.PluginInterface.AssemblyLocation.DirectoryName))
+            AvailableLanguages = ["English"];
+            foreach(var x in Directory.GetFiles(Svc.PluginInterface.AssemblyLocation.DirectoryName))
             {
                 var name = Path.GetFileName(x);
-                if (name.StartsWith("Language") && name.EndsWith(".ini"))
+                if(name.StartsWith("Language") && name.EndsWith(".ini"))
                 {
                     var lang = name[8..^4];
                     if(!AvailableLanguages.Contains(lang)) AvailableLanguages.Add(lang);

@@ -43,13 +43,13 @@ public partial class TaskManager
     /// <param name="tasks">Sequence of tasks to Insert</param>
     public void InsertMulti(params TaskManagerTask?[] tasks)
     {
-        foreach (var task in tasks.Reverse())
+        foreach(var task in tasks.Reverse())
         {
-            if (task == null) continue;
-            if (IsStackActive)
-						{
-								Log($"(stack) Inserted task {task.Name}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
-								Stack.Insert(0, task);
+            if(task == null) continue;
+            if(IsStackActive)
+            {
+                Log($"(stack) Inserted task {task.Name}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
+                Stack.Insert(0, task);
             }
             else
             {

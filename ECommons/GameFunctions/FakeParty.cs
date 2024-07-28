@@ -9,11 +9,11 @@ public static class FakeParty
 {
     public static IEnumerable<IPlayerCharacter> Get()
     {
-        if (Svc.Condition[ConditionFlag.DutyRecorderPlayback])
+        if(Svc.Condition[ConditionFlag.DutyRecorderPlayback])
         {
-            foreach (var x in Svc.Objects)
+            foreach(var x in Svc.Objects)
             {
-                if (x is IPlayerCharacter pc)
+                if(x is IPlayerCharacter pc)
                 {
                     yield return pc;
                 }

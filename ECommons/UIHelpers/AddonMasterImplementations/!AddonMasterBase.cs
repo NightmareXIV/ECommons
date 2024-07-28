@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
-public unsafe abstract class AddonMasterBase<T> : IAddonMasterBase where T : unmanaged
+public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unmanaged
 {
     protected AddonMasterBase(nint addon)
     {
@@ -25,7 +25,7 @@ public unsafe abstract class AddonMasterBase<T> : IAddonMasterBase where T : unm
 
     protected bool ClickButtonIfEnabled(AtkComponentButton* button)
     {
-        if (button->IsEnabled)
+        if(button->IsEnabled)
         {
             button->ClickAddonButton(Base);
             return true;
@@ -49,7 +49,7 @@ public unsafe abstract class AddonMasterBase<T> : IAddonMasterBase where T : unm
     }
 }
 
-public unsafe abstract class AddonMasterBase : AddonMasterBase<AtkUnitBase>
+public abstract unsafe class AddonMasterBase : AddonMasterBase<AtkUnitBase>
 {
     protected AddonMasterBase(nint addon) : base(addon)
     {

@@ -6,7 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
-public partial class AddonMaster{
+public partial class AddonMaster
+{
     public unsafe class _TitleMenu : AddonMasterBase
     {
         public _TitleMenu(nint addon) : base(addon)

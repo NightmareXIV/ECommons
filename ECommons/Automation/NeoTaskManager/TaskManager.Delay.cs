@@ -10,7 +10,7 @@ public partial class TaskManager
     /// <param name="isFrame">If true, delay is measured in seconds and not </param>
     public void EnqueueDelay(int ms, bool isFrame = false)
     {
-        if (isFrame)
+        if(isFrame)
         {
             EnqueueTask(new FrameDelayTask(ms));
         }
@@ -27,7 +27,7 @@ public partial class TaskManager
     /// <param name="isFrame">If true, delay is measured in seconds and not </param>
     public void InsertDelay(int ms, bool isFrame = false)
     {
-        if (isFrame)
+        if(isFrame)
         {
             InsertTask(new FrameDelayTask(ms));
         }

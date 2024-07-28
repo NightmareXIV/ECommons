@@ -24,14 +24,14 @@ public static partial class GenericHelpers
     {
         try
         {
-            if (text.IsNullOrEmpty())
+            if(text.IsNullOrEmpty())
             {
 #if (DEBUGFORMS || RELEASEFORMS)
                 Clipboard.Clear();
 #else
                 ImGui.SetClipboardText("");
 #endif
-                if (!silent) Notify.Success("Clipboard cleared");
+                if(!silent) Notify.Success("Clipboard cleared");
             }
             else
             {
@@ -40,13 +40,13 @@ public static partial class GenericHelpers
 #else
                 ImGui.SetClipboardText(text);
 #endif
-                if (!silent) Notify.Success("Text copied to clipboard");
+                if(!silent) Notify.Success("Text copied to clipboard");
             }
             return true;
         }
-        catch (Exception e)
+        catch(Exception e)
         {
-            if (!silent)
+            if(!silent)
             {
                 Notify.Error($"Error copying to clipboard:\n{e.Message}\nPlease try again");
             }
@@ -74,9 +74,9 @@ public static partial class GenericHelpers
             return ImGui.GetClipboardText();
 #endif
         }
-        catch (Exception e)
+        catch(Exception e)
         {
-            if (!silent)
+            if(!silent)
             {
                 Notify.Error($"Error pasting from clipboard:\n{e.Message}\nPlease try again");
             }
@@ -98,9 +98,9 @@ public static partial class GenericHelpers
 
     public static bool IsKeyPressed(IEnumerable<Keys> keys)
     {
-        foreach (var x in keys)
+        foreach(var x in keys)
         {
-            if (IsKeyPressed(x)) return true;
+            if(IsKeyPressed(x)) return true;
         }
         return false;
     }

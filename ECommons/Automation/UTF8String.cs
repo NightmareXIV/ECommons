@@ -14,7 +14,7 @@ public readonly struct UTF8String : IDisposable
     public readonly ulong length;
     public readonly ulong unknown;
     public readonly byte isEmpty;
-    public readonly byte notReallocated; 
+    public readonly byte notReallocated;
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x40)]
     public readonly byte[] str;
 
@@ -26,7 +26,7 @@ public readonly struct UTF8String : IDisposable
         length = (ulong)text.Length + 1;
         str = new byte[capacity];
 
-        if (length > capacity)
+        if(length > capacity)
         {
             stringPtr = Marshal.AllocHGlobal(text.Length + 1);
             capacity = length;
@@ -47,7 +47,7 @@ public readonly struct UTF8String : IDisposable
 
     public void Dispose()
     {
-        if (notReallocated == 0)
+        if(notReallocated == 0)
             Marshal.FreeHGlobal(stringPtr);
     }
 }

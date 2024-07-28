@@ -9,7 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
-public unsafe partial class AddonMaster{
+public unsafe partial class AddonMaster
+{
     public class TitleDCWorldMap : AddonMasterBase
     {
         public TitleDCWorldMap(nint addon) : base(addon)
@@ -24,12 +25,12 @@ public unsafe partial class AddonMaster{
 
         public bool Select(int dc)
         {
-            if (!PublicDC.Contains(dc)) return false;
+            if(!PublicDC.Contains(dc)) return false;
             var data = Svc.Data.GetExcelSheet<WorldDCGroupType>()?.GetRow((uint)dc);
             if(data != null)
             {
-                if (data.Name.ExtractText().IsNullOrEmpty()) return false;
-                if (data.Region == 0) return false;
+                if(data.Name.ExtractText().IsNullOrEmpty()) return false;
+                if(data.Region == 0) return false;
                 UncheckedSelect(dc);
                 return true;
             }

@@ -11,30 +11,30 @@ namespace ECommons.ImGuiMethods;
 
 public class ChangelogWindow : Window
 {
-    Action func;
-    Action onClose;
-    IPluginConfiguration config;
-    WindowSystem ws = new();
-    int version;
+    private Action func;
+    private Action onClose;
+    private IPluginConfiguration config;
+    private WindowSystem ws = new();
+    private int version;
 
-    public ChangelogWindow(IPluginConfiguration Configuration, int version, Action func, Action onClose = null) : base($"{DalamudReflector.GetPluginName()} was updated", 
+    public ChangelogWindow(IPluginConfiguration Configuration, int version, Action func, Action onClose = null) : base($"{DalamudReflector.GetPluginName()} was updated",
         ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse)
     {
         try
         {
-            this.config = Configuration;
+            config = Configuration;
             this.version = version;
-            this.func = func; 
+            this.func = func;
             this.onClose = onClose;
-            if (Svc.PluginInterface.Reason == PluginLoadReason.Installer)
+            if(Svc.PluginInterface.Reason == PluginLoadReason.Installer)
             {
-                this.OnClose();
+                OnClose();
             }
             else
             {
-                if ((int)Configuration.GetType().GetField("ChangelogWindowVer").GetValue(Configuration) != version)
+                if((int)Configuration.GetType().GetField("ChangelogWindowVer").GetValue(Configuration) != version)
                 {
-                    this.IsOpen = true;
+                    IsOpen = true;
                     ws.AddWindow(this);
                     Svc.PluginInterface.UiBuilder.Draw += ws.Draw;
                 }
@@ -58,8 +58,9 @@ public class ChangelogWindow : Window
 
     public override void OnClose()
     {
-        GenericHelpers.Safe(delegate {
-            config.GetType().GetField("ChangelogWindowVer").SetValue(config, this.version);
+        GenericHelpers.Safe(delegate
+        {
+            config.GetType().GetField("ChangelogWindowVer").SetValue(config, version);
             base.OnClose();
             if(onClose != null)
             {

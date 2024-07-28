@@ -10,51 +10,51 @@ public class TaskManagerTask
 
     public TaskManagerTask(Func<bool?> function, TaskManagerConfiguration? configuration = null)
     {
-        this.Function = function;
-        this.Configuration = configuration;
-        this.Name = function.GetMethodInfo().Name ?? ""; 
+        Function = function;
+        Configuration = configuration;
+        Name = function.GetMethodInfo().Name ?? "";
     }
 
     public TaskManagerTask(Func<bool> function, TaskManagerConfiguration? configuration = null)
     {
-        this.Function = () => function();
-        this.Configuration = configuration;
-        this.Name = function.GetMethodInfo().Name ?? "";
+        Function = () => function();
+        Configuration = configuration;
+        Name = function.GetMethodInfo().Name ?? "";
     }
 
     public TaskManagerTask(Action action, TaskManagerConfiguration? configuration = null)
     {
-        this.Function = () =>
+        Function = () =>
         {
             action();
             return true;
         };
-        this.Configuration = configuration;
-        this.Name = action.GetMethodInfo().Name ?? "";
+        Configuration = configuration;
+        Name = action.GetMethodInfo().Name ?? "";
     }
 
     public TaskManagerTask(Func<bool?> function, string taskName, TaskManagerConfiguration? configuration = null)
     {
-        this.Function = function;
-        this.Configuration = configuration;
-        this.Name = taskName;
+        Function = function;
+        Configuration = configuration;
+        Name = taskName;
     }
 
     public TaskManagerTask(Func<bool> function, string taskName, TaskManagerConfiguration? configuration = null)
     {
-        this.Function = () => function();
-        this.Configuration = configuration;
-        this.Name = taskName;
+        Function = () => function();
+        Configuration = configuration;
+        Name = taskName;
     }
 
     public TaskManagerTask(Action action, string taskName, TaskManagerConfiguration? configuration = null)
     {
-        this.Function = () =>
+        Function = () =>
         {
             action();
             return true;
         };
-        this.Configuration = configuration;
-        this.Name = taskName;
+        Configuration = configuration;
+        Name = taskName;
     }
 }

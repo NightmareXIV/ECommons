@@ -17,7 +17,7 @@ internal static class SafeWrapperAny
             {
                 Action(a1, a2, a3, a4, a5, a6, a7, a8);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -28,7 +28,7 @@ internal static class SafeWrapperAny
             {
                 return Function(a1, a2, a3, a4, a5, a6, a7, a8);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -47,7 +47,7 @@ internal static class SafeWrapperAny
             {
                 Action(a1, a2, a3, a4, a5, a6, a7);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -59,7 +59,7 @@ internal static class SafeWrapperAny
             {
                 return Function(a1, a2, a3, a4, a5, a6, a7);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -78,7 +78,7 @@ internal static class SafeWrapperAny
             {
                 Action(a1, a2, a3, a4, a5, a6);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -90,7 +90,7 @@ internal static class SafeWrapperAny
             {
                 return Function(a1, a2, a3, a4, a5, a6);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -109,7 +109,7 @@ internal static class SafeWrapperAny
             {
                 Action(a1, a2, a3, a4, a5);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -121,7 +121,7 @@ internal static class SafeWrapperAny
             {
                 return Function(a1, a2, a3, a4, a5);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -140,7 +140,7 @@ internal static class SafeWrapperAny
             {
                 Action(a1, a2, a3, a4);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -152,7 +152,7 @@ internal static class SafeWrapperAny
             {
                 return Function(a1, a2, a3, a4);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -171,7 +171,7 @@ internal static class SafeWrapperAny
             {
                 Action(a1, a2, a3);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -183,7 +183,7 @@ internal static class SafeWrapperAny
             {
                 return Function(a1, a2, a3);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -202,7 +202,7 @@ internal static class SafeWrapperAny
             {
                 Action(a1, a2);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -214,7 +214,7 @@ internal static class SafeWrapperAny
             {
                 return Function(a1, a2);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -233,7 +233,7 @@ internal static class SafeWrapperAny
             {
                 Action(a1);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -245,7 +245,7 @@ internal static class SafeWrapperAny
             {
                 return Function(a1);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -264,7 +264,7 @@ internal static class SafeWrapperAny
             {
                 Action();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }
@@ -276,7 +276,7 @@ internal static class SafeWrapperAny
             {
                 return Function();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 EzIPC.InvokeOnSafeInvocationException(e);
             }

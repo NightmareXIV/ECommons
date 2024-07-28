@@ -1,7 +1,7 @@
-﻿using Dalamud.Hooking;
-using ECommons.Logging;
+﻿using Dalamud;
+using Dalamud.Hooking;
 using ECommons.DalamudServices;
-using Dalamud;
+using ECommons.Logging;
 using System.Linq;
 
 namespace ECommons.EzHookManager;
@@ -14,7 +14,7 @@ namespace ECommons.EzHookManager;
 /// - Increasing transparency to developer, indicating that Dalamud's disable method doesn't completely disables it and just pauses detour execution.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class EzHook<T> where T:System.Delegate
+public class EzHook<T> where T : System.Delegate
 {
     public nint Address { get; private set; }
     public T Detour { get; private set; }
@@ -35,33 +35,33 @@ public class EzHook<T> where T:System.Delegate
         Setup(address, detour, autoEnable);
     }
 
-    void Setup(nint address, T detour, bool autoEnable)
+    private void Setup(nint address, T detour, bool autoEnable)
     {
         Address = address;
         Delegate = EzDelegate.Get<T>(address);
         Log($"Configured {typeof(T).FullName} at {address:X16}");
         Detour = detour;
-        if (autoEnable) Enable();
+        if(autoEnable) Enable();
     }
 
 
     public void Enable()
     {
-        if (HookDelegate == null)
+        if(HookDelegate == null)
         {
             byte[] orig = null;
             Log($"Creating hook {typeof(T).FullName} at {Address:X16}");
-            if (EzHookCommon.TrackMemory > 0) SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out orig);
+            if(EzHookCommon.TrackMemory > 0) SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out orig);
             HookDelegate = Svc.Hook.HookFromAddress(Address, Detour);
             HookDelegate.Enable();
-            if (EzHookCommon.TrackMemory > 0 && SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out var changed) && orig != null)
+            if(EzHookCommon.TrackMemory > 0 && SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out var changed) && orig != null)
             {
                 PluginLog.Debug($"   Before: {orig.Select(x => $"{x:X2}").Print(" ")}");
                 PluginLog.Debug($"    After: {changed.Select(x => $"{x:X2}").Print(" ")}");
             }
             EzHookCommon.RegisteredHooks.Add(HookDelegate);
         }
-        else if (!HookDelegate.IsEnabled)
+        else if(!HookDelegate.IsEnabled)
         {
             Log($"Enabling hook {typeof(T).FullName} at {Address:X16}");
             HookDelegate.Enable();
@@ -71,12 +71,12 @@ public class EzHook<T> where T:System.Delegate
     public void Pause()
     {
         byte[] orig = null;
-        if (HookDelegate != null)
+        if(HookDelegate != null)
         {
             Log($"Disabling hook {typeof(T).FullName} at {Address:X16}");
-            if (EzHookCommon.TrackMemory > 0) SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out orig);
+            if(EzHookCommon.TrackMemory > 0) SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out orig);
             HookDelegate.Disable();
-            if (EzHookCommon.TrackMemory > 0 && SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out var changed) && orig != null)
+            if(EzHookCommon.TrackMemory > 0 && SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out var changed) && orig != null)
             {
                 PluginLog.Debug($"   Before: {orig.Select(x => $"{x:X2}").Print(" ")}");
                 PluginLog.Debug($"    After: {changed.Select(x => $"{x:X2}").Print(" ")}");
@@ -93,11 +93,11 @@ public class EzHook<T> where T:System.Delegate
         {
             byte[] orig = null;
             Log($"Disposing hook {typeof(T).FullName} at {Address:X16}");
-            if (EzHookCommon.TrackMemory > 0) SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out orig);
+            if(EzHookCommon.TrackMemory > 0) SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out orig);
             HookDelegate.Dispose();
             EzHookCommon.RegisteredHooks.Remove(HookDelegate);
             HookDelegate = null;
-            if (EzHookCommon.TrackMemory > 0 && SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out var changed) && orig != null)
+            if(EzHookCommon.TrackMemory > 0 && SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out var changed) && orig != null)
             {
                 PluginLog.Debug($"   Before: {orig.Select(x => $"{x:X2}").Print(" ")}");
                 PluginLog.Debug($"    After: {changed.Select(x => $"{x:X2}").Print(" ")}");
@@ -111,5 +111,6 @@ public class EzHook<T> where T:System.Delegate
     /// Calls original function as if it was unhooked if hook is enabled; calls original Delegate if hook is disabled.
     /// </summary>
     public T Original => HookDelegate?.Original ?? Delegate;
-    static void Log(string s) => PluginLog.Debug($"[EzHook] {s}");
-} 
+
+    private static void Log(string s) => PluginLog.Debug($"[EzHook] {s}");
+}

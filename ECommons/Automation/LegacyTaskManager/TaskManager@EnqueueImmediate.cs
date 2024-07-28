@@ -116,7 +116,7 @@ public partial class TaskManager
     /// <param name="useFrameThrottler"></param>
     public void DelayNextImmediate(string uniqueName, int delayMS, bool useFrameThrottler = false)
     {
-        if (useFrameThrottler)
+        if(useFrameThrottler)
         {
             EnqueueImmediate(() => FrameThrottler.Throttle(uniqueName, delayMS), $"FrameThrottler.Throttle({uniqueName}, {delayMS})");
             EnqueueImmediate(() => FrameThrottler.Check(uniqueName), $"FrameThrottler.Check({uniqueName})");

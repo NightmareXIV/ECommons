@@ -1,14 +1,14 @@
-﻿using ECommons.Logging;
-using ECommons.DalamudServices;
+﻿using ECommons.DalamudServices;
+using ECommons.Logging;
 using System;
 
 namespace ECommons.Schedulers;
 
 public class TickScheduler : IScheduler
 {
-    long executeAt;
-    Action function;
-    bool disposed = false;
+    private long executeAt;
+    private Action function;
+    private bool disposed = false;
 
     public TickScheduler(Action function, long delayMS = 0)
     {
@@ -19,21 +19,21 @@ public class TickScheduler : IScheduler
 
     public void Dispose()
     {
-        if (!disposed)
+        if(!disposed)
         {
             Svc.Framework.Update -= Execute;
         }
         disposed = true;
     }
 
-    void Execute(object _)
+    private void Execute(object _)
     {
-        if (Environment.TickCount64 < executeAt) return;
+        if(Environment.TickCount64 < executeAt) return;
         try
         {
             function();
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             PluginLog.Error(e.Message + "\n" + e.StackTrace ?? "");
         }

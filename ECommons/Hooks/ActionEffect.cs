@@ -1,7 +1,7 @@
 ﻿using Dalamud.Hooking;
-using ECommons.Logging;
 using ECommons.DalamudServices;
 using ECommons.Hooks.ActionEffectTypes;
+using ECommons.Logging;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using System;
 using System.Numerics;
@@ -11,14 +11,14 @@ namespace ECommons.Hooks;
 
 public static unsafe class ActionEffect
 {
-    const string Sig = "40 ?? 56 57 41 ?? 41 ?? 41 ?? 48 ?? ?? ?? ?? ?? ?? ?? 48";
+    private const string Sig = "40 ?? 56 57 41 ?? 41 ?? 41 ?? 48 ?? ?? ?? ?? ?? ?? ?? 48";
 
     public delegate void ProcessActionEffect(uint sourceId, Character* sourceCharacter, Vector3* pos, EffectHeader* effectHeader, EffectEntry* effectArray, ulong* effectTail);
     internal static Hook<ProcessActionEffect> ProcessActionEffectHook = null;
 
     public delegate void ActionEffectCallback(ActionEffectSet set);
 
-    static event ActionEffectCallback _actionEffectEvent;
+    private static event ActionEffectCallback _actionEffectEvent;
     public static event ActionEffectCallback ActionEffectEvent
     {
         add
@@ -29,7 +29,7 @@ public static unsafe class ActionEffect
         remove => _actionEffectEvent -= value;
     }
 
-    static event Action<uint, ushort, ActionEffectType, uint, ulong, uint> _actionEffectEntryEvent;
+    private static event Action<uint, ushort, ActionEffectType, uint, ulong, uint> _actionEffectEntryEvent;
     public static event Action<uint, ushort, ActionEffectType, uint, ulong, uint> ActionEffectEntryEvent
     {
         add
@@ -40,13 +40,13 @@ public static unsafe class ActionEffect
         remove => _actionEffectEntryEvent -= value;
     }
 
-    static bool doLogging = false;
+    private static bool doLogging = false;
 
     private static void Hook()
     {
-        if (ProcessActionEffectHook == null)
+        if(ProcessActionEffectHook == null)
         {
-            if (Svc.SigScanner.TryScanText(Sig, out var ptr))
+            if(Svc.SigScanner.TryScanText(Sig, out var ptr))
             {
                 ProcessActionEffectHook = Svc.Hook.HookFromAddress<ProcessActionEffect>(ptr, ProcessActionEffectDetour);
                 Enable();
@@ -73,17 +73,17 @@ public static unsafe class ActionEffect
 
     public static void Enable()
     {
-        if (ProcessActionEffectHook?.IsEnabled == false) ProcessActionEffectHook?.Enable();
+        if(ProcessActionEffectHook?.IsEnabled == false) ProcessActionEffectHook?.Enable();
     }
 
     public static void Disable()
     {
-        if (ProcessActionEffectHook?.IsEnabled == true) ProcessActionEffectHook?.Disable();
+        if(ProcessActionEffectHook?.IsEnabled == true) ProcessActionEffectHook?.Disable();
     }
 
     internal static void Dispose()
     {
-        if (ProcessActionEffectHook != null)
+        if(ProcessActionEffectHook != null)
         {
             PluginLog.Information($"Disposing Action Effect Hook");
             Disable();
@@ -105,16 +105,16 @@ public static unsafe class ActionEffect
             var set = new ActionEffectSet(sourceID, sourceCharacter, pos, effectHeader, effectArray, effectTail);
             _actionEffectEvent?.Invoke(set);
 
-            foreach( var effect in set.TargetEffects)
+            foreach(var effect in set.TargetEffects)
             {
                 effect.ForEach(entry =>
                 {
-                    if (entry.type == ActionEffectType.Nothing) return;
+                    if(entry.type == ActionEffectType.Nothing) return;
                     _actionEffectEntryEvent?.Invoke(effectHeader->ActionID, effectHeader->AnimationId, entry.type, sourceID, effect.TargetID, entry.Damage);
                 });
             }
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             PluginLog.Error($"An error has occurred in Action Effect hook.\n{e}");
         }

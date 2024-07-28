@@ -82,23 +82,23 @@ public class InternalLog
         Default = ~0
     }
 
-    static string Search = "";
-    static bool Autoscroll = true;
-    static LogEventLevel SelectedLevel = LogEventLevel.Verbose;
-    static FilterType Filter = FilterType.Default;
+    private static string Search = "";
+    private static bool Autoscroll = true;
+    private static LogEventLevel SelectedLevel = LogEventLevel.Verbose;
+    private static FilterType Filter = FilterType.Default;
     public static void PrintImgui()
     {
         ImGui.Checkbox("##Autoscroll", ref Autoscroll);
         ImGuiEx.Tooltip("Autoscroll");
         ImGui.SameLine();
-        if (ImGui.Button("Copy all"))
+        if(ImGui.Button("Copy all"))
         {
 #pragma warning disable
             GenericHelpers.Copy(Messages.Where(x => x.Level >= SelectedLevel).Select(x => $"[{x.Level}@{x.Time}] {x.Message}").Join("\n"));
 #pragma warning restore
         }
         ImGui.SameLine();
-        if (ImGui.Button("Clear"))
+        if(ImGui.Button("Clear"))
         {
             Messages.Clear();
         }
@@ -106,20 +106,20 @@ public class InternalLog
         ImGuiEx.SetNextItemFullWidth(-30);
         ImGui.InputTextWithHint("##Filter", "Filter...", ref Search, 100);
         ImGui.SameLine();
-        if (ImGuiEx.IconButton(Dalamud.Interface.FontAwesomeIcon.Filter, "##LogFilter")) ImGui.OpenPopup("filter_window");
+        if(ImGuiEx.IconButton(Dalamud.Interface.FontAwesomeIcon.Filter, "##LogFilter")) ImGui.OpenPopup("filter_window");
         ImGuiEx.Tooltip("Log Filter");
 
-        if (ImGui.BeginPopup("filter_window", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.Popup))
+        if(ImGui.BeginPopup("filter_window", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.Popup))
         {
             DrawFilterPopup();
             ImGui.EndPopup();
         }
 
         ImGui.BeginChild($"Plugin_log{DalamudReflector.GetPluginName()}");
-        foreach (var x in Messages)
+        foreach(var x in Messages)
         {
-            if (!ShouldDisplayLog(x.Level)) continue;
-            if (Search == String.Empty || x.Level.ToString().EqualsIgnoreCase(Search) || x.Message.Contains(Search, StringComparison.OrdinalIgnoreCase))
+            if(!ShouldDisplayLog(x.Level)) continue;
+            if(Search == String.Empty || x.Level.ToString().EqualsIgnoreCase(Search) || x.Message.Contains(Search, StringComparison.OrdinalIgnoreCase))
                 ImGuiEx.TextWrappedCopy(x.Level == LogEventLevel.Fatal ? ImGuiColors.DPSRed
                     : x.Level == LogEventLevel.Error ? ImGuiColors.DalamudRed
                     : x.Level == LogEventLevel.Warning ? ImGuiColors.DalamudOrange
@@ -128,7 +128,7 @@ public class InternalLog
                     : x.Level == LogEventLevel.Verbose ? ImGuiColors.DalamudGrey2
                     : ImGuiColors.DalamudWhite2, $"> [{x.Time}] {x.Message}");
         }
-        if (Autoscroll)
+        if(Autoscroll)
         {
             ImGui.SetScrollHereY();
         }
@@ -140,9 +140,9 @@ public class InternalLog
         void FlagCheckbox(string label, FilterType flag)
         {
             var b = Filter.HasFlag(flag);
-            if (!ImGui.Checkbox(label, ref b))
+            if(!ImGui.Checkbox(label, ref b))
                 return;
-            if (b)
+            if(b)
                 Filter |= flag;
             else
                 Filter &= ~flag;
@@ -157,25 +157,25 @@ public class InternalLog
 
     private static bool ShouldDisplayLog(LogEventLevel level)
     {
-        switch (level)
+        switch(level)
         {
             case LogEventLevel.Verbose:
-                if (Filter.HasFlag(FilterType.Verbose)) return true;
+                if(Filter.HasFlag(FilterType.Verbose)) return true;
                 break;
             case LogEventLevel.Debug:
-                if (Filter.HasFlag(FilterType.Debug)) return true;
+                if(Filter.HasFlag(FilterType.Debug)) return true;
                 break;
             case LogEventLevel.Information:
-                if (Filter.HasFlag(FilterType.Info)) return true;
+                if(Filter.HasFlag(FilterType.Info)) return true;
                 break;
             case LogEventLevel.Warning:
-                if (Filter.HasFlag(FilterType.Warning)) return true;
+                if(Filter.HasFlag(FilterType.Warning)) return true;
                 break;
             case LogEventLevel.Error:
-                if (Filter.HasFlag(FilterType.Error)) return true;
+                if(Filter.HasFlag(FilterType.Error)) return true;
                 break;
             case LogEventLevel.Fatal:
-                if (Filter.HasFlag(FilterType.Fatal)) return true;
+                if(Filter.HasFlag(FilterType.Fatal)) return true;
                 break;
             default:
                 break;

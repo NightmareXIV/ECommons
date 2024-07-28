@@ -18,7 +18,7 @@ public static partial class ReflectionHelper
     /// <returns>Value of a field/property</returns>
     public static object GetFoP(this object obj, string name)
     {
-        return obj.GetType().GetField(name, AllFlags)?.GetValue(obj) 
+        return obj.GetType().GetField(name, AllFlags)?.GetValue(obj)
             ?? obj.GetType().GetProperty(name, AllFlags)?.GetValue(obj);
     }
 
@@ -76,7 +76,7 @@ public static partial class ReflectionHelper
     public static void SetStaticFoP(this object obj, string type, string name, object value)
     {
         var field = obj.GetType().Assembly.GetType(type).GetField(name, StaticFlags);
-        if (field != null)
+        if(field != null)
         {
             field.SetValue(null, value);
         }
@@ -97,7 +97,7 @@ public static partial class ReflectionHelper
     public static object Call(this object obj, string name, object[] @params, bool matchExactArgumentTypes = false)
     {
         MethodInfo info;
-        if (!matchExactArgumentTypes)
+        if(!matchExactArgumentTypes)
         {
             info = obj.GetType().GetMethod(name, AllFlags);
         }
@@ -120,4 +120,4 @@ public static partial class ReflectionHelper
     {
         return (T)Call(obj, name, @params, matchExactArgumentTypes);
     }
-} 
+}

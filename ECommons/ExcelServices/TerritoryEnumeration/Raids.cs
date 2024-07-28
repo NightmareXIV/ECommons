@@ -119,13 +119,12 @@ public static class Raids
     public const ushort Abyssos_The_Eighth_Circle = 1087;
     public const ushort Abyssos_The_Eighth_Circle_Savage = 1088;
     public const ushort The_Omega_Protocol_Ultimate = 1122;
-
-    static ushort[] list = null;
+    private static ushort[] list = null;
     public static ushort[] List
     {
         get
         {
-            if (list == null)
+            if(list == null)
             {
                 var s = new List<ushort>();
                 typeof(Raids).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).Each(x => s.Add((ushort)x.GetValue(null)));

@@ -14,13 +14,12 @@ public static class Inns
     public const ushort Bokairo_Inn = 629;
     public const ushort The_Pendants_Personal_Suite = 843;
     public const ushort Andron = 990;
-
-    static ushort[] list = null;
+    private static ushort[] list = null;
     public static ushort[] List
     {
         get
         {
-            if (list == null)
+            if(list == null)
             {
                 var s = new List<ushort>();
                 typeof(Inns).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).Each(x => s.Add((ushort)x.GetValue(null)));

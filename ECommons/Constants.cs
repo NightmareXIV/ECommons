@@ -4,7 +4,7 @@ namespace ECommons;
 
 public class Constants
 {
-    public readonly static XivChatType[] NormalChatTypes =
+    public static readonly XivChatType[] NormalChatTypes =
     {
         XivChatType.Party,
         XivChatType.Alliance,

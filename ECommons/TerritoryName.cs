@@ -7,7 +7,7 @@ namespace ECommons;
 
 public static class TerritoryName
 {
-    static Dictionary<uint, string> Cache = new();
+    private static Dictionary<uint, string> Cache = [];
 
     public static string GetTerritoryName(uint id)
     {
@@ -19,13 +19,13 @@ public static class TerritoryName
         if(data != null)
         {
             var zoneName = data.PlaceName.Value?.Name.ToString() ?? "";
-            if (zoneName != string.Empty) 
+            if(zoneName != string.Empty)
             {
                 var cfc = data.ContentFinderCondition.Value;
                 if(cfc != null)
                 {
                     var cfcStr = cfc.Name.ToString();
-                    if (cfcStr != String.Empty)
+                    if(cfcStr != String.Empty)
                     {
                         Cache[id] = $"{id} | {zoneName} ({cfcStr})";
                         return Cache[id];

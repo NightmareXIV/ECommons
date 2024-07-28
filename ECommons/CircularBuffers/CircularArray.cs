@@ -6,17 +6,17 @@ namespace ECommons.CircularBuffers;
 
 public class CircularArray<T> : IEnumerable<T>
 {
-    T[] values;
-    bool[] isFilled;
+    private T[] values;
+    private bool[] isFilled;
     public CircularArray(int capacity)
     {
-        if (capacity < 2)
+        if(capacity < 2)
         {
             throw new Exception("Capacity must be at least 2");
         }
         values = new T[capacity];
         isFilled = new bool[capacity];
-        for (var i = 0; i < isFilled.Length; i++)
+        for(var i = 0; i < isFilled.Length; i++)
         {
             isFilled[i] = false;
         }
@@ -24,16 +24,16 @@ public class CircularArray<T> : IEnumerable<T>
 
     public void Push(T value)
     {
-        for (var i = 0; i < isFilled.Length; i++)
+        for(var i = 0; i < isFilled.Length; i++)
         {
-            if (!isFilled[i])
+            if(!isFilled[i])
             {
                 isFilled[i] = true;
                 values[i] = value;
                 return;
             }
         }
-        for (var i = 1; i < values.Length; i++)
+        for(var i = 1; i < values.Length; i++)
         {
             values[i - 1] = values[i];
         }
@@ -50,9 +50,9 @@ public class CircularArray<T> : IEnumerable<T>
 
     public IEnumerator<T> GetEnumerator()
     {
-        for (var i = 0; i < values.Length; i++)
+        for(var i = 0; i < values.Length; i++)
         {
-            if (isFilled[i])
+            if(isFilled[i])
             {
                 yield return values[i];
             }

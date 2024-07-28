@@ -6,7 +6,7 @@ namespace ECommons.ExcelServices.TerritoryEnumeration;
 
 [Obfuscation(Exclude = true, ApplyToMembers = true)]
 //intended use 0
-public static class MainCities 
+public static class MainCities
 {
     public const ushort Limsa_Lominsa_Upper_Decks = 128;
     public const ushort Limsa_Lominsa_Lower_Decks = 129;
@@ -25,13 +25,12 @@ public static class MainCities
     public const ushort Eulmore = 820;
     public const ushort Old_Sharlayan = 962;
     public const ushort Radz_at_Han = 963;
-
-    static ushort[] list = null;
+    private static ushort[] list = null;
     public static ushort[] List
     {
         get
         {
-            if (list == null)
+            if(list == null)
             {
                 var s = new List<ushort>();
                 typeof(MainCities).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).Each(x => s.Add((ushort)x.GetValue(null)));

@@ -29,11 +29,11 @@ public class EzHookAttribute : Attribute
         Setup(signature, offset, detourName, autoEnable);
     }
 
-    void Setup(string signature, int offset, string? detourName, bool autoEnable)
+    private void Setup(string signature, int offset, string? detourName, bool autoEnable)
     {
-        this.Signature = signature;
-        this.Offset = offset;
-        this.Detour = detourName;
-        this.AutoEnable = autoEnable;
+        Signature = signature;
+        Offset = offset;
+        Detour = detourName;
+        AutoEnable = autoEnable;
     }
 }

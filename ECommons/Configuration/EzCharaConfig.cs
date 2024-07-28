@@ -9,29 +9,31 @@ using System.Linq;
 
 namespace ECommons.Configuration;
 
-public class EzCharaConfig<T> where T:IEzConfig, new()
+public class EzCharaConfig<T> where T : IEzConfig, new()
 {
-    string DefaultCharaConfigFileName => $"{Prefix}{0:X16}.json";
+    private string DefaultCharaConfigFileName => $"{Prefix}{0:X16}.json";
     public string DefaultCharaConfigFile => Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), DefaultCharaConfigFileName);
-    string CurrentCharaConfigFileName => $"{Prefix}{Player.CID:X16}.json";
-    string CharaConfigFileName(ulong CID) => $"{Prefix}{CID:X16}.json";
+
+    private string CurrentCharaConfigFileName => $"{Prefix}{Player.CID:X16}.json";
+
+    private string CharaConfigFileName(ulong CID) => $"{Prefix}{CID:X16}.json";
     public string CurrentCharaConfigFile => Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), CurrentCharaConfigFileName);
 
-    Dictionary<ulong, T> Cache = [];
-    Option[] Options;
-    string Prefix;
+    private Dictionary<ulong, T> Cache = [];
+    private Option[] Options;
+    private string Prefix;
 
     public EzCharaConfig(IEnumerable<Option>? options = null, string prefix = "EzConfig")
     {
-        this.Options = options?.ToArray() ?? [];
-        this.Prefix = prefix;
+        Options = options?.ToArray() ?? [];
+        Prefix = prefix;
         new EzLogout(() => SaveAll(Options.Contains(Option.UnloadOnLogout)));
     }
 
     public T Get() => Get(Player.CID);
     public T GetDefault() => Get(0);
 
-    public bool TryGet(ulong CID, [NotNullWhen(true)]out T? value)
+    public bool TryGet(ulong CID, [NotNullWhen(true)] out T? value)
     {
         if(CID == 0 && !Options.Contains(Option.AllowDefaultConfig))
         {
@@ -44,11 +46,11 @@ public class EzCharaConfig<T> where T:IEzConfig, new()
 
     public T Get(ulong CID)
     {
-        if (CID == 0)
+        if(CID == 0)
         {
-            if (!Options.Contains(Option.AllowDefaultConfig)) throw new InvalidOperationException("Player is not currently logged in");
+            if(!Options.Contains(Option.AllowDefaultConfig)) throw new InvalidOperationException("Player is not currently logged in");
         }
-        if (Cache.TryGetValue(CID, out var result))
+        if(Cache.TryGetValue(CID, out var result))
         {
             return result;
         }

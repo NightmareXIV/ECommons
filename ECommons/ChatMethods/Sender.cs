@@ -54,9 +54,9 @@ public struct Sender : IEquatable<Sender>
 
     public IPlayerCharacter? Find()
     {
-        foreach (var x in Svc.Objects)
+        foreach(var x in Svc.Objects)
         {
-            if (x is IPlayerCharacter pc && pc.Name.ToString() == this.Name && pc.HomeWorld.Id == this.HomeWorld) return pc;
+            if(x is IPlayerCharacter pc && pc.Name.ToString() == Name && pc.HomeWorld.Id == HomeWorld) return pc;
         }
         return null;
     }
@@ -74,7 +74,7 @@ public struct Sender : IEquatable<Sender>
 
     public override string ToString()
     {
-        return $"{this.Name}@{Svc.Data.GetExcelSheet<World>()?.GetRow(this.HomeWorld)?.Name}";
+        return $"{Name}@{Svc.Data.GetExcelSheet<World>()?.GetRow(HomeWorld)?.Name}";
     }
 
     public static bool operator ==(Sender left, Sender right)

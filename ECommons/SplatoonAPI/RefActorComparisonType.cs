@@ -12,12 +12,12 @@
 /// </summary>
 public enum RefActorComparisonType : int
 {
-    Name=0,
-    ModelID=1,
-    ObjectID=2,
-    DataID=3,
-    NpcID=4,
-    Placeholder=5,
-    NameID=6,
-    VfxPath=7
+    Name = 0,
+    ModelID = 1,
+    ObjectID = 2,
+    DataID = 3,
+    NpcID = 4,
+    Placeholder = 5,
+    NameID = 6,
+    VfxPath = 7
 }

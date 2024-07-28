@@ -64,8 +64,8 @@ public partial class TaskManager : IDisposable
         set
         {
             stepMode = value;
-            if (stepMode == true) Svc.Framework.Update -= Tick;
-            if (stepMode == false) Svc.Framework.Update += Tick;
+            if(stepMode == true) Svc.Framework.Update -= Tick;
+            if(stepMode == false) Svc.Framework.Update += Tick;
         }
     }
 
@@ -74,17 +74,17 @@ public partial class TaskManager : IDisposable
 
     public TaskManager(TaskManagerConfiguration? defaultConfiguration = null)
     {
-				DefaultConfiguration = new TaskManagerConfiguration()
-				{
-						AbortOnTimeout = true,
-						AbortOnError = true,
-						ShowDebug = false,
-						ShowError = true,
-						TimeLimitMS = 30000,
-						TimeoutSilently = false,
+        DefaultConfiguration = new TaskManagerConfiguration()
+        {
+            AbortOnTimeout = true,
+            AbortOnError = true,
+            ShowDebug = false,
+            ShowError = true,
+            TimeLimitMS = 30000,
+            TimeoutSilently = false,
             ExecuteDefaultConfigurationEvents = true,
-				}.With(defaultConfiguration);
-				DefaultConfiguration.AssertNotNull();
+        }.With(defaultConfiguration);
+        DefaultConfiguration.AssertNotNull();
         Svc.Framework.Update += Tick;
         Instances.Add(this);
     }
@@ -116,33 +116,33 @@ public partial class TaskManager : IDisposable
 
     public void Step()
     {
-        if (!StepMode) throw new InvalidOperationException("Can not use step function outside of step mode");
-        this.Tick(null);
+        if(!StepMode) throw new InvalidOperationException("Can not use step function outside of step mode");
+        Tick(null);
     }
 
     private void Tick(object? framework)
     {
-        if (Tasks.Count > 0 || CurrentTask != null)
+        if(Tasks.Count > 0 || CurrentTask != null)
         {
             DefaultConfiguration.AssertNotNull();
-            if (CurrentTask == null)
+            if(CurrentTask == null)
             {
                 CurrentTask = Tasks[0];
                 Tasks.RemoveAt(0);
                 AbortAt = 0;
             }
-            var TimeLimitMS = CurrentTask.Configuration?.TimeLimitMS ?? this.DefaultConfiguration.TimeLimitMS!.Value;
-            var AbortOnTimeout = CurrentTask.Configuration?.AbortOnTimeout ?? this.DefaultConfiguration.AbortOnTimeout!.Value;
-            var AbortOnError = CurrentTask.Configuration?.AbortOnError ?? this.DefaultConfiguration.AbortOnError!.Value;
-            var TimeoutSilently = CurrentTask.Configuration?.TimeoutSilently ?? this.DefaultConfiguration.TimeoutSilently!.Value;
-            var ShowDebug = CurrentTask.Configuration?.ShowDebug ?? this.DefaultConfiguration.ShowDebug!.Value;
-            var ShowError = CurrentTask.Configuration?.ShowError ?? this.DefaultConfiguration.ShowError!.Value;
-            var ExecuteDefaultConfigurationEvents = CurrentTask.Configuration?.ExecuteDefaultConfigurationEvents ?? this.DefaultConfiguration.ExecuteDefaultConfigurationEvents!.Value;
+            var TimeLimitMS = CurrentTask.Configuration?.TimeLimitMS ?? DefaultConfiguration.TimeLimitMS!.Value;
+            var AbortOnTimeout = CurrentTask.Configuration?.AbortOnTimeout ?? DefaultConfiguration.AbortOnTimeout!.Value;
+            var AbortOnError = CurrentTask.Configuration?.AbortOnError ?? DefaultConfiguration.AbortOnError!.Value;
+            var TimeoutSilently = CurrentTask.Configuration?.TimeoutSilently ?? DefaultConfiguration.TimeoutSilently!.Value;
+            var ShowDebug = CurrentTask.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value;
+            var ShowError = CurrentTask.Configuration?.ShowError ?? DefaultConfiguration.ShowError!.Value;
+            var ExecuteDefaultConfigurationEvents = CurrentTask.Configuration?.ExecuteDefaultConfigurationEvents ?? DefaultConfiguration.ExecuteDefaultConfigurationEvents!.Value;
 
-						if (NumQueuedTasks > MaxTasks) MaxTasks = NumQueuedTasks;
+            if(NumQueuedTasks > MaxTasks) MaxTasks = NumQueuedTasks;
             try
             {
-                if (AbortAt == 0)
+                if(AbortAt == 0)
                 {
                     RemainingTimeMS = TimeLimitMS;
                     Log($"→Starting to execute task [{CurrentTask.Name}], timeout={RemainingTimeMS}", ShowDebug);
@@ -150,14 +150,14 @@ public partial class TaskManager : IDisposable
                 if(RemainingTimeMS < 0)
                 {
                     var time = RemainingTimeMS;
-                    if (CurrentTask.Configuration == null || ExecuteDefaultConfigurationEvents)
+                    if(CurrentTask.Configuration == null || ExecuteDefaultConfigurationEvents)
                     {
                         DefaultConfiguration.FireOnTaskTimeout(CurrentTask, ref time);
                     }
                     CurrentTask.Configuration?.FireOnTaskTimeout(CurrentTask, ref time);
-                    if (RemainingTimeMS != time)
+                    if(RemainingTimeMS != time)
                     {
-                        if (ShowDebug) PluginLog.Debug($"→→Task [{CurrentTask}] changed remaining time during {nameof(TaskManagerConfiguration.OnTaskTimeout)} event from {RemainingTimeMS} to {time}");
+                        if(ShowDebug) PluginLog.Debug($"→→Task [{CurrentTask}] changed remaining time during {nameof(TaskManagerConfiguration.OnTaskTimeout)} event from {RemainingTimeMS} to {time}");
                         RemainingTimeMS = time;
                     }
                 }
@@ -170,17 +170,17 @@ public partial class TaskManager : IDisposable
                 if(result != false)
                 {
                     var newResult = result;
-                    if (CurrentTask.Configuration == null || ExecuteDefaultConfigurationEvents)
+                    if(CurrentTask.Configuration == null || ExecuteDefaultConfigurationEvents)
                     {
                         DefaultConfiguration.FireOnTaskCompletion(CurrentTask, ref newResult);
                     }
                     CurrentTask.Configuration?.FireOnTaskCompletion(CurrentTask, ref newResult);
-										if (newResult != result)
-										{
-												if (ShowDebug) PluginLog.Debug($"→→Task [{CurrentTask}] was completed but result was changed during {nameof(TaskManagerConfiguration.OnTaskCompletion)} event from [{result.ToString() ?? "null"}] to [{newResult.ToString() ?? "null"}]");
-												result = newResult;
-										}
-								}
+                    if(newResult != result)
+                    {
+                        if(ShowDebug) PluginLog.Debug($"→→Task [{CurrentTask}] was completed but result was changed during {nameof(TaskManagerConfiguration.OnTaskCompletion)} event from [{result.ToString() ?? "null"}] to [{newResult.ToString() ?? "null"}]");
+                        result = newResult;
+                    }
+                }
                 if(result == true)
                 {
                     Log($"→→Task [{CurrentTask.Name}] completed successfully ", ShowDebug);
@@ -194,11 +194,11 @@ public partial class TaskManager : IDisposable
             }
             catch(TaskTimeoutException e)
             {
-                if (!TimeoutSilently)
+                if(!TimeoutSilently)
                 {
                     e.LogWarning();
                 }
-                if (AbortOnTimeout)
+                if(AbortOnTimeout)
                 {
                     Abort();
                 }
@@ -207,37 +207,37 @@ public partial class TaskManager : IDisposable
                     CurrentTask = null;
                 }
             }
-            catch (Exception e)
-						{
-								if (ShowError)
-								{
-										e.Log();
-								}
+            catch(Exception e)
+            {
+                if(ShowError)
+                {
+                    e.Log();
+                }
 
-								var doAbort = AbortOnError;
+                var doAbort = AbortOnError;
                 var @continue = false;
 
-								if (CurrentTask != null)
+                if(CurrentTask != null)
                 {
                     bool? eventAbortResult = null;
-                    if (CurrentTask.Configuration == null || ExecuteDefaultConfigurationEvents)
+                    if(CurrentTask.Configuration == null || ExecuteDefaultConfigurationEvents)
                     {
                         DefaultConfiguration.FireOnTaskException(CurrentTask, e, ref @continue, ref eventAbortResult);
                     }
-										CurrentTask.Configuration?.FireOnTaskException(CurrentTask, e, ref @continue, ref eventAbortResult);
-										if (eventAbortResult != null && !@continue)
+                    CurrentTask.Configuration?.FireOnTaskException(CurrentTask, e, ref @continue, ref eventAbortResult);
+                    if(eventAbortResult != null && !@continue)
                     {
-                        if (ShowDebug) PluginLog.Debug($"→→Task [{CurrentTask}] errored and it's abort behavior has changed during {nameof(TaskManagerConfiguration.OnTaskCompletion)} event from [{doAbort}] to [{eventAbortResult.Value}]");
+                        if(ShowDebug) PluginLog.Debug($"→→Task [{CurrentTask}] errored and it's abort behavior has changed during {nameof(TaskManagerConfiguration.OnTaskCompletion)} event from [{doAbort}] to [{eventAbortResult.Value}]");
                         doAbort = eventAbortResult.Value;
                     }
-                    if (@continue)
+                    if(@continue)
                     {
-												if (ShowDebug) PluginLog.Debug($"→→Task [{CurrentTask}] errored but during {nameof(TaskManagerConfiguration.OnTaskCompletion)} event it was ordered to continue execution");
-										}
+                        if(ShowDebug) PluginLog.Debug($"→→Task [{CurrentTask}] errored but during {nameof(TaskManagerConfiguration.OnTaskCompletion)} event it was ordered to continue execution");
+                    }
                 }
-                if (!@continue)
+                if(!@continue)
                 {
-                    if (doAbort)
+                    if(doAbort)
                     {
                         Abort();
                     }
@@ -249,12 +249,12 @@ public partial class TaskManager : IDisposable
             }
             return;
         }
-        if (MaxTasks != 0 && CurrentTask == null) MaxTasks = 0;
+        if(MaxTasks != 0 && CurrentTask == null) MaxTasks = 0;
     }
 
     private void Log(string message, bool toConsole)
     {
-        if (toConsole)
+        if(toConsole)
         {
             PluginLog.Debug("[NeoTaskManager] " + message);
         }

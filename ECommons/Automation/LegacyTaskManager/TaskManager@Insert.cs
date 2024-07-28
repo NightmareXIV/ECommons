@@ -60,7 +60,7 @@ public partial class TaskManager
     public void InsertDelayNext(int delayMS, bool useFrameThrottler = false) => InsertDelayNext("ECommonsGenericDelay", delayMS, useFrameThrottler);
     public void InsertDelayNext(string uniqueName, int delayMS, bool useFrameThrottler = false)
     {
-        if (useFrameThrottler)
+        if(useFrameThrottler)
         {
             Insert(() => FrameThrottler.Check(uniqueName), $"FrameThrottler.Check({uniqueName})");
             Insert(() => FrameThrottler.Throttle(uniqueName, delayMS), $"FrameThrottler.Throttle({uniqueName}, {delayMS})");

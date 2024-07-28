@@ -26,26 +26,26 @@ public static class EzSharedData
     /// <returns>Whether data could be obtained</returns>
     public static bool TryGet<T>(string Name, [NotNullWhen(true)] out T Data, CreationMode Mode = CreationMode.ReadOnly, T DefaultValue = null) where T : class
     {
-        if (Cache.TryGetValue(Name, out var data))
+        if(Cache.TryGetValue(Name, out var data))
         {
             Data = (T)data;
             return true;
         }
-        if (Mode == CreationMode.ReadOnly)
+        if(Mode == CreationMode.ReadOnly)
         {
-            if (Svc.PluginInterface.TryGetData<T>(Name, out Data))
+            if(Svc.PluginInterface.TryGetData<T>(Name, out Data))
             {
                 Cache[Name] = Data;
                 return true;
             }
         }
-        else if (Mode == CreationMode.CreateAndRelinquish)
+        else if(Mode == CreationMode.CreateAndRelinquish)
         {
             Data = Svc.PluginInterface.GetOrCreateData<T>(Name, () => DefaultValue);
             Cache[Name] = Data;
             return true;
         }
-        else if (Mode == CreationMode.CreateAndKeep)
+        else if(Mode == CreationMode.CreateAndKeep)
         {
             Data = Svc.PluginInterface.GetOrCreateData<T>(Name, () => DefaultValue);
             Keep.Add(Name);
@@ -60,13 +60,13 @@ public static class EzSharedData
 
     public static T Get<T>(string Name, CreationMode Mode = CreationMode.ReadOnly, T DefaultValue = null) where T : class
     {
-        if (Cache.TryGetValue(Name, out var data))
+        if(Cache.TryGetValue(Name, out var data))
         {
             return (T)data;
         }
-        if (Mode == CreationMode.ReadOnly)
+        if(Mode == CreationMode.ReadOnly)
         {
-            if (Svc.PluginInterface.TryGetData<T>(Name, out var Data))
+            if(Svc.PluginInterface.TryGetData<T>(Name, out var Data))
             {
                 Cache[Name] = Data;
                 return Data;
@@ -76,13 +76,13 @@ public static class EzSharedData
                 throw new SharedDataNotReadyException(Name);
             }
         }
-        else if (Mode == CreationMode.CreateAndRelinquish)
+        else if(Mode == CreationMode.CreateAndRelinquish)
         {
             var Data = Svc.PluginInterface.GetOrCreateData<T>(Name, () => DefaultValue);
             Cache[Name] = Data;
             return Data;
         }
-        else if (Mode == CreationMode.CreateAndKeep)
+        else if(Mode == CreationMode.CreateAndKeep)
         {
             var Data = Svc.PluginInterface.GetOrCreateData<T>(Name, () => DefaultValue);
             Keep.Add(Name);
@@ -98,7 +98,7 @@ public static class EzSharedData
         {
             try
             {
-                if (!Keep.Contains(x.Key))
+                if(!Keep.Contains(x.Key))
                 {
                     Svc.PluginInterface.RelinquishData(x.Key);
                 }

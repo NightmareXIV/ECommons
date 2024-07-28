@@ -1,5 +1,5 @@
-﻿using ECommons.Logging;
-using ECommons.DalamudServices;
+﻿using ECommons.DalamudServices;
+using ECommons.Logging;
 using ECommons.Reflection;
 using System;
 using System.Collections.Generic;
@@ -21,10 +21,9 @@ public static class EzIPC
 
     internal static void InvokeOnSafeInvocationException(Exception e) => OnSafeInvocationException?.Invoke(e);
 
-    static List<EzIPCDisposalToken> Unregister = [];
-
-    static Type[] FuncTypes = [typeof(Func<>), typeof(Func<,>), typeof(Func<,,>), typeof(Func<,,,>), typeof(Func<,,,,>), typeof(Func<,,,,,>), typeof(Func<,,,,,,>), typeof(Func<,,,,,,,>), typeof(Func<,,,,,,,,>), typeof(Func<,,,,,,,,,>)];
-    static Type[] ActionTypes = [typeof(Action<>), typeof(Action<,>), typeof(Action<,,>), typeof(Action<,,,>), typeof(Action<,,,,>), typeof(Action<,,,,,>), typeof(Action<,,,,,,>), typeof(Action<,,,,,,,>), typeof(Action<,,,,,,,,>), typeof(Action<,,,,,,,,,>)];
+    private static List<EzIPCDisposalToken> Unregister = [];
+    private static Type[] FuncTypes = [typeof(Func<>), typeof(Func<,>), typeof(Func<,,>), typeof(Func<,,,>), typeof(Func<,,,,>), typeof(Func<,,,,,>), typeof(Func<,,,,,,>), typeof(Func<,,,,,,,>), typeof(Func<,,,,,,,,>), typeof(Func<,,,,,,,,,>)];
+    private static Type[] ActionTypes = [typeof(Action<>), typeof(Action<,>), typeof(Action<,,>), typeof(Action<,,,>), typeof(Action<,,,,>), typeof(Action<,,,,,>), typeof(Action<,,,,,,>), typeof(Action<,,,,,,,>), typeof(Action<,,,,,,,,>), typeof(Action<,,,,,,,,,>)];
 
     /// <summary>
     /// Initializes IPC provider and subscriber for an instance type. Static methods or field/properties/properties will be ignored, register them separately via static Init if you must.<br></br>
@@ -54,17 +53,17 @@ public static class EzIPC
 
     private static EzIPCDisposalToken[] Init(object? instance, Type instanceType, string? prefix, SafeWrapper safeWrapper)
     {
-        if (safeWrapper == SafeWrapper.Inherit) throw new InvalidOperationException($"{nameof(SafeWrapper.Inherit)} is only valid option when used in EzIPC attribute. Please choose your desired SafeWrapper.");
+        if(safeWrapper == SafeWrapper.Inherit) throw new InvalidOperationException($"{nameof(SafeWrapper.Inherit)} is only valid option when used in EzIPC attribute. Please choose your desired SafeWrapper.");
         var ret = new List<EzIPCDisposalToken>();
         var bFlags = BindingFlags.Public | BindingFlags.NonPublic | (instance != null ? BindingFlags.Instance : BindingFlags.Static);
         //init provider
         prefix ??= Svc.PluginInterface.InternalName;
-        foreach (var method in instanceType.GetMethods(bFlags))
+        foreach(var method in instanceType.GetMethods(bFlags))
         {
             try
             {
                 var attr = method.GetCustomAttributes(true).OfType<EzIPCAttribute>().FirstOrDefault();
-                if (attr != null)
+                if(attr != null)
                 {
                     PluginLog.Information($"[EzIPC Provider] Attempting to register {instanceType.Name}.{method.Name} as IPC method ({method.GetParameters().Length})");
                     var ipcName = attr.IPCName ?? method.Name;
@@ -94,18 +93,18 @@ public static class EzIPC
         }
 
         //init subscriber
-        foreach (var reference in instanceType.GetFieldPropertyUnions(bFlags))
+        foreach(var reference in instanceType.GetFieldPropertyUnions(bFlags))
         {
             try
             {
                 var attr = reference.GetCustomAttributes(true).OfType<EzIPCAttribute>().FirstOrDefault();
-                if (attr != null)
+                if(attr != null)
                 {
                     var ipcName = attr.IPCName ?? reference.Name;
                     ipcName = ipcName.Replace("%m", reference.Name);
                     ipcName = ipcName.Replace("%p", Svc.PluginInterface.InternalName);
                     var isNonGenericAction = reference.UnionType == typeof(Action);
-                    if (isNonGenericAction || reference.UnionType.GetGenericTypeDefinition().EqualsAny([.. FuncTypes, .. ActionTypes]))
+                    if(isNonGenericAction || reference.UnionType.GetGenericTypeDefinition().EqualsAny([.. FuncTypes, .. ActionTypes]))
                     {
                         var wrapper = attr.Wrapper == SafeWrapper.Inherit ? safeWrapper : attr.Wrapper;
                         PluginLog.Information($"[EzIPC Subscriber] Attempting to assign IPC method to {instanceType.Name}.{reference.Name} with wrapper {wrapper}");
@@ -132,7 +131,7 @@ public static class EzIPC
                     }
                 }
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 PluginLog.Error($"[EzIPC Subscriber] Failed to initialize subscriber for {instanceType.Name}.{reference.Name}");
                 e.Log();
@@ -141,19 +140,19 @@ public static class EzIPC
 
         //init subscriber event
         prefix ??= Svc.PluginInterface.InternalName;
-        foreach (var method in instanceType.GetMethods(bFlags))
+        foreach(var method in instanceType.GetMethods(bFlags))
         {
             try
             {
                 var attr = method.GetCustomAttributes(true).OfType<EzIPCEventAttribute>().FirstOrDefault();
-                if (attr != null)
+                if(attr != null)
                 {
                     PluginLog.Information($"[EzIPC Subscriber] Attempting to register {instanceType.Name}.{method.Name} as IPC event ({method.GetParameters().Length})");
                     var ipcName = attr.IPCName ?? method.Name;
                     ipcName = ipcName.Replace("%m", method.Name);
                     ipcName = ipcName.Replace("%p", Svc.PluginInterface.InternalName);
                     var reg = FindIpcSubscriber(method.GetParameters().Length + 1) ?? throw new NullReferenceException("[EzIPC Provider] Could not retrieve FindIpcSubscriber. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
-                    if (method.ReturnType != typeof(void)) throw new InvalidOperationException($"Event method must have void return value");
+                    if(method.ReturnType != typeof(void)) throw new InvalidOperationException($"Event method must have void return value");
                     var genericArray = (Type[])[.. method.GetParameters().Select(x => x.ParameterType), attr.ActionLastGenericType];
                     var genericMethod = reg.MakeGenericMethod([.. genericArray]);
                     var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
@@ -169,7 +168,7 @@ public static class EzIPC
                     ret.Add(token);
                 }
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 PluginLog.Error($"[EzIPC Subscriber] Failed to subscribe for event for {instanceType.Name}.{method.Name}");
                 e.Log();
@@ -177,18 +176,18 @@ public static class EzIPC
         }
 
         //init provider event
-        foreach (var reference in instanceType.GetFieldPropertyUnions(bFlags))
+        foreach(var reference in instanceType.GetFieldPropertyUnions(bFlags))
         {
             try
             {
                 var attr = reference.GetCustomAttributes(true).OfType<EzIPCEventAttribute>().FirstOrDefault();
-                if (attr != null)
+                if(attr != null)
                 {
                     var ipcName = attr.IPCName ?? reference.Name;
                     ipcName = ipcName.Replace("%m", reference.Name);
                     ipcName = ipcName.Replace("%p", Svc.PluginInterface.InternalName);
                     var isNonGenericAction = reference.UnionType == typeof(Action);
-                    if (isNonGenericAction || reference.UnionType.GetGenericTypeDefinition().EqualsAny(ActionTypes))
+                    if(isNonGenericAction || reference.UnionType.GetGenericTypeDefinition().EqualsAny(ActionTypes))
                     {
                         PluginLog.Information($"[EzIPC Provider] Attempting to assign IPC event to {instanceType.Name}.{reference.Name}");
                         var reg = FindIpcProvider(reference.UnionType.GetGenericArguments().Length + 1) ?? throw new NullReferenceException("Could not retrieve GetIpcProvider. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
@@ -200,7 +199,7 @@ public static class EzIPC
                     }
                 }
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 PluginLog.Error($"[EzIPC Provider] Failed to initialize event provider for {instanceType.Name}.{reference.Name}");
                 e.Log();
@@ -234,9 +233,9 @@ public static class EzIPC
     /// <returns></returns>
     public static MethodInfo? FindIpcProvider(int numGenericArgs)
     {
-        foreach (var m in Svc.PluginInterface.GetType().GetMethods(ReflectionHelper.AllFlags))
+        foreach(var m in Svc.PluginInterface.GetType().GetMethods(ReflectionHelper.AllFlags))
         {
-            if (m.Name == "GetIpcProvider" && m.IsGenericMethod && m.GetGenericArguments().Length == numGenericArgs)
+            if(m.Name == "GetIpcProvider" && m.IsGenericMethod && m.GetGenericArguments().Length == numGenericArgs)
             {
                 return m;
             }
@@ -251,9 +250,9 @@ public static class EzIPC
     /// <returns></returns>
     public static MethodInfo? FindIpcSubscriber(int numGenericArgs)
     {
-        foreach (var m in Svc.PluginInterface.GetType().GetMethods(ReflectionHelper.AllFlags))
+        foreach(var m in Svc.PluginInterface.GetType().GetMethods(ReflectionHelper.AllFlags))
         {
-            if (m.Name == "GetIpcSubscriber" && m.IsGenericMethod && m.GetGenericArguments().Length == numGenericArgs)
+            if(m.Name == "GetIpcSubscriber" && m.IsGenericMethod && m.GetGenericArguments().Length == numGenericArgs)
             {
                 return m;
             }
@@ -261,10 +260,10 @@ public static class EzIPC
         return null;
     }
 
-    static object? CreateSafeWrapper(SafeWrapper wrapperKind, Type[] adjustedGenericArgs)
+    private static object? CreateSafeWrapper(SafeWrapper wrapperKind, Type[] adjustedGenericArgs)
     {
         Type? type = null;
-        if (wrapperKind == SafeWrapper.IPCException)
+        if(wrapperKind == SafeWrapper.IPCException)
         {
             type = adjustedGenericArgs.Length switch
             {

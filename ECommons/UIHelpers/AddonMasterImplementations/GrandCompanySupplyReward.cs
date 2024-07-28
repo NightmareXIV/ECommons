@@ -1,11 +1,11 @@
-﻿using FFXIVClientStructs.FFXIV.Client.UI;
+﻿using ECommons.Automation.UIInput;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ECommons.Automation.UIInput;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster

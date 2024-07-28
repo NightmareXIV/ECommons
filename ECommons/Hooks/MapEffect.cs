@@ -13,14 +13,13 @@ public static class MapEffect
 
     public delegate long ProcessMapEffect(long a1, uint a2, ushort a3, ushort a4);
     internal static Hook<ProcessMapEffect> ProcessMapEffectHook = null;
-    static Action<long, uint, ushort, ushort> Callback = null;
-
-    static ProcessMapEffect OriginalDelegate;
+    private static Action<long, uint, ushort, ushort> Callback = null;
+    private static ProcessMapEffect OriginalDelegate;
     public static ProcessMapEffect Delegate
     {
         get
         {
-            if (ProcessMapEffectHook != null && !ProcessMapEffectHook.IsDisposed)
+            if(ProcessMapEffectHook != null && !ProcessMapEffectHook.IsDisposed)
             {
                 return ProcessMapEffectHook.Original;
             }
@@ -38,7 +37,7 @@ public static class MapEffect
         {
             Callback(a1, a2, a3, a4);
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             e.Log();
         }
@@ -47,11 +46,11 @@ public static class MapEffect
 
     public static void Init(Action<long, uint, ushort, ushort> fullParamsCallback)
     {
-        if (ProcessMapEffectHook != null)
+        if(ProcessMapEffectHook != null)
         {
             throw new Exception("MapEffect is already initialized!");
         }
-        if (Svc.SigScanner.TryScanText(Sig, out var ptr))
+        if(Svc.SigScanner.TryScanText(Sig, out var ptr))
         {
             Callback = fullParamsCallback;
             ProcessMapEffectHook = Svc.Hook.HookFromAddress<ProcessMapEffect>(ptr, ProcessMapEffectDetour);
@@ -66,17 +65,17 @@ public static class MapEffect
 
     public static void Enable()
     {
-        if (ProcessMapEffectHook?.IsEnabled == false) ProcessMapEffectHook?.Enable();
+        if(ProcessMapEffectHook?.IsEnabled == false) ProcessMapEffectHook?.Enable();
     }
 
     public static void Disable()
     {
-        if (ProcessMapEffectHook?.IsEnabled == true) ProcessMapEffectHook?.Disable();
+        if(ProcessMapEffectHook?.IsEnabled == true) ProcessMapEffectHook?.Disable();
     }
 
     public static void Dispose()
     {
-        if (ProcessMapEffectHook != null)
+        if(ProcessMapEffectHook != null)
         {
             PluginLog.Information($"Disposing MapEffect Hook");
             Disable();

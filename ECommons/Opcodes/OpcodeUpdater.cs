@@ -11,7 +11,7 @@ namespace ECommons.Opcodes;
 [Obsolete("Scheduled to be removed. Please contact the developer if you have an use for it.")]
 public static class OpcodeUpdater
 {
-    static HttpClient? client;
+    private static HttpClient? client;
     public static void DownloadOpcodes(string url, Action<Dictionary<string, uint>> successCallback, Action<string>? failureCallback = null)
     {
         client ??= new();
@@ -19,15 +19,15 @@ public static class OpcodeUpdater
         {
             try
             {
-                Dictionary<string, uint> dic = new();
+                Dictionary<string, uint> dic = [];
                 PluginLog.Debug($"Opcode list downloading from {url}...");
                 var result = client.GetAsync(url).Result;
-                if (!result.IsSuccessStatusCode)
+                if(!result.IsSuccessStatusCode)
                 {
                     _ = new TickScheduler(delegate
                     {
                         var error = $"{(int)result.StatusCode} {result.StatusCode}";
-                        if (failureCallback == null)
+                        if(failureCallback == null)
                         {
                             PluginLog.Warning($"Failed to download opcodes: {error}");
                         }
@@ -41,13 +41,13 @@ public static class OpcodeUpdater
                 {
                     PluginLog.Debug("Opcode list download success");
                     var content = result.Content.ReadAsStringAsync().Result;
-                    foreach (var s in content.Split("\n"))
+                    foreach(var s in content.Split("\n"))
                     {
                         var o = s.Split("|");
-                        if (o.Length == 2)
+                        if(o.Length == 2)
                         {
                             PluginLog.Debug($"Received opcode: {o[0]} = 0x{o[1]}");
-                            if (uint.TryParse(o[1], NumberStyles.HexNumber, null, out var code))
+                            if(uint.TryParse(o[1], NumberStyles.HexNumber, null, out var code))
                             {
                                 PluginLog.Debug($"Opcode {o[0]} = 0x{code:X} ({code})");
                                 dic[o[0]] = code;
