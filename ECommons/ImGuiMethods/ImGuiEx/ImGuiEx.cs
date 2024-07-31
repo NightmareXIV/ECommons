@@ -27,6 +27,26 @@ public static unsafe partial class ImGuiEx
     public const ImGuiWindowFlags OverlayFlags = ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoMouseInputs | ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing;
     private static Dictionary<string, int> SelectedPages = [];
 
+    public static bool InputInt(float width, string label, ref int? valueNullable, int step = 1, int step_fast = 100, ImGuiInputTextFlags flags = ImGuiInputTextFlags.None)
+    {
+        ImGui.PushID($"NullableInputInt{label}");
+        var enabled = valueNullable != null;
+        var chk = ImGui.Checkbox($"##checkbox", ref enabled);
+        if(chk)
+        {
+            valueNullable = enabled?0:null;
+        }
+        ImGui.PopID();
+        var value = valueNullable ?? 0;
+        if(!enabled) ImGui.BeginDisabled();
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(width);
+        var ret = ImGui.InputInt(label, ref value, step, step_fast, flags);
+        if(ret) valueNullable = value;
+        if(!enabled) ImGui.EndDisabled();
+        return ret || chk;
+    }
+
     public static Action[] Pagination(Action[] actions, int perPage = 0, int maxPages = 0) => Pagination(GenericHelpers.GetCallStackID(), actions, perPage, maxPages);
 
     public static Action[] Pagination(string id, Action[] actions, int perPage = 0, int maxPages = 0)
@@ -884,7 +904,7 @@ public static unsafe partial class ImGuiEx
     }
 
     private static Dictionary<string, Box<string>> InputListValuesString = [];
-    public static void InputListString(string name, List<string> list, Dictionary<string, string> overrideValues = null)
+    public static void InputListString(string name, List<string> list, Dictionary<string, string> overrideValues = null, string defaultValue = null)
     {
         if(!InputListValuesString.ContainsKey(name)) InputListValuesString[name] = new("");
         InputList(name, list, overrideValues, delegate
