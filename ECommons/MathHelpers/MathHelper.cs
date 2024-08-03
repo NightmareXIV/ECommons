@@ -46,11 +46,23 @@ public static class MathHelper
         return new Vector3(vector2.X, Y, vector2.Y);
     }
 
+    /// <summary>
+    /// Degrees
+    /// </summary>
+    /// <param name="origin"></param>
+    /// <param name="target"></param>
+    /// <returns></returns>
     public static float GetRelativeAngle(Vector3 origin, Vector3 target)
     {
         return GetRelativeAngle(origin.ToVector2(), target.ToVector2());
     }
 
+    /// <summary>
+    /// Degrees
+    /// </summary>
+    /// <param name="origin"></param>
+    /// <param name="target"></param>
+    /// <returns></returns>
     public static float GetRelativeAngle(Vector2 origin, Vector2 target)
     {
         var vector2 = target - origin;
@@ -73,6 +85,11 @@ public static class MathHelper
         return GetCardinalDirection(GetRelativeAngle(origin, target));
     }
 
+    /// <summary>
+    /// From angle in degrees
+    /// </summary>
+    /// <param name="angle">Degrees</param>
+    /// <returns></returns>
     public static CardinalDirection GetCardinalDirection(float angle)
     {
         if(angle.InRange(45, 135, false)) return CardinalDirection.East;

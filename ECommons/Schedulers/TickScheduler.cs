@@ -6,32 +6,32 @@ namespace ECommons.Schedulers;
 
 public class TickScheduler : IScheduler
 {
-    private long executeAt;
-    private Action function;
-    private bool disposed = false;
+    private long ExecuteAt;
+    private Action Action;
+    public bool Disposed { get; private set; } = false;
 
     public TickScheduler(Action function, long delayMS = 0)
     {
-        executeAt = Environment.TickCount64 + delayMS;
-        this.function = function;
+        ExecuteAt = Environment.TickCount64 + delayMS;
+        this.Action = function;
         Svc.Framework.Update += Execute;
     }
 
     public void Dispose()
     {
-        if(!disposed)
+        if(!Disposed)
         {
             Svc.Framework.Update -= Execute;
         }
-        disposed = true;
+        Disposed = true;
     }
 
     private void Execute(object _)
     {
-        if(Environment.TickCount64 < executeAt) return;
+        if(Environment.TickCount64 < ExecuteAt) return;
         try
         {
-            function();
+            Action();
         }
         catch(Exception e)
         {
