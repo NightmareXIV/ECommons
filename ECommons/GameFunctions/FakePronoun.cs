@@ -12,7 +12,19 @@ public static unsafe class FakePronoun
     {
         try
         {
-            if(Svc.Condition[ConditionFlag.DutyRecorderPlayback])
+            if(pronoun.StartsWith("<t") && int.TryParse(pronoun[2..3], out var n))
+            {
+                return GetRolePlaceholder(CombatRole.Tank, n);
+            }
+            else if(pronoun.StartsWith("<h") && int.TryParse(pronoun[2..3], out n))
+            {
+                return GetRolePlaceholder(CombatRole.Healer, n);
+            }
+            else if(pronoun.StartsWith("<d") && int.TryParse(pronoun[2..3], out n))
+            {
+                return GetRolePlaceholder(CombatRole.DPS, n);
+            }
+            else if(Svc.Condition[ConditionFlag.DutyRecorderPlayback])
             {
                 if(uint.TryParse(pronoun[1..2], out var pos))
                 {
@@ -28,24 +40,8 @@ public static unsafe class FakePronoun
                             }
                         }
                     }
-                    return null;
                 }
-                else
-                {
-                    if(pronoun.StartsWith("<t") && int.TryParse(pronoun[2..3], out var n))
-                    {
-                        return GetRolePlaceholder(CombatRole.Tank, n);
-                    }
-                    else if(pronoun.StartsWith("<h") && int.TryParse(pronoun[2..3], out n))
-                    {
-                        return GetRolePlaceholder(CombatRole.Healer, n);
-                    }
-                    else if(pronoun.StartsWith("<d") && int.TryParse(pronoun[2..3], out n))
-                    {
-                        return GetRolePlaceholder(CombatRole.DPS, n);
-                    }
-                    return null;
-                }
+                return null;
             }
             else
             {
