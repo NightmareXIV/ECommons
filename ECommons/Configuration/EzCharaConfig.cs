@@ -12,12 +12,12 @@ namespace ECommons.Configuration;
 public class EzCharaConfig<T> where T : IEzConfig, new()
 {
     private string DefaultCharaConfigFileName => $"{Prefix}{0:X16}.json";
-    public string DefaultCharaConfigFile => Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), DefaultCharaConfigFileName);
+    public string DefaultCharaConfigFile => Path.Combine(EzConfig.GetPluginConfigDirectory(), DefaultCharaConfigFileName);
 
     private string CurrentCharaConfigFileName => $"{Prefix}{Player.CID:X16}.json";
 
     private string CharaConfigFileName(ulong CID) => $"{Prefix}{CID:X16}.json";
-    public string CurrentCharaConfigFile => Path.Combine(Svc.PluginInterface.GetPluginConfigDirectory(), CurrentCharaConfigFileName);
+    public string CurrentCharaConfigFile => Path.Combine(EzConfig.GetPluginConfigDirectory(), CurrentCharaConfigFileName);
 
     private Dictionary<ulong, T> Cache = [];
     private Option[] Options;
