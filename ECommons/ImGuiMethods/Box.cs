@@ -2,9 +2,9 @@
 
 public class Box<T>
 {
-    public T Value;
+    public T? Value;
 
-    public Box(T value)
+    public Box(T? value)
     {
         Value = value;
     }
