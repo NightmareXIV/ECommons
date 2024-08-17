@@ -1126,6 +1126,15 @@ public static unsafe partial class ImGuiEx
         }
     }
 
+    public static void SameLineWrapped(Action drawAction, float padding = 1f)
+    {
+        var pos1 = ImGui.GetCursorPosX();
+        ImGui.SameLine();
+        if (ImGui.GetCursorPos().X + ImGui.GetItemRectSize().X >= ImGui.GetWindowWidth())
+            ImGui.NewLine();
+        drawAction();
+    }
+
     public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, null, tabs);
     public static void EzTabBar(string id, string KoFiTransparent, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, KoFiTransparent, null, tabs);
     public static void EzTabBar(string id, string KoFiTransparent, string openTabName, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, KoFiTransparent, openTabName, ImGuiTabBarFlags.None, tabs);
