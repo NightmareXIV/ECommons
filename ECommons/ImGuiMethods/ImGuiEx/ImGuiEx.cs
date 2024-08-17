@@ -1130,7 +1130,7 @@ public static unsafe partial class ImGuiEx
     {
         var pos1 = ImGui.GetCursorPosX();
         ImGui.SameLine();
-        if (ImGui.GetCursorPos().X + ImGui.GetItemRectSize().X >= ImGui.GetWindowWidth())
+        if (ImGui.GetCursorPos().X + ImGui.GetItemRectSize().X >= ImGui.GetContentRegionMax().X)
             ImGui.NewLine();
         drawAction();
     }
