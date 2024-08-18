@@ -1126,12 +1126,22 @@ public static unsafe partial class ImGuiEx
         }
     }
 
-    public static void SameLineWrapped(Action drawAction, float offsetX = 0, float padding = 1f)
+    /// <summary>
+    /// Draws a checkbox that will be on the same line as previous if there is space, otherwise will move to the next line.
+    /// </summary>
+    /// <param name="label">Checkbox label</param>
+    /// <param name="v">Boolean to toggle</param>
+    /// <remarks><see cref="ImGui.SameLine()"/> does not need to be called just before using this.</remarks>
+    /// <returns></returns>
+    public static bool CheckboxWrapped(string label, ref bool v)
     {
-        ImGui.SameLine(offsetX, padding);
-        if (ImGui.GetCursorPos().X + ImGui.GetItemRectSize().X >= ImGui.GetContentRegionMax().X)
+        ImGui.SameLine();
+        var labelW = ImGui.CalcTextSize(label);
+        var finishPos = ImGui.GetCursorPosX() + labelW.X + ImGui.GetStyle().ItemSpacing.X + ImGui.GetStyle().ItemInnerSpacing.X + ImGui.GetStyle().FramePadding.Length() + ImGui.GetCursorStartPos().X;
+        if (finishPos >= ImGui.GetContentRegionMax().X)
             ImGui.NewLine();
-        drawAction();
+
+        return ImGui.Checkbox(label, ref v);
     }
 
     public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, null, tabs);
