@@ -1126,9 +1126,9 @@ public static unsafe partial class ImGuiEx
         }
     }
 
-    public static void SameLineWrapped(Action drawAction, float padding = 1f)
+    public static void SameLineWrapped(Action drawAction, float offsetX = 0, float padding = 1f)
     {
-        ImGui.SameLine();
+        ImGui.SameLine(offsetX, padding);
         if (ImGui.GetCursorPos().X + ImGui.GetItemRectSize().X >= ImGui.GetContentRegionMax().X)
             ImGui.NewLine();
         drawAction();
