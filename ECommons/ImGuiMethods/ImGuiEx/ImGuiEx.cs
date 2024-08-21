@@ -1153,6 +1153,23 @@ public static unsafe partial class ImGuiEx
         return ImGui.Checkbox(label, ref v);
     }
 
+    /// <summary>
+    /// Draws a button that will be on the same line as previous if there is space, otherwise will move to the next line.
+    /// </summary>
+    /// <param name="label">Button label</param>
+    /// <remarks><see cref="ImGui.SameLine()"/> does not need to be called just before using this.</remarks>
+    /// <returns></returns>
+    public static bool ButtonWrapped(string label)
+    {
+        ImGui.SameLine();
+        var labelW = ImGuiHelpers.GetButtonSize(label);
+        var finishPos = ImGui.GetCursorPosX() + labelW.X;
+        if (finishPos >= ImGui.GetContentRegionMax().X)
+            ImGui.NewLine();
+
+        return ImGui.Button(label);
+    }
+
     public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, null, tabs);
     public static void EzTabBar(string id, string KoFiTransparent, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, KoFiTransparent, null, tabs);
     public static void EzTabBar(string id, string KoFiTransparent, string openTabName, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, KoFiTransparent, openTabName, ImGuiTabBarFlags.None, tabs);
