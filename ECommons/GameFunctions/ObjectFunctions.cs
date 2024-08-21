@@ -11,10 +11,10 @@ namespace ECommons.GameFunctions;
 
 public static unsafe class ObjectFunctions
 {
-    public delegate byte GetNameplateColorDelegate(nint ptr);
-    public static GetNameplateColorDelegate GetNameplateColor;
+    private delegate byte GetNameplateColorDelegate(nint ptr);
+    private static GetNameplateColorDelegate GetNameplateColorNative;
 
-    public static string GetNameplateColorSig = "48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 48 8B 35 ?? ?? ?? ?? 48 8B F9";
+    private static string GetNameplateColorSig = "48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 48 8B 35 ?? ?? ?? ?? 48 8B F9";
 
     public static FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject* Struct(this IGameObject o)
     {
@@ -23,7 +23,7 @@ public static unsafe class ObjectFunctions
 
     internal static void Init()
     {
-        GetNameplateColor ??= EzDelegate.Get<GetNameplateColorDelegate>(GetNameplateColorSig);
+        GetNameplateColorNative ??= EzDelegate.Get<GetNameplateColorDelegate>(GetNameplateColorSig);
     }
 
     [Obsolete($"Use {nameof(IGameObject.IsTargetable)}")]
@@ -34,14 +34,21 @@ public static unsafe class ObjectFunctions
 
     public static bool IsHostile(this IGameObject a)
     {
-        GetNameplateColor ??= EzDelegate.Get<GetNameplateColorDelegate>(GetNameplateColorSig);
-        var plateType = GetNameplateColor(a.Address);
+        GetNameplateColorNative ??= EzDelegate.Get<GetNameplateColorDelegate>(GetNameplateColorSig);
+        var plateType = GetNameplateColorNative(a.Address);
         //7: yellow, can be attacked, not engaged
         //8: dead
         //9: red, engaged with your party
         //11: orange, aggroed to your party but not attacked yet
         //10: purple, engaged with other party
         return plateType == 7 || plateType == 9 || plateType == 11 || plateType == 10;
+    }
+
+
+    public static NameplateKind GetNameplateKind(this IGameObject o)
+    {
+        GetNameplateColorNative ??= EzDelegate.Get<GetNameplateColorDelegate>(GetNameplateColorSig);
+        return (NameplateKind)GetNameplateColorNative(o.Address);
     }
 
     public static int GetAttackableEnemyCountAroundPoint(Vector3 point, float radius)

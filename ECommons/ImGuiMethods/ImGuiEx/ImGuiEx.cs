@@ -191,9 +191,18 @@ public static unsafe partial class ImGuiEx
             MinVersion = minVersion;
         }
     }
-    public static void PluginAvailabilityIndicator(IEnumerable<RequiredPluginInfo> pluginInfos, string prependText = "The following plugins are required to be installed and enabled:")
+    public static void PluginAvailabilityIndicator(IEnumerable<RequiredPluginInfo> pluginInfos, string? prependText = null, bool all = true)
     {
-        var pass = pluginInfos.All(info => Svc.PluginInterface.InstalledPlugins.Any(x => x.IsLoaded && x.InternalName == info.InternalName && (info.MinVersion == null || x.Version >= info.MinVersion)));
+        prependText ??= all?"The following plugins are required to be installed and enabled:":"One of the following plugins is required to be installed and enabled";
+        bool pass;
+        if(all)
+        {
+            pass = pluginInfos.All(info => Svc.PluginInterface.InstalledPlugins.Any(x => x.IsLoaded && x.InternalName == info.InternalName && (info.MinVersion == null || x.Version >= info.MinVersion)));
+        }
+        else
+        {
+            pass = pluginInfos.Any(info => Svc.PluginInterface.InstalledPlugins.Any(x => x.IsLoaded && x.InternalName == info.InternalName && (info.MinVersion == null || x.Version >= info.MinVersion)));
+        }
 
         ImGui.SameLine();
         ImGui.PushFont(UiBuilder.IconFont);
