@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using System;
 
 namespace ECommons.ImGuiMethods;
 public static unsafe partial class ImGuiEx
@@ -49,6 +50,17 @@ public static unsafe partial class ImGuiEx
         if(ImGui.Checkbox(label, ref b))
         {
             value = b ? 1 : 0;
+            return true;
+        }
+        return false;
+    }
+
+    public static bool Checkbox<T>(string id, ref T? value, T? defaultValue = null) where T : struct
+    {
+        var enabled = value != null;
+        if(ImGui.Checkbox(id, ref enabled))
+        {
+            value = enabled ? defaultValue ?? default : null;
             return true;
         }
         return false;

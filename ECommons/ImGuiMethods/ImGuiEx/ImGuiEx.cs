@@ -1170,6 +1170,7 @@ public static unsafe partial class ImGuiEx
     }
 
     public static Dictionary<string, Box<string>> EnumComboSearch = [];
+
     /// <summary>
     /// Draws an easy combo selector for an enum with a search field for long lists.
     /// </summary>
