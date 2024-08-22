@@ -191,9 +191,18 @@ public static unsafe partial class ImGuiEx
             MinVersion = minVersion;
         }
     }
-    public static void PluginAvailabilityIndicator(IEnumerable<RequiredPluginInfo> pluginInfos, string prependText = "The following plugins are required to be installed and enabled:")
+    public static void PluginAvailabilityIndicator(IEnumerable<RequiredPluginInfo> pluginInfos, string? prependText = null, bool all = true)
     {
-        var pass = pluginInfos.All(info => Svc.PluginInterface.InstalledPlugins.Any(x => x.IsLoaded && x.InternalName == info.InternalName && (info.MinVersion == null || x.Version >= info.MinVersion)));
+        prependText ??= all?"The following plugins are required to be installed and enabled:":"One of the following plugins is required to be installed and enabled";
+        bool pass;
+        if(all)
+        {
+            pass = pluginInfos.All(info => Svc.PluginInterface.InstalledPlugins.Any(x => x.IsLoaded && x.InternalName == info.InternalName && (info.MinVersion == null || x.Version >= info.MinVersion)));
+        }
+        else
+        {
+            pass = pluginInfos.Any(info => Svc.PluginInterface.InstalledPlugins.Any(x => x.IsLoaded && x.InternalName == info.InternalName && (info.MinVersion == null || x.Version >= info.MinVersion)));
+        }
 
         ImGui.SameLine();
         ImGui.PushFont(UiBuilder.IconFont);
@@ -406,6 +415,80 @@ public static unsafe partial class ImGuiEx
     public static void SetNextItemWidthScaled(float width)
     {
         ImGui.SetNextItemWidth(width.Scale());
+    }
+
+    private static int FindWrapPosition(string text, float wrapWidth)
+    {
+         float currentWidth = 0;
+         int lastSpacePos = -1;
+         for (int i = 0; i < text.Length; i++)
+         {
+              char c = text[i];
+              currentWidth += ImGui.CalcTextSize(c.ToString()).X;
+              if (char.IsWhiteSpace(c))
+              {
+                   lastSpacePos = i;
+              }
+              if (currentWidth > wrapWidth)
+              {
+                   return lastSpacePos >= 0 ? lastSpacePos : i;
+              }
+         }
+         return -1;
+    }
+
+    private static unsafe int TextEditCallback(ImGuiInputTextCallbackData* data, float wrapWidth)
+    {
+        string text = Marshal.PtrToStringAnsi((IntPtr)data->Buf, data->BufTextLen);
+        var lines = text.Split('\n').ToList();
+        bool textModified = false;
+        // Traverse each line to check if it exceeds the wrap width
+        for (int i = 0; i < lines.Count; i++)
+        {
+            float lineWidth = ImGui.CalcTextSize(lines[i]).X;
+            while (lineWidth + 10f > wrapWidth)
+            {
+                // Find where to break the line
+                int wrapPos = FindWrapPosition(lines[i], wrapWidth);
+                if (wrapPos >= 0)
+                {
+                    // Insert a newline at the wrap position
+                    string part1 = lines[i].Substring(0, wrapPos);
+                    string part2 = lines[i].Substring(wrapPos).TrimStart();
+                    lines[i] = part1;
+                    lines.Insert(i + 1, part2);
+                    textModified = true;
+                    lineWidth = ImGui.CalcTextSize(part2).X;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        // Merge all lines back to the buffer
+        if (textModified)
+        {
+            string newText = string.Join("\n", lines);
+            byte[] newTextBytes = Encoding.UTF8.GetBytes(newText.PadRight(data->BufSize, '\0'));
+            Marshal.Copy(newTextBytes, 0, (IntPtr)data->Buf, newTextBytes.Length);
+            data->BufTextLen = newText.Length;
+            data->BufDirty = 1;
+            data->CursorPos = Math.Min(data->CursorPos, data->BufTextLen);
+        }
+        return 0;
+    }
+     
+    public unsafe static bool InputTextWrapMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
+    {
+        float wrapWidth = width ?? ImGui.GetContentRegionAvail().X; // determine wrap width
+        bool result = ImGui.InputTextMultiline(id, ref text, maxLength,
+            new(width ?? ImGui.GetContentRegionAvail().X, ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)),
+            ImGuiInputTextFlags.CallbackEdit, // flag stuff 
+            (data) => {
+                return TextEditCallback(data, wrapWidth); // Callback Action
+            });
+        return result;
     }
 
     public static bool InputTextMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
@@ -1124,6 +1207,41 @@ public static unsafe partial class ImGuiEx
         {
             return ImGuiColors.DalamudRed;
         }
+    }
+
+    /// <summary>
+    /// Draws a checkbox that will be on the same line as previous if there is space, otherwise will move to the next line.
+    /// </summary>
+    /// <param name="label">Checkbox label</param>
+    /// <param name="v">Boolean to toggle</param>
+    /// <remarks><see cref="ImGui.SameLine()"/> does not need to be called just before using this.</remarks>
+    /// <returns></returns>
+    public static bool CheckboxWrapped(string label, ref bool v)
+    {
+        ImGui.SameLine();
+        var labelW = ImGui.CalcTextSize(label);
+        var finishPos = ImGui.GetCursorPosX() + labelW.X + ImGui.GetStyle().ItemSpacing.X + ImGui.GetStyle().ItemInnerSpacing.X + ImGui.GetStyle().FramePadding.Length() + ImGui.GetCursorStartPos().X;
+        if (finishPos >= ImGui.GetContentRegionMax().X)
+            ImGui.NewLine();
+
+        return ImGui.Checkbox(label, ref v);
+    }
+
+    /// <summary>
+    /// Draws a button that will be on the same line as previous if there is space, otherwise will move to the next line.
+    /// </summary>
+    /// <param name="label">Button label</param>
+    /// <remarks><see cref="ImGui.SameLine()"/> does not need to be called just before using this.</remarks>
+    /// <returns></returns>
+    public static bool ButtonWrapped(string label)
+    {
+        ImGui.SameLine();
+        var labelW = ImGuiHelpers.GetButtonSize(label);
+        var finishPos = ImGui.GetCursorPosX() + labelW.X;
+        if (finishPos >= ImGui.GetContentRegionMax().X)
+            ImGui.NewLine();
+
+        return ImGui.Button(label);
     }
 
     public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, null, tabs);
