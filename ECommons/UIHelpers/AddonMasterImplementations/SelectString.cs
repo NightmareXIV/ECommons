@@ -61,18 +61,18 @@ public partial class AddonMaster
             }
         }
 
-        public void Entry1() => Entries[0].Select();
-        public void Entry2() => Entries[1].Select();
-        public void Entry3() => Entries[2].Select();
-        public void Entry4() => Entries[3].Select();
-        public void Entry5() => Entries[4].Select();
-        public void Entry6() => Entries[5].Select();
-        public void Entry7() => Entries[6].Select();
-        public void Entry8() => Entries[7].Select();
-        public void Entry9() => Entries[8].Select();
-        public void Entry10() => Entries[9].Select();
-        public void Entry11() => Entries[10].Select();
-        public void Entry12() => Entries[11].Select();
+        private void Entry1() => Entries[0].Select();
+        private void Entry2() => Entries[1].Select();
+        private void Entry3() => Entries[2].Select();
+        private void Entry4() => Entries[3].Select();
+        private void Entry5() => Entries[4].Select();
+        private void Entry6() => Entries[5].Select();
+        private void Entry7() => Entries[6].Select();
+        private void Entry8() => Entries[7].Select();
+        private void Entry9() => Entries[8].Select();
+        private void Entry10() => Entries[9].Select();
+        private void Entry11() => Entries[10].Select();
+        private void Entry12() => Entries[11].Select();
     }
 }
 
