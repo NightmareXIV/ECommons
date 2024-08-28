@@ -26,7 +26,13 @@ public partial class AddonMaster
                 CreateAtkEvent(132),
             };
             var data = stackalloc AtkEventData[1];
+            for(int i = 0; i < sizeof(AtkEventData); i++)
+            {
+                ((byte*)data)[i] = 0;
+            }
+            Base->ReceiveEvent(AtkEventType.MouseDown, 0, evt, data);
             Base->ReceiveEvent(AtkEventType.MouseClick, 0, evt, data);
+            Base->ReceiveEvent(AtkEventType.MouseUp, 0, evt, data);
         }
     }
 }
