@@ -748,6 +748,46 @@ public static unsafe partial class GenericHelpers
     }
 
     /// <summary>
+    /// Gets a node given a chain of node IDs
+    /// </summary>
+    /// <param name="node">Root node of the addon</param>
+    /// <param name="ids">Node IDs (starting from root) to the desired node</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static unsafe AtkResNode* GetNodeByIDChain(AtkResNode* node, params int[] ids)
+    {
+        if (node == null || ids.Length <= 0)
+            return null;
+
+        if (node->NodeId == ids[0])
+        {
+            if (ids.Length == 1)
+                return node;
+
+            var newList = new List<int>(ids);
+            newList.RemoveAt(0);
+
+            var childNode = node->ChildNode;
+            if (childNode != null)
+                return GetNodeByIDChain(childNode, [.. newList]);
+
+            if ((int)node->Type >= 1000)
+            {
+                var componentNode = node->GetAsAtkComponentNode();
+                var component = componentNode->Component;
+                var uldManager = component->UldManager;
+                childNode = uldManager.NodeList[0];
+                return childNode == null ? null : GetNodeByIDChain(childNode, [.. newList]);
+            }
+
+            return null;
+        }
+
+        //check siblings
+        var sibNode = node->PrevSiblingNode;
+        return sibNode != null ? GetNodeByIDChain(sibNode, ids) : null;
+    }
+
+    /// <summary>
     /// Discards any non-text payloads from <see cref="SeString"/>
     /// </summary>
     /// <param name="s"></param>
