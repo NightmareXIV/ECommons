@@ -1,11 +1,6 @@
 ﻿using ECommons.Automation.UIInput;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unmanaged
@@ -23,7 +18,20 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
     public AtkUnitBase* Base => (AtkUnitBase*)Addon;
     public bool IsVisible => Base->IsVisible;
     public bool IsAddonReady => GenericHelpers.IsAddonReady(Base);
-    public bool IsAddonFocused => RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries.Contains(Base);
+    public bool IsAddonFocused
+    {
+        get
+        {
+            for (var i = 0; i < RaptureAtkUnitManager.Instance()->FocusedUnitsList.Count; i++)
+            {
+                var atk = RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries[i].Value;
+                if (atk != null && atk == Base) return true;
+            }
+            return false;
+        }
+    }
+
+    public bool IsAddonHighestFocus => RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries[RaptureAtkUnitManager.Instance()->FocusedUnitsList.Count - 1].Value == Base;
 
     protected bool ClickButtonIfEnabled(AtkComponentButton* button)
     {
