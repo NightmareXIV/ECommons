@@ -16,8 +16,10 @@ public partial class AddonMaster
         public Request(void* addon) : base(addon) { }
 
         public AtkComponentButton* HandOverButton => Base->GetButtonNodeById(14);
+        public AtkComponentButton* CancelButton => Base->GetButtonNodeById(15);
 
         public void HandOver() => ClickButtonIfEnabled(HandOverButton);
+        public void Cancel() => ClickButtonIfEnabled(CancelButton);
 
         public bool IsHandOverEnabled => HandOverButton->IsEnabled;
 

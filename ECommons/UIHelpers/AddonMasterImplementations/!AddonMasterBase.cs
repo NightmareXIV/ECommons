@@ -1,4 +1,5 @@
 ﻿using ECommons.Automation.UIInput;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Generic;
@@ -22,12 +23,23 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
     public AtkUnitBase* Base => (AtkUnitBase*)Addon;
     public bool IsVisible => Base->IsVisible;
     public bool IsAddonReady => GenericHelpers.IsAddonReady(Base);
+    public bool IsAddonFocused => RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries.Contains(Base);
 
     protected bool ClickButtonIfEnabled(AtkComponentButton* button)
     {
         if(button->IsEnabled)
         {
             button->ClickAddonButton(Base);
+            return true;
+        }
+        return false;
+    }
+
+    protected bool ClickButtonIfEnabled(AtkComponentRadioButton* button)
+    {
+        if (button->IsEnabled)
+        {
+            button->ClickRadioButton(Base);
             return true;
         }
         return false;
