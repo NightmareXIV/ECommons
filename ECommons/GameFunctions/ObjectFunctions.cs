@@ -44,13 +44,6 @@ public static unsafe class ObjectFunctions
         return plateType == 7 || plateType == 9 || plateType == 11 || plateType == 10;
     }
 
-    public static bool IsTaggedByOther(this IGameObject a)
-    {
-        GetNameplateColorNative ??= EzDelegate.Get<GetNameplateColorDelegate>(GetNameplateColorSig);
-        var plateType = GetNameplateColorNative(a.Address);
-        return plateType == 10;
-    }
-
     public static NameplateKind GetNameplateKind(this IGameObject o)
     {
         GetNameplateColorNative ??= EzDelegate.Get<GetNameplateColorDelegate>(GetNameplateColorSig);
