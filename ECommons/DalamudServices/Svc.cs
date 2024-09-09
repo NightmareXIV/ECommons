@@ -47,8 +47,7 @@ public class Svc
     [PluginService] public static ITitleScreenMenu TitleScreenMenu { get; private set; }
     [PluginService] public static INotificationManager NotificationManager { get; private set; }
     [PluginService] public static IContextMenu ContextMenu { get; private set; }
-
-
+    [PluginService] public static IMarketBoard MarketBoard { get; private set; }
 
     internal static bool IsInitialized = false;
     public static void Init(IDalamudPluginInterface pi)

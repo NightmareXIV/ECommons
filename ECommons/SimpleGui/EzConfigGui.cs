@@ -3,6 +3,7 @@ using Dalamud.Interface.Windowing;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using System;
+using System.Linq;
 
 namespace ECommons.SimpleGui;
 #nullable disable
@@ -52,5 +53,22 @@ public static class EzConfigGui
     public static void Open(string cmd = null, string args = null)
     {
         Open();
+    }
+
+    /// <summary>
+    /// Returns a window from the EzGui WindowSystem.
+    /// </summary>
+    public static T? GetWindow<T>() where T : Window
+        => !typeof(T).IsSubclassOf(typeof(Window)) ? null : WindowSystem.Windows.FirstOrDefault(w => w.GetType() == typeof(T)) as T;
+
+    /// <summary>
+    /// Removes a window from the EzGui WindowSystem. Windows are auto-disposed upon plugin unload. This is only needed if you need to manually remove a window prior to plugin unload.
+    /// </summary>
+    public static void RemoveWindow<T>() where T : Window
+    {
+        if (!typeof(T).IsSubclassOf(typeof(Window))) return;
+        var window = WindowSystem.Windows.FirstOrDefault(w => w.GetType() == typeof(T));
+        if (window != null)
+            WindowSystem.RemoveWindow(window);
     }
 }

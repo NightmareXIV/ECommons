@@ -357,10 +357,6 @@ public static unsafe partial class ImGuiEx
         }
     }
 
-
-
-
-
     public static bool SliderInt(string label, ref int v, int v_min, int v_max, string format, ImGuiSliderFlags flags)
     {
         var ret = ImGui.SliderInt(label, ref v, v_min, v_max, format, flags);
@@ -419,22 +415,22 @@ public static unsafe partial class ImGuiEx
 
     private static int FindWrapPosition(string text, float wrapWidth)
     {
-         float currentWidth = 0;
-         int lastSpacePos = -1;
-         for (int i = 0; i < text.Length; i++)
-         {
-              char c = text[i];
-              currentWidth += ImGui.CalcTextSize(c.ToString()).X;
-              if (char.IsWhiteSpace(c))
-              {
-                   lastSpacePos = i;
-              }
-              if (currentWidth > wrapWidth)
-              {
-                   return lastSpacePos >= 0 ? lastSpacePos : i;
-              }
-         }
-         return -1;
+        float currentWidth = 0;
+        int lastSpacePos = -1;
+        for (int i = 0; i < text.Length; i++)
+        {
+            char c = text[i];
+            currentWidth += ImGui.CalcTextSize(c.ToString()).X;
+            if (char.IsWhiteSpace(c))
+            {
+                lastSpacePos = i;
+            }
+            if (currentWidth > wrapWidth)
+            {
+                return lastSpacePos >= 0 ? lastSpacePos : i;
+            }
+        }
+        return -1;
     }
 
     private static unsafe int TextEditCallback(ImGuiInputTextCallbackData* data, float wrapWidth)
@@ -478,7 +474,7 @@ public static unsafe partial class ImGuiEx
         }
         return 0;
     }
-     
+
     public unsafe static bool InputTextWrapMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
     {
         float wrapWidth = width ?? ImGui.GetContentRegionAvail().X; // determine wrap width
@@ -570,7 +566,6 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
-
     /// <summary>
     /// Provides a button that can be used to switch <see langword="bool"/>? variables. Left click - to toggle between <see langword="true"/> and <see langword="null"/>, right click - to toggle between <see langword="false"/> and <see langword="null"/>.
     /// </summary>
@@ -637,7 +632,6 @@ public static unsafe partial class ImGuiEx
         var bytes = (byte*)&col;
         return new Vector4((float)bytes[2] / 255f, (float)bytes[1] / 255f, (float)bytes[0] / 255f, alpha);
     }
-
 
     /// <summary>
     /// Converts RGBA color to <see cref="Vector4"/> for ImGui
@@ -1647,6 +1641,23 @@ public static unsafe partial class ImGuiEx
         CenterColumnText(text, underlined);
         ImGui.PopStyleColor();
     }
+
+    /// <summary>
+    /// Move the cursor by the vector relative to the current position
+    /// </summary>
+    public static void PushCursor(Vector2 vec) => ImGui.SetCursorPos(ImGui.GetCursorPos() + vec);
+    /// <summary>
+    /// Move the cursor by the coordinates relative to the current position
+    /// </summary>
+    public static void PushCursor(float x, float y) => PushCursor(new Vector2(x, y));
+    /// <summary>
+    /// Move the cursor horizontally x units relative to the current position
+    /// </summary>
+    public static void PushCursorX(float x) => ImGui.SetCursorPosX(ImGui.GetCursorPosX() + x);
+    /// <summary>
+    /// Move the cursor vertically y units relative to the current position
+    /// </summary>
+    public static void PushCursorY(float y) => ImGui.SetCursorPosY(ImGui.GetCursorPosY() + y);
 
     public static unsafe bool BeginTabItem(string label, ImGuiTabItemFlags flags)
     {
