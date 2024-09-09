@@ -288,31 +288,42 @@ public static class DalamudReflector
         return false;
     }
 
-    public static bool HasRepo(string repository)
+    /// <summary>
+    /// Checks the Dalamud Configuration for the presence of a given repository URL.
+    /// </summary>
+    public static bool HasRepo(string repoURL)
     {
         var conf = GetService("Dalamud.Configuration.Internal.DalamudConfiguration");
         var repolist = (IEnumerable<object>)conf.GetFoP("ThirdRepoList");
         if (repolist != null)
             foreach (var r in repolist)
-                if ((string)r.GetFoP("Url") == repository)
+                if ((string)r.GetFoP("Url") == repoURL)
                     return true;
         return false;
     }
 
-    public static void AddRepo(string repository, bool enabled)
+    /// <summary>
+    /// Attempts to add a new repository entry into the Dalamud Configuration. If the repo already exists, nothing is overridden.
+    /// </summary>
+    /// <param name="repoURL">The json URL of the repository.</param>
+    /// <param name="enabled">Set the enabled state, whether plugins from the repo will load in the plugin installer.</param>
+    public static void AddRepo(string repoURL, bool enabled)
     {
         var conf = GetService("Dalamud.Configuration.Internal.DalamudConfiguration");
         var repolist = (IEnumerable<object>)conf.GetFoP("ThirdRepoList");
         if (repolist != null)
             foreach (var r in repolist)
-                if ((string)r.GetFoP("Url") == repository)
+                if ((string)r.GetFoP("Url") == repoURL)
                     return;
         var instance = Activator.CreateInstance(Svc.PluginInterface.GetType().Assembly.GetType("Dalamud.Configuration.ThirdPartyRepoSettings")!);
-        instance.SetFoP("Url", repository);
+        instance.SetFoP("Url", repoURL);
         instance.SetFoP("IsEnabled", enabled);
         conf.GetFoP<IList<object>>("ThirdRepoList").Add(instance!);
     }
 
+    /// <summary>
+    /// Reloads the Dalamud Plugin Manager, effectively the same as closing and reopening the Plugin Installer window.
+    /// </summary>
     public static void ReloadPluginMasters()
     {
         var mgr = GetService("Dalamud.Plugin.Internal.PluginManager");
@@ -320,6 +331,9 @@ public static class DalamudReflector
         pluginReload?.Invoke(mgr, [true]);
     }
 
+    /// <summary>
+    /// Saves the Dalamud Configuration.
+    /// </summary>
     public static void SaveDalamudConfig()
     {
         var conf = GetService("Dalamud.Configuration.Internal.DalamudConfiguration");

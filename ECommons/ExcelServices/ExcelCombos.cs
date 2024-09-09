@@ -11,27 +11,112 @@ namespace ECommons.ExcelServices;
 public static class ExcelCombos
 {
     // from koenari https://github.com/Koenari/HimbeertoniRaidTool/blob/b28313e6d62de940acc073f203e3032e846bfb13/HimbeertoniRaidTool/UI/ImGuiHelper.cs#L188
+
+    /// <summary>
+    /// Creates a searchable combo box for a given Excel sheet with an optional custom filter.
+    /// </summary>
+    /// <typeparam name="T">ExcelSheet</typeparam>
+    /// <param name="id">ID of the combo box.</param>
+    /// <param name="selected">Excel row returned when selected.</param>
+    /// <param name="getPreview">The format of the initial value in the combo box.</param>
+    /// <param name="flags">Any ImGuiComboFlags</param>
+    /// <returns>Bool when item is selected.</returns>
     public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
         => ExcelSheetCombo(id, out selected, getPreview, t => t.ToString(), flags);
 
+    /// <summary>
+    /// Creates a searchable combo box for a given Excel sheet with an optional custom filter.
+    /// </summary>
+    /// <typeparam name="T">ExcelSheet</typeparam>
+    /// <param name="id">ID of the combo box.</param>
+    /// <param name="selected">Excel row returned when selected.</param>
+    /// <param name="getPreview">The format of the initial value in the combo box.</param>
+    /// <param name="searchPredicate">Initial filter to apply to the sheet for which items to display.</param>
+    /// <param name="flags">Any ImGuiComboFlags</param>
+    /// <returns>Bool when item is selected.</returns>
     public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string, bool> searchPredicate, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
         => ExcelSheetCombo(id, out selected, getPreview, t => t.ToString(), searchPredicate, flags);
 
+    /// <summary>
+    /// Creates a searchable combo box for a given Excel sheet with an optional custom filter.
+    /// </summary>
+    /// <typeparam name="T">ExcelSheet</typeparam>
+    /// <param name="id">ID of the combo box.</param>
+    /// <param name="selected">Excel row returned when selected.</param>
+    /// <param name="getPreview">The format of the initial value in the combo box.</param>
+    /// <param name="preFilter"></param>
+    /// <param name="flags">Any ImGuiComboFlags</param>
+    /// <returns>Bool when item is selected.</returns>
     public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, Func<T, bool> preFilter, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
         => ExcelSheetCombo(id, out selected, getPreview, t => t.ToString(), preFilter, flags);
 
+    /// <summary>
+    /// Creates a searchable combo box for a given Excel sheet with an optional custom filter.
+    /// </summary>
+    /// <typeparam name="T">ExcelSheet</typeparam>
+    /// <param name="id">ID of the combo box.</param>
+    /// <param name="selected">Excel row returned when selected.</param>
+    /// <param name="getPreview">The format of the initial value in the combo box.</param>
+    /// <param name="searchPredicate">Secondary filter to apply to the sheet for which items to display.</param>
+    /// <param name="preFilter">Initial filter to apply to the sheet for which items to display.</param>
+    /// <param name="flags">Any ImGuiComboFlags</param>
+    /// <returns>Bool when item is selected.</returns>
     public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string, bool> searchPredicate, Func<T, bool> preFilter, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
         => ExcelSheetCombo(id, out selected, getPreview, t => t.ToString(), searchPredicate, preFilter, flags);
 
+    /// <summary>
+    /// Creates a searchable combo box for a given Excel sheet with an optional custom filter.
+    /// </summary>
+    /// <typeparam name="T">ExcelSheet</typeparam>
+    /// <param name="id">ID of the combo box.</param>
+    /// <param name="selected">Excel row returned when selected.</param>
+    /// <param name="getPreview">The format of the initial value in the combo box.</param>
+    /// <param name="toName">The format of each item in the combo box.</param>
+    /// <param name="flags">Any ImGuiComboFlags</param>
+    /// <returns>Bool when item is selected.</returns>
     public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string> toName, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
         => ExcelSheetCombo(id, out selected, getPreview, toName, (t, s) => toName(t).Contains(s, StringComparison.CurrentCultureIgnoreCase), flags);
 
+    /// <summary>
+    /// Creates a searchable combo box for a given Excel sheet with an optional custom filter.
+    /// </summary>
+    /// <typeparam name="T">ExcelSheet</typeparam>
+    /// <param name="id">ID of the combo box.</param>
+    /// <param name="selected">Excel row returned when selected.</param>
+    /// <param name="getPreview">The format of the initial value in the combo box.</param>
+    /// <param name="toName">The format of each item in the combo box.</param>
+    /// <param name="searchPredicate">Initial filter to apply to the sheet for which items to display.</param>
+    /// <param name="flags">Any ImGuiComboFlags</param>
+    /// <returns>Bool when item is selected.</returns>
     public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string> toName, Func<T, string, bool> searchPredicate, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
         => ExcelSheetCombo(id, out selected, getPreview, toName, searchPredicate, _ => true, flags);
 
+    /// <summary>
+    /// Creates a searchable combo box for a given Excel sheet with an optional custom filter.
+    /// </summary>
+    /// <typeparam name="T">ExcelSheet</typeparam>
+    /// <param name="id">ID of the combo box.</param>
+    /// <param name="selected">Excel row returned when selected.</param>
+    /// <param name="getPreview">The format of the initial value in the combo box.</param>
+    /// <param name="toName">The format of each item in the combo box.</param>
+    /// <param name="preFilter">Initial filter to apply to the sheet for which items to display.</param>
+    /// <param name="flags">Any ImGuiComboFlags</param>
+    /// <returns>Bool when item is selected.</returns>
     public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string> toName, Func<T, bool> preFilter, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
         => ExcelSheetCombo(id, out selected, getPreview, toName, (t, s) => toName(t).Contains(s, StringComparison.CurrentCultureIgnoreCase), preFilter, flags);
 
+    /// <summary>
+    /// Creates a searchable combo box for a given Excel sheet with an optional custom filter.
+    /// </summary>
+    /// <typeparam name="T">ExcelSheet</typeparam>
+    /// <param name="id">ID of the combo box.</param>
+    /// <param name="selected">Excel row returned when selected.</param>
+    /// <param name="getPreview">The format of the initial value in the combo box.</param>
+    /// <param name="toName">The format of the initial value in the combo box.</param>
+    /// <param name="searchPredicate">Secondary filter to apply to the sheet for which items to display.</param>
+    /// <param name="preFilter">Initial filter to apply to the sheet for which items to display.</param>
+    /// <param name="flags">Any ImGuiComboFlags</param>
+    /// <returns>Bool when item is selected.</returns>
     public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string> toName, Func<T, string, bool> searchPredicate, Func<T, bool> preFilter, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
     {
         var sheet = Svc.Data.GetExcelSheet<T>();
@@ -48,12 +133,48 @@ public static class ExcelCombos
     private static int _hoveredItem;
     private static readonly Dictionary<string, (bool toogle, bool wasEnterClickedLastTime)> _comboDic = [];
 
+    /// <summary>
+    /// Creates a searchable combo box for a given Excel sheet with an optional custom filter.
+    /// </summary>
+    /// <typeparam name="T">ExcelSheet</typeparam>
+    /// <param name="id">ID of the combo box.</param>
+    /// <param name="selected">Excel row returned when selected.</param>
+    /// <param name="preview">The format of the initial value in the combo box.</param>
+    /// <param name="possibilities">The initial excel sheet.</param>
+    /// <param name="toName">The format of the initial value in the combo box.</param>
+    /// <param name="flags">Any ImGuiComboFlags</param>
+    /// <returns>Bool when item is selected.</returns>
     public static bool SearchableCombo<T>(string id, [NotNullWhen(true)] out T? selected, string preview, IEnumerable<T> possibilities, Func<T, string> toName, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : notnull
         => SearchableCombo(id, out selected, preview, possibilities, toName, (p, s) => toName.Invoke(p).Contains(s, StringComparison.InvariantCultureIgnoreCase), flags);
 
+    /// <summary>
+    /// Creates a searchable combo box for a given Excel sheet with an optional custom filter.
+    /// </summary>
+    /// <typeparam name="T">ExcelSheet</typeparam>
+    /// <param name="id">ID of the combo box.</param>
+    /// <param name="selected">Excel row returned when selected.</param>
+    /// <param name="preview">The format of the initial value in the combo box.</param>
+    /// <param name="possibilities">The initial excel sheet.</param>
+    /// <param name="toName">The format of each item in the combo box.</param>
+    /// <param name="searchPredicate">Initial filter to apply to the sheet for which items to display.</param>
+    /// <param name="flags">Any ImGuiComboFlags</param>
+    /// <returns>Bool when item is selected.</returns>
     public static bool SearchableCombo<T>(string id, [NotNullWhen(true)] out T? selected, string preview, IEnumerable<T> possibilities, Func<T, string> toName, Func<T, string, bool> searchPredicate, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : notnull
         => SearchableCombo(id, out selected, preview, possibilities, toName, searchPredicate, _ => true, flags);
 
+    /// <summary>
+    /// Creates a searchable combo box for a given Excel sheet with an optional custom filter.
+    /// </summary>
+    /// <typeparam name="T">ExcelSheet</typeparam>
+    /// <param name="id">ID of the combo box.</param>
+    /// <param name="selected">Excel row returned when selected.</param>
+    /// <param name="preview">The format of the initial value in the combo box.</param>
+    /// <param name="possibilities">The initial excel sheet.</param>
+    /// <param name="toName">The format of each item in the combo box.</param>
+    /// <param name="searchPredicate">Secondary filter to apply to the sheet for which items to display.</param>
+    /// <param name="preFilter">Initial filter to apply to the sheet for which items to display.</param>
+    /// <param name="flags">Any ImGuiComboFlags</param>
+    /// <returns>Bool when item is selected.</returns>
     public static bool SearchableCombo<T>(string id, [NotNullWhen(true)] out T? selected, string preview, IEnumerable<T> possibilities, Func<T, string> toName, Func<T, string, bool> searchPredicate, Func<T, bool> preFilter, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : notnull
     {
 

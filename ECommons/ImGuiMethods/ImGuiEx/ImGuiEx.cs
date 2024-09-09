@@ -1642,9 +1642,21 @@ public static unsafe partial class ImGuiEx
         ImGui.PopStyleColor();
     }
 
+    /// <summary>
+    /// Move the cursor by the vector relative to the current position
+    /// </summary>
     public static void PushCursor(Vector2 vec) => ImGui.SetCursorPos(ImGui.GetCursorPos() + vec);
+    /// <summary>
+    /// Move the cursor by the coordinates relative to the current position
+    /// </summary>
     public static void PushCursor(float x, float y) => PushCursor(new Vector2(x, y));
+    /// <summary>
+    /// Move the cursor horizontally x units relative to the current position
+    /// </summary>
     public static void PushCursorX(float x) => ImGui.SetCursorPosX(ImGui.GetCursorPosX() + x);
+    /// <summary>
+    /// Move the cursor vertically y units relative to the current position
+    /// </summary>
     public static void PushCursorY(float y) => ImGui.SetCursorPosY(ImGui.GetCursorPosY() + y);
 
     public static unsafe bool BeginTabItem(string label, ImGuiTabItemFlags flags)
