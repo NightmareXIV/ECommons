@@ -107,6 +107,7 @@ public partial class TaskManager : IDisposable
         Tasks.Clear();
         AbortAt = 0;
         CurrentTask = null;
+        if(IsStackActive) DiscardStack();
     }
 
     public void AbortCurrent()

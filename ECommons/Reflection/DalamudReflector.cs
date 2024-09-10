@@ -2,6 +2,7 @@
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Plugin;
 using ECommons.DalamudServices;
+using ECommons.EzSharedDataManager;
 using ECommons.Logging;
 using ECommons.Schedulers;
 using Newtonsoft.Json;
@@ -339,5 +340,15 @@ public static class DalamudReflector
         var conf = GetService("Dalamud.Configuration.Internal.DalamudConfiguration");
         var configSave = conf?.GetType().GetMethod("QueueSave", BindingFlags.Instance | BindingFlags.Public);
         configSave?.Invoke(conf, null);
+    }
+
+    /// <summary>
+    /// Deletes specified shared data
+    /// </summary>
+    /// <param name="name"></param>
+    public static void DeleteSharedData(string name)
+    {
+        DalamudReflector.GetService("Dalamud.Plugin.Ipc.Internal.DataShare").GetFoP<System.Collections.IDictionary>("caches").Remove(name);
+        EzSharedData.Cache.Remove(name);
     }
 }
