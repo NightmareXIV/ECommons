@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FFXIVClientStructs.FFXIV.Component.GUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,8 @@ public unsafe partial class AddonMaster
         {
         }
 
-        public bool RecruitMembersOrDetails() => ClickButtonIfEnabled(Base->GetButtonNodeById(46));
+        public AtkComponentButton* RecruitMembersButton => Base->GetButtonNodeById(46);
+
+        public bool RecruitMembersOrDetails() => ClickButtonIfEnabled(RecruitMembersButton);
     }
 }
