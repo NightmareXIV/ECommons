@@ -1369,7 +1369,7 @@ public static unsafe partial class ImGuiEx
     public static bool Combo<T>(string name, ref T refConfigField, IEnumerable<T> values, Func<T, bool> filter = null, Dictionary<T, string> names = null)
     {
         var ret = false;
-        if(ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString()))
+        if(ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString(), ImGuiComboFlags.HeightLarge))
         {
             Box<string> fltr = null;
             if(values.Count() > 10)
