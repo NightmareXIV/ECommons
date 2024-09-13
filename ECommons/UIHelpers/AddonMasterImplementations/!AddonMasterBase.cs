@@ -35,7 +35,7 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
 
     protected bool ClickButtonIfEnabled(AtkComponentButton* button)
     {
-        if(button->IsEnabled)
+        if(button->IsEnabled && button->AtkResNode->IsVisible())
         {
             button->ClickAddonButton(Base);
             return true;
@@ -45,7 +45,7 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
 
     protected bool ClickButtonIfEnabled(AtkComponentRadioButton* button)
     {
-        if (button->IsEnabled)
+        if (button->IsEnabled && button->AtkResNode->IsVisible())
         {
             button->ClickRadioButton(Base);
             return true;
