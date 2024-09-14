@@ -115,9 +115,10 @@ public static class DalamudReflector
         }
     }
 
-    public static bool TryGetLocalPlugin(out object localPlugin, out Type type) => TryGetLocalPlugin(ECommonsMain.Instance, out localPlugin, out type);
+    public static bool TryGetLocalPlugin(out object localPlugin, out AssemblyLoadContext context, out Type type) =>
+        TryGetLocalPlugin(ECommonsMain.Instance, out localPlugin, out context, out type);
 
-    public static bool TryGetLocalPlugin(IDalamudPlugin instance, out object localPlugin, out Type type)
+    public static bool TryGetLocalPlugin(IDalamudPlugin instance, out object localPlugin, out AssemblyLoadContext context, out Type type)
     {
         try
         {
@@ -127,28 +128,30 @@ public static class DalamudReflector
             }
             var pluginManager = GetPluginManager();
             var installedPlugins = (System.Collections.IList)pluginManager.GetType().GetProperty("InstalledPlugins").GetValue(pluginManager);
-
             foreach(var t in installedPlugins)
             {
-                if(t != null)
+                type = t.GetType().Name == "LocalDevPlugin" ? t.GetType().BaseType : t.GetType();
+                var plugin = (IDalamudPlugin)type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t);
+                if(plugin == ECommonsMain.Instance)
                 {
-                    type = t.GetType().Name == "LocalDevPlugin" ? t.GetType().BaseType : t.GetType();
-                    if(object.ReferenceEquals(type.GetField("instance", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(t), instance))
-                    {
-                        localPlugin = t;
-                        return true;
-                    }
+                    localPlugin = t;
+                    context = t.GetFoP("loader")?.GetFoP<AssemblyLoadContext>("context");
+                    return true;
                 }
             }
-            localPlugin = type = null;
+            type = null;
+            context = null;
+            localPlugin = null;
             return false;
         }
         catch(Exception e)
         {
             e.Log();
-            localPlugin = type = null;
-            return false;
         }
+        type = null;
+        context = null;
+        localPlugin = null;
+        return false;
     }
 
     public static bool TryGetDalamudPlugin(string internalName, out IDalamudPlugin instance, bool suppressErrors = false, bool ignoreCache = false) => TryGetDalamudPlugin(internalName, out instance, out _, suppressErrors, ignoreCache);

@@ -38,6 +38,14 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> values)
+    {
+        foreach(var x in values)
+        {
+            collection.Add(x);
+        }
+    }
+
     public static uint[] Range(uint inclusiveStart, uint inclusiveEnd)
     {
         var ret = new uint[inclusiveEnd - inclusiveStart + 1];
