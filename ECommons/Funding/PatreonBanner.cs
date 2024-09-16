@@ -9,7 +9,7 @@ namespace ECommons.Funding;
 public static class PatreonBanner
 {
     public static Func<bool> IsOfficialPlugin = () => false;
-    public static string Text = "Support on Patreon";
+    public static string Text = "♥ Patreon";
     public static string DonateLink => "https://www.patreon.com/NightmareXIV";
     public static void DrawRaw()
     {
