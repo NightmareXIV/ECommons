@@ -12,4 +12,5 @@ public enum NameplateKind
     HostileEngagedSelfUndamaged = 9,
     HostileEngagedOther = 10,
     HostileEngagedSelfDamaged = 11,
+    FriendlyBattleNPC = 12,
 }
