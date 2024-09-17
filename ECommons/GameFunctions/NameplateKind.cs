@@ -14,6 +14,7 @@ public enum NameplateKind
     HostileEngagedOther = 10,
     HostileEngagedSelfDamaged = 11,
     FriendlyBattleNPC = 12,
+    OtherAlliancePlayerCharacter = 20,
     OtherPlayerCharacterDead = 21,
     OutOfDutyandPartyPC = 22,
     InDutyPCInPartyTank = 27,
