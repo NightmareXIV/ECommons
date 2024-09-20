@@ -135,7 +135,7 @@ public static class DalamudReflector
                 if(plugin == ECommonsMain.Instance)
                 {
                     localPlugin = t;
-                    context = t.GetFoP("loader")?.GetFoP<AssemblyLoadContext>("context");
+                    context = type.GetField("loader", ReflectionHelper.AllFlags).GetValue(t)?.GetFoP<AssemblyLoadContext>("context");
                     return true;
                 }
             }
