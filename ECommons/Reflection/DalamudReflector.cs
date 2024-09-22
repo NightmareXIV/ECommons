@@ -298,10 +298,10 @@ public static class DalamudReflector
     public static bool HasRepo(string repoURL)
     {
         var conf = GetService("Dalamud.Configuration.Internal.DalamudConfiguration");
-        var repolist = (IEnumerable<object>)conf.GetFoP("ThirdRepoList");
-        if (repolist != null)
-            foreach (var r in repolist)
-                if ((string)r.GetFoP("Url") == repoURL)
+        var repolist = (System.Collections.IEnumerable)conf.GetFoP("ThirdRepoList");
+        if(repolist != null)
+            foreach(var r in repolist)
+                if((string)r.GetFoP("Url") == repoURL)
                     return true;
         return false;
     }
@@ -314,15 +314,15 @@ public static class DalamudReflector
     public static void AddRepo(string repoURL, bool enabled)
     {
         var conf = GetService("Dalamud.Configuration.Internal.DalamudConfiguration");
-        var repolist = (IEnumerable<object>)conf.GetFoP("ThirdRepoList");
-        if (repolist != null)
-            foreach (var r in repolist)
-                if ((string)r.GetFoP("Url") == repoURL)
+        var repolist = (System.Collections.IEnumerable)conf.GetFoP("ThirdRepoList");
+        if(repolist != null)
+            foreach(var r in repolist)
+                if((string)r.GetFoP("Url") == repoURL)
                     return;
         var instance = Activator.CreateInstance(Svc.PluginInterface.GetType().Assembly.GetType("Dalamud.Configuration.ThirdPartyRepoSettings")!);
         instance.SetFoP("Url", repoURL);
         instance.SetFoP("IsEnabled", enabled);
-        conf.GetFoP<IList<object>>("ThirdRepoList").Add(instance!);
+        conf.GetFoP<System.Collections.IList>("ThirdRepoList").Add(instance!);
     }
 
     /// <summary>
