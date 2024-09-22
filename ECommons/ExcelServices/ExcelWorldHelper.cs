@@ -18,7 +18,7 @@ public static class ExcelWorldHelper
     public static bool IsPublic(this World w)
     {
         if(w.IsPublic) return true;
-        return w.RowId.EqualsAny<uint>(408, 409, 410, 411, 415);
+        return false;//w.RowId.EqualsAny<uint>(408, 409, 410, 411, 415);
     }
 
     public static World Get(string name, bool onlyPublic = false)
