@@ -18,7 +18,14 @@ public static unsafe partial class ImGuiEx
     /// <returns></returns>
     public static bool CollectionCheckbox<T>(string label, IEnumerable<T> values, ICollection<T> collection, bool inverted = false, bool delayedOperation = false)
     {
-        if(!values.Any()) throw new InvalidOperationException("values can not be empty");
+        if(!values.Any())
+        {
+            var x = false;
+            ImGui.BeginDisabled();
+            ImGui.Checkbox(label, ref x);
+            ImGui.EndDisabled();
+            return false;
+        }
         void RemoveAll()
         {
             foreach(var el in values)
