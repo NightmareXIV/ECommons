@@ -52,7 +52,8 @@ public partial class AddonMaster
             public int PortraitBroken { get; init; }
 
             /// <summary>
-            /// 5 = broken portrait, highest priority <br></br>
+            /// 7 = unable to retrieve glamour plate data <br></br>
+            /// 5 = broken portrait <br></br>
             /// 1 = unbroken portrait and UseAsInstantPortrait is off <br></br>
             /// 0 = unbroken portrait and UseAsInstantPortrait is on
             /// </summary>
