@@ -1,0 +1,17 @@
+﻿using FFXIVClientStructs.FFXIV.Component.GUI;
+
+namespace ECommons.UIHelpers.AddonMasterImplementations;
+public partial class AddonMaster
+{
+    public unsafe class MiragePrismRemove : AddonMasterBase<AtkUnitBase>
+    {
+        public MiragePrismRemove(nint addon) : base(addon) { }
+        public MiragePrismRemove(void* addon) : base(addon) { }
+
+        public AtkComponentButton* DispelButton => Addon->GetButtonNodeById(15);
+        public AtkComponentButton* ReturnButton => Addon->GetButtonNodeById(16);
+
+        public void Dispel() => ClickButtonIfEnabled(DispelButton);
+        public void Return() => ClickButtonIfEnabled(ReturnButton);
+    }
+}
