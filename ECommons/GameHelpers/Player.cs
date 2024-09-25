@@ -1,8 +1,10 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.SubKinds;
+using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Statuses;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
+using ECommons.MathHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
@@ -64,4 +66,7 @@ public static unsafe class Player
     public static bool Mounting => Svc.Condition[ConditionFlag.Unknown57]; // condition 57 is set while mount up animation is playing
     public static unsafe bool Dismounting => **(byte**)(Svc.ClientState.LocalPlayer.Address + 1432) == 1;
     public static bool Jumping => Svc.Condition[ConditionFlag.Jumping] || Svc.Condition[ConditionFlag.Jumping61];
+    public static float DistanceTo(Vector3 other) => Vector3.Distance(Position, other);
+    public static float DistanceTo(Vector2 other) => Vector2.Distance(Position.ToVector2(), other);
+    public static float DistanceTo(IGameObject other) => Vector3.Distance(Position, other.Position);
 }

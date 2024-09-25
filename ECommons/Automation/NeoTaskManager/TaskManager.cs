@@ -107,6 +107,7 @@ public partial class TaskManager : IDisposable
         Tasks.Clear();
         AbortAt = 0;
         CurrentTask = null;
+        if(IsStackActive) DiscardStack();
     }
 
     public void AbortCurrent()
@@ -157,7 +158,7 @@ public partial class TaskManager : IDisposable
                     CurrentTask.Configuration?.FireOnTaskTimeout(CurrentTask, ref time);
                     if(RemainingTimeMS != time)
                     {
-                        if(ShowDebug) PluginLog.Debug($"→→Task [{CurrentTask}] changed remaining time during {nameof(TaskManagerConfiguration.OnTaskTimeout)} event from {RemainingTimeMS} to {time}");
+                        Log($"→→Task [{CurrentTask}] changed remaining time during {nameof(TaskManagerConfiguration.OnTaskTimeout)} event from {RemainingTimeMS} to {time}", ShowDebug);
                         RemainingTimeMS = time;
                     }
                 }
@@ -167,6 +168,11 @@ public partial class TaskManager : IDisposable
                     throw new TaskTimeoutException();
                 }
                 var result = CurrentTask.Function();
+                if(CurrentTask == null)
+                {
+                    PluginLog.Warning("[NeoTaskManager] Task manager was aborted from inside the task.");
+                    return;
+                }
                 if(result != false)
                 {
                     var newResult = result;

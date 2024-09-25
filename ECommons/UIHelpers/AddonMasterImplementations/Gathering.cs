@@ -44,9 +44,22 @@ public partial class AddonMaster
             }
         }
 
-        public class GatheredItem(Gathering addonMaster, AddonGathering* addon, AtkComponentCheckBox* checkbox, int index)
+        public class GatheredItem
         {
-            public AtkComponentCheckBox* CheckBox = checkbox;
+            private Gathering addonMaster;
+            private AddonGathering* addon;
+            private AtkComponentCheckBox* checkbox;
+            private int index;
+
+            public GatheredItem(Gathering addonMaster, AddonGathering* addon, AtkComponentCheckBox* checkbox, int index)
+            {
+                this.addonMaster = addonMaster;
+                this.addon = addon;
+                this.checkbox = checkbox;
+                this.index = index;
+            }
+
+            public AtkComponentCheckBox* CheckBox => checkbox;
             public bool IsEnabled => CheckBox->IsEnabled;
             public string ItemName => CheckBox->GetTextNodeById(23)->GetAsAtkTextNode()->NodeText.ExtractText();
             public uint ItemID => addon->ItemIds[index];
@@ -89,14 +102,14 @@ public partial class AddonMaster
 
         private AtkComponentCheckBox* GetCheckBox(int index) => index switch
         {
-            0 => Addon->GatheredItemComponentCheckBox1,
-            1 => Addon->GatheredItemComponentCheckBox2,
-            2 => Addon->GatheredItemComponentCheckBox3,
-            3 => Addon->GatheredItemComponentCheckBox4,
-            4 => Addon->GatheredItemComponentCheckBox5,
-            5 => Addon->GatheredItemComponentCheckBox6,
-            6 => Addon->GatheredItemComponentCheckBox7,
-            7 => Addon->GatheredItemComponentCheckBox8,
+            0 => Addon->GatheredItemComponentCheckbox[0],
+            1 => Addon->GatheredItemComponentCheckbox[1],
+            2 => Addon->GatheredItemComponentCheckbox[2],
+            3 => Addon->GatheredItemComponentCheckbox[3],
+            4 => Addon->GatheredItemComponentCheckbox[4],
+            5 => Addon->GatheredItemComponentCheckbox[5],
+            6 => Addon->GatheredItemComponentCheckbox[6],
+            7 => Addon->GatheredItemComponentCheckbox[7],
             _ => throw new ArgumentOutOfRangeException(nameof(index)),
         };
 

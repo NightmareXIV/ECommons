@@ -1,0 +1,35 @@
+﻿using ECommons.Automation;
+using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Component.GUI;
+
+namespace ECommons.UIHelpers.AddonMasterImplementations;
+public partial class AddonMaster
+{
+    public unsafe class RetainerSell : AddonMasterBase<AddonRetainerSell>
+    {
+        public RetainerSell(nint addon) : base(addon) { }
+        public RetainerSell(void* addon) : base(addon) { }
+
+        public AtkComponentButton* ComparePricesButton => Addon->GetButtonNodeById(4);
+        public AtkComponentButton* ConfirmButton => Addon->GetButtonNodeById(21);
+        public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(22);
+
+        public int AskingPrice
+        {
+            get => Addon->AtkValues[5].Int;
+            set => Callback.Fire(Base, true, 2, value);
+        }
+
+        public int Quantity
+        {
+            get => Addon->AtkValues[8].Int;
+            set => Callback.Fire(Base, true, 3, value);
+        }
+
+        public string ItemName => Addon->GetTextNodeById(7)->NodeText.ExtractText();
+
+        public void ComparePrices() => ClickButtonIfEnabled(ComparePricesButton);
+        public void Assign() => ClickButtonIfEnabled(ConfirmButton);
+        public void Return() => ClickButtonIfEnabled(CancelButton);
+    }
+}

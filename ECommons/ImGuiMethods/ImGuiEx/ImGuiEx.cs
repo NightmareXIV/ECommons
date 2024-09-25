@@ -27,6 +27,16 @@ public static unsafe partial class ImGuiEx
     public const ImGuiWindowFlags OverlayFlags = ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoMouseInputs | ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing;
     private static Dictionary<string, int> SelectedPages = [];
 
+    /// <summary>
+    /// An <see cref="ImGui.InputInt"/> for nullable int. Consists of checkbox and input component that is enabled/disabled based on checkbox state.
+    /// </summary>
+    /// <param name="width"></param>
+    /// <param name="label"></param>
+    /// <param name="valueNullable"></param>
+    /// <param name="step"></param>
+    /// <param name="step_fast"></param>
+    /// <param name="flags"></param>
+    /// <returns></returns>
     public static bool InputInt(float width, string label, ref int? valueNullable, int step = 1, int step_fast = 100, ImGuiInputTextFlags flags = ImGuiInputTextFlags.None)
     {
         ImGui.PushID($"NullableInputInt{label}");
@@ -47,8 +57,10 @@ public static unsafe partial class ImGuiEx
         return ret || chk;
     }
 
+    /// <inheritdoc cref="Pagination(string, System.Action[], out System.Action?, int, int)"/>
     public static Action[] Pagination(Action[] actions, int perPage = 0, int maxPages = 0) => Pagination(GenericHelpers.GetCallStackID(), actions, perPage, maxPages);
 
+    /// <inheritdoc cref="Pagination(string, System.Action[], out System.Action?, int, int)"/>
     public static Action[] Pagination(string id, Action[] actions, int perPage = 0, int maxPages = 0)
     {
         var ret = Pagination(id, actions, out var paginator, perPage, maxPages);
@@ -56,8 +68,18 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
+    /// <inheritdoc cref="Pagination(string, System.Action[], out System.Action?, int, int)"/>
     public static Action[] Pagination(Action[] actions, out Action? paginator, int perPage = 0, int maxPages = 0) => Pagination(GenericHelpers.GetCallStackID(), actions, out paginator, perPage, maxPages);
 
+    /// <summary>
+    /// Splits array of draw actions into few pages.
+    /// </summary>
+    /// <param name="id">Unique ID of your paginator. Must be unique on plugin level.</param>
+    /// <param name="actions">Array of actions to paginate</param>
+    /// <param name="paginator">Page switcher that you have to draw. May be absent if there's no page.</param>
+    /// <param name="perPage">How much elements to display per page. If set to 0, it will be automatically calculated as actions.Length / maxPages. If set to 0, maxPages must be more than 0.</param>
+    /// <param name="maxPages">Maximum amount of pages that are allowed to be displayed. If this amount is reached, new perPage amount will be actions.Length / maxPages.</param>
+    /// <returns>Array of actions in the selected by user page for you to draw.</returns>
     public static Action[] Pagination(string id, Action[] actions, out Action? paginator, int perPage = 0, int maxPages = 0)
     {
         if(actions.Length == 0)
@@ -121,6 +143,11 @@ public static unsafe partial class ImGuiEx
         return actions[rangeMin..rangeMax];
     }
 
+    /// <summary>
+    /// Another interpretation of <see cref="ImGui.CollapsingHeader(string)"/> but with narrow design and border.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="action"></param>
     public static void TreeNodeCollapsingHeader(string name, Action action)
     {
         ImGui.PushID("CollapsingHeaderHelperTable");
@@ -191,6 +218,13 @@ public static unsafe partial class ImGuiEx
             MinVersion = minVersion;
         }
     }
+
+    /// <summary>
+    /// Draws plugin availability checkmark. Allows to check by name and version. When hovered, will display tooltip with info about which plugins are installed, outdated or missing.
+    /// </summary>
+    /// <param name="pluginInfos">RequiredPluginInfos of plugins that are required</param>
+    /// <param name="prependText">Override first tooltip line if you want</param>
+    /// <param name="all">Whether to check for all plugins from the list or just one of them</param>
     public static void PluginAvailabilityIndicator(IEnumerable<RequiredPluginInfo> pluginInfos, string? prependText = null, bool all = true)
     {
         prependText ??= all?"The following plugins are required to be installed and enabled:":"One of the following plugins is required to be installed and enabled";
@@ -244,16 +278,29 @@ public static unsafe partial class ImGuiEx
 
     }
 
+    /// <summary>Selectable item made from TreeNode with bullet mark in front</summary>
+    /// <inheritdoc cref="Selectable(Vector4?, string, ref bool, ImGuiTreeNodeFlags)"/>
     public static bool Selectable(Vector4? color, string id)
     {
         var ret = ImGuiEx.TreeNode(color, id, ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.Leaf);
         return ret;
     }
 
+    /// <inheritdoc cref="Selectable(Vector4?, string)"/>
     public static bool Selectable(string id) => Selectable(null, id);
 
+    /// <inheritdoc cref="Selectable(Vector4?, string)"/>
     public static bool Selectable(string id, ref bool selected) => Selectable(null, id, ref selected);
 
+
+    /// <summary>
+    /// Selectable item made from TreeNode
+    /// </summary>
+    /// <param name="color">Text color</param>
+    /// <param name="id">ImGui ID</param>
+    /// <param name="selected">Selected state storage field</param>
+    /// <param name="extraFlags">Extra tree node flags</param>
+    /// <returns><see langword="true"/> when clicked</returns>
     public static bool Selectable(Vector4? color, string id, ref bool selected, ImGuiTreeNodeFlags extraFlags = ImGuiTreeNodeFlags.Leaf)
     {
         ImGuiEx.TreeNode(color, id, ImGuiTreeNodeFlags.NoTreePushOnOpen | (selected ? ImGuiTreeNodeFlags.Selected : ImGuiTreeNodeFlags.None) | extraFlags);
@@ -262,9 +309,17 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
-    public static bool TreeNode(string name, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.None) => ImGuiEx.TreeNode(null, name, flags);
+    ///<inheritdoc cref="TreeNode(Vector4?, string, ImGuiTreeNodeFlags)"/>
+    public static bool TreeNode(string name, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.SpanFullWidth) => ImGuiEx.TreeNode(null, name, flags);
 
-    public static bool TreeNode(Vector4? color, string name, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.None)
+    /// <summary>
+    /// Just like <see cref="ImGui.TreeNode"/> but with color option and that spans full width by default.
+    /// </summary>
+    /// <param name="color"></param>
+    /// <param name="name"></param>
+    /// <param name="flags"></param>
+    /// <returns></returns>
+    public static bool TreeNode(Vector4? color, string name, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.SpanFullWidth)
     {
         flags |= ImGuiTreeNodeFlags.SpanFullWidth;
         if(color != null) ImGui.PushStyleColor(ImGuiCol.Text, color.Value);
@@ -339,8 +394,16 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
+    ///<inheritdoc cref="InfoMarker(string, Vector4?, string, bool)"/>
     public static void HelpMarker(string helpText, Vector4? color = null, string symbolOverride = null, bool sameLine = true) => InfoMarker(helpText, color, symbolOverride, sameLine);
 
+    /// <summary>
+    /// <see cref="ImGuiComponents.HelpMarker(string)"/> but with more options
+    /// </summary>
+    /// <param name="helpText"></param>
+    /// <param name="color"></param>
+    /// <param name="symbolOverride"></param>
+    /// <param name="sameLine">Whether to call SameLine before drawing marker</param>
     public static void InfoMarker(string helpText, Vector4? color = null, string symbolOverride = null, bool sameLine = true)
     {
         if(sameLine) ImGui.SameLine();
@@ -357,6 +420,16 @@ public static unsafe partial class ImGuiEx
         }
     }
 
+    /// <summary>
+    /// <see cref="ImGui.SliderInt"/> but with double-click to edit support.
+    /// </summary>
+    /// <param name="label"></param>
+    /// <param name="v"></param>
+    /// <param name="v_min"></param>
+    /// <param name="v_max"></param>
+    /// <param name="format"></param>
+    /// <param name="flags"></param>
+    /// <returns></returns>
     public static bool SliderInt(string label, ref int v, int v_min, int v_max, string format, ImGuiSliderFlags flags)
     {
         var ret = ImGui.SliderInt(label, ref v, v_min, v_max, format, flags);
@@ -364,6 +437,7 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
+    ///<inheritdoc cref="SliderInt(string, ref int, int, int, string, ImGuiSliderFlags)"/>
     public static bool SliderInt(string label, ref int v, int v_min, int v_max, string format)
     {
         var ret = ImGui.SliderInt(label, ref v, v_min, v_max, format);
@@ -371,6 +445,7 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
+    ///<inheritdoc cref="SliderInt(string, ref int, int, int, string, ImGuiSliderFlags)"/>
     public static bool SliderInt(string label, ref int v, int v_min, int v_max)
     {
         var ret = ImGui.SliderInt(label, ref v, v_min, v_max);
@@ -378,7 +453,16 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
-
+    /// <summary>
+    /// <see cref="ImGui.SliderFloat"/> but with double-click to edit support.
+    /// </summary>
+    /// <param name="label"></param>
+    /// <param name="v"></param>
+    /// <param name="v_min"></param>
+    /// <param name="v_max"></param>
+    /// <param name="format"></param>
+    /// <param name="flags"></param>
+    /// <returns></returns>
     public static bool SliderFloat(string label, ref float v, float v_min, float v_max, string format, ImGuiSliderFlags flags)
     {
         var ret = ImGui.SliderFloat(label, ref v, v_min, v_max, format, flags);
@@ -386,6 +470,7 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
+    ///<inheritdoc cref="SliderFloat(string, ref float, float, float, string, ImGuiSliderFlags)"/>
     public static bool SliderFloat(string label, ref float v, float v_min, float v_max, string format)
     {
         var ret = ImGui.SliderFloat(label, ref v, v_min, v_max, format);
@@ -393,6 +478,7 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
+    ///<inheritdoc cref="SliderFloat(string, ref float, float, float, string, ImGuiSliderFlags)"/>
     public static bool SliderFloat(string label, ref float v, float v_min, float v_max)
     {
         var ret = ImGui.SliderFloat(label, ref v, v_min, v_max);
@@ -400,6 +486,9 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
+    /// <summary>
+    /// Activates item when double-clicked. Place after any ImGui Slider component to enable edit on double-click.
+    /// </summary>
     public static void ActivateIfDoubleClicked()
     {
         if(ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
@@ -527,6 +616,13 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
+    /// <summary>
+    /// Checks whether item is hovered and double-clicked. Sets cursor to hand to indicate that it can be clicked.
+    /// </summary>
+    /// <param name="tooltip">Optional tooltip</param>
+    /// <param name="btn">Which button to check</param>
+    /// <param name="requireCtrl">Whether to require CTRL when clicking</param>
+    /// <returns></returns>
     public static bool HoveredAndClicked(string tooltip = null, ImGuiMouseButton btn = ImGuiMouseButton.Left, bool requireCtrl = false)
     {
         if(ImGui.IsItemHovered())
@@ -541,6 +637,7 @@ public static unsafe partial class ImGuiEx
         return false;
     }
 
+    [Obsolete($"Use {nameof(Button)}")]
     public static bool ButtonCond(string name, Func<bool> condition)
     {
         var dis = !condition();
@@ -1363,7 +1460,7 @@ public static unsafe partial class ImGuiEx
     public static bool Combo<T>(string name, ref T refConfigField, IEnumerable<T> values, Func<T, bool> filter = null, Dictionary<T, string> names = null)
     {
         var ret = false;
-        if(ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString()))
+        if(ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString(), ImGuiComboFlags.HeightLarge))
         {
             Box<string> fltr = null;
             if(values.Count() > 10)

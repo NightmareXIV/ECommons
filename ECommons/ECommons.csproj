@@ -15,7 +15,7 @@
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <OutputPath>bin\$(Configuration)\</OutputPath>
-        <NoWarn>CS1591;CA1401;CS0649;CS8632;CS0414;CS0169;IDE1006</NoWarn>
+        <NoWarn>CS1591;CA1401;CS0649;CS8632;CS0414;CS0169;IDE1006;CS0419</NoWarn>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
         <Optimize>True</Optimize>
         <IsTrimmable>false</IsTrimmable>
