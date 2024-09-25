@@ -32,7 +32,7 @@ public abstract class EzOverlayWindow : Window
         if(HPos == HorizontalPosition.Right) x = vportsize.X - WindowSize.X;
         if(VPos == VerticalPosition.Middle) y = vportsize.Y / 2 - WindowSize.Y / 2;
         if(VPos == VerticalPosition.Bottom) y = vportsize.Y - WindowSize.Y;
-        ImGuiHelpers.SetNextWindowPosRelativeMainViewport(new(x, y));
+        ImGuiHelpers.SetNextWindowPosRelativeMainViewport(new Vector2(x, y) + Offset);
     }
 
     public abstract void DrawAction();

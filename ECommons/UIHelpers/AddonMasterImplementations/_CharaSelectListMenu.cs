@@ -53,6 +53,9 @@ public unsafe partial class AddonMaster
             public CharaSelectCharacterEntry* Entry { get; init; }
             public string Name => Entry->NameString;
             public uint HomeWorld => Entry->HomeWorldId;
+            public uint CurrentWorld => Entry->CurrentWorldId;
+            public bool IsVisitingAnotherDC => Entry->LoginFlags.HasFlag(CharaSelectCharacterEntryLoginFlags.DCTraveling);
+            public bool CanLoginNormally => !Entry->LoginFlags.HasFlag(CharaSelectCharacterEntryLoginFlags.Locked) && !Entry->LoginFlags.HasFlag(CharaSelectCharacterEntryLoginFlags.NameChangeRequired) && !Entry->LoginFlags.HasFlag(CharaSelectCharacterEntryLoginFlags.MissingExVersionForLogin) && !Entry->LoginFlags.HasFlag(CharaSelectCharacterEntryLoginFlags.DCTraveling);
             public bool IsSelected => AgentLobby.Instance()->HoveredCharacterContentId == Entry->ContentId;
 
             public Character(_CharaSelectListMenu master, int index, CharaSelectCharacterEntry* entry)
