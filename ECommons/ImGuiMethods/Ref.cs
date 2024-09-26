@@ -33,7 +33,7 @@ public static class Ref<T>
         }
     }
     
-    public static ref T? Get(string s, Func<T?>? defaultValueGenerator = default)
+    public static ref T? Get(string s, Func<T?>? defaultValueGenerator)
     {
         if (Storage.TryGetValue(s, out var ret))
         {
