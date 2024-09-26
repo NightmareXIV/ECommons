@@ -32,4 +32,21 @@ public static class Ref<T>
             return ref Storage[s].Value;
         }
     }
+    
+    public static ref T? Get(string s, Func<T?>? defaultValueGenerator = default)
+    {
+        if (Storage.TryGetValue(s, out var ret))
+        {
+            return ref ret.Value;
+        }
+        else
+        {
+            Storage[s] = new(defaultValueGenerator == null?default:defaultValueGenerator.Invoke());
+            if (defaultValueGenerator == null && typeof(T) == typeof(string))
+            {
+                Storage[s].SetFoP("Value", string.Empty);
+            }
+            return ref Storage[s].Value;
+        }
+    }
 }

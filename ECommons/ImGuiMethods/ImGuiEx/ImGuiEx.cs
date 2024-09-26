@@ -148,7 +148,7 @@ public static unsafe partial class ImGuiEx
     /// </summary>
     /// <param name="name"></param>
     /// <param name="action"></param>
-    public static void TreeNodeCollapsingHeader(string name, Action action)
+    public static void TreeNodeCollapsingHeader(string name, Action action, ImGuiTreeNodeFlags extraFlags = ImGuiTreeNodeFlags.None)
     {
         ImGui.PushID("CollapsingHeaderHelperTable");
         ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, Vector2.Zero);
@@ -157,7 +157,7 @@ public static unsafe partial class ImGuiEx
             ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthStretch);
             ImGui.TableNextRow();
             ImGui.TableNextColumn();
-            var ret = ImGuiEx.TreeNode(name, ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.Selected);
+            var ret = ImGuiEx.TreeNode(name, ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.Selected | extraFlags);
             ImGui.PopStyleVar();
             if(ret)
             {
