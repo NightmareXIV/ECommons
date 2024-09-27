@@ -42,8 +42,16 @@ public class ThreadLoadImageHandler
         Safe(CachedIcons.Clear);
     }
 
+    /// <inheritdoc cref="TryGetIconTextureWrap(uint, bool, out IDalamudTextureWrap)" />
     public static bool TryGetIconTextureWrap(int icon, bool hq, out IDalamudTextureWrap textureWrap) => TryGetIconTextureWrap((uint)icon, hq, out textureWrap);
 
+    /// <summary>
+    /// Attempts to load game icon. <b>Do NOT cache <paramref name="textureWrap"/></b> and call this function every time before you want to work with it.
+    /// </summary>
+    /// <param name="icon"></param>
+    /// <param name="hq"></param>
+    /// <param name="textureWrap"></param>
+    /// <returns></returns>
     public static bool TryGetIconTextureWrap(uint icon, bool hq, out IDalamudTextureWrap textureWrap)
     {
         ImageLoadingResult result;
@@ -57,6 +65,12 @@ public class ThreadLoadImageHandler
         return result.Texture != null;
     }
 
+    /// <summary>
+    /// Attempts to load image from URL, game path or file on disk. <b>Do NOT cache <paramref name="textureWrap"/></b> and call this function every time before you want to work with it.
+    /// </summary>
+    /// <param name="url">URL, game path or file on disk</param>
+    /// <param name="textureWrap"></param>
+    /// <returns></returns>
     public static bool TryGetTextureWrap(string url, out IDalamudTextureWrap textureWrap)
     {
         ImageLoadingResult result;
