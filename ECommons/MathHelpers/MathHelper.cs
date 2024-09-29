@@ -9,6 +9,11 @@ namespace ECommons.MathHelpers;
 
 public static class MathHelper
 {
+    public static bool IsPointOnLine(Vector2 point, Vector2 a, Vector2 b, float tolerance = 0f)
+    {
+        return Math.Abs(Vector2.Distance(a, b) - (Vector2.Distance(a, point) + Vector2.Distance(point, b))) <= tolerance;
+    }
+
     public static List<Vector3> CalculateCircularMovement(Vector3 centerPoint, Vector3 initialPoint, Vector3 exitPoint, out List<List<Vector3>> candidates, float precision = 36f, int exitPointTolerance = 1, Vector2? clampRadius = null)
     {
         var ret = CalculateCircularMovement(centerPoint.ToVector2(), initialPoint.ToVector2(), exitPoint.ToVector2(), out var cand, precision, exitPointTolerance, clampRadius);
@@ -29,7 +34,18 @@ public static class MathHelper
         }
         var closestPoints = points.OrderBy(x => Vector2.Distance(initialPoint, x)).Take(2).ToList();
         List<List<Vector2>> retCandidates = [];
-        var finalPoints = points.OrderBy(x => Vector2.Distance(exitPoint, x)).Take(exitPointTolerance);
+        var finalPoints = points.OrderBy(x => Vector2.Distance(exitPoint, x)).Take(exitPointTolerance).ToArray();
+        if(finalPoints.Length > 1)
+        {
+            for(int i = 0; i < finalPoints.Length-1; i++)
+            {
+                if(IsPointOnLine(initialPoint, finalPoints[i], finalPoints[i+1], 0.1f))
+                {
+                    candidates = retCandidates;
+                    return [];
+                }
+            }
+        }
         foreach(var finalPoint in finalPoints)
         {
             foreach(var point in closestPoints)
