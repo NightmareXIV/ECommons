@@ -13,23 +13,36 @@ public static class MathHelper
     {
         return Math.Abs(Vector2.Distance(a, b) - (Vector2.Distance(a, point) + Vector2.Distance(point, b))) <= tolerance;
     }
-
-    public static List<Vector3> CalculateCircularMovement(Vector3 centerPoint, Vector3 initialPoint, Vector3 exitPoint, out List<List<Vector3>> candidates, float precision = 36f, int exitPointTolerance = 1, Vector2? clampRadius = null)
+    
+    ///<inheritdoc cref="CalculateCircularMovement(Vector2, Vector2, Vector2, out List{List{Vector2}}, float, int, ValueTuple{float, float}?)"/>
+    public static List<Vector3> CalculateCircularMovement(Vector3 centerPoint, Vector3 initialPoint, Vector3 exitPoint, out List<List<Vector3>> candidates, float precision = 36f, int exitPointTolerance = 1, (float Min, float Max)? clampRadius = null)
     {
         var ret = CalculateCircularMovement(centerPoint.ToVector2(), initialPoint.ToVector2(), exitPoint.ToVector2(), out var cand, precision, exitPointTolerance, clampRadius);
         candidates = cand.Select(x => x.Select(s => s.ToVector3(initialPoint.Y)).ToList()).ToList();
         return ret.Select(s => s.ToVector3(initialPoint.Y)).ToList();
     }
 
-    // Calculate the distance between
-    // point pt and the segment p1 --> p2.
-    public static Vector2 FindClosestPointOnLine(Vector2 P, Vector2 A, Vector2 B)
+    /// <summary>
+    /// Calculates perpendicular distance drawn from <paramref name="point"/> towards infinite line defined by (<paramref name="lineA"/>, <paramref name="lineB"/>)
+    /// </summary>
+    /// <param name="point"></param>
+    /// <param name="lineA"></param>
+    /// <param name="lineB"></param>
+    /// <returns></returns>
+    public static Vector2 FindClosestPointOnLine(Vector2 point, Vector2 lineA, Vector2 lineB)
     {
-        var D = Vector2.Normalize(B - A);
-        var d = Vector2.Dot(P - A, D);
-        return A + Vector2.Multiply(D, d);
+        var D = Vector2.Normalize(lineB - lineA);
+        var d = Vector2.Dot(point - lineA, D);
+        return lineA + Vector2.Multiply(D, d);
     }
 
+    /// <summary>
+    /// Tests whether perpendicular drawn from <paramref name="point"/> towards line will intersect line segment (<paramref name="lineA"/>, <paramref name="lineB"/>)
+    /// </summary>
+    /// <param name="point"></param>
+    /// <param name="lineA"></param>
+    /// <param name="lineB"></param>
+    /// <returns></returns>
     public static bool IsPointPerpendicularToLineSegment(Vector2 point, Vector2 lineA, Vector2 lineB)
     {
         var ac = point - lineA;
@@ -37,12 +50,24 @@ public static class MathHelper
         return (Vector2.Dot(ac, ab) >= 0 && Vector2.Dot(ac, ab) <= Vector2.Dot(ab, ab));
     }
 
-    public static List<Vector2> CalculateCircularMovement(Vector2 centerPoint, Vector2 initialPoint, Vector2 exitPoint, out List<List<Vector2>> candidates, float precision = 36f, int exitPointTolerance = 1, Vector2? clampRadius = null)
+    /// <summary>
+    /// Calculates circular path around specified point required to arrive towards a specified point.
+    /// </summary>
+    /// <param name="centerPoint">Center point around which movement will be calculated</param>
+    /// <param name="initialPoint">Starting point</param>
+    /// <param name="exitPoint">Point towards which you aim to move after completing circulat move. Must be greater than the radius from <paramref name="centerPoint"/> to <paramref name="initialPoint"/>.</param>
+    /// <param name="candidates">List of all pathes that were tested, for debugging.</param>
+    /// <param name="precision">How much points on circle to generate</param>
+    /// <param name="exitPointTolerance">How much points that are closest to exit point to consider to be valid stopping points</param>
+    /// <param name="clampRadius">If set, radius of circular path will be restricted to these values inclusively.</param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    public static List<Vector2> CalculateCircularMovement(Vector2 centerPoint, Vector2 initialPoint, Vector2 exitPoint, out List<List<Vector2>> candidates, float precision = 36f, int exitPointTolerance = 1, (float Min, float Max)? clampRadius = null)
     {
         var step = 360f / precision;
         List<Vector2> points = [];
         var distance = Vector2.Distance(centerPoint, initialPoint);
-        if(clampRadius != null) distance.ValidateRange(clampRadius.Value.X, clampRadius.Value.Y);
+        if(clampRadius != null) distance.ValidateRange(clampRadius.Value.Min, clampRadius.Value.Max);
         for(var x = 0f;x < 360f;x += step)
         {
             var p = MathF.SinCos(x.DegToRad());
