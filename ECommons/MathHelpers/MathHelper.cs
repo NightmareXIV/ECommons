@@ -9,14 +9,14 @@ namespace ECommons.MathHelpers;
 
 public static class MathHelper
 {
-    public static List<Vector3> CalculateCircularMovement(Vector3 centerPoint, Vector3 initialPoint, Vector3 exitPoint, out List<List<Vector3>> candidates, float precision = 36f, Vector2? clampRadius = null)
+    public static List<Vector3> CalculateCircularMovement(Vector3 centerPoint, Vector3 initialPoint, Vector3 exitPoint, out List<List<Vector3>> candidates, float precision = 36f, int exitPointTolerance = 1, Vector2? clampRadius = null)
     {
-        var ret = CalculateCircularMovement(centerPoint.ToVector2(), initialPoint.ToVector2(), exitPoint.ToVector2(), out var cand, precision, clampRadius);
+        var ret = CalculateCircularMovement(centerPoint.ToVector2(), initialPoint.ToVector2(), exitPoint.ToVector2(), out var cand, precision, exitPointTolerance, clampRadius);
         candidates = cand.Select(x => x.Select(s => s.ToVector3(initialPoint.Y)).ToList()).ToList();
         return ret.Select(s => s.ToVector3(initialPoint.Y)).ToList();
     }
 
-    public static List<Vector2> CalculateCircularMovement(Vector2 centerPoint, Vector2 initialPoint, Vector2 exitPoint, out List<List<Vector2>> candidates, float precision = 36f, Vector2? clampRadius = null)
+    public static List<Vector2> CalculateCircularMovement(Vector2 centerPoint, Vector2 initialPoint, Vector2 exitPoint, out List<List<Vector2>> candidates, float precision = 36f, int exitPointTolerance = 1, Vector2? clampRadius = null)
     {
         var step = 360f / precision;
         List<Vector2> points = [];
@@ -28,30 +28,33 @@ public static class MathHelper
             points.Add(new(p.Sin * distance, p.Cos * distance));
         }
         var closestPoints = points.OrderBy(x => Vector2.Distance(initialPoint, x)).Take(2).ToList();
-        var finalPoint = points.OrderBy(x => Vector2.Distance(exitPoint, x)).First();
         List<List<Vector2>> retCandidates = [];
-        foreach(var point in closestPoints)
+        var finalPoints = points.OrderBy(x => Vector2.Distance(exitPoint, x)).Take(exitPointTolerance);
+        foreach(var finalPoint in finalPoints)
         {
-            void Process(int mod)
+            foreach(var point in closestPoints)
             {
-                var pointIndex = points.IndexOf(point);
-                if(pointIndex == -1) throw new Exception($"Could not find {point} in \n{points.Print("\n")}");
-                var list = new List<Vector2>();
-                int iterations = 0;
-                PluginLog.Information($"{point} at {pointIndex}");
-                do
+                void Process(int mod)
                 {
-                    iterations++;
-                    if(iterations > 1000) throw new Exception("Iteration limit exceeded");
-                    list.Add(points.CircularSelect(pointIndex));
-                    PluginLog.Information($"{list[^1]} == {finalPoint}: {points[^1] == finalPoint}");
-                    pointIndex += mod;
+                    var pointIndex = points.IndexOf(point);
+                    if(pointIndex == -1) throw new Exception($"Could not find {point} in \n{points.Print("\n")}");
+                    var list = new List<Vector2>();
+                    int iterations = 0;
+                    PluginLog.Information($"{point} at {pointIndex}");
+                    do
+                    {
+                        iterations++;
+                        if(iterations > 1000) throw new Exception("Iteration limit exceeded");
+                        list.Add(points.CircularSelect(pointIndex));
+                        PluginLog.Information($"{list[^1]} == {finalPoint}: {points[^1] == finalPoint}");
+                        pointIndex += mod;
+                    }
+                    while(list[^1] != finalPoint);
+                    retCandidates.Add(list);
                 }
-                while(list[^1] != finalPoint);
-                retCandidates.Add(list);
+                Process(1);
+                Process(-1);
             }
-            Process(1);
-            Process(-1);
         }
         candidates = retCandidates;
         return retCandidates.OrderBy(CalculateDistance).First();
