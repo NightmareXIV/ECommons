@@ -55,7 +55,7 @@ public static class MathHelper
         {
             for(int i = 0; i < finalPoints.Length-1; i++)
             {
-                if(IsPointPerpendicularToLineSegment(initialPoint, finalPoints[i], finalPoints[i+1]))
+                if(IsPointPerpendicularToLineSegment(initialPoint, finalPoints[i], finalPoints[i+1]) && Vector2.Distance(initialPoint, FindClosestPointOnLine(initialPoint, finalPoints[i], finalPoints[i + 1])) < distance / 2f)
                 {
                     candidates = retCandidates;
                     return [];
