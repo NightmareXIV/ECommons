@@ -1,4 +1,5 @@
 ﻿using ECommons.DalamudServices;
+using ECommons.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,13 @@ namespace ECommons.MathHelpers;
 
 public static class MathHelper
 {
+    public static List<Vector3> CalculateCircularMovement(Vector3 centerPoint, Vector3 initialPoint, Vector3 exitPoint, out List<List<Vector3>> candidates, float precision = 36f, Vector2? clampRadius = null)
+    {
+        var ret = CalculateCircularMovement(centerPoint.ToVector2(), initialPoint.ToVector2(), exitPoint.ToVector2(), out var cand, precision, clampRadius);
+        candidates = cand.Select(x => x.Select(s => s.ToVector3(initialPoint.Y)).ToList()).ToList();
+        return ret.Select(s => s.ToVector3(initialPoint.Y)).ToList();
+    }
+
     public static List<Vector2> CalculateCircularMovement(Vector2 centerPoint, Vector2 initialPoint, Vector2 exitPoint, out List<List<Vector2>> candidates, float precision = 36f, Vector2? clampRadius = null)
     {
         var step = 360f / precision;
@@ -27,13 +35,19 @@ public static class MathHelper
             void Process(int mod)
             {
                 var pointIndex = points.IndexOf(point);
+                if(pointIndex == -1) throw new Exception($"Could not find {point} in \n{points.Print("\n")}");
                 var list = new List<Vector2>();
+                int iterations = 0;
+                PluginLog.Information($"{point} at {pointIndex}");
                 do
                 {
+                    iterations++;
+                    if(iterations > 1000) throw new Exception("Iteration limit exceeded");
                     list.Add(points.CircularSelect(pointIndex));
+                    PluginLog.Information($"{list[^1]} == {finalPoint}: {points[^1] == finalPoint}");
                     pointIndex += mod;
                 }
-                while(points[^1] != finalPoint);
+                while(list[^1] != finalPoint);
                 retCandidates.Add(list);
             }
             Process(1);
@@ -41,6 +55,51 @@ public static class MathHelper
         }
         candidates = retCandidates;
         return retCandidates.OrderBy(CalculateDistance).First();
+    }
+
+    /// <summary>Calculates the positive remainder when dividing a dividend by a divisor.</summary>
+    public static double Mod(double dividend, double divisor)
+    {
+        double remainder = dividend % divisor;
+        if(remainder < 0)
+        {
+            if(divisor < 0)
+            {
+                return remainder - divisor;
+            }
+            return remainder + divisor;
+        }
+        return remainder;
+    }
+
+    /// <summary>Calculates the positive remainder when dividing a dividend by a divisor.</summary>
+    public static float Mod(float dividend, float divisor)
+    {
+        float remainder = dividend % divisor;
+        if(remainder < 0)
+        {
+            if(divisor < 0)
+            {
+                return remainder - divisor;
+            }
+            return remainder + divisor;
+        }
+        return remainder;
+    }
+
+    /// <summary>Calculates the positive remainder when dividing a dividend by a divisor.</summary>
+    public static int Mod(int dividend, int divisor)
+    {
+        int remainder = dividend % divisor;
+        if(remainder < 0)
+        {
+            if(divisor < 0)
+            {
+                return remainder - divisor;
+            }
+            return remainder + divisor;
+        }
+        return remainder;
     }
 
     public static float CalculateDistance(IEnumerable<Vector2> vectors)
