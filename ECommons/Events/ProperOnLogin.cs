@@ -79,7 +79,6 @@ public static class ProperOnLogin
         }
     }
 
-    [Obsolete("This event is automatically disposed together with ECommons")]
     public static void Unregister(Action action)
     {
         if(!RegisteredActions.Remove(action) && !RegisteredActionsInteractable.Remove(action))

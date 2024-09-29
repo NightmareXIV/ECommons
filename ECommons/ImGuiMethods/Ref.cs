@@ -16,6 +16,13 @@ public static class Ref<T>
     }
 
     private static Dictionary<string, Box<T>> Storage = [];
+
+    public static ref T? Get() => ref Get(GenericHelpers.GetCallStackID());
+
+    public static ref T? Get(T? defaultValue) => ref Get(GenericHelpers.GetCallStackID(), defaultValue);
+
+    public static ref T? Get(Func<T?>? defaultValueGenerator) => ref Get(GenericHelpers.GetCallStackID(), defaultValueGenerator);
+
     public static ref T? Get(string s, T? defaultValue = default)
     {
         if (Storage.TryGetValue(s, out var ret))

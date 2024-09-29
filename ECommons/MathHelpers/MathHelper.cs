@@ -1,23 +1,56 @@
 ﻿using ECommons.DalamudServices;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace ECommons.MathHelpers;
 
 public static class MathHelper
 {
-    public static List<Vector2> CalculateCircularMovement(Vector2 centerPoint, Vector2 initialPoint, Vector2 exitPoint, float precision = 36f)
+    public static List<Vector2> CalculateCircularMovement(Vector2 centerPoint, Vector2 initialPoint, Vector2 exitPoint, out List<List<Vector2>> candidates, float precision = 36f, Vector2? clampRadius = null)
     {
         var step = 360f / precision;
         List<Vector2> points = [];
         var distance = Vector2.Distance(centerPoint, initialPoint);
+        if(clampRadius != null) distance.ValidateRange(clampRadius.Value.X, clampRadius.Value.Y);
         for(var x = 0f;x < 360f;x += step)
         {
             var p = MathF.SinCos(x.DegToRad());
             points.Add(new(p.Sin * distance, p.Cos * distance));
         }
-        return null;
+        var closestPoints = points.OrderBy(x => Vector2.Distance(initialPoint, x)).Take(2).ToList();
+        var finalPoint = points.OrderBy(x => Vector2.Distance(exitPoint, x)).First();
+        List<List<Vector2>> retCandidates = [];
+        foreach(var point in closestPoints)
+        {
+            void Process(int mod)
+            {
+                var pointIndex = points.IndexOf(point);
+                var list = new List<Vector2>();
+                do
+                {
+                    list.Add(points.CircularSelect(pointIndex));
+                    pointIndex += mod;
+                }
+                while(points[^1] != finalPoint);
+                retCandidates.Add(list);
+            }
+            Process(1);
+            Process(-1);
+        }
+        candidates = retCandidates;
+        return retCandidates.OrderBy(CalculateDistance).First();
+    }
+
+    public static float CalculateDistance(IEnumerable<Vector2> vectors)
+    {
+        var distance = 0f;
+        for(var i = 0; i < vectors.Count() - 1; i++)
+        {
+            distance += Vector2.Distance(vectors.ElementAt(i), vectors.ElementAt(i + 1));
+        }
+        return distance;
     }
 
     public static float DegToRad(this float val)
