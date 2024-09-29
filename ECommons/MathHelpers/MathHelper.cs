@@ -71,7 +71,7 @@ public static class MathHelper
         for(var x = 0f;x < 360f;x += step)
         {
             var p = MathF.SinCos(x.DegToRad());
-            points.Add(new(p.Sin * distance, p.Cos * distance));
+            points.Add(new Vector2(p.Sin * distance, p.Cos * distance) + centerPoint);
         }
         var closestPoints = points.OrderBy(x => Vector2.Distance(initialPoint, x)).Take(2).ToList();
         List<List<Vector2>> retCandidates = [];
@@ -97,13 +97,11 @@ public static class MathHelper
                     if(pointIndex == -1) throw new Exception($"Could not find {point} in \n{points.Print("\n")}");
                     var list = new List<Vector2>();
                     int iterations = 0;
-                    PluginLog.Information($"{point} at {pointIndex}");
                     do
                     {
                         iterations++;
                         if(iterations > 1000) throw new Exception("Iteration limit exceeded");
                         list.Add(points.CircularSelect(pointIndex));
-                        PluginLog.Information($"{list[^1]} == {finalPoint}: {points[^1] == finalPoint}");
                         pointIndex += mod;
                     }
                     while(list[^1] != finalPoint);
