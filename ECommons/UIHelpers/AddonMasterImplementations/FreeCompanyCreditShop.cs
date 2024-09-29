@@ -53,7 +53,13 @@ public partial class AddonMaster
                 Price = Addon->AtkValues[130 + index].UInt; // for a single unit
             }
 
-            public readonly void Buy(int quantity) => Callback.Fire(Addon, true, 0, Index, quantity);
+            public readonly void Buy(int quantity)
+            {
+                if (quantity <= MaxPurchaseSize)
+                    Callback.Fire(Addon, true, 0, Index, quantity);
+                else
+                    PluginLog.LogError($"Unable to purchase {quantity}x of {ItemId}. Quantity exceeds max purchase size of {MaxPurchaseSize}");
+            }
 
             public override readonly string? ToString() => $"{nameof(AddonMaster)}.{nameof(FreeCompanyCreditShop)}.{nameof(Item)} [{nameof(ItemId)}={ItemId} {nameof(ItemName)}=\"{ItemName}\", {nameof(Index)}={Index}]";
         }
@@ -61,7 +67,12 @@ public partial class AddonMaster
         public void Buy(uint itemId, int quantity)
         {
             if (Items.TryGetFirst(x => x.ItemId == itemId, out var item))
-                item.Buy(quantity);
+            {
+                if (quantity <= item.MaxPurchaseSize)
+                    item.Buy(quantity);
+                else
+                    PluginLog.LogError($"Unable to purchase {quantity}x of {itemId}. Quantity exceeds max purchase size of {item.MaxPurchaseSize}");
+            }
             else
                 PluginLog.LogError($"Item id \"{itemId}\" not found in {nameof(FreeCompanyCreditShop)}.{nameof(Items)}");
         }
