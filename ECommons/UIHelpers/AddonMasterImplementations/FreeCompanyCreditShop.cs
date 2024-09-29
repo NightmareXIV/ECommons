@@ -23,14 +23,13 @@ public partial class AddonMaster
             {
                 var ret = new Item[ItemCount];
                 for (var i = 0; i < ret.Length; i++)
-                    ret[i] = new(Addon, i);
+                    ret[i] = new(this, i);
                 return ret;
             }
         }
 
-        public struct Item
+        public readonly struct Item
         {
-            public AtkUnitBase* Addon;
             public int Index { get; init; }
             public string ItemName { get; init; }
             public uint ItemId { get; init; }
@@ -39,24 +38,30 @@ public partial class AddonMaster
             public int QuantityInInventory { get; init; }
             public int MaxPurchaseSize { get; init; }
             public uint Price { get; init; }
+            private readonly FreeCompanyCreditShop Am;
 
-            public Item(AtkUnitBase* addon, int index)
+            public Item(FreeCompanyCreditShop am, int index)
             {
-                Addon = addon;
+                Am = am;
                 Index = index;
-                ItemName = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[10 + index].String).ExtractText();
-                ItemId = Addon->AtkValues[30 + index].UInt;
-                IconId = Addon->AtkValues[50 + index].Int;
-                Rank = Addon->AtkValues[70 + index].UInt;
-                QuantityInInventory = (int)Addon->AtkValues[90 + index].UInt;
-                MaxPurchaseSize = Addon->AtkValues[110 + index].Int; // not certain this is what the value is for
-                Price = Addon->AtkValues[130 + index].UInt; // for a single unit
+                ItemName = MemoryHelper.ReadSeStringNullTerminated((nint)Am.Addon->AtkValues[10 + index].String).ExtractText();
+                ItemId = Am.Addon->AtkValues[30 + index].UInt;
+                IconId = Am.Addon->AtkValues[50 + index].Int;
+                Rank = Am.Addon->AtkValues[70 + index].UInt;
+                QuantityInInventory = (int)Am.Addon->AtkValues[90 + index].UInt;
+                MaxPurchaseSize = Am.Addon->AtkValues[110 + index].Int;
+                Price = Am.Addon->AtkValues[130 + index].UInt; // for a single unit
             }
 
             public readonly void Buy(int quantity)
             {
                 if (quantity <= MaxPurchaseSize)
-                    Callback.Fire(Addon, true, 0, Index, quantity);
+                {
+                    if (quantity * Price <= Am.CompanyCredits)
+                        Callback.Fire(Am.Addon, true, 0, Index, quantity);
+                    else
+                        PluginLog.LogError($"Unable to purchase {quantity}x of {ItemId}. Insufficient company credits (requires {quantity * Price}, have {Am.CompanyCredits})");
+                }
                 else
                     PluginLog.LogError($"Unable to purchase {quantity}x of {ItemId}. Quantity exceeds max purchase size of {MaxPurchaseSize}");
             }
@@ -67,12 +72,7 @@ public partial class AddonMaster
         public void Buy(uint itemId, int quantity)
         {
             if (Items.TryGetFirst(x => x.ItemId == itemId, out var item))
-            {
-                if (quantity <= item.MaxPurchaseSize)
-                    item.Buy(quantity);
-                else
-                    PluginLog.LogError($"Unable to purchase {quantity}x of {itemId}. Quantity exceeds max purchase size of {item.MaxPurchaseSize}");
-            }
+                item.Buy(quantity);
             else
                 PluginLog.LogError($"Item id \"{itemId}\" not found in {nameof(FreeCompanyCreditShop)}.{nameof(Items)}");
         }
