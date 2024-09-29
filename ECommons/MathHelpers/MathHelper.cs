@@ -21,6 +21,22 @@ public static class MathHelper
         return ret.Select(s => s.ToVector3(initialPoint.Y)).ToList();
     }
 
+    // Calculate the distance between
+    // point pt and the segment p1 --> p2.
+    public static Vector2 FindClosestPointOnLine(Vector2 P, Vector2 A, Vector2 B)
+    {
+        var D = Vector2.Normalize(B - A);
+        var d = Vector2.Dot(P - A, D);
+        return A + Vector2.Multiply(D, d);
+    }
+
+    public static bool IsPointPerpendicularToLineSegment(Vector2 point, Vector2 lineA, Vector2 lineB)
+    {
+        var ac = point - lineA;
+        var ab = lineB - lineA;
+        return (Vector2.Dot(ac, ab) >= 0 && Vector2.Dot(ac, ab) <= Vector2.Dot(ab, ab));
+    }
+
     public static List<Vector2> CalculateCircularMovement(Vector2 centerPoint, Vector2 initialPoint, Vector2 exitPoint, out List<List<Vector2>> candidates, float precision = 36f, int exitPointTolerance = 1, Vector2? clampRadius = null)
     {
         var step = 360f / precision;
@@ -39,7 +55,7 @@ public static class MathHelper
         {
             for(int i = 0; i < finalPoints.Length-1; i++)
             {
-                if(IsPointOnLine(initialPoint, finalPoints[i], finalPoints[i+1], 0.1f))
+                if(IsPointPerpendicularToLineSegment(initialPoint, finalPoints[i], finalPoints[i+1]))
                 {
                     candidates = retCandidates;
                     return [];
