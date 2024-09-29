@@ -1,11 +1,30 @@
 ﻿using ECommons.DalamudServices;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace ECommons.MathHelpers;
 
 public static class MathHelper
 {
+    public static List<Vector2> CalculateCircularMovement(Vector2 centerPoint, Vector2 initialPoint, Vector2 exitPoint, float precision = 36f)
+    {
+        var step = 360f / precision;
+        List<Vector2> points = [];
+        var distance = Vector2.Distance(centerPoint, initialPoint);
+        for(var x = 0f;x < 360f;x += step)
+        {
+            var p = MathF.SinCos(x.DegToRad());
+            points.Add(new(p.Sin * distance, p.Cos * distance));
+        }
+        return null;
+    }
+
+    public static float DegToRad(this float val)
+    {
+        return (float)(MathF.PI / 180f * val);
+    }
+
     public static Vector3 RotateWorldPoint(Vector3 origin, float angle, Vector3 p)
     {
         if(angle == 0f) return p;
