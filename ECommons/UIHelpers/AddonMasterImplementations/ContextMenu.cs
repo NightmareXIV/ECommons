@@ -26,24 +26,36 @@ public partial class AddonMaster
             }
         }
 
-        public struct Entry(AddonContextMenu* addon, int index)
+        public readonly struct Entry(AddonContextMenu* addon, int index)
         {
-            private AddonContextMenu* Addon = addon;
-            public int Index { get; init; } = index;
+            private readonly AddonContextMenu* Addon = addon;
+            public readonly int Index { get; init; } = index;
             public readonly int ListIndex => Index + offset;
             // Dalamud added context menu entries all have a callback index of -1, which results in looping the list and calling something else. AFAIK, native entries are always a single payload of rawtext.
             public readonly bool IsNativeEntry => Addon->AtkValues[ListIndex].Type == FFXIVClientStructs.FFXIV.Component.GUI.ValueType.ManagedString && new ReadOnlySeStringSpan(((AtkValue*)(nint)(&Addon->AtkValues[ListIndex]))->String).PayloadCount == 1;
 
-            public SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[ListIndex].String);
-            public string Text => SeString.ExtractText();
-
-            public readonly void Select()
+            public readonly SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[ListIndex].String);
+            public readonly string Text => SeString.ExtractText();
+            public readonly bool Enabled
             {
-                if (IsNativeEntry)
-                    Callback.Fire((AtkUnitBase*)Addon, true, 0, Index, 0);
+                get
+                {
+                    var item = (AtkComponentListItemRenderer*)Addon->GetComponentNodeById(2)->GetAsAtkComponentList()->UldManager.NodeList[1 + Index]->GetComponent();
+                    return item->IsEnabled;
+                }
             }
 
-            public override string? ToString() => $"{nameof(AddonMaster)}.{nameof(ContextMenu)}.{nameof(Entry)} [Text=\"{Text}\", Index={ListIndex} CallbackIndex={Index}]";
+            public readonly bool Select()
+            {
+                if(IsNativeEntry && Enabled)
+                {
+                    Callback.Fire((AtkUnitBase*)Addon, true, 0, Index, 0);
+                    return true;
+                }
+                return false;
+            }
+
+            public override readonly string? ToString() => $"{nameof(AddonMaster)}.{nameof(ContextMenu)}.{nameof(Entry)} [Text=\"{Text}\", Index={ListIndex} CallbackIndex={Index}]";
         }
     }
 }
