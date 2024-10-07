@@ -33,6 +33,8 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
 
     public bool IsAddonHighestFocus => RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries[RaptureAtkUnitManager.Instance()->FocusedUnitsList.Count - 1].Value == Base;
 
+    public bool IsAddonOnlyFocus => RaptureAtkUnitManager.Instance()->FocusedUnitsList.Count == 1 && RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries[0].Value == Base;
+
     protected bool ClickButtonIfEnabled(AtkComponentButton* button)
     {
         if(button->IsEnabled && button->AtkResNode->IsVisible())
