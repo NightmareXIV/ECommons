@@ -1,0 +1,24 @@
+﻿using FFXIVClientStructs.FFXIV.Component.GUI;
+
+namespace ECommons.UIHelpers.AddonMasterImplementations;
+public partial class AddonMaster
+{
+    public unsafe class TripleTriadResult : AddonMasterBase<AtkUnitBase>
+    {
+        public TripleTriadResult(nint addon) : base(addon) { }
+        public TripleTriadResult(void* addon) : base(addon) { }
+
+        /// <summary>
+        /// 0 = won, 1 = lost
+        /// </summary>
+        public int WonValue => Addon->AtkValues[2].Int;
+        public uint MGPReward => Addon->AtkValues[7].UInt;
+        public bool WonGame => WonValue == 0;
+
+        public AtkComponentButton* RematchButton => Addon->GetButtonNodeById(21);
+        public AtkComponentButton* QuitButton => Addon->GetButtonNodeById(22);
+
+        public void Rematch() => ClickButtonIfEnabled(RematchButton);
+        public void Quit() => ClickButtonIfEnabled(QuitButton);
+    }
+}
