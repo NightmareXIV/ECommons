@@ -1,12 +1,12 @@
-﻿using FFXIVClientStructs.FFXIV.Component.GUI;
+﻿using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public unsafe partial class AddonMaster
 {
-    public class LookingForGroupDetail : AddonMasterBase
+    public class LookingForGroupDetail : AddonMasterBase<AddonLookingForGroupDetail>
     {
         public LookingForGroupDetail(nint addon) : base(addon) { }
-
         public LookingForGroupDetail(void* addon) : base(addon) { }
 
         public AtkComponentButton* EditButton => Base->GetButtonNodeById(109);
