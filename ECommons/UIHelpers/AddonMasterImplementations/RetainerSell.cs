@@ -29,7 +29,7 @@ public partial class AddonMaster
         public string ItemName => Addon->GetTextNodeById(7)->NodeText.ExtractText();
 
         public void ComparePrices() => ClickButtonIfEnabled(ComparePricesButton);
-        public void Assign() => ClickButtonIfEnabled(ConfirmButton);
-        public void Return() => ClickButtonIfEnabled(CancelButton);
+        public void Confirm() => ClickButtonIfEnabled(ConfirmButton);
+        public void Cancel() => ClickButtonIfEnabled(CancelButton);
     }
 }
