@@ -9,13 +9,13 @@ public unsafe partial class AddonMaster
         public LookingForGroupDetail(nint addon) : base(addon) { }
         public LookingForGroupDetail(void* addon) : base(addon) { }
 
-        public AtkComponentButton* EditButton => Base->GetButtonNodeById(109);
-        public AtkComponentButton* EndButton => Base->GetButtonNodeById(110);
+        public AtkComponentButton* JoinEditButton => Base->GetButtonNodeById(109);
+        public AtkComponentButton* TellEndButton => Base->GetButtonNodeById(110);
         public AtkComponentButton* BackButton => Base->GetButtonNodeById(111);
 
-        public bool Recruit() => ClickButtonIfEnabled(EditButton);
-        public bool Cancel() => ClickButtonIfEnabled(EndButton);
-        public bool Reset() => ClickButtonIfEnabled(BackButton);
+        public bool JoinEdit() => ClickButtonIfEnabled(JoinEditButton);
+        public bool TellEnd() => ClickButtonIfEnabled(TellEndButton);
+        public bool Back() => ClickButtonIfEnabled(BackButton);
 
         public string PartyLeader => Addon->GetTextNodeById(6)->NodeText.ExtractText();
         public string Description => Addon->GetTextNodeById(20)->NodeText.ExtractText();

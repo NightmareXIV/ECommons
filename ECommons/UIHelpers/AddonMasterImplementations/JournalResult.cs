@@ -1,5 +1,4 @@
 ﻿using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
