@@ -82,4 +82,12 @@ public abstract unsafe class AddonMasterBase : AddonMasterBase<AtkUnitBase>
     }
 }
 
-public interface IAddonMasterBase { }
+public unsafe interface IAddonMasterBase
+{
+    unsafe AtkUnitBase* Base { get; }
+    bool IsAddonFocused { get; }
+    bool IsAddonHighestFocus { get; }
+    bool IsAddonOnlyFocus { get; }
+    bool IsAddonReady { get; }
+    bool IsVisible { get; }
+}
