@@ -873,6 +873,17 @@ public static unsafe partial class GenericHelpers
     }
 
     /// <summary>
+    /// Recursively gets the root node of an addon
+    /// </summary>
+    /// <param name="node">Starting node to search from</param>
+    /// <returns></returns>
+    public static unsafe AtkResNode* GetRootNode(AtkResNode* node)
+    {
+        var parent = node->ParentNode;
+        return parent == null ? node : GetRootNode(parent);
+    }
+
+    /// <summary>
     /// Discards any non-text payloads from <see cref="SeString"/>
     /// </summary>
     /// <param name="s"></param>

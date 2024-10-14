@@ -1,5 +1,3 @@
-using ECommons.Automation.UIInput;
-using FFXIVClientStructs.FFXIV.Application.Network.WorkDefinitions;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using System;
 
@@ -15,6 +13,7 @@ public partial class AddonMaster
         public MaterializeDialog(void* addon) : base(addon) { }
 
         public void Materialize() => ClickButtonIfEnabled(Addon->YesButton);
+        public void No() => ClickButtonIfEnabled(Addon->NoButton);
     }
 }
 

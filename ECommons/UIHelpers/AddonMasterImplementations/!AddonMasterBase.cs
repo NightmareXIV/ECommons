@@ -1,6 +1,7 @@
 ﻿using ECommons.Automation.UIInput;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using System;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unmanaged
@@ -18,7 +19,24 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
     public AtkUnitBase* Base => (AtkUnitBase*)Addon;
     public bool IsVisible => Base->IsVisible;
     public bool IsAddonReady => GenericHelpers.IsAddonReady(Base);
-    public bool IsAddonFocused
+
+    public bool HasFocus
+    {
+        get
+        {
+            var focus = AtkStage.Instance()->GetFocus();
+            if (focus == null) return false;
+            for (var i = 0; i < RaptureAtkUnitManager.Instance()->FocusedUnitsList.Count; i++)
+            {
+                var atk = RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries[i].Value;
+                if (atk != null && atk->RootNode == GenericHelpers.GetRootNode(focus))
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    public bool IsAddonInFocusList
     {
         get
         {
@@ -31,8 +49,9 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
         }
     }
 
+    [Obsolete("Please use IsAddonInFocusList instead.")]
+    public bool IsAddonFocused => IsAddonInFocusList;
     public bool IsAddonHighestFocus => RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries[RaptureAtkUnitManager.Instance()->FocusedUnitsList.Count - 1].Value == Base;
-
     public bool IsAddonOnlyFocus => RaptureAtkUnitManager.Instance()->FocusedUnitsList.Count == 1 && RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries[0].Value == Base;
 
     protected bool ClickButtonIfEnabled(AtkComponentButton* button)
