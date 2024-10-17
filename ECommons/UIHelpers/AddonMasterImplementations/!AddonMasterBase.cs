@@ -49,10 +49,9 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
         }
     }
 
-    [Obsolete("Please use IsAddonInFocusList instead.")]
+    [Obsolete("For the intended functionality please use HasFocus. For the same functionality please use IsAddonInFocusList.")]
     public bool IsAddonFocused => IsAddonInFocusList;
-    public bool IsAddonHighestFocus => RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries[RaptureAtkUnitManager.Instance()->FocusedUnitsList.Count - 1].Value == Base;
-    public bool IsAddonOnlyFocus => RaptureAtkUnitManager.Instance()->FocusedUnitsList.Count == 1 && RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries[0].Value == Base;
+    public bool IsAddonOnlyFocusListEntry => RaptureAtkUnitManager.Instance()->FocusedUnitsList.Count == 1 && RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries[0].Value == Base;
 
     protected bool ClickButtonIfEnabled(AtkComponentButton* button)
     {
@@ -104,9 +103,9 @@ public abstract unsafe class AddonMasterBase : AddonMasterBase<AtkUnitBase>
 public unsafe interface IAddonMasterBase
 {
     unsafe AtkUnitBase* Base { get; }
-    bool IsAddonFocused { get; }
-    bool IsAddonHighestFocus { get; }
-    bool IsAddonOnlyFocus { get; }
+    bool HasFocus { get; }
+    bool IsAddonInFocusList { get; }
+    bool IsAddonOnlyFocusListEntry { get; }
     bool IsAddonReady { get; }
     bool IsVisible { get; }
 }

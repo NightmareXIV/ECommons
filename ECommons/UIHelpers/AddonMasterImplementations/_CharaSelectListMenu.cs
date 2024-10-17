@@ -2,25 +2,23 @@
 using ECommons.ExcelServices;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using Lumina.Text.ReadOnly;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public unsafe partial class AddonMaster
 {
     public class _CharaSelectListMenu : AddonMasterBase
     {
-        public _CharaSelectListMenu(nint addon) : base(addon)
-        {
-        }
+        public _CharaSelectListMenu(nint addon) : base(addon) { }
+        public _CharaSelectListMenu(void* addon) : base(addon) { }
 
-        public _CharaSelectListMenu(void* addon) : base(addon)
-        {
-        }
+        public AtkComponentButton* WorldButton => Addon->GetButtonNodeById(4);
+        public AtkComponentButton* NewCharacterButton => Addon->GetButtonNodeById(5);
+        public AtkComponentButton* BackUpClientSettingsButton => Addon->GetButtonNodeById(6);
+
+        public void World() => ClickButtonIfEnabled(WorldButton);
+        public void NewCharacter() => ClickButtonIfEnabled(NewCharacterButton);
+        public void BackUpClientSettings() => ClickButtonIfEnabled(BackUpClientSettingsButton);
 
         public bool TemporarilyLocked => false;// AgentLobby.Instance()->TemporaryLocked;
 
@@ -37,7 +35,7 @@ public unsafe partial class AddonMaster
             {
                 var ret = new List<Character>();
                 var charaSpan = AgentLobby.Instance()->LobbyData.CharaSelectEntries.ToArray();
-                for(var i = 0; i < charaSpan.Length; i++)
+                for (var i = 0; i < charaSpan.Length; i++)
                 {
                     var s = charaSpan[i];
                     ret.Add(new(this, i, s));

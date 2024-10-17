@@ -3,52 +3,61 @@ using Dalamud.Memory;
 using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using FFXIVClientStructs.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
 {
     public unsafe class SelectString : AddonMasterBase<AddonSelectString>
     {
-        public SelectString(nint addon) : base(addon)
-        {
-        }
-
+        public SelectString(nint addon) : base(addon) { }
         public SelectString(void* addon) : base(addon) { }
 
+        public int EntryCount => Addon->PopupMenu.PopupMenu.EntryCount;
         public SeString SeString => MemoryHelper.ReadSeString(&Base->GetTextNodeById(2)->NodeText);
         public string Text => SeString.ExtractText();
+
+        public AtkComponentList* ListComponent => Addon->GetComponentListById(3);
+        public List<Pointer<AtkComponentListItemRenderer>> ListItems
+        {
+            get
+            {
+                List<Pointer<AtkComponentListItemRenderer>> items = [];
+                foreach (var node in Enumerable.Range(0, ListComponent->GetItemCount()))
+                {
+                    var item = ListComponent->GetItemRenderer(node);
+                    if (item == null)
+                        continue;
+                    items.Add(item);
+                }
+                return items;
+            }
+        }
 
         public Entry[] Entries
         {
             get
             {
-                var ret = new Entry[Addon->PopupMenu.PopupMenu.EntryCount];
-                for(var i = 0; i < ret.Length; i++)
+                var ret = new Entry[EntryCount];
+                for (var i = 0; i < ret.Length; i++)
                 {
-                    ret[i] = new(Addon, i);
+                    ret[i] = new(this, Addon, i);
                 }
                 return ret;
             }
         }
 
-        public struct Entry
+        public struct Entry(SelectString am, AddonSelectString* addon, int index)
         {
-            private AddonSelectString* Addon;
-            public int Index { get; init; }
+            private readonly AddonSelectString* Addon = addon;
+            public int Index { get; init; } = index;
 
-            public Entry(AddonSelectString* addon, int index)
-            {
-                Addon = addon;
-                Index = index;
-            }
-
-            public SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->PopupMenu.PopupMenu.EntryNames[Index]);
-            public string Text => SeString.ExtractText();
+            public readonly AtkTextNode* TextNode => am.ListItems[Index].Value->ButtonTextNode;
+            public readonly SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->PopupMenu.PopupMenu.EntryNames[Index]);
+            public readonly string Text => SeString.ExtractText();
 
             public readonly void Select()
             {

@@ -1,4 +1,5 @@
 ﻿using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -27,5 +28,13 @@ public partial class AddonMaster
         public int BrazenPowerMin => Addon->AtkUnitBase.AtkValues[49].Int;
         public int BrazenPowerMax => Addon->AtkUnitBase.AtkValues[50].Int;
         public int MeticulousPower => Addon->AtkUnitBase.AtkValues[51].Int;
+
+        public AtkComponentCheckBox* ScrutinyCheckBox => Addon->GetComponentNodeById(177)->GetAsAtkComponentCheckBox();
+        public AtkComponentCheckBox* CollectorsIntuitionCheckBox => Addon->GetComponentNodeById(178)->GetAsAtkComponentCheckBox();
+        public AtkComponentButton* HelpButton => Addon->GetButtonNodeById(182);
+        public AtkComponentButton* ReturnButton => Addon->GetButtonNodeById(183);
+
+        public void Help() => ClickButtonIfEnabled(HelpButton);
+        public void Return() => ClickButtonIfEnabled(ReturnButton);
     }
 }

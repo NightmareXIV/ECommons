@@ -3,6 +3,9 @@
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
 {
+    /// <summary>
+    /// Solo duty difficulty selection addon
+    /// </summary>
     public unsafe class DifficultySelectYesNo : AddonMasterBase<AtkUnitBase>
     {
         public DifficultySelectYesNo(nint addon) : base(addon) { }
