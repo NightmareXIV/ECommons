@@ -3,6 +3,9 @@
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
 {
+    /// <summary>
+    /// Portraits editor addon
+    /// </summary>
     public unsafe class BannerEditor : AddonMasterBase<AddonBannerEditor>
     {
         public BannerEditor(nint addon) : base(addon) { }

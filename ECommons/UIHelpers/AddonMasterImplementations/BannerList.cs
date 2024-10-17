@@ -5,6 +5,9 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
 {
+    /// <summary>
+    /// Portraits list addon
+    /// </summary>
     public unsafe class BannerList : AddonMasterBase<AtkUnitBase>
     {
         public BannerList(nint addon) : base(addon) { }

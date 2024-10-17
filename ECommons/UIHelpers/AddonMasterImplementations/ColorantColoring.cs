@@ -4,6 +4,9 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public unsafe partial class AddonMaster
 {
+    /// <summary>
+    /// Item dyeing addon
+    /// </summary>
     public class ColorantColoring : AddonMasterBase<AtkUnitBase>
     {
         public ColorantColoring(nint addon) : base(addon) { }

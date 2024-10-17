@@ -24,11 +24,11 @@ public partial class AddonMaster
                 var reader = new ReaderLetterViewer(Base);
                 var entries = new Item[reader.Items.Count];
                 for(var i = 0; i < entries.Length; i++)
-                    entries[i] = new (Base, reader.Items[i], i);
+                    entries[i] = new (reader.Items[i]);
                 return entries;
             }
         }
 
-        public class Item(AtkUnitBase* Base, ReaderLetterViewer.Item handle, int index) : ReaderLetterViewer.Item(handle.AtkReaderParams.UnitBase, handle.AtkReaderParams.BeginOffset);
+        public class Item(ReaderLetterViewer.Item handle) : ReaderLetterViewer.Item(handle.AtkReaderParams.UnitBase, handle.AtkReaderParams.BeginOffset);
     }
 }
