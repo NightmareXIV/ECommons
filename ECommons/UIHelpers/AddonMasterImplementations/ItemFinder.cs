@@ -10,6 +10,8 @@ public partial class AddonMaster
 
         public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(14);
 
+        public override string AddonDescription { get; } = "Item search window";
+
         public void Close() => ClickButtonIfEnabled(CloseButton);
     }
 }

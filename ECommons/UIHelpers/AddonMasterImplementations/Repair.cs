@@ -13,18 +13,8 @@ public partial class AddonMaster
 
         public Repair(void* addon) : base(addon) { }
 
+        public override string AddonDescription { get; } = "Repair window";
+
         public void RepairAll() => ClickButtonIfEnabled(Addon->RepairAllButton);
-    }
-}
-
-[Obsolete("Please use AddonMaster.Repair")]
-public unsafe class RepairMaster : AddonMaster.Repair
-{
-    public RepairMaster(nint addon) : base(addon)
-    {
-    }
-
-    public RepairMaster(void* addon) : base(addon)
-    {
     }
 }

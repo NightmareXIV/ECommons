@@ -13,6 +13,8 @@ public partial class AddonMaster
 
         public AtkComponentButton* OkButton => Addon->GetButtonNodeById(4);
 
+        public override string AddonDescription { get; } = "Title screen error code window";
+
         public void Ok() => ClickButtonIfEnabled(OkButton);
     }
 }

@@ -11,6 +11,8 @@ public partial class AddonMaster
 
         public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(15);
 
+        public override string AddonDescription { get; } = "Desynthesis result window";
+
         public void Close() => ClickButtonIfEnabled(CloseButton);
     }
 }

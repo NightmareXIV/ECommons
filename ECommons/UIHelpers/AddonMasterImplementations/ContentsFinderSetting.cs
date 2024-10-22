@@ -11,6 +11,8 @@ public partial class AddonMaster
         public AtkComponentButton* ConfirmButton => Addon->GetButtonNodeById(29);
         public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(30);
 
+        public override string AddonDescription { get; } = "Duty finder settings window";
+
         public bool Confirm() => ClickButtonIfEnabled(ConfirmButton);
         public void Close() => ClickButtonIfEnabled(CloseButton);
     }

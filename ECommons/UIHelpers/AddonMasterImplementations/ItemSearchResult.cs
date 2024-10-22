@@ -40,6 +40,8 @@ public partial class AddonMaster
             }
         }
 
+        public override string AddonDescription { get; } = "Unknown: ItemSearchResult";
+
         public readonly struct Entry(ItemSearchResult am, AddonItemSearchResult* addon, int index)
         {
             private readonly AddonItemSearchResult* Addon = addon;

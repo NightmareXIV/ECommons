@@ -10,6 +10,8 @@ public partial class AddonMaster
 
         public AtkComponentButton* SeriesMalmstonesButton => Addon->GetButtonNodeById(21);
 
+        public override string AddonDescription { get; } = "Unknown: PvpProfile";
+
         public void SeriesMalmstones() => ClickButtonIfEnabled(SeriesMalmstonesButton);
     }
 }

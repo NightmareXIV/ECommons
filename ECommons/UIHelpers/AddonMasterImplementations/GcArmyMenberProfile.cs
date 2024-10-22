@@ -27,6 +27,8 @@ public partial class AddonMaster
         public AtkComponentRadioButton* ConfirmChemistryButton => Addon->GetComponentNodeById(33)->GetAsAtkComponentRadioButton();
         public AtkComponentRadioButton* OutfitButton => Addon->GetComponentNodeById(34)->GetAsAtkComponentRadioButton();
 
+        public override string AddonDescription { get; } = "Squadron member profile window";
+
         public void DisplayOrders() => ClickButtonIfEnabled(DisplayOrdersButton);
         public void ChangeClass() => ClickButtonIfEnabled(ChangeClassButton);
         public void ConfirmChemistry() => ClickButtonIfEnabled(ConfirmChemistryButton);

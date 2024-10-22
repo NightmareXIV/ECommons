@@ -11,6 +11,8 @@ public partial class AddonMaster
         public AtkComponentButton* DispelButton => Addon->GetButtonNodeById(15);
         public AtkComponentButton* ReturnButton => Addon->GetButtonNodeById(16);
 
+        public override string AddonDescription { get; } = "Remove glamour window";
+
         public void Dispel() => ClickButtonIfEnabled(DispelButton);
         public void Return() => ClickButtonIfEnabled(ReturnButton);
     }

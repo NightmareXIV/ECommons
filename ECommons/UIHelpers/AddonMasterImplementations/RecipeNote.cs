@@ -9,6 +9,8 @@ public partial class AddonMaster
 {
     public unsafe class RecipeNote : AddonMasterBase<AddonRecipeNote>
     {
+        public override string AddonDescription { get; } = "Crafting Log";
+
         public RecipeNote(nint addon) : base(addon)
         {
         }

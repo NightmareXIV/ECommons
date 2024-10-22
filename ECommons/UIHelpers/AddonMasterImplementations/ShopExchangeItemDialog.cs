@@ -11,6 +11,8 @@ public partial class AddonMaster
         public AtkComponentButton* ExchangeButton => Addon->GetButtonNodeById(18);
         public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(19);
 
+        public override string AddonDescription { get; } = "Unknown: ShopExchangeItemDialog";
+
         public void Exchange() => ClickButtonIfEnabled(ExchangeButton);
         public void Cancel() => ClickButtonIfEnabled(CancelButton);
     }

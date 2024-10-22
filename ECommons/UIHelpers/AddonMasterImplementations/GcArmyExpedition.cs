@@ -8,6 +8,8 @@ public partial class AddonMaster
         public GcArmyExpedition(nint addon) : base(addon) { }
         public GcArmyExpedition(void* addon) : base(addon) { }
 
+        public override string AddonDescription { get; } = "Squadron mission assignment window";
+
         public void Deploy() => ClickButtonIfEnabled(Addon->DeployButton);
     }
 }

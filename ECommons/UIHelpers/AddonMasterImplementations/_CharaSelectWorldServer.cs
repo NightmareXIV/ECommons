@@ -39,6 +39,8 @@ public unsafe partial class AddonMaster
             }
         }
 
+        public override string AddonDescription { get; } = "World selection menu on login screen";
+
         public class World
         {
             public readonly _CharaSelectWorldServer Master;

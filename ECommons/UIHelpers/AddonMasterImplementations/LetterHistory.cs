@@ -10,6 +10,8 @@ public partial class AddonMaster
 
         public AtkComponentButton* CloseButton => Base->GetButtonNodeById(5);
 
+        public override string AddonDescription { get; } = "Mail history window";
+
         public void Close() => ClickButtonIfEnabled(CloseButton);
     }
 }

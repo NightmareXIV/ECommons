@@ -16,6 +16,8 @@ public partial class AddonMaster
         public AtkComponentButton* BruteJusticeButton => Addon->GetButtonNodeById(6);
         public AtkComponentButton* MountButton => Addon->GetButtonNodeById(11);
 
+        public override string AddonDescription { get; } = "Rival Wings mount choice window";
+
         public void CruiseChaser() => ClickButtonIfEnabled(CruiseChaserButton);
         public void Oppressor() => ClickButtonIfEnabled(OppressorButton);
         public void BruteJustice() => ClickButtonIfEnabled(BruteJusticeButton);

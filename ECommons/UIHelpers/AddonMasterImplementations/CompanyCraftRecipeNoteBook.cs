@@ -10,6 +10,8 @@ public unsafe partial class AddonMaster
 
         public AtkComponentButton* BeginButton => Base->GetButtonNodeById(34);
 
+        public override string AddonDescription { get; } = "Free Company crafting log";
+
         public void Begin() => ClickButtonIfEnabled(BeginButton);
     }
 }

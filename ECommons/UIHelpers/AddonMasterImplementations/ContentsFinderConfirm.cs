@@ -6,6 +6,8 @@ public partial class AddonMaster
 {
     public unsafe class ContentsFinderConfirm : AddonMasterBase<AddonContentsFinderConfirm>
     {
+        public override string AddonDescription { get; } = "Duty finder confirmation window";
+
         public ContentsFinderConfirm(nint addon) : base(addon)
         {
         }
