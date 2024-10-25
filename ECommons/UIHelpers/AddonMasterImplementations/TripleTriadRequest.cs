@@ -28,6 +28,8 @@ public partial class AddonMaster
         public AtkComponentButton* ChallengeButton => Addon->GetButtonNodeById(41);
         public AtkComponentButton* QuitButton => Addon->GetButtonNodeById(42);
 
+        public override string AddonDescription { get; } = "Triple triad challenge window";
+
         public void Challenge() => ClickButtonIfEnabled(ChallengeButton);
         public void Quit() => ClickButtonIfEnabled(QuitButton);
     }

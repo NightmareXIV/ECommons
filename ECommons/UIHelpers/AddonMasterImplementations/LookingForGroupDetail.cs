@@ -20,5 +20,7 @@ public unsafe partial class AddonMaster
         public string PartyLeader => Addon->GetTextNodeById(6)->NodeText.ExtractText();
         public string Description => Addon->GetTextNodeById(20)->NodeText.ExtractText();
         public string World => Addon->GetTextNodeById(33)->NodeText.ExtractText();
+
+        public override string AddonDescription { get; } = "Party finder details window";
     }
 }

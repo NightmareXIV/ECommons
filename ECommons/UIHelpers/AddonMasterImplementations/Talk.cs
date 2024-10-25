@@ -19,6 +19,8 @@ public partial class AddonMaster
         {
         }
 
+        public override string AddonDescription { get; } = "Subtitle box";
+
         public void Click()
         {
             var evt = stackalloc AtkEvent[1]

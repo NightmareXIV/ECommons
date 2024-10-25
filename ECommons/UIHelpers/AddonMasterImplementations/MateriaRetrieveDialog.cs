@@ -21,6 +21,8 @@ public partial class AddonMaster
         public AtkComponentButton* BeginButton => Base->GetButtonNodeById(17);
         public AtkComponentButton* ReturnButton => Base->GetButtonNodeById(18);
 
+        public override string AddonDescription { get; } = "Materia extraction window";
+
         public void Begin() => ClickButtonIfEnabled(BeginButton);
         public void Return() => ClickButtonIfEnabled(ReturnButton);
     }

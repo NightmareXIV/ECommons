@@ -23,6 +23,8 @@ public partial class AddonMaster
         public AtkComponentButton* MeldButton => Base->GetButtonNodeById(35);
         public AtkComponentButton* ReturnButton => Base->GetButtonNodeById(36);
 
+        public override string AddonDescription { get; } = "Materia melding window";
+
         public void Meld() => ClickButtonIfEnabled(MeldButton);
         public void Return() => ClickButtonIfEnabled(ReturnButton);
     }

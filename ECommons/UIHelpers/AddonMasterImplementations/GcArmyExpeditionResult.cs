@@ -8,6 +8,8 @@ public partial class AddonMaster
         public GcArmyExpeditionResult(nint addon) : base(addon) { }
         public GcArmyExpeditionResult(void* addon) : base(addon) { }
 
+        public override string AddonDescription { get; } = "Squadron mission result";
+
         public void Complete() => ClickButtonIfEnabled(Addon->CompleteButton);
     }
 }

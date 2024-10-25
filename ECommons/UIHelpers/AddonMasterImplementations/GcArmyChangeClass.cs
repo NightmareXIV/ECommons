@@ -18,6 +18,8 @@ public partial class AddonMaster
         public AtkComponentButton* ThaumaturgeButton => Addon->GetButtonNodeById(19);
         public AtkComponentButton* ArcanistButton => Addon->GetButtonNodeById(20);
 
+        public override string AddonDescription { get; } = "Squadron change class window";
+
         public void Gladiator() => ClickButtonIfEnabled(GladiatorButton);
         public void Marauder() => ClickButtonIfEnabled(MarauderButton);
         public void Pugilist() => ClickButtonIfEnabled(PugilistButton);

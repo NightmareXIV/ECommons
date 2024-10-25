@@ -12,6 +12,8 @@ public partial class AddonMaster
         public AtkComponentButton* SentLetterHistoryButton => Base->GetButtonNodeById(3);
         public AtkComponentButton* DeliveryRequestButton => Base->GetButtonNodeById(4);
 
+        public override string AddonDescription { get; } = "Mail list window";
+
         public void New() => ClickButtonIfEnabled(NewButton);
         public void SentLetterHistory() => ClickButtonIfEnabled(SentLetterHistoryButton);
         public void DeliveryRequest() => ClickButtonIfEnabled(DeliveryRequestButton);

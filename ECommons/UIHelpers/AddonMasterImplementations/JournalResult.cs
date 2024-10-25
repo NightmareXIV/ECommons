@@ -11,6 +11,8 @@ public partial class AddonMaster
 
         public JournalResult(void* addon) : base(addon) { }
 
+        public override string AddonDescription { get; } = "Quest completion window";
+
         public void Complete() => ClickButtonIfEnabled(Addon->CompleteButton);
         public void Decline() => ClickButtonIfEnabled(Addon->DeclineButton);
     }

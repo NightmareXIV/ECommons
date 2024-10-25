@@ -28,6 +28,8 @@ public partial class AddonMaster
             }
         }
 
+        public override string AddonDescription { get; } = "Free Company credit shop window";
+
         public readonly struct Item
         {
             public int Index { get; init; }

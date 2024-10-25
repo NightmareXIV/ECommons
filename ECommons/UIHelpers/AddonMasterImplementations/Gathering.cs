@@ -44,6 +44,8 @@ public partial class AddonMaster
             }
         }
 
+        public override string AddonDescription { get; } = "Gathering window";
+
         public class GatheredItem
         {
             private Gathering addonMaster;

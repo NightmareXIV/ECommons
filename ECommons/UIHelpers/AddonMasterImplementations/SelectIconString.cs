@@ -3,36 +3,57 @@ using Dalamud.Memory;
 using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using FFXIVClientStructs.Interop;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
 {
     public unsafe class SelectIconString : AddonMasterBase<AddonSelectIconString>
     {
-        public SelectIconString(nint addon) : base(addon)
-        {
-        }
-
+        public SelectIconString(nint addon) : base(addon) { }
         public SelectIconString(void* addon) : base(addon) { }
+
+        public int EntryCount => Addon->PopupMenu.PopupMenu.EntryCount;
+        public AtkComponentList* ListComponent => Addon->GetComponentListById(3);
+        public List<Pointer<AtkComponentListItemRenderer>> ListItems
+        {
+            get
+            {
+                List<Pointer<AtkComponentListItemRenderer>> items = [];
+                foreach (var node in Enumerable.Range(0, ListComponent->GetItemCount()))
+                {
+                    var item = ListComponent->GetItemRenderer(node);
+                    if (item == null)
+                        continue;
+                    items.Add(item);
+                }
+                return items;
+            }
+        }
 
         public Entry[] Entries
         {
             get
             {
-                var ret = new Entry[Addon->PopupMenu.PopupMenu.EntryCount];
-                for(var i = 0; i < ret.Length; i++)
-                    ret[i] = new(Addon, i);
+                var ret = new Entry[EntryCount];
+                for (var i = 0; i < ret.Length; i++)
+                    ret[i] = new(this, Addon, i);
                 return ret;
             }
         }
 
-        public struct Entry(AddonSelectIconString* addon, int index)
+        public override string AddonDescription { get; } = "List selection menu with icons";
+
+        public struct Entry(SelectIconString am, AddonSelectIconString* addon, int index)
         {
-            private AddonSelectIconString* Addon = addon;
+            private readonly AddonSelectIconString* Addon = addon;
             public int Index { get; init; } = index;
 
-            public SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->PopupMenu.PopupMenu.EntryNames[Index]);
-            public string Text => SeString.ExtractText();
+            public readonly AtkTextNode* TextNode => am.ListItems[Index].Value->ButtonTextNode;
+            public readonly SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->PopupMenu.PopupMenu.EntryNames[Index]);
+            public readonly string Text => SeString.ExtractText();
 
             public readonly void Select()
             {
