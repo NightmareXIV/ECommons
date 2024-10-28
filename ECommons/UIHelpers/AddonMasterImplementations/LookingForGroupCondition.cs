@@ -13,6 +13,8 @@ public unsafe partial class AddonMaster
         public AtkComponentButton* CancelButton => Base->GetButtonNodeById(112);
         public AtkComponentButton* ResetButton => Base->GetButtonNodeById(110);
 
+        public override string AddonDescription { get; } = "Party finder creation window";
+
         public bool Normal() => ClickButtonIfEnabled(Base->GetButtonNodeById(3));
         public bool Alliance() => ClickButtonIfEnabled(Base->GetButtonNodeById(4));
         public bool Recruit() => ClickButtonIfEnabled(RecruitButton);

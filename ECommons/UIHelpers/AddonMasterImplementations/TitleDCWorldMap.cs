@@ -23,6 +23,8 @@ public unsafe partial class AddonMaster
 
         public static int[] PublicDC = [1, 2, 3, 10, 4, 5, 8, 11, 6, 7, 12, 9,];
 
+        public override string AddonDescription { get; } = "Data center selection menu";
+
         public bool Select(int dc)
         {
             if(!PublicDC.Contains(dc)) return false;

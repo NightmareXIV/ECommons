@@ -1,5 +1,4 @@
-﻿using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
+﻿using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -11,6 +10,8 @@ public partial class AddonMaster
         public SalvageResult(void* addon) : base(addon) { }
 
         public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(15);
+
+        public override string AddonDescription { get; } = "Desynthesis result window";
 
         public void Close() => ClickButtonIfEnabled(CloseButton);
     }

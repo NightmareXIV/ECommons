@@ -625,14 +625,14 @@ public static unsafe partial class ImGuiEx
     /// <returns></returns>
     public static bool HoveredAndClicked(string tooltip = null, ImGuiMouseButton btn = ImGuiMouseButton.Left, bool requireCtrl = false)
     {
-        if(ImGui.IsItemHovered())
+        if(ImGui.IsItemHovered() && ImGui.GetMouseDragDelta().X < 2f && ImGui.GetMouseDragDelta().Y < 2f)
         {
             if(tooltip != null)
             {
                 SetTooltip(tooltip);
             }
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-            return (!requireCtrl || ImGui.GetIO().KeyCtrl) && ImGui.IsItemClicked(btn);
+            return (!requireCtrl || ImGui.GetIO().KeyCtrl) && ImGui.IsMouseReleased(btn);
         }
         return false;
     }
@@ -787,11 +787,12 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
-    public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, bool smallButton = false) => CollectionButtonCheckbox(name, value, collection, EColor.Red, smallButton);
+    public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, bool smallButton = false, bool inverted = false) => CollectionButtonCheckbox(name, value, collection, EColor.Red, smallButton, inverted);
 
-    public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, Vector4 color, bool smallButton = false)
+    public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, Vector4 color, bool smallButton = false, bool inverted = false)
     {
         var col = collection.Contains(value);
+        if(inverted) col = !col;
         var ret = false;
         if(col)
         {
@@ -803,11 +804,25 @@ public static unsafe partial class ImGuiEx
         {
             if(col)
             {
-                collection.Remove(value);
+                if(inverted)
+                {
+                    collection.Add(value);
+                }
+                else
+                {
+                    collection.Remove(value);
+                }
             }
             else
             {
-                collection.Add(value);
+                if(inverted)
+                {
+                    collection.Remove(value);
+                }
+                else
+                {
+                    collection.Add(value);
+                }
             }
             ret = true;
         }

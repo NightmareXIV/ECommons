@@ -13,6 +13,8 @@ public partial class AddonMaster
         {
         }
 
+        public override string AddonDescription { get; } = "Entrust duplicates progress window";
+
         public void Close() => ClickButtonIfEnabled(Addon->CloseWindowButton);
     }
 }

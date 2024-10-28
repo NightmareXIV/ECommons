@@ -3,6 +3,9 @@
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
 {
+    /// <summary>
+    /// Solo duty difficulty selection addon
+    /// </summary>
     public unsafe class DifficultySelectYesNo : AddonMasterBase<AtkUnitBase>
     {
         public DifficultySelectYesNo(nint addon) : base(addon) { }
@@ -15,6 +18,8 @@ public partial class AddonMaster
         public AtkComponentRadioButton* NormalButton => Addon->GetComponentNodeById(5)->GetAsAtkComponentRadioButton(); // which: 64
         public AtkComponentRadioButton* EasyButton => Addon->GetComponentNodeById(6)->GetAsAtkComponentRadioButton(); // which: 65
         public AtkComponentRadioButton* VeryEasyButton => Addon->GetComponentNodeById(7)->GetAsAtkComponentRadioButton(); // which: 66
+
+        public override string AddonDescription { get; } = "Solo duty difficulty selection window";
 
         public void Proceed() => ClickButtonIfEnabled(ProceedButton);
         public void Leave() => ClickButtonIfEnabled(LeaveButton);

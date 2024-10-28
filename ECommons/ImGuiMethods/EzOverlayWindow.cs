@@ -1,5 +1,6 @@
 ﻿using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
+using ECommons.Logging;
 using ImGuiNET;
 using System.Numerics;
 
@@ -9,7 +10,7 @@ public abstract class EzOverlayWindow : Window
     public HorizontalPosition HPos;
     public VerticalPosition VPos;
     public Vector2 Offset;
-    private Vector2 WindowSize;
+    public Vector2 WindowSize;
 
     public EzOverlayWindow(string name, HorizontalPosition hPos, VerticalPosition vPos, Vector2? offset = null) : base(name, ImGuiEx.OverlayFlags | ImGuiWindowFlags.AlwaysAutoResize, true)
     {
@@ -32,7 +33,9 @@ public abstract class EzOverlayWindow : Window
         if(HPos == HorizontalPosition.Right) x = vportsize.X - WindowSize.X;
         if(VPos == VerticalPosition.Middle) y = vportsize.Y / 2 - WindowSize.Y / 2;
         if(VPos == VerticalPosition.Bottom) y = vportsize.Y - WindowSize.Y;
-        ImGuiHelpers.SetNextWindowPosRelativeMainViewport(new Vector2(x, y) + Offset);
+        var vec = new Vector2(x, y) + Offset;
+        //PluginLog.Information($"Set offset to: {vec}");
+        ImGuiHelpers.SetNextWindowPosRelativeMainViewport(vec);
     }
 
     public abstract void DrawAction();
