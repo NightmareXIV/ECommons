@@ -12,6 +12,8 @@ public partial class AddonMaster
         public AtkComponentButton* RedeployButton => Addon->GetButtonNodeById(47);
         public AtkComponentButton* FinalizeReportButton => Addon->GetButtonNodeById(48);
 
+        public override string AddonDescription { get; } = "Submersible/Airship exploration result window";
+
         public void Redeploy() => ClickButtonIfEnabled(RedeployButton);
         public void FinalizeReport() => ClickButtonIfEnabled(FinalizeReportButton);
     }

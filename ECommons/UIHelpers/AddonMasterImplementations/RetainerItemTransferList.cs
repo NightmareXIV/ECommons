@@ -5,6 +5,8 @@ public partial class AddonMaster
 {
     public unsafe class RetainerItemTransferList : AddonMasterBase<AddonRetainerItemTransferList>
     {
+        public override string AddonDescription { get; } = "Entrust duplicates window";
+
         public RetainerItemTransferList(nint addon) : base(addon)
         {
         }

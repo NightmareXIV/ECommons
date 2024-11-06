@@ -23,6 +23,8 @@ public partial class AddonMaster
         public AtkComponentButton* ReassignButton => Addon->ReassignButton;
         public AtkComponentButton* ConfirmButton => Addon->ConfirmButton;
 
+        public override string AddonDescription { get; } = "Venture result window";
+
         public void Confirm() => ClickButtonIfEnabled(ConfirmButton);
 
         public void Reassign() => ClickButtonIfEnabled(ReassignButton);

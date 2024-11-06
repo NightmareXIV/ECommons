@@ -15,6 +15,8 @@ public partial class AddonMaster
         public AtkComponentButton* OkButton => Addon->GetButtonNodeById(4);
         public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(5);
 
+        public override string AddonDescription { get; } = "Number input dialogue";
+
         public void Ok(int value) => Callback.Fire(Addon, true, value);
         public void Ok() => ClickButtonIfEnabled(OkButton);
         public void Cancel() => ClickButtonIfEnabled(CancelButton);

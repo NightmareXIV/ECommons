@@ -14,6 +14,8 @@ public partial class AddonMaster
         public AtkComponentButton* ProceedButton => Addon->GetButtonNodeById(35);
         public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(36);
 
+        public override string AddonDescription { get; } = "Gil transfer window";
+
         public void Proceed() => ClickButtonIfEnabled(ProceedButton);
         public void Cancel() => ClickButtonIfEnabled(CancelButton);
 

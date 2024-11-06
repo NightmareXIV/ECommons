@@ -14,7 +14,11 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
     {
         Addon = (T*)addon;
     }
-
+    
+    /// <summary>
+    /// User-friendly description, for use in plugin settings, etc.
+    /// </summary>
+    public abstract string AddonDescription { get; }
     public T* Addon { get; }
     public AtkUnitBase* Base => (AtkUnitBase*)Addon;
     public bool IsVisible => Base->IsVisible;
@@ -102,6 +106,7 @@ public abstract unsafe class AddonMasterBase : AddonMasterBase<AtkUnitBase>
 
 public unsafe interface IAddonMasterBase
 {
+    string AddonDescription { get; }
     unsafe AtkUnitBase* Base { get; }
     bool HasFocus { get; }
     bool IsAddonInFocusList { get; }

@@ -24,6 +24,8 @@ public partial class AddonMaster
         public AtkComponentButton* SellButton => Base->GetButtonNodeById(16);
         public AtkComponentButton* CancelButton => Base->GetButtonNodeById(17);
 
+        public override string AddonDescription { get; } = "Triple triad card exchange window";
+
         public void Sell() => ClickButtonIfEnabled(SellButton);
         public void Cancel() => ClickButtonIfEnabled(CancelButton);
     }

@@ -47,6 +47,8 @@ public partial class AddonMaster
             }
         }
 
+        public override string AddonDescription { get; } = "Context menu";
+
         public readonly struct Entry(ContextMenu am, AddonContextMenu* addon, int index)
         {
             private readonly AddonContextMenu* Addon = addon;

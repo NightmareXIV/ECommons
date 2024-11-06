@@ -50,6 +50,8 @@ public partial class AddonMaster
             }
         }
 
+        public override string AddonDescription { get; } = "Selection menu";
+
         public struct Entry(SelectString am, AddonSelectString* addon, int index)
         {
             private readonly AddonSelectString* Addon = addon;

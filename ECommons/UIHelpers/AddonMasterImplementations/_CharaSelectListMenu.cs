@@ -44,6 +44,8 @@ public unsafe partial class AddonMaster
             }
         }
 
+        public override string AddonDescription { get; } = "Character select menu";
+
         public class Character
         {
             private _CharaSelectListMenu Master;

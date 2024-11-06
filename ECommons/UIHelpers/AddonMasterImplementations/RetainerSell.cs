@@ -28,6 +28,8 @@ public partial class AddonMaster
 
         public string ItemName => Addon->GetTextNodeById(7)->NodeText.ExtractText();
 
+        public override string AddonDescription { get; } = "Retainer item sell window";
+
         public void ComparePrices() => ClickButtonIfEnabled(ComparePricesButton);
         public void Confirm() => ClickButtonIfEnabled(ConfirmButton);
         public void Cancel() => ClickButtonIfEnabled(CancelButton);

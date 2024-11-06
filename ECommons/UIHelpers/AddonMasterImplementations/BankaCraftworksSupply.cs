@@ -29,6 +29,8 @@ public partial class AddonMaster
         public List<int> SlotsFilled => new(Enumerable.Range(0, 6).Where(i => Addon->GetComponentNodeById((uint)(i + 36))->Component->UldManager.NodeList[1]->IsVisible()).Select(i => i));
         public int? FirstUnfilledSlot => SlotsFilled.Count == 6 ? null : Enumerable.Range(0, 6).FirstOrDefault(i => !SlotsFilled.Contains(i));
 
+        public override string AddonDescription { get; } = "Crystarium/Studium/Wachumeqimeqi Deliveries window";
+
         public bool? TryHandOver(int slot)
         {
             if (SlotsFilled.Contains(slot)) return true;

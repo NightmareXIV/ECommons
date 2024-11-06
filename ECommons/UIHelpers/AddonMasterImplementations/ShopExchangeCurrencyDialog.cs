@@ -14,6 +14,8 @@ public partial class AddonMaster
         public AtkComponentButton* ExchangeButton => Addon->GetButtonNodeById(17);
         public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(18);
 
+        public override string AddonDescription { get; } = "Venture purchase window";
+
         public void Exchange() => ClickButtonIfEnabled(ExchangeButton);
         public void Cancel() => ClickButtonIfEnabled(CancelButton);
     }

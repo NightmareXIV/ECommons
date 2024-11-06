@@ -13,6 +13,8 @@ public partial class AddonMaster
 
         public AtkComponentButton* LeaveButton => Addon->GetButtonNodeById(62);
 
+        public override string AddonDescription { get; } = "Rival Wings post-game window";
+
         public void Leave() => ClickButtonIfEnabled(LeaveButton);
     }
 }

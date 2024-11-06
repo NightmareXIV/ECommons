@@ -19,6 +19,8 @@ public partial class AddonMaster
         public AtkComponentRadioButton* EasyButton => Addon->GetComponentNodeById(6)->GetAsAtkComponentRadioButton(); // which: 65
         public AtkComponentRadioButton* VeryEasyButton => Addon->GetComponentNodeById(7)->GetAsAtkComponentRadioButton(); // which: 66
 
+        public override string AddonDescription { get; } = "Solo duty difficulty selection window";
+
         public void Proceed() => ClickButtonIfEnabled(ProceedButton);
         public void Leave() => ClickButtonIfEnabled(LeaveButton);
 

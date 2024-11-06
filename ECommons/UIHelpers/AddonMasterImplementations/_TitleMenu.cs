@@ -34,6 +34,8 @@ public partial class AddonMaster
         public AtkComponentButton* LicenseButton => Base->GetButtonNodeById(8);
         public AtkComponentButton* ExitButton => Base->GetButtonNodeById(9);
 
+        public override string AddonDescription { get; } = "Title menu";
+
         public void Start() => ClickButtonIfEnabled(StartButton);
         public void DataCenter() => ClickButtonIfEnabled(DataCenterButton);
         public void MoviesAndTitles() => ClickButtonIfEnabled(MoviesAndTitlesButton);

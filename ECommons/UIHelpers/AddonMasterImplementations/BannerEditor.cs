@@ -8,6 +8,8 @@ public partial class AddonMaster
     /// </summary>
     public unsafe class BannerEditor : AddonMasterBase<AddonBannerEditor>
     {
+        public override string AddonDescription { get; } = "Portraits editor";
+
         public BannerEditor(nint addon) : base(addon) { }
         public BannerEditor(void* addon) : base(addon) { }
 

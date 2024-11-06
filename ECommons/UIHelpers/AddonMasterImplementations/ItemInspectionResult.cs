@@ -24,6 +24,8 @@ public partial class AddonMaster
         public AtkComponentButton* NextButton => Base->GetButtonNodeById(74);
         public AtkComponentButton* CloseButton => Base->GetButtonNodeById(73);
 
+        public override string AddonDescription { get; } = "Unknown: ItemInspectionResult";
+
         public void Next() => ClickButtonIfEnabled(NextButton);
         public void Close() => ClickButtonIfEnabled(CloseButton);
     }

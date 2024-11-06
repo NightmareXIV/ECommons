@@ -11,6 +11,8 @@ public partial class AddonMaster
         public AtkComponentButton* AcceptButton => Addon->GetButtonNodeById(93);
         public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(94);
 
+        public override string AddonDescription { get; } = "Unknown: WeeklyBingoResult";
+
         public void Accept() => ClickButtonIfEnabled(AcceptButton);
         public void Cancel() => ClickButtonIfEnabled(CancelButton);
     }

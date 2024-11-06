@@ -34,6 +34,8 @@ public partial class AddonMaster
         public AtkComponentButton* HelpButton => Addon->GetButtonNodeById(182);
         public AtkComponentButton* ReturnButton => Addon->GetButtonNodeById(183);
 
+        public override string AddonDescription { get; } = "Collectables gathering window";
+
         public void Help() => ClickButtonIfEnabled(HelpButton);
         public void Return() => ClickButtonIfEnabled(ReturnButton);
     }

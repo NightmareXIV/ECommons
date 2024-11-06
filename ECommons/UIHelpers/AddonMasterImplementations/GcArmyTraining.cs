@@ -10,6 +10,8 @@ public partial class AddonMaster
 
         public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(39);
 
+        public override string AddonDescription { get; } = "Squadron training window";
+
         public void Close() => ClickButtonIfEnabled(CloseButton);
     }
 }

@@ -15,6 +15,8 @@ public partial class AddonMaster
         public AtkComponentButton* DesynthesizeButton => Addon->GetButtonNodeById(24);
         public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(25);
 
+        public override string AddonDescription { get; } = "Desynthesis window";
+
         public void Desynthesize() => ClickButtonIfEnabled(DesynthesizeButton);
         public void Cancel() => ClickButtonIfEnabled(CancelButton);
 

@@ -23,6 +23,8 @@ public partial class AddonMaster
 
         public AtkComponentButton* ThirdButton => Addon->GetButtonNodeById(14);
 
+        public override string AddonDescription { get; } = "Yes or No selection menu";
+
         public void Yes()
         {
             if(Addon->YesButton != null && !Addon->YesButton->IsEnabled)

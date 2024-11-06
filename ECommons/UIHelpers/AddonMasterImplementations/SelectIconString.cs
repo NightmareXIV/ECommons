@@ -44,6 +44,8 @@ public partial class AddonMaster
             }
         }
 
+        public override string AddonDescription { get; } = "List selection menu with icons";
+
         public struct Entry(SelectIconString am, AddonSelectIconString* addon, int index)
         {
             private readonly AddonSelectIconString* Addon = addon;

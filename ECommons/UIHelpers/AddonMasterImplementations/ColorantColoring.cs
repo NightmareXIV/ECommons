@@ -19,6 +19,8 @@ public unsafe partial class AddonMaster
         public AtkComponentButton* ApplyButton => Base->GetButtonNodeById(68);
         public AtkComponentButton* SelectAnotherButton => Base->GetButtonNodeById(69);
 
+        public override string AddonDescription { get; } = "Item dyeing window";
+
         public void Apply() => ClickButtonIfEnabled(ApplyButton);
         public void SelectAnother() => ClickButtonIfEnabled(SelectAnotherButton);
     }

@@ -29,6 +29,8 @@ public partial class AddonMaster
             }
         }
 
+        public override string AddonDescription { get; } = "Open mail window";
+
         public class Item(ReaderLetterViewer.Item handle) : ReaderLetterViewer.Item(handle.AtkReaderParams.UnitBase, handle.AtkReaderParams.BeginOffset);
     }
 }

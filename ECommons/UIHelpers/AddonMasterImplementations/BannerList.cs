@@ -36,6 +36,8 @@ public partial class AddonMaster
             }
         }
 
+        public override string AddonDescription { get; } = "Portraits list";
+
         public readonly struct Portraits
         {
             private readonly AtkUnitBase* Addon;
