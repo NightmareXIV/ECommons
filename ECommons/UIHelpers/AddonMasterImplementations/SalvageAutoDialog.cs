@@ -19,7 +19,7 @@ public partial class AddonMaster
         public bool DesynthesisActive => Svc.Data.GetExcelSheet<Addon>()!.GetRow(5867)!.Text.RawString.Equals(EndDesynthesisButtonText);
         public bool DesynthesisInactive => Svc.Data.GetExcelSheet<Addon>()!.GetRow(5868)!.Text.RawString.Equals(EndDesynthesisButtonText);
 
-        public override string AddonDescription { get; } = "Unknown: SalvageAutoDialog";
+        public override string AddonDescription { get; } = "Desynthesis Bulk Dialog";
 
         public void EndDesynthesis() => ClickButtonIfEnabled(EndDesynthesisButton);
     }
