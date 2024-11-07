@@ -27,6 +27,8 @@ public unsafe partial class AddonMaster
             }
         }
 
+        public override string AddonDescription { get; } = "Jumbo Cactpot result window";
+
         public readonly struct Reward(LotteryWeeklyRewardList am, int index)
         {
             public bool Unk01 { get; init; } = am.Addon->AtkValues[10 + 7 * index].Bool;

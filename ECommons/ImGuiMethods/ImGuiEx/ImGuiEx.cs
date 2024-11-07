@@ -143,12 +143,15 @@ public static unsafe partial class ImGuiEx
         return actions[rangeMin..rangeMax];
     }
 
+    public static void TreeNodeCollapsingHeader(string name, Action action, ImGuiTreeNodeFlags extraFlags = ImGuiTreeNodeFlags.None) => TreeNodeCollapsingHeader(name, true, action, extraFlags);
     /// <summary>
     /// Another interpretation of <see cref="ImGui.CollapsingHeader(string)"/> but with narrow design and border.
     /// </summary>
     /// <param name="name"></param>
+    /// <param name="usePadding"></param>
     /// <param name="action"></param>
-    public static void TreeNodeCollapsingHeader(string name, Action action, ImGuiTreeNodeFlags extraFlags = ImGuiTreeNodeFlags.None)
+    /// <param name="extraFlags"></param>
+    public static void TreeNodeCollapsingHeader(string name, bool usePadding, Action action, ImGuiTreeNodeFlags extraFlags = ImGuiTreeNodeFlags.None)
     {
         ImGui.PushID("CollapsingHeaderHelperTable");
         ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, Vector2.Zero);
@@ -163,7 +166,7 @@ public static unsafe partial class ImGuiEx
             {
                 ImGui.TableNextRow();
                 ImGui.TableNextColumn();
-                if(ImGui.BeginTable($"2{name}", 1, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.PadOuterX))
+                if(ImGui.BeginTable($"2{name}", 1, ImGuiTableFlags.NoSavedSettings | (usePadding?ImGuiTableFlags.PadOuterX:ImGuiTableFlags.None)))
                 {
                     ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthStretch);
                     ImGui.TableNextRow();

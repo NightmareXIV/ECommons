@@ -18,6 +18,8 @@ public partial class AddonMaster
         public AtkComponentButton* RematchButton => Addon->GetButtonNodeById(21);
         public AtkComponentButton* QuitButton => Addon->GetButtonNodeById(22);
 
+        public override string AddonDescription { get; } = "Triple triad result window";
+
         public void Rematch() => ClickButtonIfEnabled(RematchButton);
         public void Quit() => ClickButtonIfEnabled(QuitButton);
     }

@@ -16,6 +16,8 @@ public partial class AddonMaster
         public SeString SeString => MemoryHelper.ReadSeString(&Addon->PromptText->NodeText);
         public string Text => SeString.ExtractText();
 
+        public override string AddonDescription { get; } = "Generic confirmation window (OK button)";
+
         public void Ok() => ClickButtonIfEnabled(Addon->OkButton);
     }
 }

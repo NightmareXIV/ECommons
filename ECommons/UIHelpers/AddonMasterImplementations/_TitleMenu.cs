@@ -1,9 +1,4 @@
 ﻿using FFXIVClientStructs.FFXIV.Component.GUI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -32,8 +27,20 @@ public partial class AddonMaster
             }
         }
 
-        public void Start() => ClickButtonIfEnabled(Base->GetButtonNodeById(4));
-        public void DataCenter() => ClickButtonIfEnabled(Base->GetButtonNodeById(5));
-        public void Exit() => ClickButtonIfEnabled(Base->GetButtonNodeById(9));
+        public AtkComponentButton* StartButton => Base->GetButtonNodeById(4);
+        public AtkComponentButton* DataCenterButton => Base->GetButtonNodeById(5);
+        public AtkComponentButton* MoviesAndTitlesButton => Base->GetButtonNodeById(6);
+        public AtkComponentButton* OptionsButton => Base->GetButtonNodeById(7);
+        public AtkComponentButton* LicenseButton => Base->GetButtonNodeById(8);
+        public AtkComponentButton* ExitButton => Base->GetButtonNodeById(9);
+
+        public override string AddonDescription { get; } = "Title menu";
+
+        public void Start() => ClickButtonIfEnabled(StartButton);
+        public void DataCenter() => ClickButtonIfEnabled(DataCenterButton);
+        public void MoviesAndTitles() => ClickButtonIfEnabled(MoviesAndTitlesButton);
+        public void Options() => ClickButtonIfEnabled(OptionsButton);
+        public void License() => ClickButtonIfEnabled(LicenseButton);
+        public void Exit() => ClickButtonIfEnabled(ExitButton);
     }
 }

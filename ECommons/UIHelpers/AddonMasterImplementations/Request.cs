@@ -39,17 +39,7 @@ public partial class AddonMaster
                 return true;
             }
         }
-    }
-}
 
-[Obsolete("Please use AddonMaster.Request")]
-public unsafe class RequestMaster : AddonMaster.Request
-{
-    public RequestMaster(nint addon) : base(addon)
-    {
-    }
-
-    public RequestMaster(void* addon) : base(addon)
-    {
+        public override string AddonDescription { get; } = "Item request window";
     }
 }

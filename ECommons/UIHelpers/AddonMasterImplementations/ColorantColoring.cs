@@ -4,6 +4,9 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public unsafe partial class AddonMaster
 {
+    /// <summary>
+    /// Item dyeing addon
+    /// </summary>
     public class ColorantColoring : AddonMasterBase<AtkUnitBase>
     {
         public ColorantColoring(nint addon) : base(addon) { }
@@ -15,6 +18,8 @@ public unsafe partial class AddonMaster
 
         public AtkComponentButton* ApplyButton => Base->GetButtonNodeById(68);
         public AtkComponentButton* SelectAnotherButton => Base->GetButtonNodeById(69);
+
+        public override string AddonDescription { get; } = "Item dyeing window";
 
         public void Apply() => ClickButtonIfEnabled(ApplyButton);
         public void SelectAnother() => ClickButtonIfEnabled(SelectAnotherButton);

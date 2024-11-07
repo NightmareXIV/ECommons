@@ -826,6 +826,8 @@ public static unsafe partial class GenericHelpers
         return Addon->IsVisible && Addon->UldManager.LoadedState == AtkLoadState.Loaded && Addon->IsFullyLoaded();
     }
 
+    public static bool IsReady(this AtkUnitBase Addon) => Addon.IsVisible && Addon.UldManager.LoadedState == AtkLoadState.Loaded && Addon.IsFullyLoaded();
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAddonReady(AtkComponentNode* Addon)
     {
@@ -870,6 +872,17 @@ public static unsafe partial class GenericHelpers
         //check siblings
         var sibNode = node->PrevSiblingNode;
         return sibNode != null ? GetNodeByIDChain(sibNode, ids) : null;
+    }
+
+    /// <summary>
+    /// Recursively gets the root node of an addon
+    /// </summary>
+    /// <param name="node">Starting node to search from</param>
+    /// <returns></returns>
+    public static unsafe AtkResNode* GetRootNode(AtkResNode* node)
+    {
+        var parent = node->ParentNode;
+        return parent == null ? node : GetRootNode(parent);
     }
 
     /// <summary>

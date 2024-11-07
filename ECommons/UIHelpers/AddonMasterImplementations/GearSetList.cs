@@ -13,6 +13,8 @@ public unsafe partial class AddonMaster
         public AtkComponentButton* RefreshButton => Base->GetButtonNodeById(4);
         public AtkComponentButton* EquipSetButton => Base->GetButtonNodeById(9);
 
+        public override string AddonDescription { get; } = "Gearset window";
+
         public void DisplayHelp() => ClickButtonIfEnabled(DisplayHelpButton);
         public void CreateNewGearset() => ClickButtonIfEnabled(CreateNewGearsetButton);
         public void Refresh() => ClickButtonIfEnabled(RefreshButton);

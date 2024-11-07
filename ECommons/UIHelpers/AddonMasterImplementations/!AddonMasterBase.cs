@@ -1,6 +1,7 @@
 ﻿using ECommons.Automation.UIInput;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using System;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unmanaged
@@ -13,12 +14,33 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
     {
         Addon = (T*)addon;
     }
-
+    
+    /// <summary>
+    /// User-friendly description, for use in plugin settings, etc.
+    /// </summary>
+    public abstract string AddonDescription { get; }
     public T* Addon { get; }
     public AtkUnitBase* Base => (AtkUnitBase*)Addon;
     public bool IsVisible => Base->IsVisible;
     public bool IsAddonReady => GenericHelpers.IsAddonReady(Base);
-    public bool IsAddonFocused
+
+    public bool HasFocus
+    {
+        get
+        {
+            var focus = AtkStage.Instance()->GetFocus();
+            if (focus == null) return false;
+            for (var i = 0; i < RaptureAtkUnitManager.Instance()->FocusedUnitsList.Count; i++)
+            {
+                var atk = RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries[i].Value;
+                if (atk != null && atk->RootNode == GenericHelpers.GetRootNode(focus))
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    public bool IsAddonInFocusList
     {
         get
         {
@@ -31,9 +53,9 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
         }
     }
 
-    public bool IsAddonHighestFocus => RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries[RaptureAtkUnitManager.Instance()->FocusedUnitsList.Count - 1].Value == Base;
-
-    public bool IsAddonOnlyFocus => RaptureAtkUnitManager.Instance()->FocusedUnitsList.Count == 1 && RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries[0].Value == Base;
+    [Obsolete("For the intended functionality please use HasFocus. For the same functionality please use IsAddonInFocusList.")]
+    public bool IsAddonFocused => IsAddonInFocusList;
+    public bool IsAddonOnlyFocusListEntry => RaptureAtkUnitManager.Instance()->FocusedUnitsList.Count == 1 && RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries[0].Value == Base;
 
     protected bool ClickButtonIfEnabled(AtkComponentButton* button)
     {
@@ -82,4 +104,13 @@ public abstract unsafe class AddonMasterBase : AddonMasterBase<AtkUnitBase>
     }
 }
 
-public interface IAddonMasterBase { }
+public unsafe interface IAddonMasterBase
+{
+    string AddonDescription { get; }
+    unsafe AtkUnitBase* Base { get; }
+    bool HasFocus { get; }
+    bool IsAddonInFocusList { get; }
+    bool IsAddonOnlyFocusListEntry { get; }
+    bool IsAddonReady { get; }
+    bool IsVisible { get; }
+}

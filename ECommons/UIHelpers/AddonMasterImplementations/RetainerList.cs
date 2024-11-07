@@ -35,6 +35,8 @@ public partial class AddonMaster
             }
         }
 
+        public override string AddonDescription { get; } = "Retainer list";
+
         public class Entry(AtkUnitBase* Base, ReaderRetainerList.Retainer handle, int index) : ReaderRetainerList.Retainer(handle.AtkReaderParams.UnitBase, handle.AtkReaderParams.BeginOffset)
         {
             public int Index => index;

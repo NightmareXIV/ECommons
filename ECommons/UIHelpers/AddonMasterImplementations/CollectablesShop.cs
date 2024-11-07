@@ -25,6 +25,8 @@ public partial class AddonMaster
         public AtkComponentRadioButton* BotanistButton => Addon->GetComponentNodeById(12)->GetAsAtkComponentRadioButton();
         public AtkComponentRadioButton* FisherButton => Addon->GetComponentNodeById(13)->GetAsAtkComponentRadioButton();
 
+        public override string AddonDescription { get; } = "Collectables";
+
         public void Trade() => ClickButtonIfEnabled(TradeButton);
 
         public bool SelectDiscipleTab(Job job) => SelectDiscipleTab((uint)job);

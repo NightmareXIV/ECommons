@@ -24,6 +24,8 @@ public partial class AddonMaster
 
         public bool IsEnabled => DeliverButton->IsEnabled;
 
+        public override string AddonDescription { get; } = "Grand Company delivery window";
+
         public void Deliver() => ClickButtonIfEnabled(DeliverButton);
     }
 }

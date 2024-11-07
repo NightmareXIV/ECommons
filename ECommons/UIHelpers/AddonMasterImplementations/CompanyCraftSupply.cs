@@ -11,6 +11,8 @@ public partial class AddonMaster
 
         public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(41);
 
+        public override string AddonDescription { get; } = "Free Company workshop delivery";
+
         public void Close() => ClickButtonIfEnabled(CloseButton);
     }
 }

@@ -11,6 +11,8 @@ public partial class AddonMaster
         public AtkComponentButton* CastButton => Addon->GetButtonNodeById(24);
         public AtkComponentButton* ReturnButton => Addon->GetButtonNodeById(25);
 
+        public override string AddonDescription { get; } = "Cast glamour window";
+
         public void Cast() => ClickButtonIfEnabled(CastButton);
         public void Return() => ClickButtonIfEnabled(ReturnButton);
     }

@@ -22,6 +22,8 @@ public partial class AddonMaster
         public AtkComponentButton* AssignButton => Addon->AssignButton;
         public AtkComponentButton* ReturnButton => Addon->ReturnButton;
 
+        public override string AddonDescription { get; } = "Venture assign window";
+
         public void Assign() => ClickButtonIfEnabled(AssignButton);
         public void Return() => ClickButtonIfEnabled(ReturnButton);
     }
