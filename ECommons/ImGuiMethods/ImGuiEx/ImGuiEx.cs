@@ -1205,12 +1205,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="s">Text</param>
     public static void TextV(string s)
     {
-        var cur = ImGui.GetCursorPos();
-        ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0);
-        ImGui.Button("");
-        ImGui.PopStyleVar();
-        ImGui.SameLine();
-        ImGui.SetCursorPos(cur);
+        ImGui.AlignTextToFramePadding();
         ImGui.TextUnformatted(s);
     }
 
