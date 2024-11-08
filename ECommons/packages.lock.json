@@ -1,6 +1,10 @@
 {
   "version": 1,
   "dependencies": {
-    "net8.0-windows7.0": {}
+    "net8.0-windows7.0": {
+      "ecommons.filewriter": {
+        "type": "Project"
+      }
+    }
   }
 }
