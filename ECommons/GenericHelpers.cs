@@ -1392,6 +1392,13 @@ public static unsafe partial class GenericHelpers
         return values.Any(x => x.Equals(obj));
     }
 
+    public static uint ToUInt(this ushort value) => value;
+    public static uint ToUInt(this byte value) => value;
+    public static uint ToUInt(this int value) => (uint)value;
+    public static int ToInt(this byte value) => value;
+    public static int ToInt(this ushort value) => value;
+    public static int ToInt(this uint value) => (int)value;
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool AllNull(params object[] objects) => objects.All(s => s == null);
 

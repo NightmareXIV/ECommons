@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.Text.SeStringHandling;
 using ECommons.DalamudServices;
+using ECommons.ExcelServices;
 using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -14,6 +15,22 @@ public struct Sender : IEquatable<Sender>
 {
     public string Name;
     public uint HomeWorld;
+
+    public static bool TryParse(string nameWithWorld, out Sender s)
+    {
+        var split = nameWithWorld.Split('@');
+        if(split.Length == 2)
+        {
+            var world = ExcelWorldHelper.Get(split[1]);
+            if(world != null)
+            {
+                s = new(split[0], world.RowId);
+                return true;
+            }
+        }
+        s = default;
+        return false;
+    }
 
     public Sender(string Name, uint HomeWorld)
     {
