@@ -118,24 +118,6 @@ public static unsafe partial class GenericHelpers
         }
     }
 
-    public static string ParamsPlaceholderPrefix = "$";
-    public static string Params(this string? defaultValue, params object?[] objects)
-    {
-        defaultValue ??= "";
-        var guid = Guid.NewGuid().ToString();
-        defaultValue = defaultValue.Replace($"{ParamsPlaceholderPrefix}{ParamsPlaceholderPrefix}", guid);
-        for(var i = 0; i < objects.Length; i++)
-        {
-            var str = objects[i]?.ToString() ?? "";
-            defaultValue = defaultValue.Replace($"{ParamsPlaceholderPrefix}{i}", str);
-        }
-        foreach(var obj in objects)
-        {
-            defaultValue = defaultValue.ReplaceFirst(ParamsPlaceholderPrefix, obj?.ToString() ?? "");
-        }
-        return defaultValue.Replace(guid, ParamsPlaceholderPrefix);
-    }
-
     /// <summary>
     /// Returns random element from <paramref name="enumerable"/>.
     /// </summary>
