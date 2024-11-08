@@ -27,6 +27,26 @@ public static unsafe partial class ImGuiEx
     public const ImGuiWindowFlags OverlayFlags = ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoMouseInputs | ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing;
     private static Dictionary<string, int> SelectedPages = [];
 
+    public static string ImGuiTrim(this string str)
+    {
+        if(str.Length < 5) return str;
+        var size = ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize("...").X;
+        for (int i = 1; i < str.Length; i++)
+        {
+            if(ImGui.CalcTextSize(str[..i]).X > size)
+            {
+                return str[..(i - 1)] + "...";
+            }
+        }
+        return str;
+    }
+
+    public static string Trim(this string text, int len)
+    {
+        if(text.Length > len) return text[..len] + "...";
+        return text;
+    }
+
     /// <summary>
     /// An <see cref="ImGui.InputInt"/> for nullable int. Consists of checkbox and input component that is enabled/disabled based on checkbox state.
     /// </summary>
