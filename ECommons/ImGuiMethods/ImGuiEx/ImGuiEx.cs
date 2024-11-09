@@ -810,6 +810,34 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
+    public static bool ButtonCheckbox(FontAwesomeIcon icon, ref bool value, Vector4? color = null, bool inverted = false)
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        var ret = ButtonCheckbox(icon.ToIconString(), ref value, color, inverted);
+        ImGui.PopFont();
+        return ret;
+    }
+
+    public static bool ButtonCheckbox(string name, ref bool value, Vector4? color = null, bool inverted = false)
+    {
+        var ret = false;
+        color ??= EColor.Green;
+        var col = !inverted?value:!value;
+        if(col)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, color.Value);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, color.Value);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, color.Value);
+        }
+        if(ImGui.Button(name))
+        {
+            value = !value;
+            ret = true;
+        }
+        if(col) ImGui.PopStyleColor(3);
+        return ret;
+    }
+
     public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, bool smallButton = false, bool inverted = false) => CollectionButtonCheckbox(name, value, collection, EColor.Red, smallButton, inverted);
 
     public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, Vector4 color, bool smallButton = false, bool inverted = false)
