@@ -33,6 +33,24 @@ public static unsafe partial class ImGuiEx
             InitialDragDropCurpos = ImGui.GetCursorPos();
         }
 
+        public void DrawButtonDummy<T>(T item, List<T> list, Func<T, string> getUniqueId, int targetPosition)
+        {
+            void executeMove(string x)
+            {
+                GenericHelpers.MoveItemToPosition<T>(list, (s) => getUniqueId(s) == x, targetPosition);
+            }
+            DrawButtonDummy(getUniqueId(item), executeMove);
+        }
+
+        public void DrawButtonDummy<T>(string uniqueId, List<T> list, Func<T, string> getUniqueId, int targetPosition)
+        {
+            void executeMove(string x)
+            {
+                GenericHelpers.MoveItemToPosition<T>(list, (s) => getUniqueId(s) == x, targetPosition);
+            }
+            DrawButtonDummy(uniqueId, executeMove);
+        }
+
         public void DrawButtonDummy(string uniqueId, Action<string> onAcceptDragDropPayload)
         {
             ImGui.PushFont(UiBuilder.IconFont);
