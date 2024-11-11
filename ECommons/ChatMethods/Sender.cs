@@ -10,11 +10,10 @@ using System.Reflection;
 namespace ECommons.ChatMethods;
 #nullable disable
 
-[Obfuscation(Exclude = true, ApplyToMembers = true)]
 public struct Sender : IEquatable<Sender>
 {
-    public string Name;
-    public uint HomeWorld;
+    [Obfuscation] public string Name;
+    [Obfuscation] public uint HomeWorld;
 
     public static bool TryParse(string nameWithWorld, out Sender s)
     {
