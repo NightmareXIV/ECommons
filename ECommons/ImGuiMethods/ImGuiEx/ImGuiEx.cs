@@ -28,6 +28,26 @@ public static unsafe partial class ImGuiEx
     public const ImGuiWindowFlags OverlayFlags = ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoMouseInputs | ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing;
     private static Dictionary<string, int> SelectedPages = [];
 
+    public static string ImGuiTrim(this string str)
+    {
+        if(str.Length < 5) return str;
+        var size = ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize("...").X;
+        for (int i = 1; i < str.Length; i++)
+        {
+            if(ImGui.CalcTextSize(str[..i]).X > size)
+            {
+                return str[..(i - 1)] + "...";
+            }
+        }
+        return str;
+    }
+
+    public static string Trim(this string text, int len)
+    {
+        if(text.Length > len) return text[..len] + "...";
+        return text;
+    }
+
     public static bool InputFancyNumeric(string label, ref int number, int step)
     {
         var str = $"{number:N0}";
@@ -842,6 +862,34 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
+    public static bool ButtonCheckbox(FontAwesomeIcon icon, ref bool value, Vector4? color = null, bool inverted = false)
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        var ret = ButtonCheckbox(icon.ToIconString(), ref value, color, inverted);
+        ImGui.PopFont();
+        return ret;
+    }
+
+    public static bool ButtonCheckbox(string name, ref bool value, Vector4? color = null, bool inverted = false)
+    {
+        var ret = false;
+        color ??= EColor.Green;
+        var col = !inverted?value:!value;
+        if(col)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, color.Value);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, color.Value);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, color.Value);
+        }
+        if(ImGui.Button(name))
+        {
+            value = !value;
+            ret = true;
+        }
+        if(col) ImGui.PopStyleColor(3);
+        return ret;
+    }
+
     public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, bool smallButton = false, bool inverted = false) => CollectionButtonCheckbox(name, value, collection, EColor.Red, smallButton, inverted);
 
     public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, Vector4 color, bool smallButton = false, bool inverted = false)
@@ -1260,12 +1308,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="s">Text</param>
     public static void TextV(string s)
     {
-        var cur = ImGui.GetCursorPos();
-        ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0);
-        ImGui.Button("");
-        ImGui.PopStyleVar();
-        ImGui.SameLine();
-        ImGui.SetCursorPos(cur);
+        ImGui.AlignTextToFramePadding();
         ImGui.TextUnformatted(s);
     }
 
