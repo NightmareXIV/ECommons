@@ -1,11 +1,13 @@
 ﻿using Lumina;
 using Lumina.Data;
 using Lumina.Excel;
-using Lumina.Excel.GeneratedSheets;
+
 
 namespace ECommons.ExcelServices.Sheets;
+//TODO: fix or remove
 #nullable disable
-
+/*
+ * 
 //This code is authored by Caraxi https://github.com/Caraxi/SimpleTweaksPlugin/
 [Sheet("Item")]
 public class ExtendedItem : Item
@@ -49,3 +51,4 @@ public class ExtendedItem : Item
 
     }
 }
+*/

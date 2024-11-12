@@ -1,5 +1,5 @@
 ﻿using ECommons.DalamudServices;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -44,7 +44,7 @@ public static class ExcelJobHelper
         return j == Job.ADV ? 62143 : (062100 + (int)j);
     }
 
-    public static ClassJob GetJobByName(string name)
+    public static ClassJob? GetJobByName(string name)
     {
         if(Svc.Data.GetExcelSheet<ClassJob>().TryGetFirst(x => x.Name.ToString().EqualsIgnoreCase(name), out var result))
         {
@@ -55,13 +55,14 @@ public static class ExcelJobHelper
 
     public static bool TryGetJobByName(string name, out ClassJob result)
     {
-        result = GetJobByName(name);
-        return result != null;
+        var r = GetJobByName(name);
+        result = r ?? default;
+        return r != null;
     }
 
-    public static ClassJob GetJobById(uint id)
+    public static ClassJob? GetJobById(uint id)
     {
-        return Svc.Data.GetExcelSheet<ClassJob>().GetRow(id);
+        return Svc.Data.GetExcelSheet<ClassJob>().GetRowOrDefault(id);
     }
 
     public static string GetJobNameById(uint id)

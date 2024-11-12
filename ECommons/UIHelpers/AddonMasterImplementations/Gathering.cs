@@ -1,7 +1,7 @@
 ﻿using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using System;
 using System.Text.RegularExpressions;
 
@@ -65,7 +65,7 @@ public partial class AddonMaster
             public bool IsEnabled => CheckBox->IsEnabled;
             public string ItemName => CheckBox->GetTextNodeById(23)->GetAsAtkTextNode()->NodeText.ExtractText();
             public uint ItemID => addon->ItemIds[index];
-            public bool IsCollectable => Svc.Data.GetExcelSheet<Item>()?.GetRow(ItemID)?.IsCollectable ?? false;
+            public bool IsCollectable => Svc.Data.GetExcelSheet<Item>()?.GetRowOrDefault(ItemID)?.IsCollectable ?? false;
             public int ItemLevel
             {
                 get

@@ -1,5 +1,5 @@
 ﻿using ECommons.DalamudServices;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using System;
 using System.Collections.Generic;
 
@@ -15,16 +15,16 @@ public static class TerritoryName
         {
             return val;
         }
-        var data = Svc.Data.GetExcelSheet<TerritoryType>()!.GetRow(id);
+        var data = Svc.Data.GetExcelSheet<TerritoryType>()!.GetRowOrDefault(id);
         if(data != null)
         {
-            var zoneName = data.PlaceName.Value?.Name.ToString() ?? "";
+            var zoneName = data.Value.PlaceName.ValueNullable?.Name.ToString() ?? "";
             if(zoneName != string.Empty)
             {
-                var cfc = data.ContentFinderCondition.Value;
+                var cfc = data.Value.ContentFinderCondition.ValueNullable;
                 if(cfc != null)
                 {
-                    var cfcStr = cfc.Name.ToString();
+                    var cfcStr = cfc.Value.Name.ToString();
                     if(cfcStr != String.Empty)
                     {
                         Cache[id] = $"{id} | {zoneName} ({cfcStr})";

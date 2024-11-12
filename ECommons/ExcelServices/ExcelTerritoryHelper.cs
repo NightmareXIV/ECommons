@@ -1,7 +1,7 @@
 ﻿using ECommons.DalamudServices;
 using ECommons.ExcelServices.TerritoryEnumeration;
 using ECommons.Logging;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,14 +44,14 @@ public static class ExcelTerritoryHelper
 
     public static bool NameExists(uint TerritoryType)
     {
-        var data = Svc.Data.GetExcelSheet<TerritoryType>().GetRow(TerritoryType);
+        var data = Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(TerritoryType);
         if(data != null) return NameExists(data);
         return false;
     }
 
-    public static bool NameExists(this TerritoryType t)
+    public static bool NameExists(this TerritoryType? t)
     {
-        var nonExists = t.Name.ExtractText().IsNullOrEmpty() && t.ContentFinderCondition?.Value.Name.ExtractText().IsNullOrEmpty() != false;
+        var nonExists = t?.Name.ExtractText().IsNullOrEmpty() != false && t?.ContentFinderCondition.ValueNullable?.Name.ExtractText().IsNullOrEmpty() != false;
         return !nonExists;
     }
 
@@ -63,11 +63,11 @@ public static class ExcelTerritoryHelper
     /// <returns>Content finder condition if exists; otherwise - zone name if exists; otherwise - zone ID as a string</returns>
     public static string GetName(uint TerritoryType, bool includeID = false)
     {
-        var data = Svc.Data.GetExcelSheet<TerritoryType>().GetRow(TerritoryType);
+        var data = Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(TerritoryType);
         var id = includeID ? $"#{TerritoryType} | " : "";
         if(data == null) return $"#{TerritoryType}";
-        var tname = data.PlaceName.Value?.Name?.ToString();
-        var cfc = data.ContentFinderCondition.Value.Name?.ToString();
+        var tname = data?.PlaceName.ValueNullable?.Name.ToString();
+        var cfc = data?.ContentFinderCondition.ValueNullable?.Name.ToString();
         if(cfc.IsNullOrEmpty())
         {
             if(tname.IsNullOrEmpty())
@@ -85,9 +85,9 @@ public static class ExcelTerritoryHelper
         }
     }
 
-    public static TerritoryType Get(uint ID) => Svc.Data.GetExcelSheet<TerritoryType>().GetRow(ID);
+    public static TerritoryType? Get(uint ID) => Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(ID);
 
-    public static string GetBG(this TerritoryType t) => t?.Bg?.ExtractText();
+    public static string GetBG(this TerritoryType? t) => t?.Bg.ExtractText();
 
-    public static string GetBG(uint ID) => Get(ID)?.Bg?.ExtractText();
+    public static string GetBG(uint ID) => Get(ID)?.Bg.ExtractText();
 }
