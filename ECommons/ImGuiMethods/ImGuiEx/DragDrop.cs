@@ -11,8 +11,15 @@ using System.Runtime.ConstrainedExecution;
 namespace ECommons.ImGuiMethods;
 public static unsafe partial class ImGuiEx
 {
+    /// <summary>
+    /// Realtime drag drop helper. Relatively easy way to implement dragging for element reorder. To be used with <see cref="ImGui"/> Tables and with <see langword="for"/> loop, not <see langword="foreach"/>.
+    /// </summary>
     public class RealtimeDragDrop 
     {
+        /// <summary>
+        /// Step 1. Create an instance of dragdrop helper. Set unique ID that will be unique to your table.
+        /// </summary>
+        /// <param name="dragDropId"></param>
         public RealtimeDragDrop(string dragDropId)
         {
             this.DragDropID = dragDropId;
@@ -23,21 +30,35 @@ public static unsafe partial class ImGuiEx
         Vector2 ButtonDragDropCurpos;
         string DragDropID;
         string? CurrentDrag = null;
+        /// <summary>
+        /// Call this before any other commands to indicate that your reorderable list begins now.
+        /// </summary>
         public void Begin()
         {
             MoveCommands.Clear();
         }
 
+        /// <summary>
+        /// Call this in the beginning of table's row (first column). This function just stores cursor.
+        /// </summary>
         public void NextRow()
         {
             InitialDragDropCurpos = ImGui.GetCursorPos();
         }
 
-        public void DrawButtonDummy<T>(T item, List<T> list, Func<T, string> getUniqueId, int targetPosition)
+        /// <summary>
+        /// Draws reorder button placeholder as well as collects necessary parameters for function operation
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="item">Current item</param>
+        /// <param name="itemIndex">item's index in the list</param>
+        /// <param name="list">List in which current item resides</param>
+        /// <param name="getUniqueId">Function that retrieves unique ID of an item as a string. Must be unique within the list!</param>
+        public void DrawButtonDummy<T>(T item, int itemIndex, List<T> list, Func<T, string> getUniqueId)
         {
             void executeMove(string x)
             {
-                GenericHelpers.MoveItemToPosition<T>(list, (s) => getUniqueId(s) == x, targetPosition);
+                GenericHelpers.MoveItemToPosition<T>(list, (s) => getUniqueId(s) == x, itemIndex);
             }
             DrawButtonDummy(getUniqueId(item), executeMove);
         }
