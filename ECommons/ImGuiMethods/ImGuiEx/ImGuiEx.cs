@@ -7,6 +7,7 @@ using ECommons.ExcelServices;
 using ECommons.Funding;
 using ECommons.Logging;
 using ECommons.MathHelpers;
+using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using ImGuiNET;
 using Lumina.Excel.Sheets;
@@ -45,6 +46,57 @@ public static unsafe partial class ImGuiEx
     {
         if(text.Length > len) return text[..len] + "...";
         return text;
+    }
+
+    public static bool InputFancyNumeric(string label, ref int number, int step)
+    {
+        var str = $"{number:N0}";
+        var ret = ImGui.InputText(label, ref str, 50, ImGuiInputTextFlags.AutoSelectAll);
+        ImGui.SameLine(0, 1);
+        if(ImGui.Button($"-##minus{label}", new(ImGui.GetFrameHeight())))
+        {
+            number -= step;
+        }
+        if(ImGui.IsItemHovered() && ImGui.GetIO().MouseDownDuration[0] > 0.5f && EzThrottler.Throttle("FancyInputHold", 50))
+        {
+            number -= step;
+        }
+        ImGui.SameLine(0, 1);
+        if(ImGui.Button($"+##plus{label}", new(ImGui.GetFrameHeight())))
+        {
+            number += step;
+        }
+        if(ImGui.IsItemHovered() && ImGui.GetIO().MouseDownDuration[0] > 0.5f && EzThrottler.Throttle("FancyInputHold", 50))
+        {
+            number += step;
+        }
+        if(ret)
+        {
+            var mult = 1;
+            str = str.Trim();
+            if(str == "")
+            {
+                number = 0;
+            }
+            else
+            {
+                while(str.EndsWith("M", StringComparison.OrdinalIgnoreCase))
+                {
+                    mult *= 1000000;
+                    str = str[0..^1];
+                }
+                while(str.EndsWith("K", StringComparison.OrdinalIgnoreCase))
+                {
+                    mult *= 1000;
+                    str = str[0..^1];
+                }
+                if(int.TryParse(str, NumberStyles.AllowThousands, null, out var result))
+                {
+                    number = result * mult;
+                }
+            }
+        }
+        return ret;
     }
 
     /// <summary>
