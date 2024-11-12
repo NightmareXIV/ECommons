@@ -20,7 +20,7 @@ public partial class AddonMaster
         public bool PurificationActive => Svc.Data.GetExcelSheet<Addon>()!.GetRow(3868)!.Text.ToString().Equals(CancelExitButtonText);
         public bool PurificationInactive => Svc.Data.GetExcelSheet<Addon>()!.GetRow(3869)!.Text.ToString().Equals(CancelExitButtonText);
 
-        public override string AddonDescription { get; } = "Unknown: PurifyAutoDialog";
+        public override string AddonDescription { get; } = "Aetherial Reduction Dialog";
 
         public void CancelExit() => ClickButtonIfEnabled(CancelExitButton);
     }
