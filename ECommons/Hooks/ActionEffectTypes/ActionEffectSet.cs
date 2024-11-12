@@ -1,10 +1,10 @@
 ﻿using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using System.Collections.Generic;
 using System.Numerics;
-using Action = Lumina.Excel.GeneratedSheets.Action;
+using Action = Lumina.Excel.Sheets.Action;
 using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace ECommons.Hooks.ActionEffectTypes;
@@ -40,29 +40,29 @@ public unsafe readonly record struct ActionEffectSet
         switch(effectHeader->ActionType)
         {
             case ActionType.KeyItem:
-                EventItem = Svc.Data.GetExcelSheet<EventItem>()!.GetRow(effectHeader->ActionID);
-                Name = EventItem?.Singular ?? string.Empty;
+                EventItem = Svc.Data.GetExcelSheet<EventItem>()!.GetRowOrDefault(effectHeader->ActionID);
+                Name = EventItem?.Singular.ToString() ?? string.Empty;
                 IconId = EventItem?.Icon ?? 0;
                 break;
 
             case ActionType.Item:
                 var id = effectHeader->ActionID > 1000000 ? effectHeader->ActionID - 1000000 : effectHeader->ActionID;
-                Item = Svc.Data.GetExcelSheet<Item>()!.GetRow(id);
-                Name = Item?.Name ?? string.Empty;
+                Item = Svc.Data.GetExcelSheet<Item>()!.GetRowOrDefault(id);
+                Name = Item?.Name.ToString() ?? string.Empty;
                 IconId = Item?.Icon ?? 0;
                 break;
 
             case ActionType.Mount:
-                Mount = Svc.Data.GetExcelSheet<Mount>()!.GetRow(effectHeader->ActionID);
-                Name = Mount?.Singular ?? string.Empty;
+                Mount = Svc.Data.GetExcelSheet<Mount>()!.GetRowOrDefault(effectHeader->ActionID);
+                Name = Mount?.Singular.ToString() ?? string.Empty;
                 IconId = Mount?.Icon ?? 0;
                 break;
 
             default:
-                Action = Svc.Data.GetExcelSheet<Action>()!.GetRow(effectHeader->ActionID);
-                Name = Action?.Name ?? string.Empty; ;
+                Action = Svc.Data.GetExcelSheet<Action>()!.GetRowOrDefault(effectHeader->ActionID);
+                Name = Action?.Name.ToString() ?? string.Empty;
 
-                var actionCate = Action?.ActionCategory.Value?.RowId ?? 0;
+                var actionCate = Action?.ActionCategory.ValueNullable?.RowId ?? 0;
 
                 IconId = actionCate == 1 ? (ushort)101 // Auto Attack
                     : effectHeader->ActionID == 3 ? (ushort)104 //Sprint

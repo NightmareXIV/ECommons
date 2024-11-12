@@ -60,10 +60,10 @@ public static unsafe class CharacterFunctions
 
     public static CombatRole GetRole(this ICharacter c)
     {
-        if(c.ClassJob.GameData?.Role == 1) return CombatRole.Tank;
-        if(c.ClassJob.GameData?.Role == 2) return CombatRole.DPS;
-        if(c.ClassJob.GameData?.Role == 3) return CombatRole.DPS;
-        if(c.ClassJob.GameData?.Role == 4) return CombatRole.Healer;
+        if(c.ClassJob.ValueNullable?.Role == 1) return CombatRole.Tank;
+        if(c.ClassJob.ValueNullable?.Role == 2) return CombatRole.DPS;
+        if(c.ClassJob.ValueNullable?.Role == 3) return CombatRole.DPS;
+        if(c.ClassJob.ValueNullable?.Role == 4) return CombatRole.Healer;
         return CombatRole.NonCombat;
     }
 

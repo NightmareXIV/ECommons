@@ -3,7 +3,8 @@ using Lumina.Data;
 using Lumina.Excel;
 
 namespace ECommons.ExcelServices.Sheets;
-
+//TODO: update or remove
+/*
 //This code is authored by Caraxi https://github.com/Caraxi/SimpleTweaksPlugin/
 [Sheet("BaseParam")]
 public class ExtendedBaseParam : Lumina.Excel.GeneratedSheets.BaseParam
@@ -19,3 +20,4 @@ public class ExtendedBaseParam : Lumina.Excel.GeneratedSheets.BaseParam
         }
     }
 }
+*/

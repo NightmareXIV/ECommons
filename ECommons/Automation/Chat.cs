@@ -21,7 +21,7 @@ SOFTWARE.
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.String;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -144,7 +144,7 @@ public class Chat
     /// <param name="generalActionId"></param>
     public void ExecuteGeneralAction(uint generalActionId)
     {
-        ExecuteCommand($"/generalaction \"{Svc.Data.GetExcelSheet<GeneralAction>().GetRow(generalActionId).Name}\"");
+        ExecuteCommand($"/generalaction \"{Svc.Data.GetExcelSheet<GeneralAction>().GetRowOrDefault(generalActionId)?.Name}\"");
     }
 
     /// <summary>
@@ -153,7 +153,7 @@ public class Chat
     /// <param name="actionId"></param>
     public void ExecuteAction(uint actionId)
     {
-        ExecuteCommand($"/action \"{Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(actionId).Name}\"");
+        ExecuteCommand($"/action \"{Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRowOrDefault(actionId)?.Name}\"");
     }
 
     /// <summary>

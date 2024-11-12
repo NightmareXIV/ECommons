@@ -1,7 +1,8 @@
 using ECommons.DalamudServices;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
@@ -11,9 +12,9 @@ namespace ECommons.ExcelServices;
 public static class ExcelWorldHelper
 {
     [Obsolete("Please use Get")]
-    public static World GetWorldByName(string name) => Get(name);
+    public static World? GetWorldByName(string name) => Get(name);
 
-    private static Dictionary<string, World> NameCache = [];
+    private static Dictionary<string, World?> NameCache = [];
 
     public static bool IsPublic(this World w)
     {
@@ -21,7 +22,7 @@ public static class ExcelWorldHelper
         return false;//w.RowId.EqualsAny<uint>(408, 409, 410, 411, 415);
     }
 
-    public static World Get(string name, bool onlyPublic = false)
+    public static World? Get(string name, bool onlyPublic = false)
     {
         if(name == null) return null;
         if(NameCache.TryGetValue(name, out var world)) return world;
@@ -33,10 +34,10 @@ public static class ExcelWorldHelper
         return null;
     }
 
-    public static World Get(uint id, bool onlyPublic = false)
+    public static World? Get(uint id, bool onlyPublic = false)
     {
-        var result = Svc.Data.GetExcelSheet<World>().GetRow(id);
-        if(result != null && (!onlyPublic || result.Region.EqualsAny(Enum.GetValues<Region>().Select(z => (byte)z).ToArray())))
+        var result = Svc.Data.GetExcelSheet<World>().GetRowOrDefault(id);
+        if(result != null && (!onlyPublic || result.Value.Region.EqualsAny(Enum.GetValues<Region>().Select(z => (byte)z).ToArray())))
         {
             return result;
         }
@@ -48,14 +49,16 @@ public static class ExcelWorldHelper
 
     public static bool TryGet(string name, out World result)
     {
-        result = Get(name);
-        return result != null;
+        var r = Get(name);
+        result = r ?? default;
+        return r != null;
     }
 
     public static bool TryGet(uint id, out World result)
     {
-        result = Get(id);
-        return result != null;
+        var r = Get(id);
+        result = r ?? default;
+        return r != null;
     }
 
     public static World[] GetPublicWorlds(Region? region = null)
@@ -65,7 +68,7 @@ public static class ExcelWorldHelper
 
     public static World[] GetPublicWorlds(uint dataCenter)
     {
-        return Svc.Data.GetExcelSheet<World>().Where(x => x.IsPublic() && x.DataCenter.Row == dataCenter).ToArray();
+        return Svc.Data.GetExcelSheet<World>().Where(x => x.IsPublic() && x.DataCenter.RowId == dataCenter).ToArray();
     }
 
     public static WorldDCGroupType[] GetDataCenters(Region? region = null, bool checkForPublicWorlds = false)
@@ -79,10 +82,10 @@ public static class ExcelWorldHelper
     }
 
     [Obsolete("Please use Get")]
-    public static World GetWorldById(uint id) => Get(id);
-    public static World Get(uint id)
+    public static World? GetWorldById(uint id) => Get(id);
+    public static World? Get(uint id)
     {
-        return Svc.Data.GetExcelSheet<World>().GetRow(id);
+        return Svc.Data.GetExcelSheet<World>().GetRowOrDefault(id);
     }
 
     [Obsolete("Please use GetName")]
@@ -94,10 +97,10 @@ public static class ExcelWorldHelper
     }
 
     [Obsolete("Please use Get")]
-    public static World GetPublicWorldById(uint id) => Get(id, true);
+    public static World? GetPublicWorldById(uint id) => Get(id, true);
 
     [Obsolete("Please use GetName")]
-    public static string GetPublicWorldNameById(uint id) => Get(id, true).Name.ToString();
+    public static string GetPublicWorldNameById(uint id) => Get(id, true)?.Name.ToString();
 
     [Obfuscation(Exclude = true)]
     public enum Region
@@ -111,8 +114,8 @@ public static class ExcelWorldHelper
     public static Region GetRegion(this World world)
     {
         var dc = world.DataCenter;
-        var dcg = Svc.Data.GetExcelSheet<WorldDCGroupType>().GetRow(dc.Row);
+        var dcg = Svc.Data.GetExcelSheet<WorldDCGroupType>().GetRowOrDefault(dc.Value.RowId);
         if(dcg == null) return 0;
-        return (Region)dcg.Region;
+        return (Region)dcg.Value.Region;
     }
 }

@@ -25,8 +25,8 @@ public static unsafe class UniversalParty
                 new()
                 {
                     Name = Player.Name,
-                    HomeWorld = new(Player.Object.HomeWorld),
-                    CurrentWorld = new(Player.Object.CurrentWorld),
+                    HomeWorld = Player.Object.HomeWorld,
+                    CurrentWorld = Player.Object.CurrentWorld,
                     GameObjectInternal = Player.Object,
                     ContentID = Player.CID,
                 }
@@ -41,13 +41,13 @@ public static unsafe class UniversalParty
                     {
                         var x = group.GroupMembers[c];
                         var name = GenericHelpers.Read(x.Name);
-                        if(!(name == Player.Name && x.HomeWorld == Player.Object.HomeWorld.Id))
+                        if(!(name == Player.Name && x.HomeWorld == Player.Object.HomeWorld.RowId))
                         {
                             span.Add(new()
                             {
                                 Name = name,
-                                HomeWorld = new((uint)x.HomeWorld),
-                                CurrentWorld = new((uint)x.CurrentWorld),
+                                HomeWorld = new(Svc.Data.Excel, (uint)x.HomeWorld),
+                                CurrentWorld = new(Svc.Data.Excel, (uint)x.CurrentWorld),
                                 ContentID = x.ContentId,
                             });
                         }
@@ -63,8 +63,8 @@ public static unsafe class UniversalParty
                         span.Add(new()
                         {
                             Name = x.Name.ToString(),
-                            HomeWorld = new(x.World),
-                            CurrentWorld = new(Player.Object!.CurrentWorld),
+                            HomeWorld = x.World,
+                            CurrentWorld = Player.Object!.CurrentWorld,
                             GameObjectInternal = x.GameObject,
                             ContentID = (ulong)x.ContentId,
                         });

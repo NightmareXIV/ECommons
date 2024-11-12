@@ -24,7 +24,7 @@ public partial class AddonMaster
         public AtkComponentButton* NextButton => Base->GetButtonNodeById(74);
         public AtkComponentButton* CloseButton => Base->GetButtonNodeById(73);
 
-        public override string AddonDescription { get; } = "Unknown: ItemInspectionResult";
+        public override string AddonDescription { get; } = "Eureka/Bozja lootbox results";
 
         public void Next() => ClickButtonIfEnabled(NextButton);
         public void Close() => ClickButtonIfEnabled(CloseButton);

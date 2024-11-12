@@ -12,7 +12,7 @@ public partial class AddonMaster
         public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(11);
         public AtkComponentButton* SettingsButton => Addon->GetButtonNodeById(12);
 
-        public override string AddonDescription { get; } = "Unknown: VoteMvp";
+        public override string AddonDescription { get; } = "Player commendations simple voting window";
 
         public void Ok() => ClickButtonIfEnabled(OkButton);
         public void Cancel() => ClickButtonIfEnabled(CancelButton);

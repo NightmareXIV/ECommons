@@ -82,14 +82,17 @@ public static unsafe partial class ImGuiEx
             EndRow(uniqueId, onAcceptDragDropPayload);
         }
 
-        public void SetRowColor(string uniqueId)
+        public bool SetRowColor(string uniqueId)
         {
+            var ret = false;
             if(CurrentDrag == uniqueId)
             {
                 var col = GradientColor.Get(EColor.Green, EColor.Green with { W = EColor.Green.W / 4 }, 500).ToUint();
                 ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, col);
                 ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg1, col);
+                ret = true;
             }
+            return ret;
         }
 
         private void EndRow(string uniqueId, Action<string> onAcceptDragDropPayload)
