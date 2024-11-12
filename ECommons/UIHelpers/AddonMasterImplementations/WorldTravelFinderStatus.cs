@@ -1,6 +1,6 @@
 ﻿using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -15,9 +15,9 @@ public partial class AddonMaster
         public string PositionInQueueString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[3].String).ExtractText();
         public string TimeElapsedString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[4].String).ExtractText();
         public string TimeRemainingString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[5].String).ExtractText();
-
+        /* TODO: fix or delete
         public World? StartingWorld => GenericHelpers.FindRow<World>(x => !string.IsNullOrEmpty(x!.Name) && x.Name == StartingWorldString);
-        public World? DestinationWorld => GenericHelpers.FindRow<World>(x => !string.IsNullOrEmpty(x!.Name) && x.Name == DestinationWorldString);
+        public World? DestinationWorld => GenericHelpers.FindRow<World>(x => !string.IsNullOrEmpty(x!.Name) && x.Name == DestinationWorldString);*/
 
         public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(13);
 
