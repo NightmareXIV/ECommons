@@ -1,5 +1,4 @@
-﻿using Dalamud.Game;
-using Dalamud.Game.ClientState.Conditions;
+﻿using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
@@ -17,7 +16,6 @@ using ECommons.UIHelpers.AddonMasterImplementations;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
-using Lumina.Excel;
 using Lumina.Excel.Sheets;
 using Lumina.Text.ReadOnly;
 using Newtonsoft.Json;
@@ -25,13 +23,11 @@ using PInvoke;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -41,6 +37,24 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static T? FirstOrNull<T>(this IEnumerable<T> values, Func<T, bool> predicate) where T : struct
+    {
+        if(values.TryGetFirst(predicate, out var result))
+        {
+            return result;
+        }
+        return null;
+    }
+
+    public static T? FirstOrNull<T>(this IEnumerable<T> values) where T:struct
+    {
+        if(values.TryGetFirst(out var result))
+        {
+            return result;
+        }
+        return null;
+    }
+
     public static IEnumerable<T?> AsNullable<T>(this IEnumerable<T> values) where T : struct
     {
         return values.Cast<T?>();
