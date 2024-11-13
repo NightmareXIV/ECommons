@@ -365,6 +365,74 @@ public static class DalamudReflector
     }
 
     /// <summary>
+    /// Installs a plugin from a remote Plugin Master.
+    /// </summary>
+    /// <param name="masterURL">the remote Master for <see cref="GetPluginMaster"/>.</param>
+    /// <param name="pluginInternalName">the internal name of the plugin you want to install.</param>
+    /// <returns>whether the install succeeded.</returns>
+    /// <remarks>
+    /// Will provide Error logs for any type of failure.<br/>
+    /// Will add the remote Master as a Repo if it isn't already one.<br/>
+    /// Installs via <see cref="Dalamud.Plugin.Internal.PluginManager.InstallPluginAsync"/>.
+    /// </remarks>
+    public static async Task<bool> AddPlugin(string masterURL, string
+            pluginInternalName)
+    {
+        // Get the remote manifest
+        var plugins = await GetPluginMaster(masterURL);
+        if (plugins == null || plugins.Count == 0)
+            return false; // Will already have a log
+        var pluginManifest = plugins.FirstOrDefault(x => (string)x.GetFoP("InternalName") == pluginInternalName);
+        if (pluginManifest == null)
+        {
+            PluginLog.Error("[ECommons] [DalamudReflector] Failed to add plugin:\n" +
+                            "Failed to find plugin in master:\n" +
+                            $"Master URL: {masterURL}\n" +
+                            $"Plugin Internal Name: {pluginInternalName}");
+            return false;
+        }
+
+        object pm = null;
+        var error = "";
+        try { pm = GetPluginManager(); } catch(Exception e) { error = e.Message; }
+        if (pm == null || error != "")
+        {
+            PluginLog.Error("[ECommons] [DalamudReflector] Failed to add plugin:\n" +
+                            "Failed to get plugin manager:\n" +
+                            error);
+            return false;
+        }
+
+        // Install the plugin
+        try
+        {
+            if (!HasRepo(masterURL))
+                AddRepo(masterURL, true);
+            ReloadPluginMasters(); // necessary to avoid it be listed as orphaned
+
+            var installCall = pm.Call<Task>("InstallPluginAsync", [pluginManifest, false, PluginLoadReason.Installer, null]);
+            await installCall;
+
+            var localPlugin = installCall.GetFoP("Result");
+            // A good check, but mostly here so that it will Throw if not installed
+            if ((bool)localPlugin.GetFoP("IsLoaded")) {
+                return true;
+            }
+        }
+        catch (Exception e)
+        {
+            PluginLog.Error("[ECommons] [DalamudReflector] Failed to add plugin:\n" +
+                            "Failed to finish installing plugin:\n" +
+                            e.Message + "\n" + e.StackTrace);
+            return false;
+        }
+
+        PluginLog.Error("[ECommons] [DalamudReflector] Failed to add plugin:\n" +
+                        "Unkown failure:\n" +
+                        JsonConvert.SerializeObject(new {masterURL}));
+        return false;
+    }
+    /// <summary>
     /// Reloads the Dalamud Plugin Manager, effectively the same as closing and reopening the Plugin Installer window.
     /// </summary>
     public static void ReloadPluginMasters()
