@@ -432,6 +432,51 @@ public static class DalamudReflector
                         JsonConvert.SerializeObject(new {masterURL}));
         return false;
     }
+
+    /// <summary>
+    /// Unloads then Deletes the current plugin on the next Tick.<br/>
+    /// The plugin that called this. Your plugin.
+    /// </summary>
+    /// <remarks>
+    /// Uses the internal
+    /// <see cref="Dalamud.Plugin.Internal.Types.LocalPlugin.UnloadAsync"/><br/>
+    /// and <see cref="Dalamud.Plugin.Internal.PluginManager.RemovePlugin"/>
+    /// </remarks>
+    public static void RemoveCurrentPlugin()
+    {
+        object pm = null;
+        var error = "";
+        try { pm = GetPluginManager(); } catch(Exception e) { error = e.Message; }
+        if (pm == null || error != "")
+        {
+            PluginLog.Error("[ECommons] [DalamudReflector] Failed to remove plugin:\n" +
+                            "Failed to get plugin manager:\n" +
+                            error);
+            return;
+        }
+
+        // If you wanted to be able to delete other plugins, you would replace this
+        // with functionality that creates a LocalPlugin instance based on the
+        // plugin's InternalName and searching InstalledPlugins
+        TryGetLocalPlugin(out var localPlugin, out _, out _);
+
+        // Default unload mode
+        var disposalMode = Enum.Parse(Svc.PluginInterface.GetType().Assembly.GetType
+            ("Dalamud.Plugin.Internal.Types.PluginLoaderDisposalMode")!, "WaitBeforeDispose");
+
+        // Save and run the Action that unloads+removes the plugin outside the plugin code
+        Svc.Framework.RunOnTick((Action)UnloadAndRemove);
+        return;
+
+        // Actual series of events to unload and remove the plugin
+        async void UnloadAndRemove()
+        {
+            var unloading = localPlugin.Call<Task>("UnloadAsync", [disposalMode]);
+            await unloading;
+            pm.Call("RemovePlugin", [localPlugin]);
+        }
+    }
+
     /// <summary>
     /// Reloads the Dalamud Plugin Manager, effectively the same as closing and reopening the Plugin Installer window.
     /// </summary>
