@@ -11,11 +11,13 @@ using System.Runtime.ConstrainedExecution;
 namespace ECommons.ImGuiMethods;
 public static unsafe partial class ImGuiEx
 {
-    public class RealtimeDragDrop 
+    public class RealtimeDragDrop<T>
     {
-        public RealtimeDragDrop(string dragDropId)
+        public RealtimeDragDrop(string dragDropId, Func<T, string> getUniqueId, bool smallButton = false)
         {
             this.DragDropID = dragDropId;
+            this.GetUniqueId = getUniqueId;
+            this.Small = smallButton;
         }
 
         List<(Vector2 RowPos, Vector2 ButtonPos, Action BeginDraw, Action AcceptDraw)> MoveCommands = [];
@@ -23,6 +25,9 @@ public static unsafe partial class ImGuiEx
         Vector2 ButtonDragDropCurpos;
         string DragDropID;
         string? CurrentDrag = null;
+        Func<T, string> GetUniqueId;
+        bool Small = false;
+
         public void Begin()
         {
             MoveCommands.Clear();
@@ -33,20 +38,20 @@ public static unsafe partial class ImGuiEx
             InitialDragDropCurpos = ImGui.GetCursorPos();
         }
 
-        public void DrawButtonDummy<T>(T item, List<T> list, Func<T, string> getUniqueId, int targetPosition)
+        public void DrawButtonDummy(T item, List<T> list, int targetPosition)
         {
             void executeMove(string x)
             {
-                GenericHelpers.MoveItemToPosition<T>(list, (s) => getUniqueId(s) == x, targetPosition);
+                GenericHelpers.MoveItemToPosition<T>(list, (s) => GetUniqueId(s) == x, targetPosition);
             }
-            DrawButtonDummy(getUniqueId(item), executeMove);
+            DrawButtonDummy(GetUniqueId(item), executeMove);
         }
 
-        public void DrawButtonDummy<T>(string uniqueId, List<T> list, Func<T, string> getUniqueId, int targetPosition)
+        public void DrawButtonDummy(string uniqueId, List<T> list, int targetPosition)
         {
             void executeMove(string x)
             {
-                GenericHelpers.MoveItemToPosition<T>(list, (s) => getUniqueId(s) == x, targetPosition);
+                GenericHelpers.MoveItemToPosition<T>(list, (s) => GetUniqueId(s) == x, targetPosition);
             }
             DrawButtonDummy(uniqueId, executeMove);
         }
@@ -56,6 +61,7 @@ public static unsafe partial class ImGuiEx
             ImGui.PushFont(UiBuilder.IconFont);
             ButtonDragDropCurpos = ImGui.GetCursorPos();
             var size = ImGuiHelpers.GetButtonSize(FontAwesomeIcon.ArrowsUpDownLeftRight.ToIconString());
+            if(Small) size = size with { Y = ImGui.CalcTextSize(FontAwesomeIcon.ArrowsUpDownLeftRight.ToIconString()).Y };
             ImGui.Dummy(size);
             ImGui.PopFont();
             EndRow(uniqueId, onAcceptDragDropPayload);
@@ -81,7 +87,15 @@ public static unsafe partial class ImGuiEx
             void sourceAction()
             {
                 ImGui.PushFont(UiBuilder.IconFont);
-                ImGui.Button($"{FontAwesomeIcon.ArrowsUpDownLeftRight.ToIconString()}##{DragDropID}Move{uniqueId}");
+                var btxt = $"{FontAwesomeIcon.ArrowsUpDownLeftRight.ToIconString()}##{DragDropID}Move{uniqueId}";
+                if(Small)
+                {
+                    ImGui.SmallButton(btxt);
+                }
+                else
+                {
+                    ImGui.Button(btxt);
+                }
                 ImGui.PopFont();
                 if(ImGui.IsItemHovered())
                 {
@@ -128,7 +142,7 @@ public static unsafe partial class ImGuiEx
             return uniqueId != null;
         }
 
-        public void End()
+        public void End(int numRows = 1)
         {
             foreach(var x in MoveCommands)
             {
@@ -136,7 +150,8 @@ public static unsafe partial class ImGuiEx
                 x.BeginDraw();
                 x.AcceptDraw();
                 ImGui.SetCursorPos(x.RowPos);
-                ImGui.Dummy(new Vector2(ImGui.GetContentRegionAvail().X, ImGuiHelpers.GetButtonSize(" ").Y));
+                var height = ImGui.GetFrameHeight() * numRows + ImGui.GetStyle().ItemInnerSpacing.Y - numRows;
+                ImGui.Dummy(new Vector2(ImGui.GetContentRegionAvail().X, height));
                 x.AcceptDraw();
             }
         }
