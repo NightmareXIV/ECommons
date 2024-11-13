@@ -1,4 +1,5 @@
-﻿using Dalamud.Game.ClientState.Conditions;
+﻿using Dalamud.Common;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
@@ -16,6 +17,7 @@ using ECommons.UIHelpers.AddonMasterImplementations;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
+using Lumina.Excel;
 using Lumina.Excel.Sheets;
 using Lumina.Text.ReadOnly;
 using Newtonsoft.Json;
@@ -1656,21 +1658,14 @@ public static unsafe partial class GenericHelpers
     [Obsolete($"Use MemoryHelper.ReadRaw")]
     public static byte[] ReadRaw(IntPtr memoryAddress, int length) => MemoryHelper.ReadRaw(memoryAddress, length);
 
-    //TODO: fix or remove
-    /* 
-    public static ExcelSheet<T> GetSheet<T>(ClientLanguage? language = null) where T : ExcelRow
-        => Svc.Data.GetExcelSheet<T>(language ?? Svc.ClientState.ClientLanguage)!;
-
-    public static uint GetRowCount<T>() where T : ExcelRow
-        => GetSheet<T>().RowCount;
-
-    public static T? GetRow<T>(uint rowId, uint subRowId = uint.MaxValue, ClientLanguage? language = null) where T : ExcelRow
-        => GetSheet<T>(language).GetRowOrDefault(rowId, subRowId);
-
-    public static T? FindRow<T>(Func<T?, bool> predicate) where T : ExcelRow
-        => GetSheet<T>().FirstOrDefault(predicate, null);
-
-    public static IEnumerable<T> FindRows<T>(Func<T?, bool> predicate) where T : ExcelRow
-        => GetSheet<T>().Where(predicate);
-    */
+    public static IEnumerable<T> All<T>(this SubrowExcelSheet<T> subrowSheet) where T:struct, IExcelSubrow<T>
+    {
+        foreach(var x in subrowSheet)
+        {
+            foreach(var z in x)
+            {
+                yield return z;
+            }
+        }
+    }
 }
