@@ -1,5 +1,4 @@
-﻿using Dalamud.Game;
-using Dalamud.Game.ClientState.Conditions;
+﻿using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
@@ -17,8 +16,8 @@ using ECommons.UIHelpers.AddonMasterImplementations;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
-using Lumina.Excel;
 using Lumina.Excel.Sheets;
+using Lumina.Text.ReadOnly;
 using Newtonsoft.Json;
 using PInvoke;
 using System;
@@ -38,6 +37,34 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static T? FirstOrNull<T>(this IEnumerable<T> values, Func<T, bool> predicate) where T : struct
+    {
+        if(values.TryGetFirst(predicate, out var result))
+        {
+            return result;
+        }
+        return null;
+    }
+
+    public static T? FirstOrNull<T>(this IEnumerable<T> values) where T:struct
+    {
+        if(values.TryGetFirst(out var result))
+        {
+            return result;
+        }
+        return null;
+    }
+
+    public static IEnumerable<T?> AsNullable<T>(this IEnumerable<T> values) where T : struct
+    {
+        return values.Cast<T?>();
+    }
+
+    public static bool ContainsNullable<T>(this IEnumerable<T> values, T? value) where T : struct
+    {
+        if(value == null) return false;
+        return System.Linq.Enumerable.Contains(values, value.Value);
+    }
 
     /// <summary>
     /// Adds all <paramref name="values"/> to the <paramref name="collection"/>.
@@ -874,7 +901,7 @@ public static unsafe partial class GenericHelpers
     /// <param name="onlyFirst">Whether to find first text payload and only return it</param>
     /// <returns>String that only includes text payloads</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ExtractText(this Lumina.Text.SeString s, bool onlyFirst = false)
+    public static string ExtractText(this ReadOnlySeString s, bool onlyFirst = false)
     {
         return s.ToDalamudString().ExtractText(onlyFirst);
     }
