@@ -19,16 +19,19 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
+using Lumina.Text.ReadOnly;
 using Newtonsoft.Json;
 using PInvoke;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -38,6 +41,16 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static IEnumerable<T?> AsNullable<T>(this IEnumerable<T> values) where T : struct
+    {
+        return values.Cast<T?>();
+    }
+
+    public static bool ContainsNullable<T>(this IEnumerable<T> values, T? value) where T : struct
+    {
+        if(value == null) return false;
+        return System.Linq.Enumerable.Contains(values, value.Value);
+    }
 
     /// <summary>
     /// Adds all <paramref name="values"/> to the <paramref name="collection"/>.
@@ -874,7 +887,7 @@ public static unsafe partial class GenericHelpers
     /// <param name="onlyFirst">Whether to find first text payload and only return it</param>
     /// <returns>String that only includes text payloads</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ExtractText(this Lumina.Text.SeString s, bool onlyFirst = false)
+    public static string ExtractText(this ReadOnlySeString s, bool onlyFirst = false)
     {
         return s.ToDalamudString().ExtractText(onlyFirst);
     }
