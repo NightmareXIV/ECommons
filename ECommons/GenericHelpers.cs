@@ -1017,7 +1017,7 @@ public static unsafe partial class GenericHelpers
             .Select(i => str.Substring(i * chunkSize, chunkSize));
     }
 
-    public static string GetTerritoryName(this uint terr)
+    public static string GetTerritoryName(this Number terr)
     {
         var t = Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(terr);
         return $"{terr} | {t?.ContentFinderCondition.ValueNullable?.Name.ToString().Default(t?.PlaceName.ValueNullable?.Name.ToString())}";

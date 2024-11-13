@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FFXIVClientStructs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -10,7 +11,7 @@ namespace ECommons.MathHelpers;
 /// Ultimate number union. Offers same performance as using numbers directly.
 /// </summary>
 [StructLayout(LayoutKind.Explicit, Size = 8)]
-public unsafe readonly record struct Number
+public unsafe readonly struct Number : IEquatable<Number>
 {
     [FieldOffset(0)] private readonly long LongValue;
     [FieldOffset(0)] private readonly ulong ULongValue;
@@ -93,8 +94,38 @@ public unsafe readonly record struct Number
     public static implicit operator Number(byte n) => new(n);
     public static implicit operator Number(sbyte n) => new(n);
 
+    public static bool operator ==(Number left, Number right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Number left, Number right)
+    {
+        return !(left == right);
+    }
+
     public readonly override string ToString()
     {
         return $"{LongValue}";
     }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Number number && Equals(number);
+    }
+
+    public bool Equals(Number other)
+    {
+        return LongValue == other.LongValue;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(LongValue);
+    }
+
+    public static Number operator +(Number a, Number b) => new(a.LongValue + b.LongValue);
+    public static Number operator -(Number a, Number b) => new(a.LongValue - b.LongValue);
+    public static Number operator *(Number a, Number b) => new(a.LongValue * b.LongValue);
+    public static Number operator /(Number a, Number b) => new(a.LongValue / b.LongValue);
 }

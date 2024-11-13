@@ -2,6 +2,7 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
+using AtkEvent = ECommons.Automation.UIInput.AtkEvent;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unmanaged
@@ -84,10 +85,10 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
             new()
             {
                 Listener = (AtkEventListener*)Base,
-                Target = &AtkStage.Instance()->AtkEventTarget
+                Target = &AtkStage.Instance()->AtkEventTarget,
+                Flags = flags
             } 
         };
-        *(byte*)(((nint)ret) + 0x2A) = flags;
         return *ret;
     }
 

@@ -1,6 +1,7 @@
 ﻿using ECommons.DalamudServices;
 using ECommons.EzHookManager;
 using ECommons.UIHelpers.AddonMasterImplementations;
+using FFXIVClientStructs;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Linq;
@@ -117,46 +118,40 @@ public static unsafe class ClickHelperExtensions
 
     public static void ClickAddonButton(this AtkComponentButton target, AtkUnitBase* addon, AtkEvent* eventData)
     {
-        ClickHelper.Listener.Invoke((nint)addon, eventData->GetEventType(), eventData->Param, eventData);
+        ClickHelper.Listener.Invoke((nint)addon, eventData->Type, eventData->Param, eventData);
     }
 
     public static void ClickAddonButton(this AtkCollisionNode target, AtkUnitBase* addon, AtkEvent* eventData)
     {
-        ClickHelper.Listener.Invoke((nint)addon, eventData->GetEventType(), eventData->Param, eventData);
+        ClickHelper.Listener.Invoke((nint)addon, eventData->Type, eventData->Param, eventData);
     }
 
     public static void ClickAddonButton(this AtkComponentButton target, AtkUnitBase* addon)
     {
         var btnRes = target.AtkComponentBase.OwnerNode->AtkResNode;
-        var evt = btnRes.AtkEventManager.Event;
+        var evt = (AtkEvent*)btnRes.AtkEventManager.Event;
 
-        addon->ReceiveEvent(evt->GetEventType(), (int)evt->Param, btnRes.AtkEventManager.Event);
+        addon->ReceiveEvent(evt->Type, (int)evt->Param, btnRes.AtkEventManager.Event);
     }
 
     public static void ClickAddonButton(this AtkCollisionNode target, AtkUnitBase* addon)
     {
         var btnRes = target.AtkResNode;
-        var evt = btnRes.AtkEventManager.Event;
+        var evt = (AtkEvent*)btnRes.AtkEventManager.Event;
 
-        while(evt->GetEventType() != AtkEventType.MouseClick)
+        while(evt->Type != AtkEventType.MouseClick)
             evt = evt->NextEvent;
 
-        addon->ReceiveEvent(evt->GetEventType(), (int)evt->Param, btnRes.AtkEventManager.Event);
+        addon->ReceiveEvent(evt->Type, (int)evt->Param, btnRes.AtkEventManager.Event);
     }
 
 
     public static void ClickRadioButton(this AtkComponentRadioButton target, AtkUnitBase* addon)
     {
         var btnRes = target.OwnerNode->AtkResNode;
-        var evt = btnRes.AtkEventManager.Event;
+        var evt = (AtkEvent*)btnRes.AtkEventManager.Event;
 
-        Svc.Log.Debug($"{evt->GetEventType()} {evt->Param}");
-        addon->ReceiveEvent(evt->GetEventType(), (int)evt->Param, btnRes.AtkEventManager.Event);
-    }
-
-    public static AtkEventType GetEventType(this AtkEvent evt)
-    {
-        var ptr = &evt;
-        return *(AtkEventType*)(((nint)ptr) + 28);
+        Svc.Log.Debug($"{evt->Type} {evt->Param}");
+        addon->ReceiveEvent(evt->Type, (int)evt->Param, btnRes.AtkEventManager.Event);
     }
 }

@@ -5,6 +5,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.Sheets;
 using System;
 using System.Text.RegularExpressions;
+using AtkEvent = ECommons.Automation.UIInput.AtkEvent;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -96,9 +97,9 @@ public partial class AddonMaster
             {
                 if (IsEnabled)
                 {
-                    var evt = CheckBox->OwnerNode->AtkResNode.AtkEventManager.Event;
+                    var evt = (AtkEvent*)CheckBox->OwnerNode->AtkResNode.AtkEventManager.Event;
                     var data = stackalloc AtkEventData[1];
-                    addon->AtkUnitBase.ReceiveEvent(evt->GetEventType(), (int)evt->Param, evt, data);
+                    addon->AtkUnitBase.ReceiveEvent(evt->Type, (int)evt->Param, (FFXIVClientStructs.FFXIV.Component.GUI.AtkEvent*)evt, data);
                 }
             }
         }
