@@ -12,7 +12,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Threading.Tasks;
 using CapturedPluginState = (string InternalName, System.Version Version, bool IsLoaded);
+using Task = System.Threading.Tasks.Task;
+
 #nullable disable
 
 namespace ECommons.Reflection;
@@ -78,6 +81,42 @@ public static class DalamudReflector
         return Svc.PluginInterface.GetType().Assembly.
                 GetType("Dalamud.Service`1", true).MakeGenericType(Svc.PluginInterface.GetType().Assembly.GetType("Dalamud.Plugin.Internal.PluginManager", true)).
                 GetMethod("Get").Invoke(null, BindingFlags.Default, null, Array.Empty<object>(), null);
+    }
+
+    /// <summary>
+    /// Loads a remote Plugin Master.
+    /// </summary>
+    /// <param name="masterURL">The URL to the remote Master.</param>
+    /// <returns>
+    /// A List of <see cref="Dalamud.Plugin.Internal.Types.Manifest.RemotePluginManifest"/>s for each plugin in the Master.<br/>
+    /// List will be null if the operation fails.
+    /// </returns>
+    public static async Task<List<object>?> GetPluginMaster(string masterURL)
+    {
+        List<object>? plugins = null;
+
+        try
+        {
+            var happyHttpClient = GetService("Dalamud.Networking.Http.HappyHttpClient");
+            var pluginRepository = Activator.CreateInstance(
+                Svc.PluginInterface.GetType().Assembly
+                    .GetType("Dalamud.Plugin.Internal.Types.PluginRepository")!,
+                happyHttpClient, masterURL, true);
+            await pluginRepository.Call<Task>("ReloadPluginMasterAsync", []);
+
+            var pluginMaster = pluginRepository!.GetType()
+                .GetProperty("PluginMaster")!
+                .GetValue(pluginRepository) as System.Collections.IEnumerable;
+
+            plugins = pluginMaster?.Cast<object>().ToList();
+        }
+        catch(Exception e)
+        {
+            PluginLog.Error("[ECommons] [DalamudReflector] Failed to get plugin master:\n" + e.Message + "\n" + e.StackTrace);
+            return null;
+        }
+
+        return plugins;
     }
 
     public static object GetService(string serviceFullName)
