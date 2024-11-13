@@ -117,12 +117,12 @@ public static unsafe class ClickHelperExtensions
 
     public static void ClickAddonButton(this AtkComponentButton target, AtkUnitBase* addon, AtkEvent* eventData)
     {
-        ClickHelper.Listener.Invoke((nint)addon, eventData->Type, eventData->Param, eventData);
+        ClickHelper.Listener.Invoke((nint)addon, eventData->GetEventType(), eventData->Param, eventData);
     }
 
     public static void ClickAddonButton(this AtkCollisionNode target, AtkUnitBase* addon, AtkEvent* eventData)
     {
-        ClickHelper.Listener.Invoke((nint)addon, eventData->Type, eventData->Param, eventData);
+        ClickHelper.Listener.Invoke((nint)addon, eventData->GetEventType(), eventData->Param, eventData);
     }
 
     public static void ClickAddonButton(this AtkComponentButton target, AtkUnitBase* addon)
@@ -130,7 +130,7 @@ public static unsafe class ClickHelperExtensions
         var btnRes = target.AtkComponentBase.OwnerNode->AtkResNode;
         var evt = btnRes.AtkEventManager.Event;
 
-        addon->ReceiveEvent(evt->Type, (int)evt->Param, btnRes.AtkEventManager.Event);
+        addon->ReceiveEvent(evt->GetEventType(), (int)evt->Param, btnRes.AtkEventManager.Event);
     }
 
     public static void ClickAddonButton(this AtkCollisionNode target, AtkUnitBase* addon)
@@ -138,10 +138,10 @@ public static unsafe class ClickHelperExtensions
         var btnRes = target.AtkResNode;
         var evt = btnRes.AtkEventManager.Event;
 
-        while(evt->Type != AtkEventType.MouseClick)
+        while(evt->GetEventType() != AtkEventType.MouseClick)
             evt = evt->NextEvent;
 
-        addon->ReceiveEvent(evt->Type, (int)evt->Param, btnRes.AtkEventManager.Event);
+        addon->ReceiveEvent(evt->GetEventType(), (int)evt->Param, btnRes.AtkEventManager.Event);
     }
 
 
@@ -150,7 +150,13 @@ public static unsafe class ClickHelperExtensions
         var btnRes = target.OwnerNode->AtkResNode;
         var evt = btnRes.AtkEventManager.Event;
 
-        Svc.Log.Debug($"{evt->Type} {evt->Param}");
-        addon->ReceiveEvent(evt->Type, (int)evt->Param, btnRes.AtkEventManager.Event);
+        Svc.Log.Debug($"{evt->GetEventType()} {evt->Param}");
+        addon->ReceiveEvent(evt->GetEventType(), (int)evt->Param, btnRes.AtkEventManager.Event);
+    }
+
+    public static AtkEventType GetEventType(this AtkEvent evt)
+    {
+        var ptr = &evt;
+        return *(AtkEventType*)(((nint)ptr) + 28);
     }
 }

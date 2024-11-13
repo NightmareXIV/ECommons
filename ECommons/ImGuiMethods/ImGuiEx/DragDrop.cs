@@ -33,6 +33,9 @@ public static unsafe partial class ImGuiEx
             MoveCommands.Clear();
         }
 
+        /// <summary>
+        /// Call this in the beginning of table's row (first column). This function just stores cursor.
+        /// </summary>
         public void NextRow()
         {
             InitialDragDropCurpos = ImGui.GetCursorPos();

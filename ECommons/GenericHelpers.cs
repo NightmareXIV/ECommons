@@ -18,17 +18,20 @@ using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
 using Lumina.Excel;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
+using Lumina.Text.ReadOnly;
 using Newtonsoft.Json;
 using PInvoke;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -38,6 +41,16 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static IEnumerable<T?> AsNullable<T>(this IEnumerable<T> values) where T : struct
+    {
+        return values.Cast<T?>();
+    }
+
+    public static bool ContainsNullable<T>(this IEnumerable<T> values, T? value) where T : struct
+    {
+        if(value == null) return false;
+        return System.Linq.Enumerable.Contains(values, value.Value);
+    }
 
     /// <summary>
     /// Adds all <paramref name="values"/> to the <paramref name="collection"/>.
@@ -874,7 +887,7 @@ public static unsafe partial class GenericHelpers
     /// <param name="onlyFirst">Whether to find first text payload and only return it</param>
     /// <returns>String that only includes text payloads</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ExtractText(this Lumina.Text.SeString s, bool onlyFirst = false)
+    public static string ExtractText(this ReadOnlySeString s, bool onlyFirst = false)
     {
         return s.ToDalamudString().ExtractText(onlyFirst);
     }
@@ -990,8 +1003,8 @@ public static unsafe partial class GenericHelpers
 
     public static string GetTerritoryName(this uint terr)
     {
-        var t = Svc.Data.GetExcelSheet<TerritoryType>().GetRow(terr);
-        return $"{terr} | {t?.ContentFinderCondition?.Value?.Name?.ToString().Default(t?.PlaceName.Value?.Name?.ToString())}";
+        var t = Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(terr);
+        return $"{terr} | {t?.ContentFinderCondition.ValueNullable?.Name.ToString().Default(t?.PlaceName.ValueNullable?.Name.ToString())}";
     }
 
     public static T FirstOr0<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
@@ -1041,7 +1054,7 @@ public static unsafe partial class GenericHelpers
     }
 
     [Obsolete($"Please use ExcelWorldHelper.TryGetWorldByName")]
-    public static bool TryGetWorldByName(string world, out Lumina.Excel.GeneratedSheets.World worldId) => ExcelWorldHelper.TryGetWorldByName(world, out worldId);
+    public static bool TryGetWorldByName(string world, out Lumina.Excel.Sheets.World worldId) => ExcelWorldHelper.TryGetWorldByName(world, out worldId);
 
     public static Vector4 Invert(this Vector4 v)
     {
@@ -1629,6 +1642,8 @@ public static unsafe partial class GenericHelpers
     [Obsolete($"Use MemoryHelper.ReadRaw")]
     public static byte[] ReadRaw(IntPtr memoryAddress, int length) => MemoryHelper.ReadRaw(memoryAddress, length);
 
+    //TODO: fix or remove
+    /* 
     public static ExcelSheet<T> GetSheet<T>(ClientLanguage? language = null) where T : ExcelRow
         => Svc.Data.GetExcelSheet<T>(language ?? Svc.ClientState.ClientLanguage)!;
 
@@ -1636,12 +1651,12 @@ public static unsafe partial class GenericHelpers
         => GetSheet<T>().RowCount;
 
     public static T? GetRow<T>(uint rowId, uint subRowId = uint.MaxValue, ClientLanguage? language = null) where T : ExcelRow
-        => GetSheet<T>(language).GetRow(rowId, subRowId);
+        => GetSheet<T>(language).GetRowOrDefault(rowId, subRowId);
 
     public static T? FindRow<T>(Func<T?, bool> predicate) where T : ExcelRow
         => GetSheet<T>().FirstOrDefault(predicate, null);
 
     public static IEnumerable<T> FindRows<T>(Func<T?, bool> predicate) where T : ExcelRow
         => GetSheet<T>().Where(predicate);
-
+    */
 }

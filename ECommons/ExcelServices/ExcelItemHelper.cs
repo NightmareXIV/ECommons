@@ -1,6 +1,6 @@
 ﻿using ECommons.DalamudServices;
 using ECommons.ExcelServices.Sheets;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using System.Collections.Generic;
 
 namespace ECommons.ExcelServices;
@@ -19,7 +19,7 @@ public static class ExcelItemHelper
     /// </summary>
     /// <param name="rowId"></param>
     /// <returns></returns>
-    public static Item? Get(uint rowId) => Svc.Data.GetExcelSheet<Item>()!.GetRow(rowId);
+    public static Item? Get(uint rowId) => Svc.Data.GetExcelSheet<Item>()!.GetRowOrDefault(rowId);
 
     /// <summary>
     /// Gets item name. If name or item is missing, prints item's ID. Item names are stripped off non-text payloads. Results are cached.
@@ -30,7 +30,7 @@ public static class ExcelItemHelper
     public static string GetName(uint id, bool includeID = false)
     {
         if(ItemNameCache.TryGetValue(id, out var ret)) return ret;
-        var data = Svc.Data.GetExcelSheet<Item>()!.GetRow(id);
+        var data = Svc.Data.GetExcelSheet<Item>()!.GetRowOrDefault(id);
         if(data == null) return $"#{id}";
         return GetName(data);
     }
@@ -42,18 +42,19 @@ public static class ExcelItemHelper
     /// <param name="item"></param>
     /// <param name="includeID"></param>
     /// <returns></returns>
-    public static string GetName(this Item item, bool includeID = false)
+    public static string GetName(this Item? item, bool includeID = false)
     {
         if(item == null) return "? Unknown ?";
-        if(!ItemNameCache.TryGetValue(item.RowId, out var name))
+        if(!ItemNameCache.TryGetValue(item.Value.RowId, out var name))
         {
-            name = item.Name.ExtractText();
-            ItemNameCache[item.RowId] = name;
+            name = item.Value.Name.ExtractText();
+            ItemNameCache[item.Value.RowId] = name;
         }
         if(name == "")
         {
-            return $"#{item.RowId}";
+            return $"#{item.Value.RowId}";
         }
         return name;
     }
+    public static string GetName(this Item item, bool includeID = false) => GetName((Item?)item, includeID);
 }
