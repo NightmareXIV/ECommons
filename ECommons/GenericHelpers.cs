@@ -1658,7 +1658,7 @@ public static unsafe partial class GenericHelpers
     [Obsolete($"Use MemoryHelper.ReadRaw")]
     public static byte[] ReadRaw(IntPtr memoryAddress, int length) => MemoryHelper.ReadRaw(memoryAddress, length);
 
-    public static IEnumerable<T> All<T>(this SubrowExcelSheet<T> subrowSheet) where T:struct, IExcelSubrow<T>
+    public static IEnumerable<T> AllRows<T>(this SubrowExcelSheet<T> subrowSheet) where T:struct, IExcelSubrow<T>
     {
         foreach(var x in subrowSheet)
         {
