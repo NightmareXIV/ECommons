@@ -15,7 +15,7 @@ public partial class AddonMaster
         public PurifyAutoDialog(void* addon) : base(addon) { }
 
         public AtkComponentButton* CancelExitButton => Addon->GetButtonNodeById(16);
-        public SeString CancelExitButtonSeString => MemoryHelper.ReadSeString(&CancelExitButton->UldManager.SearchNodeById(2)->GetAsAtkTextNode()->NodeText);
+        public SeString CancelExitButtonSeString => GenericHelpers.ReadSeString(&CancelExitButton->UldManager.SearchNodeById(2)->GetAsAtkTextNode()->NodeText);
         public string CancelExitButtonText => CancelExitButtonSeString.ExtractText();
         public bool PurificationActive => Svc.Data.GetExcelSheet<Addon>()!.GetRow(3868)!.Text.ToString().Equals(CancelExitButtonText);
         public bool PurificationInactive => Svc.Data.GetExcelSheet<Addon>()!.GetRow(3869)!.Text.ToString().Equals(CancelExitButtonText);
