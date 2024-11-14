@@ -1662,6 +1662,31 @@ public static unsafe partial class GenericHelpers
     [Obsolete($"Use MemoryHelper.ReadRaw")]
     public static byte[] ReadRaw(IntPtr memoryAddress, int length) => MemoryHelper.ReadRaw(memoryAddress, length);
 
+
+    public static ExcelSheet<T> GetSheet<T>(ClientLanguage? language = null) where T : struct, IExcelRow<T>
+        => Svc.Data.GetExcelSheet<T>(language ?? Svc.ClientState.ClientLanguage);
+
+    public static SubrowExcelSheet<T> GetSubrowSheet<T>(ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
+        => Svc.Data.GetSubrowExcelSheet<T>(language ?? Svc.ClientState.ClientLanguage);
+
+    public static int GetRowCount<T>() where T : struct, IExcelRow<T>
+        => GetSheet<T>().Count;
+
+    public static T? GetRow<T>(uint rowId, ClientLanguage? language = null) where T : struct, IExcelRow<T>
+        => GetSheet<T>(language).GetRowOrDefault(rowId);
+
+    public static T? GetRow<T>(uint rowId, ushort subRowId, ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
+        => Svc.Data.GetSubrowExcelSheet<T>(language).GetSubrowOrDefault(rowId, subRowId);
+
+    public static T? FindRow<T>(Func<T, bool> predicate) where T : struct, IExcelRow<T>
+         => GetSheet<T>().FirstOrDefault(predicate);
+
+    public static T? FindRow<T>(Func<T, bool> predicate, ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
+        => GetSubrowSheet<T>(language).SelectMany(m => m).Cast<T?>().FirstOrDefault(t => predicate(t.Value));
+
+    public static T[] FindRows<T>(Func<T, bool> predicate) where T : struct, IExcelRow<T>
+        => GetSheet<T>().Where(predicate).ToArray();
+
     public static IEnumerable<T> AllRows<T>(this SubrowExcelSheet<T> subrowSheet) where T:struct, IExcelSubrow<T>
     {
         foreach(var x in subrowSheet)

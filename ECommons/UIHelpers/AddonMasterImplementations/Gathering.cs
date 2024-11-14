@@ -99,7 +99,7 @@ public partial class AddonMaster
                 {
                     var evt = (AtkEvent*)CheckBox->OwnerNode->AtkResNode.AtkEventManager.Event;
                     var data = stackalloc AtkEventData[1];
-                    addon->AtkUnitBase.ReceiveEvent(evt->Type, (int)evt->Param, (FFXIVClientStructs.FFXIV.Component.GUI.AtkEvent*)evt, data);
+                    addon->AtkUnitBase.ReceiveEvent(evt->State.EventType, (int)evt->Param, evt, data);
                 }
             }
         }
