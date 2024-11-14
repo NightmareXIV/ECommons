@@ -17,7 +17,7 @@ public partial class AddonMaster
         public SelectString(void* addon) : base(addon) { }
 
         public int EntryCount => Addon->PopupMenu.PopupMenu.EntryCount;
-        public SeString SeString => MemoryHelper.ReadSeString(&Base->GetTextNodeById(2)->NodeText);
+        public SeString SeString => GenericHelpers.ReadSeString(&Base->GetTextNodeById(2)->NodeText);
         public string Text => SeString.ExtractText();
 
         public AtkComponentList* ListComponent => Addon->GetComponentListById(3);

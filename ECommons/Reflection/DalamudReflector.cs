@@ -12,7 +12,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Threading.Tasks;
 using CapturedPluginState = (string InternalName, System.Version Version, bool IsLoaded);
+using Task = System.Threading.Tasks.Task;
+
 #nullable disable
 
 namespace ECommons.Reflection;
@@ -78,6 +81,42 @@ public static class DalamudReflector
         return Svc.PluginInterface.GetType().Assembly.
                 GetType("Dalamud.Service`1", true).MakeGenericType(Svc.PluginInterface.GetType().Assembly.GetType("Dalamud.Plugin.Internal.PluginManager", true)).
                 GetMethod("Get").Invoke(null, BindingFlags.Default, null, Array.Empty<object>(), null);
+    }
+
+    /// <summary>
+    /// Loads a remote Plugin Master.
+    /// </summary>
+    /// <param name="masterURL">The URL to the remote Master.</param>
+    /// <returns>
+    /// A List of <see cref="Dalamud.Plugin.Internal.Types.Manifest.RemotePluginManifest"/>s for each plugin in the Master.<br/>
+    /// List will be null if the operation fails.
+    /// </returns>
+    public static async Task<List<object>?> GetPluginMaster(string masterURL)
+    {
+        List<object>? plugins = null;
+
+        try
+        {
+            var happyHttpClient = GetService("Dalamud.Networking.Http.HappyHttpClient");
+            var pluginRepository = Activator.CreateInstance(
+                Svc.PluginInterface.GetType().Assembly
+                    .GetType("Dalamud.Plugin.Internal.Types.PluginRepository")!,
+                happyHttpClient, masterURL, true);
+            await pluginRepository.Call<Task>("ReloadPluginMasterAsync", []);
+
+            var pluginMaster = pluginRepository!.GetType()
+                .GetProperty("PluginMaster")!
+                .GetValue(pluginRepository) as System.Collections.IEnumerable;
+
+            plugins = pluginMaster?.Cast<object>().ToList();
+        }
+        catch(Exception e)
+        {
+            PluginLog.Error("[ECommons] [DalamudReflector] Failed to get plugin master:\n" + e.Message + "\n" + e.StackTrace);
+            return null;
+        }
+
+        return plugins;
     }
 
     public static object GetService(string serviceFullName)
@@ -323,6 +362,119 @@ public static class DalamudReflector
         instance.SetFoP("Url", repoURL);
         instance.SetFoP("IsEnabled", enabled);
         conf.GetFoP<System.Collections.IList>("ThirdRepoList").Add(instance!);
+    }
+
+    /// <summary>
+    /// Installs a plugin from a remote Plugin Master.
+    /// </summary>
+    /// <param name="masterURL">the remote Master for <see cref="GetPluginMaster"/>.</param>
+    /// <param name="pluginInternalName">the internal name of the plugin you want to install.</param>
+    /// <returns>whether the install succeeded.</returns>
+    /// <remarks>
+    /// Will provide Error logs for any type of failure.<br/>
+    /// Will add the remote Master as a Repo if it isn't already one.<br/>
+    /// Installs via <see cref="Dalamud.Plugin.Internal.PluginManager.InstallPluginAsync"/>.
+    /// </remarks>
+    public static async Task<bool> AddPlugin(string masterURL, string
+            pluginInternalName)
+    {
+        // Get the remote manifest
+        var plugins = await GetPluginMaster(masterURL);
+        if (plugins == null || plugins.Count == 0)
+            return false; // Will already have a log
+        var pluginManifest = plugins.FirstOrDefault(x => (string)x.GetFoP("InternalName") == pluginInternalName);
+        if (pluginManifest == null)
+        {
+            PluginLog.Error("[ECommons] [DalamudReflector] Failed to add plugin:\n" +
+                            "Failed to find plugin in master:\n" +
+                            $"Master URL: {masterURL}\n" +
+                            $"Plugin Internal Name: {pluginInternalName}");
+            return false;
+        }
+
+        object pm = null;
+        var error = "";
+        try { pm = GetPluginManager(); } catch(Exception e) { error = e.Message; }
+        if (pm == null || error != "")
+        {
+            PluginLog.Error("[ECommons] [DalamudReflector] Failed to add plugin:\n" +
+                            "Failed to get plugin manager:\n" +
+                            error);
+            return false;
+        }
+
+        // Install the plugin
+        try
+        {
+            if (!HasRepo(masterURL))
+                AddRepo(masterURL, true);
+            ReloadPluginMasters(); // necessary to avoid it be listed as orphaned
+
+            var installCall = pm.Call<Task>("InstallPluginAsync", [pluginManifest, false, PluginLoadReason.Installer, null]);
+            await installCall;
+
+            var localPlugin = installCall.GetFoP("Result");
+            // A good check, but mostly here so that it will Throw if not installed
+            if ((bool)localPlugin.GetFoP("IsLoaded")) {
+                return true;
+            }
+        }
+        catch (Exception e)
+        {
+            PluginLog.Error("[ECommons] [DalamudReflector] Failed to add plugin:\n" +
+                            "Failed to finish installing plugin:\n" +
+                            e.Message + "\n" + e.StackTrace);
+            return false;
+        }
+
+        PluginLog.Error("[ECommons] [DalamudReflector] Failed to add plugin:\n" +
+                        "Unkown failure:\n" +
+                        JsonConvert.SerializeObject(new {masterURL}));
+        return false;
+    }
+
+    /// <summary>
+    /// Unloads then Deletes the current plugin on the next Tick.<br/>
+    /// The plugin that called this. Your plugin.
+    /// </summary>
+    /// <remarks>
+    /// Uses the internal
+    /// <see cref="Dalamud.Plugin.Internal.Types.LocalPlugin.UnloadAsync"/><br/>
+    /// and <see cref="Dalamud.Plugin.Internal.PluginManager.RemovePlugin"/>
+    /// </remarks>
+    public static void RemoveCurrentPlugin()
+    {
+        object pm = null;
+        var error = "";
+        try { pm = GetPluginManager(); } catch(Exception e) { error = e.Message; }
+        if (pm == null || error != "")
+        {
+            PluginLog.Error("[ECommons] [DalamudReflector] Failed to remove plugin:\n" +
+                            "Failed to get plugin manager:\n" +
+                            error);
+            return;
+        }
+
+        // If you wanted to be able to delete other plugins, you would replace this
+        // with functionality that creates a LocalPlugin instance based on the
+        // plugin's InternalName and searching InstalledPlugins
+        TryGetLocalPlugin(out var localPlugin, out _, out _);
+
+        // Default unload mode
+        var disposalMode = Enum.Parse(Svc.PluginInterface.GetType().Assembly.GetType
+            ("Dalamud.Plugin.Internal.Types.PluginLoaderDisposalMode")!, "WaitBeforeDispose");
+
+        // Save and run the Action that unloads+removes the plugin outside the plugin code
+        Svc.Framework.RunOnTick((Action)UnloadAndRemove);
+        return;
+
+        // Actual series of events to unload and remove the plugin
+        async void UnloadAndRemove()
+        {
+            var unloading = localPlugin.Call<Task>("UnloadAsync", [disposalMode]);
+            await unloading;
+            pm.Call("RemovePlugin", [localPlugin]);
+        }
     }
 
     /// <summary>

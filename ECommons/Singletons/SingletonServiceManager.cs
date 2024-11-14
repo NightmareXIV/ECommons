@@ -20,7 +20,7 @@ public static class SingletonServiceManager
     {
         foreach(var x in Types)
         {
-            foreach(var t in x.GetFieldPropertyUnions(ReflectionHelper.AllFlags).Reverse())
+            foreach(var t in Enumerable.Reverse(x.GetFieldPropertyUnions(ReflectionHelper.AllFlags)))
             {
                 var value = t.GetValue(null);
                 var prio = t.GetCustomAttribute<PriorityAttribute>()?.Priority ?? 0;

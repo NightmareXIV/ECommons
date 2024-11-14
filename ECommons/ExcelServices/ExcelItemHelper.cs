@@ -56,4 +56,5 @@ public static class ExcelItemHelper
         }
         return name;
     }
+    public static string GetName(this Item item, bool includeID = false) => GetName((Item?)item, includeID);
 }

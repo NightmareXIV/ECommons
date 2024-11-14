@@ -26,7 +26,7 @@ public unsafe partial class AddonMaster
         {
             var evt = CreateAtkEvent(1);
             var data = CreateAtkEventData().Build();
-            Base->ReceiveEvent((AtkEventType)25, 1, &evt, &data);
+            Base->ReceiveEvent((AtkEventType)25, 1, &evt.CSEvent, &data);
         }
 
         public Character[] Characters
@@ -77,7 +77,7 @@ public unsafe partial class AddonMaster
             private void Click(bool right)
             {
                 var eventIndex = (byte)(5 + Index);
-                var evt = stackalloc AtkEvent[] { Master.CreateAtkEvent(eventIndex) };
+                var evt = stackalloc AtkEvent[] { Master.CreateAtkEvent(eventIndex).CSEvent };
                 var data = stackalloc AtkEventData[] { Master.CreateAtkEventData().Write<byte>(6, (byte)(right ? 1 : 0)).Build() };
                 Master.Base->ReceiveEvent(AtkEventType.MouseClick, eventIndex, evt, data);
             }

@@ -21,32 +21,30 @@ namespace ECommons.GameHelpers;
 
 public static unsafe class Player
 {
-    public const int MaxLevel = 100;
+    public static readonly Number MaxLevel = 100;
     public static IPlayerCharacter Object => Svc.ClientState.LocalPlayer;
     public static bool Available => Svc.ClientState.LocalPlayer != null;
     public static bool Interactable => Available && Object.IsTargetable;
     public static ulong CID => Svc.ClientState.LocalContentId;
-    public static StatusList Status => Svc.ClientState.LocalPlayer.StatusList;
+    public static StatusList Status => Svc.ClientState.LocalPlayer?.StatusList;
     public static string Name => Svc.ClientState.LocalPlayer?.Name.ToString();
     public static string NameWithWorld => GetNameWithWorld(Svc.ClientState.LocalPlayer);
     public static string GetNameWithWorld(this IPlayerCharacter pc) => pc == null ? null : (pc.Name.ToString() + "@" + pc.HomeWorld.ValueNullable?.Name.ToString());
 
     public static int Level => Svc.ClientState.LocalPlayer?.Level ?? 0;
     public static bool IsLevelSynced => PlayerState.Instance()->IsLevelSynced == 1;
-    public static short SyncedLevel => PlayerState.Instance()->SyncedLevel;
+    public static int SyncedLevel => PlayerState.Instance()->SyncedLevel;
 
-    public static bool IsInHomeWorld => Svc.ClientState.LocalPlayer.HomeWorld.RowId == Svc.ClientState.LocalPlayer.CurrentWorld.RowId;
-    public static bool IsInHomeDC => Svc.ClientState.LocalPlayer.CurrentWorld.Value.DataCenter.RowId == Svc.ClientState.LocalPlayer.HomeWorld.Value.DataCenter.RowId;
+    public static bool IsInHomeWorld => !Player.Available?false:Svc.ClientState.LocalPlayer.HomeWorld.RowId == Svc.ClientState.LocalPlayer.CurrentWorld.RowId;
+    public static bool IsInHomeDC => !Player.Available ? false : Svc.ClientState.LocalPlayer.CurrentWorld.Value.DataCenter.RowId == Svc.ClientState.LocalPlayer.HomeWorld.Value.DataCenter.RowId;
     public static string HomeWorld => Svc.ClientState.LocalPlayer?.HomeWorld.Value.Name.ToString();
     public static string CurrentWorld => Svc.ClientState.LocalPlayer?.CurrentWorld.Value.Name.ToString();
-    public static string HomeDataCenter => Svc.Data.GetExcelSheet<World>().GetRow(Svc.ClientState.LocalPlayer.HomeWorld.RowId).DataCenter.Value.Name.ToString();
-    public static string CurrentDataCenter => Svc.Data.GetExcelSheet<World>().GetRow(Svc.ClientState.LocalPlayer.CurrentWorld.RowId).DataCenter.Value.Name.ToString();
+    public static string HomeDataCenter => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(HomeWorldId)?.DataCenter.ValueNullable?.Name.ToString();
+    public static string CurrentDataCenter => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(CurrentWorldId)?.DataCenter.ValueNullable?.Name.ToString();
 
     public static Character* Character => (Character*)Svc.ClientState.LocalPlayer.Address;
     public static BattleChara* BattleChara => (BattleChara*)Svc.ClientState.LocalPlayer.Address;
     public static GameObject* GameObject => (GameObject*)Svc.ClientState.LocalPlayer.Address;
-    [Obsolete("Please use GameObject")]
-    public static GameObject* IGameObject => (GameObject*)Svc.ClientState.LocalPlayer.Address;
 
     public static uint Territory => Svc.ClientState.TerritoryType;
     public static TerritoryIntendedUseEnum TerritoryIntendedUse => (TerritoryIntendedUseEnum)(Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(Territory)?.TerritoryIntendedUse.ValueNullable?.RowId ?? default);
@@ -55,7 +53,12 @@ public static unsafe class Player
 
     public static Job Job => GetJob(Svc.ClientState.LocalPlayer);
     public static GrandCompany GrandCompany => (GrandCompany)PlayerState.Instance()->GrandCompany;
-    public static Job GetJob(this IPlayerCharacter pc) => (Job)pc.ClassJob.RowId;
+    public static Job GetJob(this IPlayerCharacter pc) => (Job)(pc?.ClassJob.RowId ?? 0);
+
+    public static uint HomeWorldId => Player.Object?.HomeWorld.RowId ?? 0;
+    public static uint CurrentWorldId => Player.Object?.CurrentWorld.RowId ?? 0;
+    public static uint JobId => Player.Object?.ClassJob.RowId ?? 0;
+    public static uint OnlineStatus => Player.Object?.OnlineStatus.RowId ?? 0;
 
     public static Vector3 Position => Object.Position;
     public static float Rotation => Object.Rotation;

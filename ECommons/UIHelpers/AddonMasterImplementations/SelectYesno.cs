@@ -15,7 +15,7 @@ public partial class AddonMaster
         public SelectYesno(nint addon) : base(addon) { }
         public SelectYesno(void* addon) : base(addon) { }
 
-        public SeString SeString => MemoryHelper.ReadSeString(&Addon->PromptText->NodeText);
+        public SeString SeString => GenericHelpers.ReadSeString(&Addon->PromptText->NodeText);
         public SeString SeStringNullTerminated => MemoryHelper.ReadSeStringNullTerminated(new nint(Addon->AtkValues[0].String));
         public string Text => SeString.ExtractText();
         public string TextLegacy => string.Join(string.Empty, SeStringNullTerminated.Payloads.OfType<TextPayload>().Select(t => t.Text)).Replace('\n', ' ').Trim();

@@ -13,7 +13,7 @@ public partial class AddonMaster
 
         public SelectOk(void* addon) : base(addon) { }
 
-        public SeString SeString => MemoryHelper.ReadSeString(&Addon->PromptText->NodeText);
+        public SeString SeString => GenericHelpers.ReadSeString(&Addon->PromptText->NodeText);
         public string Text => SeString.ExtractText();
 
         public override string AddonDescription { get; } = "Generic confirmation window (OK button)";
