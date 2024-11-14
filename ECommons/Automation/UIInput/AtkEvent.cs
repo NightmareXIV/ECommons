@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommons.Automation.UIInput;
+namespace ECommons.Automation.UIInput;/*
 [StructLayout(LayoutKind.Explicit, Size = 0x30)]
 public unsafe partial struct AtkEvent
 {
@@ -20,3 +20,4 @@ public unsafe partial struct AtkEvent
     [FieldOffset(0x29)] public byte Unk29;
     [FieldOffset(0x2A)] public byte Flags; // 0: handled, 5: force handled (see AtkEvent::SetEventIsHandled)
 }
+*/

@@ -5,7 +5,6 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.Sheets;
 using System;
 using System.Text.RegularExpressions;
-using AtkEvent = ECommons.Automation.UIInput.AtkEvent;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
