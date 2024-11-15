@@ -823,7 +823,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="value">Value</param>
     /// <param name="smallButton">Whether button should be small</param>
     /// <returns>true when clicked, otherwise false</returns>
-    public static bool ButtonCheckbox(string name, ref bool value, bool smallButton = false) => ButtonCheckbox(name, ref value, EColor.Red, smallButton);
+    public static bool ButtonCheckbox(string name, ref bool value, bool smallButton) => ButtonCheckbox(name, ref value, EColor.Red, smallButton);
 
     /// <summary>
     /// Draws a button that acts like a checkbox.
