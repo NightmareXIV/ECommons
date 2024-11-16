@@ -82,14 +82,14 @@ public static class Content
     /// <summary>
     ///     The zone name of the current territory the player is in.
     /// </summary>
-    /// <value><c>"&lt;Unknown&gt;"</c> when not resolved.</value>
+    /// <value><c>null</c> when not resolved.</value>
     /// <seealso cref="TerritoryHelper.GetTerritoryName" />
     /// <seealso cref="TerritoryNameResolved" />
     /// <seealso cref="TerritoryNameResult" />
-    public static string TerritoryName =>
+    public static string? TerritoryName =>
         TerritoryNameResolved
             ? TerritoryNameResult.Split('|')[1].Split('(')[0].Trim()
-            : "<Unknown>";
+            : null;
 
     /// <summary>
     ///     The Sheet row for the current <see cref="TerritoryType" />.
@@ -135,17 +135,17 @@ public static class Content
     /// <value>
     ///     Falls back to <see cref="TerritoryName" /> when
     ///     <see cref="ContentFinderCondition">CFC Data</see> is not resolved.<br />
-    ///     <c>"&lt;Unknown&gt;"</c> when <see cref="TerritoryName" /> is also not
+    ///     <c>null</c> when <see cref="TerritoryName" /> is also not
     ///     resolved.
     /// </value>
     /// <seealso cref="ContentFinderCondition" />
     /// <seealso cref="ContentFinderConditionRow" />
-    public static string ContentName =>
+    public static string? ContentName =>
         TerritoryNameResolved
             ? ContentFinderConditionRow != null
                 ? ContentFinderConditionRow?.Name.ToString()
                 : TerritoryName
-            : "<Unknown>";
+            : null;
 
     /// <summary>
     ///     If the content allows Undersized (Unrestricted) Parties.
@@ -183,17 +183,17 @@ public static class Content
     ///     <see cref="ContentName" />.
     /// </summary>
     /// <value>
-    ///     <c>"&lt;Unknown&gt;"</c> when not
+    ///     <c>null</c> when not
     ///     <see cref="ContentDifficultyFromNameResolved">resolved</see> or when
     ///     <see cref="ContentFinderConditionRow" /> is null.
     /// </value>
-    public static string ContentDifficultyFromName =>
+    public static string? ContentDifficultyFromName =>
         ContentFinderConditionRow is null
-            ? "<Unknown>"
+            ? null
             : ContentDifficultyFromNameResolved
                 ? ContentFinderConditionRow?.Name.ToString().Split('(').Last()
                     .TrimEnd(')').Trim()
-                : "<Unknown>";
+                : null;
 
     /// <summary>
     ///     The Sheet row for the current <see cref="InstanceContent" />.
@@ -244,12 +244,12 @@ public static class Content
     /// <summary>
     ///     The name of the current <see cref="SheetContentType" />.
     /// </summary>
-    public static string ContentTypeName =>
+    public static string? ContentTypeName =>
         ContentTypeRowId is not null && ContentTypeRowId != 0
             ? ContentTypeRow?.Name.ToString()
             : ContentTypeRowId == 0
                 ? "OverWorld"
-                : "<Unknown>";
+                : null;
 
     /// <summary>
     ///     The determined <see cref="ContentType" /> of the current content.
@@ -310,9 +310,9 @@ public static class Content
                 GameHelpers.ContentType.FieldRaid,
 
             _ when
-                ContentName.Contains("Delubrum") ||
-                ContentName.Contains("Lacus") ||
-                ContentName.Contains("Dalriada") ||
+                (ContentName?.Contains("Delubrum") ?? false) ||
+                (ContentName?.Contains("Lacus") ?? false) ||
+                (ContentName?.Contains("Dalriada") ?? false) ||
                 MapID is >= 520 and <= 527 =>
                 GameHelpers.ContentType.FieldRaid,
 
@@ -375,7 +375,7 @@ public static class Content
 
             { ContentType.RowId: 4, HighEndDuty: false } when
                 ContentDifficultyFromName == "Extreme" ||
-                ContentName.Contains("Minstrel") =>
+                (ContentName?.Contains("Minstrel") ?? false) =>
                 GameHelpers.ContentDifficulty.Extreme,
 
             { ContentType.RowId: 4, HighEndDuty: true } =>
