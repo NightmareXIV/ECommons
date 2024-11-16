@@ -387,7 +387,7 @@ public static class Content
             { ContentType.RowId: 29 } when ContentDifficultyFromName == "Savage" =>
                 GameHelpers.ContentDifficulty.FieldRaidsSavage,
 
-            { ContentType.RowId: 4, HighEndDuty: false } when
+            { ContentType.RowId: 4 } when
                 ContentDifficultyFromName == "Extreme" ||
                 (ContentName?.Contains("Minstrel") ?? false) =>
                 GameHelpers.ContentDifficulty.Extreme,
