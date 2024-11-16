@@ -162,7 +162,7 @@ public static class Content
     /// <summary>
     ///     Whether the difficulty was found in the <see cref="ContentName" />.
     /// </summary>
-    public static bool ContentDifficultyFromNameResolved
+    private static bool ContentDifficultyFromNameResolved
     {
         get
         {
