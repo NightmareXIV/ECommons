@@ -17,14 +17,22 @@ namespace ECommons.GameHelpers;
 public enum ContentType
 {
     Unknown,
+    /// <summary>
+    ///     This encompasses anything that isn't in a roulette or a field operation,
+    ///     quest instances, actual over world content, housing, for-fun content,
+    ///     etc.
+    /// </summary>
     OverWorld,
     PVP,
     Dungeon,
     DeepDungeon,
     Variant,
+    /// This includes Criterion Savage
     Criterion,
     Trial,
+    /// Bozja, Eureka, Diadem, etc.
     FieldOperations,
+    /// Delubrum Reginae, Dalriada, etc.
     FieldRaid,
     ARaid,
     Raid,
@@ -37,9 +45,15 @@ public enum ContentType
 public enum ContentDifficulty
 {
     Unknown,
+    /// <summary>
+    ///     This encompasses anything that doesn't otherwise have an explicit
+    ///     difficulty, or is the lowest difficulty, variant dungeons, field raids,
+    ///     etc.
+    /// </summary>
     Normal,
     Hard,
     Unreal,
+    /// Only Delubrum Reginae Savage
     FieldRaidsSavage,
     Extreme,
     Chaotic,
