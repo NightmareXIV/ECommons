@@ -40,7 +40,7 @@ public partial class AddonMaster
             }
         }
 
-        public override string AddonDescription { get; } = "Unknown: ItemSearchResult";
+        public override string AddonDescription { get; } = "Marketboard Item Listings";
 
         public readonly struct Entry(ItemSearchResult am, AddonItemSearchResult* addon, int index)
         {

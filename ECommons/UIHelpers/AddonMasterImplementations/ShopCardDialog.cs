@@ -16,7 +16,7 @@ public partial class AddonMaster
         {
         }
 
-        public SeString Price => MemoryHelper.ReadSeString(&Base->GetTextNodeById(10)->NodeText);
+        public SeString Price => GenericHelpers.ReadSeString(&Base->GetTextNodeById(10)->NodeText);
         public int? Quantity { get => Addon->CardQuantityInput->Data.Value; set => Addon->CardQuantityInput->SetValue(value.HasValue ? (int)value : MinQuantity); }
         public int MinQuantity => Addon->CardQuantityInput->Data.Min;
         public int MaxQuantity => Addon->CardQuantityInput->Data.Max;

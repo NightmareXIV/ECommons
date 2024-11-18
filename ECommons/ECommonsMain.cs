@@ -141,6 +141,7 @@ var type = "unknown build";
         GenericHelpers.Safe(EzIPC.Dispose);
         GenericHelpers.Safe(ContextMenuPrefixRemover.Dispose);
         GenericHelpers.Safe(Purgatory.Purge);
+        GenericHelpers.Safe(ExternalWriter.Dispose);
         //SingletonManager.Dispose();
         Chat.instance = null;
         Instance = null;

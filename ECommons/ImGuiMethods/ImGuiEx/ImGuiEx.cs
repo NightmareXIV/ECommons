@@ -7,9 +7,10 @@ using ECommons.ExcelServices;
 using ECommons.Funding;
 using ECommons.Logging;
 using ECommons.MathHelpers;
+using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using ImGuiNET;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -26,6 +27,77 @@ public static unsafe partial class ImGuiEx
 {
     public const ImGuiWindowFlags OverlayFlags = ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoMouseInputs | ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing;
     private static Dictionary<string, int> SelectedPages = [];
+
+    public static string ImGuiTrim(this string str)
+    {
+        if(str.Length < 5) return str;
+        var size = ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize("...").X;
+        for (int i = 1; i < str.Length; i++)
+        {
+            if(ImGui.CalcTextSize(str[..i]).X > size)
+            {
+                return str[..(i - 1)] + "...";
+            }
+        }
+        return str;
+    }
+
+    public static string Trim(this string text, int len)
+    {
+        if(text.Length > len) return text[..len] + "...";
+        return text;
+    }
+
+    public static bool InputFancyNumeric(string label, ref int number, int step)
+    {
+        var str = $"{number:N0}";
+        var ret = ImGui.InputText(label, ref str, 50, ImGuiInputTextFlags.AutoSelectAll);
+        ImGui.SameLine(0, 1);
+        if(ImGui.Button($"-##minus{label}", new(ImGui.GetFrameHeight())))
+        {
+            number -= step;
+        }
+        if(ImGui.IsItemHovered() && ImGui.GetIO().MouseDownDuration[0] > 0.5f && EzThrottler.Throttle("FancyInputHold", 50))
+        {
+            number -= step;
+        }
+        ImGui.SameLine(0, 1);
+        if(ImGui.Button($"+##plus{label}", new(ImGui.GetFrameHeight())))
+        {
+            number += step;
+        }
+        if(ImGui.IsItemHovered() && ImGui.GetIO().MouseDownDuration[0] > 0.5f && EzThrottler.Throttle("FancyInputHold", 50))
+        {
+            number += step;
+        }
+        if(ret)
+        {
+            var mult = 1;
+            str = str.Trim();
+            if(str == "")
+            {
+                number = 0;
+            }
+            else
+            {
+                while(str.EndsWith("M", StringComparison.OrdinalIgnoreCase))
+                {
+                    mult *= 1000000;
+                    str = str[0..^1];
+                }
+                while(str.EndsWith("K", StringComparison.OrdinalIgnoreCase))
+                {
+                    mult *= 1000;
+                    str = str[0..^1];
+                }
+                if(int.TryParse(str, NumberStyles.AllowThousands, null, out var result))
+                {
+                    number = result * mult;
+                }
+            }
+        }
+        return ret;
+    }
 
     /// <summary>
     /// An <see cref="ImGui.InputInt"/> for nullable int. Consists of checkbox and input component that is enabled/disabled based on checkbox state.
@@ -143,12 +215,15 @@ public static unsafe partial class ImGuiEx
         return actions[rangeMin..rangeMax];
     }
 
+    public static void TreeNodeCollapsingHeader(string name, Action action, ImGuiTreeNodeFlags extraFlags = ImGuiTreeNodeFlags.None) => TreeNodeCollapsingHeader(name, true, action, extraFlags);
     /// <summary>
     /// Another interpretation of <see cref="ImGui.CollapsingHeader(string)"/> but with narrow design and border.
     /// </summary>
     /// <param name="name"></param>
+    /// <param name="usePadding"></param>
     /// <param name="action"></param>
-    public static void TreeNodeCollapsingHeader(string name, Action action, ImGuiTreeNodeFlags extraFlags = ImGuiTreeNodeFlags.None)
+    /// <param name="extraFlags"></param>
+    public static void TreeNodeCollapsingHeader(string name, bool usePadding, Action action, ImGuiTreeNodeFlags extraFlags = ImGuiTreeNodeFlags.None)
     {
         ImGui.PushID("CollapsingHeaderHelperTable");
         ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, Vector2.Zero);
@@ -163,7 +238,7 @@ public static unsafe partial class ImGuiEx
             {
                 ImGui.TableNextRow();
                 ImGui.TableNextColumn();
-                if(ImGui.BeginTable($"2{name}", 1, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.PadOuterX))
+                if(ImGui.BeginTable($"2{name}", 1, ImGuiTableFlags.NoSavedSettings | (usePadding?ImGuiTableFlags.PadOuterX:ImGuiTableFlags.None)))
                 {
                     ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthStretch);
                     ImGui.TableNextRow();
@@ -748,7 +823,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="value">Value</param>
     /// <param name="smallButton">Whether button should be small</param>
     /// <returns>true when clicked, otherwise false</returns>
-    public static bool ButtonCheckbox(string name, ref bool value, bool smallButton = false) => ButtonCheckbox(name, ref value, EColor.Red, smallButton);
+    public static bool ButtonCheckbox(string name, ref bool value, bool smallButton) => ButtonCheckbox(name, ref value, EColor.Red, smallButton);
 
     /// <summary>
     /// Draws a button that acts like a checkbox.
@@ -779,6 +854,34 @@ public static unsafe partial class ImGuiEx
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, color);
         }
         if(smallButton ? ImGui.SmallButton(name) : ImGui.Button(name))
+        {
+            value = !value;
+            ret = true;
+        }
+        if(col) ImGui.PopStyleColor(3);
+        return ret;
+    }
+
+    public static bool ButtonCheckbox(FontAwesomeIcon icon, ref bool value, Vector4? color = null, bool inverted = false)
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        var ret = ButtonCheckbox(icon.ToIconString(), ref value, color, inverted);
+        ImGui.PopFont();
+        return ret;
+    }
+
+    public static bool ButtonCheckbox(string name, ref bool value, Vector4? color = null, bool inverted = false)
+    {
+        var ret = false;
+        color ??= EColor.Green;
+        var col = !inverted?value:!value;
+        if(col)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, color.Value);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, color.Value);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, color.Value);
+        }
+        if(ImGui.Button(name))
         {
             value = !value;
             ret = true;
@@ -1205,12 +1308,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="s">Text</param>
     public static void TextV(string s)
     {
-        var cur = ImGui.GetCursorPos();
-        ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0);
-        ImGui.Button("");
-        ImGui.PopStyleVar();
-        ImGui.SameLine();
-        ImGui.SetCursorPos(cur);
+        ImGui.AlignTextToFramePadding();
         ImGui.TextUnformatted(s);
     }
 

@@ -11,12 +11,12 @@ public partial class AddonMaster
 
         public PurifyResult(void* addon) : base(addon) { }
 
-        public SeString BannerSeString => MemoryHelper.ReadSeString(&Base->GetTextNodeById(2)->NodeText);
+        public SeString BannerSeString => GenericHelpers.ReadSeString(&Base->GetTextNodeById(2)->NodeText);
         public string BannerText => BannerSeString.ExtractText();
         public AtkComponentButton* AutomaticButton => Addon->GetButtonNodeById(19);
         public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(20);
 
-        public override string AddonDescription { get; } = "Unknown: PurifyResult";
+        public override string AddonDescription { get; } = "Aetherial Reduction Result";
 
         public void Automatic() => ClickButtonIfEnabled(AutomaticButton);
         public void Close() => ClickButtonIfEnabled(CloseButton);

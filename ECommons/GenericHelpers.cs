@@ -18,7 +18,8 @@ using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
 using Lumina.Excel;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
+using Lumina.Text.ReadOnly;
 using Newtonsoft.Json;
 using PInvoke;
 using System;
@@ -38,6 +39,44 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static SeString ReadSeString(Utf8String* utf8String)
+    {
+        if(utf8String != null)
+        {
+            return SeString.Parse(utf8String->AsSpan());
+        }
+
+        return string.Empty;
+    }
+
+    public static T? FirstOrNull<T>(this IEnumerable<T> values, Func<T, bool> predicate) where T : struct
+    {
+        if(values.TryGetFirst(predicate, out var result))
+        {
+            return result;
+        }
+        return null;
+    }
+
+    public static T? FirstOrNull<T>(this IEnumerable<T> values) where T:struct
+    {
+        if(values.TryGetFirst(out var result))
+        {
+            return result;
+        }
+        return null;
+    }
+
+    public static IEnumerable<T?> AsNullable<T>(this IEnumerable<T> values) where T : struct
+    {
+        return values.Cast<T?>();
+    }
+
+    public static bool ContainsNullable<T>(this IEnumerable<T> values, T? value) where T : struct
+    {
+        if(value == null) return false;
+        return System.Linq.Enumerable.Contains(values, value.Value);
+    }
 
     /// <summary>
     /// Adds all <paramref name="values"/> to the <paramref name="collection"/>.
@@ -92,7 +131,7 @@ public static unsafe partial class GenericHelpers
     /// <returns></returns>
     public static SeString Read(this Utf8String str)
     {
-        return MemoryHelper.ReadSeString(&str);
+        return GenericHelpers.ReadSeString(&str);
     }
 
     /// <summary>
@@ -116,24 +155,6 @@ public static unsafe partial class GenericHelpers
         {
             return Marshal.PtrToStringUTF8((nint)ptr, bytes.Length);
         }
-    }
-
-    public static string ParamsPlaceholderPrefix = "$";
-    public static string Params(this string? defaultValue, params object?[] objects)
-    {
-        defaultValue ??= "";
-        var guid = Guid.NewGuid().ToString();
-        defaultValue = defaultValue.Replace($"{ParamsPlaceholderPrefix}{ParamsPlaceholderPrefix}", guid);
-        for(var i = 0; i < objects.Length; i++)
-        {
-            var str = objects[i]?.ToString() ?? "";
-            defaultValue = defaultValue.Replace($"{ParamsPlaceholderPrefix}{i}", str);
-        }
-        foreach(var obj in objects)
-        {
-            defaultValue = defaultValue.ReplaceFirst(ParamsPlaceholderPrefix, obj?.ToString() ?? "");
-        }
-        return defaultValue.Replace(guid, ParamsPlaceholderPrefix);
     }
 
     /// <summary>
@@ -826,6 +847,8 @@ public static unsafe partial class GenericHelpers
         return Addon->IsVisible && Addon->UldManager.LoadedState == AtkLoadState.Loaded && Addon->IsFullyLoaded();
     }
 
+    public static bool IsReady(this AtkUnitBase Addon) => Addon.IsVisible && Addon.UldManager.LoadedState == AtkLoadState.Loaded && Addon.IsFullyLoaded();
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAddonReady(AtkComponentNode* Addon)
     {
@@ -890,7 +913,7 @@ public static unsafe partial class GenericHelpers
     /// <param name="onlyFirst">Whether to find first text payload and only return it</param>
     /// <returns>String that only includes text payloads</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ExtractText(this Lumina.Text.SeString s, bool onlyFirst = false)
+    public static string ExtractText(this ReadOnlySeString s, bool onlyFirst = false)
     {
         return s.ToDalamudString().ExtractText(onlyFirst);
     }
@@ -904,7 +927,7 @@ public static unsafe partial class GenericHelpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ExtractText(this Utf8String s, bool onlyFirst = false)
     {
-        var str = MemoryHelper.ReadSeString(&s);
+        var str = GenericHelpers.ReadSeString(&s);
         return str.ExtractText(false);
     }
 
@@ -1004,10 +1027,10 @@ public static unsafe partial class GenericHelpers
             .Select(i => str.Substring(i * chunkSize, chunkSize));
     }
 
-    public static string GetTerritoryName(this uint terr)
+    public static string GetTerritoryName(this Number terr)
     {
-        var t = Svc.Data.GetExcelSheet<TerritoryType>().GetRow(terr);
-        return $"{terr} | {t?.ContentFinderCondition?.Value?.Name?.ToString().Default(t?.PlaceName.Value?.Name?.ToString())}";
+        var t = Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(terr);
+        return $"{terr} | {t?.ContentFinderCondition.ValueNullable?.Name.ToString().Default(t?.PlaceName.ValueNullable?.Name.ToString())}";
     }
 
     public static T FirstOr0<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
@@ -1057,7 +1080,7 @@ public static unsafe partial class GenericHelpers
     }
 
     [Obsolete($"Please use ExcelWorldHelper.TryGetWorldByName")]
-    public static bool TryGetWorldByName(string world, out Lumina.Excel.GeneratedSheets.World worldId) => ExcelWorldHelper.TryGetWorldByName(world, out worldId);
+    public static bool TryGetWorldByName(string world, out Lumina.Excel.Sheets.World worldId) => ExcelWorldHelper.TryGetWorldByName(world, out worldId);
 
     public static Vector4 Invert(this Vector4 v)
     {
@@ -1392,6 +1415,13 @@ public static unsafe partial class GenericHelpers
         return values.Any(x => x.Equals(obj));
     }
 
+    public static uint ToUInt(this ushort value) => value;
+    public static uint ToUInt(this byte value) => value;
+    public static uint ToUInt(this int value) => (uint)value;
+    public static int ToInt(this byte value) => value;
+    public static int ToInt(this ushort value) => value;
+    public static int ToInt(this uint value) => (int)value;
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool AllNull(params object[] objects) => objects.All(s => s == null);
 
@@ -1620,15 +1650,9 @@ public static unsafe partial class GenericHelpers
         };
     }
 
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete($"Use MemoryHelper.ReadSeString")]
-    public static unsafe SeString ReadSeString(Utf8String* utf8String) => MemoryHelper.ReadSeString(utf8String);
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Obsolete($"Use MemoryHelper.ReadSeString")]
-    public static SeString ReadSeString(IntPtr memoryAddress, int maxLength) => MemoryHelper.ReadSeString(memoryAddress, maxLength);
+    public static SeString ReadSeString(IntPtr memoryAddress, int maxLength) => GenericHelpers.ReadSeString(memoryAddress, maxLength);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete($"Use MemoryHelper.ReadRaw")]
@@ -1638,19 +1662,39 @@ public static unsafe partial class GenericHelpers
     [Obsolete($"Use MemoryHelper.ReadRaw")]
     public static byte[] ReadRaw(IntPtr memoryAddress, int length) => MemoryHelper.ReadRaw(memoryAddress, length);
 
-    public static ExcelSheet<T> GetSheet<T>(ClientLanguage? language = null) where T : ExcelRow
-        => Svc.Data.GetExcelSheet<T>(language ?? Svc.ClientState.ClientLanguage)!;
 
-    public static uint GetRowCount<T>() where T : ExcelRow
-        => GetSheet<T>().RowCount;
+    public static ExcelSheet<T> GetSheet<T>(ClientLanguage? language = null) where T : struct, IExcelRow<T>
+        => Svc.Data.GetExcelSheet<T>(language ?? Svc.ClientState.ClientLanguage);
 
-    public static T? GetRow<T>(uint rowId, uint subRowId = uint.MaxValue, ClientLanguage? language = null) where T : ExcelRow
-        => GetSheet<T>(language).GetRow(rowId, subRowId);
+    public static SubrowExcelSheet<T> GetSubrowSheet<T>(ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
+        => Svc.Data.GetSubrowExcelSheet<T>(language ?? Svc.ClientState.ClientLanguage);
 
-    public static T? FindRow<T>(Func<T?, bool> predicate) where T : ExcelRow
-        => GetSheet<T>().FirstOrDefault(predicate, null);
+    public static int GetRowCount<T>() where T : struct, IExcelRow<T>
+        => GetSheet<T>().Count;
 
-    public static IEnumerable<T> FindRows<T>(Func<T?, bool> predicate) where T : ExcelRow
-        => GetSheet<T>().Where(predicate);
+    public static T? GetRow<T>(uint rowId, ClientLanguage? language = null) where T : struct, IExcelRow<T>
+        => GetSheet<T>(language).GetRowOrDefault(rowId);
 
+    public static T? GetRow<T>(uint rowId, ushort subRowId, ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
+        => Svc.Data.GetSubrowExcelSheet<T>(language).GetSubrowOrDefault(rowId, subRowId);
+
+    public static T? FindRow<T>(Func<T, bool> predicate) where T : struct, IExcelRow<T>
+         => GetSheet<T>().FirstOrDefault(predicate);
+
+    public static T? FindRow<T>(Func<T, bool> predicate, ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
+        => GetSubrowSheet<T>(language).SelectMany(m => m).Cast<T?>().FirstOrDefault(t => predicate(t.Value));
+
+    public static T[] FindRows<T>(Func<T, bool> predicate) where T : struct, IExcelRow<T>
+        => GetSheet<T>().Where(predicate).ToArray();
+
+    public static IEnumerable<T> AllRows<T>(this SubrowExcelSheet<T> subrowSheet) where T:struct, IExcelSubrow<T>
+    {
+        foreach(var x in subrowSheet)
+        {
+            foreach(var z in x)
+            {
+                yield return z;
+            }
+        }
+    }
 }

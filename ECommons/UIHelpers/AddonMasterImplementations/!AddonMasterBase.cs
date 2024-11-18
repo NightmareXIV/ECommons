@@ -79,12 +79,19 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
 
     protected AtkEvent CreateAtkEvent(byte flags = 0)
     {
-        return new()
+        var ret = stackalloc AtkEvent[]
         {
-            Listener = (AtkEventListener*)Base,
-            Flags = flags,
-            Target = &AtkStage.Instance()->AtkEventTarget
+            new()
+            {
+                Listener = (AtkEventListener*)Base,
+                Target = &AtkStage.Instance()->AtkEventTarget,
+                State = new()
+                {
+                    StateFlags = (AtkEventStateFlags)flags
+                }
+            } 
         };
+        return *ret;
     }
 
     protected AtkEventDataBuilder CreateAtkEventData()

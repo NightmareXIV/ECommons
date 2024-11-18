@@ -16,15 +16,15 @@ public partial class AddonMaster
 
         public AtkTextNode* NameNode => Base->GetTextNodeById(26);
         public AtkTextNode* DescNode => Base->GetTextNodeById(35);
-        public SeString ItemName => MemoryHelper.ReadSeString(&NameNode->NodeText);
-        public SeString Description => MemoryHelper.ReadSeString(&DescNode->NodeText);
+        public SeString ItemName => GenericHelpers.ReadSeString(&NameNode->NodeText);
+        public SeString Description => GenericHelpers.ReadSeString(&DescNode->NodeText);
         public string ItemNameText => ItemName.ExtractText();
         public string DescriptionText => Description.ExtractText();
 
         public AtkComponentButton* NextButton => Base->GetButtonNodeById(74);
         public AtkComponentButton* CloseButton => Base->GetButtonNodeById(73);
 
-        public override string AddonDescription { get; } = "Unknown: ItemInspectionResult";
+        public override string AddonDescription { get; } = "Eureka/Bozja lootbox results";
 
         public void Next() => ClickButtonIfEnabled(NextButton);
         public void Close() => ClickButtonIfEnabled(CloseButton);
