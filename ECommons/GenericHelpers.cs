@@ -1607,6 +1607,7 @@ public static unsafe partial class GenericHelpers
     /// </summary>
     /// <param name="textNodePtr"></param>
     /// <returns></returns>
+    [Obsolete("Incompatible with UI mods, use other methods")]
     public static bool IsSelectItemEnabled(AtkTextNode* textNodePtr)
     {
         var col = textNodePtr->TextColor;
