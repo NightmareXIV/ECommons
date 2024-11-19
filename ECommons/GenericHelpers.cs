@@ -9,6 +9,7 @@ using Dalamud.Utility;
 using ECommons.ChatMethods;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
+using ECommons.ExcelServices.Sheets;
 using ECommons.ImGuiMethods;
 using ECommons.Interop;
 using ECommons.Logging;
@@ -39,6 +40,11 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static TExtension GetExtension<TExtension, TBase>(this TBase row) where TExtension : struct, IExcelRow<TExtension>, IRowExtension<TExtension, TBase> where TBase : struct, IExcelRow<TBase>
+    {
+        return TExtension.GetExtended(row);
+    }
+
     public static SeString ReadSeString(Utf8String* utf8String)
     {
         if(utf8String != null)

@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommons.ExcelServices;
+namespace ECommons.ExcelServices.Sheets;
 //>:(
 [Sheet]
 public struct QuestDialogueText(ExcelPage page, uint offset, uint row) : IExcelRow<QuestDialogueText>
