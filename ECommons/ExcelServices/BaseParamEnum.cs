@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.ExcelServices;
-public enum BaseParamEnum
+public enum BaseParamEnum : uint
 {
     Strength = 1,
     Dexterity = 2,
