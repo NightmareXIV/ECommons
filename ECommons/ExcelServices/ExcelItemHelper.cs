@@ -1,5 +1,6 @@
 ﻿using ECommons.DalamudServices;
 using ECommons.ExcelServices.Sheets;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using Lumina.Excel.Sheets;
 using System.Collections.Generic;
 
@@ -57,4 +58,47 @@ public static class ExcelItemHelper
         return name;
     }
     public static string GetName(this Item item, bool includeID = false) => GetName((Item?)item, includeID);
+
+    public static int GetStat(this Item item, BaseParamEnum param, bool isHq = false)
+    {
+        var ret = 0;
+        for(int i = 0; i < item.BaseParam.Count; i++)
+        {
+            if(item.BaseParam[i].RowId == (int)param)
+            {
+                if(isHq)
+                {
+                    if(item.BaseParamValueSpecial[i] > 0)
+                    {
+                        ret += item.BaseParamValueSpecial[i];
+                        continue;
+                    }
+                }
+                ret += item.BaseParamValue[i];
+            }
+        }
+        return ret;
+    }
+
+    public static int GetStat(this InventoryItem item, BaseParamEnum param)
+    {
+        var ret = 0;
+        if(ExcelItemHelper.Get(item.GetItemId()).TryGetValue(out var data))
+        {
+            ret += GetStat(data, param, item.Flags.HasFlag(InventoryItem.ItemFlags.HighQuality));
+        }
+        for(byte i = 0; i < item.GetMateriaCount(); i++)
+        {
+            var m = item.GetMateriaId(i);
+            var grade = item.GetMateriaGrade(i);
+            if(Svc.Data.GetExcelSheet<Materia>().TryGetRow(m, out var mData))
+            {
+                if(mData.BaseParam.RowId == (int)param)
+                {
+                    ret += mData.Value[grade];
+                }
+            }
+        }
+        return ret;
+    }
 }
