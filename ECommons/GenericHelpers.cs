@@ -40,6 +40,28 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static bool TryGetValue<T>(this T? nullable, out T value) where T : struct
+    {
+        if(nullable.HasValue)
+        {
+            value = nullable.Value;
+            return true;
+        }
+        value = default;
+        return false;
+    }
+
+    public static bool TryGetValue<T>(this RowRef<T> rowRef, out T value) where T:struct, IExcelRow<T>
+    {
+        if(rowRef.ValueNullable != null)
+        {
+            value = rowRef.Value;
+            return true;
+        }
+        value = default;
+        return false;
+    }
+
     public static TExtension GetExtension<TExtension, TBase>(this TBase row) where TExtension : struct, IExcelRow<TExtension>, IRowExtension<TExtension, TBase> where TBase : struct, IExcelRow<TBase>
     {
         return TExtension.GetExtended(row);
