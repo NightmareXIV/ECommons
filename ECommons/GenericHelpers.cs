@@ -933,6 +933,22 @@ public static unsafe partial class GenericHelpers
         var parent = node->ParentNode;
         return parent == null ? node : GetRootNode(parent);
     }
+    
+    /// <summary>
+    /// Removes whitespaces, line breaks, tabs, etc from string.
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    public static string Cleanup(this string s)
+    {
+        StringBuilder sb = new(s.Length);
+        foreach(var c in s)
+        {
+            if(c == ' ' || c == '\n' || c == '\r' || c == '\t') continue;
+            sb.Append(c);
+        }
+        return sb.ToString();
+    }
 
     /// <summary>
     /// Discards any non-text payloads from <see cref="SeString"/>
