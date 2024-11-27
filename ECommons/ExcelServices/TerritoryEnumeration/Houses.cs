@@ -43,6 +43,9 @@ public static class Houses
     public const ushort Company_Workshop_Empyreum = 984;
     public const ushort Ingleside_Apartment_Lobby = 985;
     public const ushort Ingleside_Apartment = 999;
+    public const ushort Private_Cottage_Minimalist = 1249;
+    public const ushort Private_House_Minimalist = 1250;
+    public const ushort Private_Mansion_Minimalist = 1251;
     private static ushort[] list = null;
     public static ushort[] List
     {
