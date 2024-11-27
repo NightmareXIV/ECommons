@@ -187,7 +187,7 @@ public static class MathHelper
     /// Gets a second point given initial point, angle and distance.
     /// </summary>
     /// <param name="initialPoint"></param>
-    /// <param name="angle"></param>
+    /// <param name="angle">Radians</param>
     /// <param name="distance"></param>
     /// <returns></returns>
     public static Vector2 GetPointFromAngleAndDistance(Vector2 initialPoint, float angle, float distance)
