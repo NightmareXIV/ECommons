@@ -69,16 +69,19 @@ public static unsafe class CharacterFunctions
 
     public static bool IsCasting(this IBattleChara c, uint spellId = 0)
     {
+        if(c.Struct()->GetCastInfo() == null) return false;
         return c.IsCasting && (spellId == 0 || c.CastActionId.EqualsAny(spellId));
     }
 
     public static bool IsCasting(this IBattleChara c, params uint[] spellId)
     {
+        if(c.Struct()->GetCastInfo() == null) return false;
         return c.IsCasting && c.CastActionId.EqualsAny(spellId);
     }
 
     public static bool IsCasting(this IBattleChara c, IEnumerable<uint> spellId)
     {
+        if(c.Struct()->GetCastInfo() == null) return false;
         return c.IsCasting && c.CastActionId.EqualsAny(spellId);
     }
 }
