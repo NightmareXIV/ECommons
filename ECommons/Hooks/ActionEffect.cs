@@ -78,16 +78,22 @@ public static unsafe class ActionEffect
 
     public static void Disable()
     {
-        if(ProcessActionEffectHook?.IsEnabled == true) ProcessActionEffectHook?.Disable();
+        if (ProcessActionEffectHook != null && !ProcessActionEffectHook.IsDisposed && ProcessActionEffectHook.IsEnabled)
+        {
+            ProcessActionEffectHook.Disable();
+        }
     }
 
     internal static void Dispose()
     {
-        if(ProcessActionEffectHook != null)
+        if (ProcessActionEffectHook != null)
         {
             PluginLog.Information($"Disposing Action Effect Hook");
             Disable();
-            ProcessActionEffectHook?.Dispose();
+            if (!ProcessActionEffectHook.IsDisposed)
+            {
+                ProcessActionEffectHook.Dispose();
+            }
             ProcessActionEffectHook = null;
         }
     }
