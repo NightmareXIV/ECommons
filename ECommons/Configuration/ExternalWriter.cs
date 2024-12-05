@@ -21,14 +21,20 @@ public static class ExternalWriter
 
     public static void PlaceWriteOrder(FileSaveStruct order)
     {
-        if(!FileSaveRequests.TryAdd(order))
+        if (FileSaveRequests == null)
+        {
+            PluginLog.Warning($"[FileWriterServer] FileSaveRequests is null, cannot place write order.");
+            return;
+        }
+
+        if (!FileSaveRequests.TryAdd(order))
         {
             PluginLog.Warning($"[FileWriterServer] PlaceWriteOrder failed, trying on another tick");
             Svc.Framework.RunOnTick(() => PlaceWriteOrder(order));
         }
         else
         {
-            if(!ThreadIsRunning)
+            if (!ThreadIsRunning)
             {
                 ThreadIsRunning = true;
                 BeginThread();
