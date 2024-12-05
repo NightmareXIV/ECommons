@@ -1,6 +1,7 @@
 ﻿using ECommons.DalamudServices;
 using Lumina.Excel.Sheets;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace ECommons.ExcelServices;
@@ -8,7 +9,7 @@ namespace ECommons.ExcelServices;
 
 public static class ExcelJobHelper
 {
-    public static readonly Dictionary<Job, Job> Upgrades = new()
+    public static readonly ReadOnlyDictionary<Job, Job> Upgrades = new Dictionary<Job, Job>()
     {
         [Job.GLA] = Job.PLD,
         [Job.PGL] = Job.MNK,
@@ -19,7 +20,7 @@ public static class ExcelJobHelper
         [Job.THM] = Job.BLM,
         [Job.ACN] = Job.SMN,
         [Job.ROG] = Job.NIN,
-    };
+    }.AsReadOnly();
 
     public static Job GetUpgradedJob(this Job j)
     {
