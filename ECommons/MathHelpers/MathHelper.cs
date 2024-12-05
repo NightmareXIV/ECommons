@@ -255,6 +255,13 @@ public static class MathHelper
         return (float)(MathF.PI / 180f * val);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="origin"></param>
+    /// <param name="angle">Radians</param>
+    /// <param name="p"></param>
+    /// <returns></returns>
     public static Vector3 RotateWorldPoint(Vector3 origin, float angle, Vector3 p)
     {
         if(angle == 0f) return p;
