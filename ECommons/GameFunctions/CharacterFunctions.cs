@@ -52,10 +52,9 @@ public static unsafe class CharacterFunctions
         //return *(byte*)(chr.Address + 2480 + 704);
     }
 
-    [Obsolete("Use static address from 44 38 35 ?? ?? ?? ?? 74 19 with offset=2 to determine if local player is in water", true)]
     public static bool IsInWater(this ICharacter chr)
     {
-        return false;
+        return *(byte*)(chr.Address + 1452) == 1;
     }
 
     public static CombatRole GetRole(this ICharacter c)
