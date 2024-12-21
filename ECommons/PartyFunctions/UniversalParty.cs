@@ -103,7 +103,7 @@ public static unsafe class UniversalParty
                 };
                 foreach(var x in Svc.Objects.OfType<IPlayerCharacter>())
                 {
-                    if(!x.AddressEquals(Player.Object))
+                    if(!x.AddressEquals(Player.Object) && x.Name.ToString() != "")
                     {
                         ret.Add(new()
                         {
