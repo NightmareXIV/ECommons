@@ -11,7 +11,7 @@ public enum EquipSlotCategoryEnum : uint
     OffHand = 2,
     Head = 3,
     Body = 4,
-    Globes = 5,
+    Gloves = 5,
     Waist = 6,
     Legs = 7,
     Feet = 8,
