@@ -41,7 +41,6 @@ public partial class AddonMaster
         public AtkComponentCheckBox* Leve1 => Addon->Leve1.CheckBox;
         public AtkComponentCheckBox* Leve2 => Addon->Leve2.CheckBox;
 
-
         //public void ClickEnemy0() => ClickButtonIfEnabled(&Enemy0->AtkComponentButton);
         public void ClickEnemy0() => ClickCheckboxIfEnabled(Enemy0);
         public void ClickEnemy1() => ClickCheckboxIfEnabled(Enemy1);
