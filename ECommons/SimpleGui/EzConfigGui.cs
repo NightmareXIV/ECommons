@@ -18,10 +18,10 @@ public static class EzConfigGui
     private static ConfigWindow configWindow;
     public static Window Window { get { return configWindow; } }
 
-    public static void Init(Action draw, IPluginConfiguration config = null)
+    public static void Init(Action draw, IPluginConfiguration config = null, string nameOverride = null)
     {
         Draw = draw;
-        Init(config);
+        Init(config, nameOverride);
     }
 
     public static T Init<T>(T window, IPluginConfiguration config = null) where T : ConfigWindow
@@ -31,7 +31,7 @@ public static class EzConfigGui
         return window;
     }
 
-    private static void Init(IPluginConfiguration config)
+    private static void Init(IPluginConfiguration config, string nameOverride = null)
     {
         if(WindowSystem != null)
         {
@@ -39,7 +39,7 @@ public static class EzConfigGui
         }
         WindowSystem = new($"ECommons@{DalamudReflector.GetPluginName()}");
         Config = config;
-        configWindow ??= new();
+        configWindow ??= new(nameOverride);
         WindowSystem.AddWindow(configWindow);
         Svc.PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
         Svc.PluginInterface.UiBuilder.OpenConfigUi += Open;
@@ -54,6 +54,8 @@ public static class EzConfigGui
     {
         Open();
     }
+
+    public static void Toggle() => configWindow.Toggle();
 
     /// <summary>
     /// Returns a window from the EzGui WindowSystem.

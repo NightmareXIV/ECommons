@@ -8,8 +8,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace ECommons.ExcelServices;
-//TODO: update or remove
-/*
 public static class ExcelCombos
 {
     // from koenari https://github.com/Koenari/HimbeertoniRaidTool/blob/b28313e6d62de940acc073f203e3032e846bfb13/HimbeertoniRaidTool/UI/ImGuiHelper.cs#L188
@@ -23,8 +21,8 @@ public static class ExcelCombos
     /// <param name="getPreview">The format of the initial value in the combo box.</param>
     /// <param name="flags">Any ImGuiComboFlags</param>
     /// <returns>Bool when item is selected.</returns>
-    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
-        => ExcelSheetCombo(id, out selected, getPreview, t => t.ToString(), flags);
+    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T selected, Func<ExcelSheet<T>, string> getPreview, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : struct, IExcelRow<T>
+        => ExcelSheetCombo(id, out selected, getPreview, t => t.ToString() ?? string.Empty, flags);
 
     /// <summary>
     /// Creates a searchable combo box for a given Excel sheet with an optional custom filter.
@@ -36,8 +34,8 @@ public static class ExcelCombos
     /// <param name="searchPredicate">Initial filter to apply to the sheet for which items to display.</param>
     /// <param name="flags">Any ImGuiComboFlags</param>
     /// <returns>Bool when item is selected.</returns>
-    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string, bool> searchPredicate, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
-        => ExcelSheetCombo(id, out selected, getPreview, t => t.ToString(), searchPredicate, flags);
+    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string, bool> searchPredicate, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : struct, IExcelRow<T>
+        => ExcelSheetCombo(id, out selected, getPreview, t => t.ToString() ?? string.Empty, searchPredicate, flags);
 
     /// <summary>
     /// Creates a searchable combo box for a given Excel sheet with an optional custom filter.
@@ -49,8 +47,8 @@ public static class ExcelCombos
     /// <param name="preFilter"></param>
     /// <param name="flags">Any ImGuiComboFlags</param>
     /// <returns>Bool when item is selected.</returns>
-    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, Func<T, bool> preFilter, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
-        => ExcelSheetCombo(id, out selected, getPreview, t => t.ToString(), preFilter, flags);
+    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T selected, Func<ExcelSheet<T>, string> getPreview, Func<T, bool> preFilter, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : struct, IExcelRow<T>
+        => ExcelSheetCombo(id, out selected, getPreview, t => t.ToString() ?? string.Empty, preFilter, flags);
 
     /// <summary>
     /// Creates a searchable combo box for a given Excel sheet with an optional custom filter.
@@ -63,8 +61,8 @@ public static class ExcelCombos
     /// <param name="preFilter">Initial filter to apply to the sheet for which items to display.</param>
     /// <param name="flags">Any ImGuiComboFlags</param>
     /// <returns>Bool when item is selected.</returns>
-    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string, bool> searchPredicate, Func<T, bool> preFilter, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
-        => ExcelSheetCombo(id, out selected, getPreview, t => t.ToString(), searchPredicate, preFilter, flags);
+    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string, bool> searchPredicate, Func<T, bool> preFilter, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : struct, IExcelRow<T>
+        => ExcelSheetCombo(id, out selected, getPreview, t => t.ToString() ?? string.Empty, searchPredicate, preFilter, flags);
 
     /// <summary>
     /// Creates a searchable combo box for a given Excel sheet with an optional custom filter.
@@ -76,7 +74,7 @@ public static class ExcelCombos
     /// <param name="toName">The format of each item in the combo box.</param>
     /// <param name="flags">Any ImGuiComboFlags</param>
     /// <returns>Bool when item is selected.</returns>
-    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string> toName, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
+    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string> toName, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : struct, IExcelRow<T>
         => ExcelSheetCombo(id, out selected, getPreview, toName, (t, s) => toName(t).Contains(s, StringComparison.CurrentCultureIgnoreCase), flags);
 
     /// <summary>
@@ -90,7 +88,7 @@ public static class ExcelCombos
     /// <param name="searchPredicate">Initial filter to apply to the sheet for which items to display.</param>
     /// <param name="flags">Any ImGuiComboFlags</param>
     /// <returns>Bool when item is selected.</returns>
-    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string> toName, Func<T, string, bool> searchPredicate, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
+    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string> toName, Func<T, string, bool> searchPredicate, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : struct, IExcelRow<T>
         => ExcelSheetCombo(id, out selected, getPreview, toName, searchPredicate, _ => true, flags);
 
     /// <summary>
@@ -104,7 +102,7 @@ public static class ExcelCombos
     /// <param name="preFilter">Initial filter to apply to the sheet for which items to display.</param>
     /// <param name="flags">Any ImGuiComboFlags</param>
     /// <returns>Bool when item is selected.</returns>
-    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string> toName, Func<T, bool> preFilter, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
+    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string> toName, Func<T, bool> preFilter, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : struct, IExcelRow<T>
         => ExcelSheetCombo(id, out selected, getPreview, toName, (t, s) => toName(t).Contains(s, StringComparison.CurrentCultureIgnoreCase), preFilter, flags);
 
     /// <summary>
@@ -119,12 +117,15 @@ public static class ExcelCombos
     /// <param name="preFilter">Initial filter to apply to the sheet for which items to display.</param>
     /// <param name="flags">Any ImGuiComboFlags</param>
     /// <returns>Bool when item is selected.</returns>
-    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T? selected, Func<ExcelSheet<T>, string> getPreview, Func<T, string> toName, Func<T, string, bool> searchPredicate, Func<T, bool> preFilter, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : ExcelRow
+    public static bool ExcelSheetCombo<T>(string id, [NotNullWhen(true)] out T selected,
+        Func<ExcelSheet<T>, string> getPreview, Func<T, string> toName,
+        Func<T, string, bool> searchPredicate,
+        Func<T, bool> preFilter, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : struct, IExcelRow<T>
     {
         var sheet = Svc.Data.GetExcelSheet<T>();
         if (sheet is null)
         {
-            selected = null;
+            selected = default;
             return false;
         }
         return SearchableCombo(id, out selected, getPreview(sheet), sheet, toName, searchPredicate, preFilter, flags);
@@ -179,7 +180,6 @@ public static class ExcelCombos
     /// <returns>Bool when item is selected.</returns>
     public static bool SearchableCombo<T>(string id, [NotNullWhen(true)] out T? selected, string preview, IEnumerable<T> possibilities, Func<T, string> toName, Func<T, string, bool> searchPredicate, Func<T, bool> preFilter, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : notnull
     {
-
         _comboDic.TryAdd(id, (false, false));
         (var toggle, var wasEnterClickedLastTime) = _comboDic[id];
         selected = default;
@@ -236,4 +236,3 @@ public static class ExcelCombos
         return false;
     }
 }
-*/

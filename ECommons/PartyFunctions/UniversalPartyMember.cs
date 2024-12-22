@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.DalamudServices;
+using ECommons.ExcelServices;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
 using System.Linq;
@@ -15,6 +16,7 @@ public class UniversalPartyMember
     public RowRef<World> CurrentWorld { get; init; }
     public string NameWithWorld => $"{Name}@{HomeWorld.ValueNullable?.Name}";
     public ulong ContentID { get; init; }
+    public Job ClassJob { get; init; }
 
     internal IGameObject GameObjectInternal = null;
     public IGameObject IGameObject

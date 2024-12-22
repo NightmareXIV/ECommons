@@ -823,7 +823,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="value">Value</param>
     /// <param name="smallButton">Whether button should be small</param>
     /// <returns>true when clicked, otherwise false</returns>
-    public static bool ButtonCheckbox(string name, ref bool value, bool smallButton = false) => ButtonCheckbox(name, ref value, EColor.Red, smallButton);
+    public static bool ButtonCheckbox(string name, ref bool value, bool smallButton) => ButtonCheckbox(name, ref value, EColor.Red, smallButton);
 
     /// <summary>
     /// Draws a button that acts like a checkbox.
@@ -1517,7 +1517,7 @@ public static unsafe partial class ImGuiEx
     public static bool EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : Enum, IConvertible
     {
         var ret = false;
-        if(ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString().Replace("_", " ")))
+        if(ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString().Replace("_", " "), ImGuiComboFlags.HeightLarge))
         {
             var values = Enum.GetValues(typeof(T));
             Box<string> fltr = null;

@@ -3,6 +3,7 @@ using Dalamud.Game.ClientState.Objects.SubKinds;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using System;
+using System.Linq;
 
 namespace ECommons.GameFunctions;
 
@@ -26,7 +27,12 @@ public static unsafe class FakePronoun
             }
             else if(Svc.Condition[ConditionFlag.DutyRecorderPlayback])
             {
-                if(uint.TryParse(pronoun[1..2], out var pos))
+                if(pronoun == "<me>")
+                {
+                    
+                    return (GameObject*)(Svc.Objects.OfType<IPlayerCharacter>().FirstOrDefault(x => x.Name.ToString().Contains(' '))?.Address ??Svc.Objects.OfType<IPlayerCharacter>().FirstOrDefault()?.Address ?? 0);
+                }
+                else if(uint.TryParse(pronoun[1..2], out var pos))
                 {
                     var i = 0;
                     foreach(var x in Svc.Objects)

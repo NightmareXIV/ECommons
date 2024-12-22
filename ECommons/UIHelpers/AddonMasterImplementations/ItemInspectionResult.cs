@@ -16,8 +16,8 @@ public partial class AddonMaster
 
         public AtkTextNode* NameNode => Base->GetTextNodeById(26);
         public AtkTextNode* DescNode => Base->GetTextNodeById(35);
-        public SeString ItemName => MemoryHelper.ReadSeString(&NameNode->NodeText);
-        public SeString Description => MemoryHelper.ReadSeString(&DescNode->NodeText);
+        public SeString ItemName => GenericHelpers.ReadSeString(&NameNode->NodeText);
+        public SeString Description => GenericHelpers.ReadSeString(&DescNode->NodeText);
         public string ItemNameText => ItemName.ExtractText();
         public string DescriptionText => Description.ExtractText();
 

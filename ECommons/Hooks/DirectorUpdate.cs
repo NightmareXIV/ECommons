@@ -9,7 +9,7 @@ namespace ECommons.Hooks;
 
 public static class DirectorUpdate
 {
-    private const string Sig = "48 89 5C 24 ?? 57 48 83 EC 30 41 8B D9";
+    private static readonly string Sig = "48 89 5C 24 ?? 57 48 83 EC 30 41 8B D9 41 8B F8 E8 ?? ?? ?? ?? 48 85 C0";
 
     public delegate long ProcessDirectorUpdate(long a1, long a2, DirectorUpdateCategory a3, uint a4, uint a5, int a6, int a7);
     internal static Hook<ProcessDirectorUpdate> ProcessDirectorUpdateHook = null;

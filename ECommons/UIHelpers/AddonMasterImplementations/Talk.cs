@@ -25,7 +25,7 @@ public partial class AddonMaster
         {
             var evt = stackalloc AtkEvent[1]
             {
-                CreateAtkEvent(132).CSEvent,
+                CreateAtkEvent(132),
             };
             var data = stackalloc AtkEventData[1];
             for(int i = 0; i < sizeof(AtkEventData); i++)

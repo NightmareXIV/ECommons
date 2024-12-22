@@ -1,4 +1,4 @@
-﻿using Dalamud.Common;
+﻿using Dalamud.Game;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Text.SeStringHandling;
@@ -9,6 +9,7 @@ using Dalamud.Utility;
 using ECommons.ChatMethods;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
+using ECommons.ExcelServices.Sheets;
 using ECommons.ImGuiMethods;
 using ECommons.Interop;
 using ECommons.Logging;
@@ -39,6 +40,47 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    private static string UidPrefix = $"{Random.Shared.Next(0, 0xFFFF):X4}";
+    private static ulong UidCnt = 0;
+    public static string GetTemporaryId() => $"{UidPrefix}{UidCnt++:X}";
+
+    public static bool TryGetValue<T>(this T? nullable, out T value) where T : struct
+    {
+        if(nullable.HasValue)
+        {
+            value = nullable.Value;
+            return true;
+        }
+        value = default;
+        return false;
+    }
+
+    public static bool TryGetValue<T>(this RowRef<T> rowRef, out T value) where T:struct, IExcelRow<T>
+    {
+        if(rowRef.ValueNullable != null)
+        {
+            value = rowRef.Value;
+            return true;
+        }
+        value = default;
+        return false;
+    }
+
+    public static TExtension GetExtension<TExtension, TBase>(this TBase row) where TExtension : struct, IExcelRow<TExtension>, IRowExtension<TExtension, TBase> where TBase : struct, IExcelRow<TBase>
+    {
+        return TExtension.GetExtended(row);
+    }
+
+    public static SeString ReadSeString(Utf8String* utf8String)
+    {
+        if(utf8String != null)
+        {
+            return SeString.Parse(utf8String->AsSpan());
+        }
+
+        return string.Empty;
+    }
+
     public static T? FirstOrNull<T>(this IEnumerable<T> values, Func<T, bool> predicate) where T : struct
     {
         if(values.TryGetFirst(predicate, out var result))
@@ -121,7 +163,7 @@ public static unsafe partial class GenericHelpers
     /// <returns></returns>
     public static SeString Read(this Utf8String str)
     {
-        return MemoryHelper.ReadSeString(&str);
+        return GenericHelpers.ReadSeString(&str);
     }
 
     /// <summary>
@@ -895,6 +937,22 @@ public static unsafe partial class GenericHelpers
         var parent = node->ParentNode;
         return parent == null ? node : GetRootNode(parent);
     }
+    
+    /// <summary>
+    /// Removes whitespaces, line breaks, tabs, etc from string.
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    public static string Cleanup(this string s)
+    {
+        StringBuilder sb = new(s.Length);
+        foreach(var c in s)
+        {
+            if(c == ' ' || c == '\n' || c == '\r' || c == '\t') continue;
+            sb.Append(c);
+        }
+        return sb.ToString();
+    }
 
     /// <summary>
     /// Discards any non-text payloads from <see cref="SeString"/>
@@ -917,7 +975,7 @@ public static unsafe partial class GenericHelpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ExtractText(this Utf8String s, bool onlyFirst = false)
     {
-        var str = MemoryHelper.ReadSeString(&s);
+        var str = GenericHelpers.ReadSeString(&s);
         return str.ExtractText(false);
     }
 
@@ -1591,6 +1649,7 @@ public static unsafe partial class GenericHelpers
     /// </summary>
     /// <param name="textNodePtr"></param>
     /// <returns></returns>
+    [Obsolete("Incompatible with UI mods, use other methods")]
     public static bool IsSelectItemEnabled(AtkTextNode* textNodePtr)
     {
         var col = textNodePtr->TextColor;
@@ -1640,15 +1699,9 @@ public static unsafe partial class GenericHelpers
         };
     }
 
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete($"Use MemoryHelper.ReadSeString")]
-    public static unsafe SeString ReadSeString(Utf8String* utf8String) => MemoryHelper.ReadSeString(utf8String);
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Obsolete($"Use MemoryHelper.ReadSeString")]
-    public static SeString ReadSeString(IntPtr memoryAddress, int maxLength) => MemoryHelper.ReadSeString(memoryAddress, maxLength);
+    public static SeString ReadSeString(IntPtr memoryAddress, int maxLength) => GenericHelpers.ReadSeString(memoryAddress, maxLength);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete($"Use MemoryHelper.ReadRaw")]
@@ -1657,6 +1710,31 @@ public static unsafe partial class GenericHelpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete($"Use MemoryHelper.ReadRaw")]
     public static byte[] ReadRaw(IntPtr memoryAddress, int length) => MemoryHelper.ReadRaw(memoryAddress, length);
+
+
+    public static ExcelSheet<T> GetSheet<T>(ClientLanguage? language = null) where T : struct, IExcelRow<T>
+        => Svc.Data.GetExcelSheet<T>(language ?? Svc.ClientState.ClientLanguage);
+
+    public static SubrowExcelSheet<T> GetSubrowSheet<T>(ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
+        => Svc.Data.GetSubrowExcelSheet<T>(language ?? Svc.ClientState.ClientLanguage);
+
+    public static int GetRowCount<T>() where T : struct, IExcelRow<T>
+        => GetSheet<T>().Count;
+
+    public static T? GetRow<T>(uint rowId, ClientLanguage? language = null) where T : struct, IExcelRow<T>
+        => GetSheet<T>(language).GetRowOrDefault(rowId);
+
+    public static T? GetRow<T>(uint rowId, ushort subRowId, ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
+        => Svc.Data.GetSubrowExcelSheet<T>(language).GetSubrowOrDefault(rowId, subRowId);
+
+    public static T? FindRow<T>(Func<T, bool> predicate) where T : struct, IExcelRow<T>
+         => GetSheet<T>().FirstOrNull(predicate);
+
+    public static T? FindRow<T>(Func<T, bool> predicate, ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
+        => GetSubrowSheet<T>(language).SelectMany(m => m).Cast<T?>().FirstOrDefault(t => predicate(t.Value), null);
+
+    public static T[] FindRows<T>(Func<T, bool> predicate) where T : struct, IExcelRow<T>
+        => GetSheet<T>().Where(predicate).ToArray();
 
     public static IEnumerable<T> AllRows<T>(this SubrowExcelSheet<T> subrowSheet) where T:struct, IExcelSubrow<T>
     {

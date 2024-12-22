@@ -15,7 +15,7 @@ public class InternalLog
 {
     public static readonly CircularBuffer<InternalLogMessage> Messages = new(1000);
 
-    public static (string, Action, Vector4, bool) ImGuiTab(bool draw = true) => (draw ? "Log" : null, PrintImgui, ImGuiColors.DalamudGrey, false);
+    public static (string, Action, Vector4, bool) ImGuiTab(bool draw = true) => (draw ? "Log" : null, PrintImgui, ImGuiColors.DalamudGrey3, false);
 
     public static void Information(string s)
     {
