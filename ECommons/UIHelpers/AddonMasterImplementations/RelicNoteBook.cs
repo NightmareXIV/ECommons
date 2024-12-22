@@ -12,6 +12,8 @@ public partial class AddonMaster
         public RelicNoteBook(nint addon) : base(addon) { }
         public RelicNoteBook(void* addon) : base(addon) { }
 
+        public override string AddonDescription => "ARR Relic Trial of the Braves book";
+
         // Enemies
         public AtkComponentCheckBox* Enemy0 => Addon->Enemy0.CheckBox;
         public AtkComponentCheckBox* Enemy1 => Addon->Enemy1.CheckBox;
@@ -40,8 +42,6 @@ public partial class AddonMaster
         public AtkComponentCheckBox* Leve2 => Addon->Leve2.CheckBox;
 
 
-        public override string AddonDescription => "Duty finder status window";
-
         //public void ClickEnemy0() => ClickButtonIfEnabled(&Enemy0->AtkComponentButton);
         public void ClickEnemy0() => ClickCheckboxIfEnabled(Enemy0);
         public void ClickEnemy1() => ClickCheckboxIfEnabled(Enemy1);
@@ -60,6 +60,10 @@ public partial class AddonMaster
         public void ClickDungeon2() => ClickCheckboxIfEnabled(Dungeon2);
 
         // FATEs
+        public void ClickFate0() => ClickCheckboxIfEnabled(Fate0);
+        public void ClickFate1() => ClickCheckboxIfEnabled(Fate1);
+        public void ClickFate2() => ClickCheckboxIfEnabled(Fate2);
+
 
         // Leves
         public void ClickLeve0() => ClickCheckboxIfEnabled(Leve0);
