@@ -40,6 +40,26 @@ public static class ExcelJobHelper
 
     public static bool IsUpgradeable(this Job j) => Upgrades.ContainsKey(j);
 
+    public static bool IsCombat(this Job j) => j.GetData().Role > 0;
+
+    public static bool IsDol(this Job j) => j.GetData().ClassJobCategory.RowId == 32;
+    public static bool IsDoh(this Job j) => j.GetData().ClassJobCategory.RowId == 33;
+    public static bool IsDom(this Job j) => j.GetData().ClassJobCategory.RowId == 31;
+    public static bool IsDow(this Job j) => j.GetData().ClassJobCategory.RowId == 30;
+
+    public static bool IsTank(this Job j) => j.GetData().Role == 1;
+    public static bool IsHealer(this Job j) => j.GetData().Role == 4;
+    public static bool IsDps(this Job j) => j.IsMeleeDps() || j.IsRangedDps();
+    public static bool IsMeleeDps(this Job j) => j.GetData().Role == 2;
+    public static bool IsRangedDps(this Job j) => j.GetData().Role == 3;
+    public static bool IsPhysicalRangedDps(this Job j) => j.IsRangedDps() && j.IsDow();
+    public static bool IsMagicalRangedDps(this Job j) => j.IsRangedDps() && j.IsDom();
+
+    public static ClassJob GetData(this Job j)
+    {
+        return Svc.Data.GetExcelSheet<ClassJob>().GetRow((uint)j);
+    }
+
     public static int GetIcon(this Job j)
     {
         return j == Job.ADV ? 62143 : (062100 + (int)j);
