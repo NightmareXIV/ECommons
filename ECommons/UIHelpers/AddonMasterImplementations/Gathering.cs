@@ -92,15 +92,7 @@ public partial class AddonMaster
                 }
             }
 
-            public void Gather()
-            {
-                if (IsEnabled)
-                {
-                    var evt = (AtkEvent*)CheckBox->OwnerNode->AtkResNode.AtkEventManager.Event;
-                    var data = stackalloc AtkEventData[1];
-                    addon->AtkUnitBase.ReceiveEvent(evt->State.EventType, (int)evt->Param, evt, data);
-                }
-            }
+            public void Gather() => addonMaster.ClickCheckboxIfEnabled(CheckBox);
         }
 
         private AtkComponentCheckBox* GetCheckBox(int index) => index switch
