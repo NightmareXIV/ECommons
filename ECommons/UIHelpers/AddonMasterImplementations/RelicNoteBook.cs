@@ -63,7 +63,6 @@ public partial class AddonMaster
         public void ClickFate1() => ClickCheckboxIfEnabled(Fate1);
         public void ClickFate2() => ClickCheckboxIfEnabled(Fate2);
 
-
         // Leves
         public void ClickLeve0() => ClickCheckboxIfEnabled(Leve0);
         public void ClickLeve1() => ClickCheckboxIfEnabled(Leve1);
