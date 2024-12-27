@@ -147,6 +147,7 @@ public static unsafe partial class ImGuiEx
 
         public void End(int numRows = 1)
         {
+            var cur = ImGui.GetCursorPos();
             foreach(var x in MoveCommands)
             {
                 ImGui.SetCursorPos(x.ButtonPos);
@@ -157,6 +158,7 @@ public static unsafe partial class ImGuiEx
                 ImGui.Dummy(new Vector2(ImGui.GetContentRegionAvail().X, height));
                 x.AcceptDraw();
             }
+            ImGui.SetCursorPos(cur);
         }
     }
 }

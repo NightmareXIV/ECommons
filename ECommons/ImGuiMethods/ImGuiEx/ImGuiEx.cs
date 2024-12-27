@@ -51,24 +51,30 @@ public static unsafe partial class ImGuiEx
     public static bool InputFancyNumeric(string label, ref int number, int step)
     {
         var str = $"{number:N0}";
-        var ret = ImGui.InputText(label, ref str, 50, ImGuiInputTextFlags.AutoSelectAll);
+        var lbl = label.StartsWith("##") ? label : $"##{label}";
+        var ret = ImGui.InputText(lbl, ref str, 50, ImGuiInputTextFlags.AutoSelectAll);
+        var btn = false;
         ImGui.SameLine(0, 1);
         if(ImGui.Button($"-##minus{label}", new(ImGui.GetFrameHeight())))
         {
             number -= step;
+            btn = true;
         }
         if(ImGui.IsItemHovered() && ImGui.GetIO().MouseDownDuration[0] > 0.5f && EzThrottler.Throttle("FancyInputHold", 50))
         {
             number -= step;
+            btn = true;
         }
         ImGui.SameLine(0, 1);
         if(ImGui.Button($"+##plus{label}", new(ImGui.GetFrameHeight())))
         {
             number += step;
+            btn = true;
         }
         if(ImGui.IsItemHovered() && ImGui.GetIO().MouseDownDuration[0] > 0.5f && EzThrottler.Throttle("FancyInputHold", 50))
         {
             number += step;
+            btn = true;
         }
         if(ret)
         {
@@ -96,7 +102,12 @@ public static unsafe partial class ImGuiEx
                 }
             }
         }
-        return ret;
+        if(!label.StartsWith("##"))
+        {
+            ImGui.SameLine();
+            ImGuiEx.Text(label);
+        }
+        return ret || btn;
     }
 
     /// <summary>
