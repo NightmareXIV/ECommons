@@ -217,8 +217,8 @@ public static unsafe partial class GenericHelpers
         return obj?.Address == other?.Address;
     }
 
-    /// <inheritdoc cref="SafeSelect{K, V}(IDictionary{K, V}, K, V)"/>
-    public static V? SafeSelect<K, V>(this IDictionary<K, V> dictionary, K? key) => SafeSelect(dictionary, key, default);
+    /// <inheritdoc cref="SafeSelect{K, V}(IReadOnlyDictionary{K, V}, K, V)"/>
+    public static V? SafeSelect<K, V>(this IReadOnlyDictionary<K, V> dictionary, K? key) => SafeSelect(dictionary, key, default);
 
     /// <summary>
     /// Safely selects a value from a <paramref name="dictionary"/>. Does not throws exceptions under any circumstances.
@@ -229,7 +229,7 @@ public static unsafe partial class GenericHelpers
     /// <param name="key"></param>
     /// <param name="defaultValue">Returns if <paramref name="dictionary"/> is <see langword="null"/> or <paramref name="key"/> is <see langword="null"/> or <paramref name="key"/> is not found in <paramref name="dictionary"/></param>
     /// <returns></returns>
-    public static V? SafeSelect<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue)
+    public static V? SafeSelect<K, V>(this IReadOnlyDictionary<K, V> dictionary, K key, V defaultValue)
     {
         if(dictionary == null) return default;
         if(key == null) return default;

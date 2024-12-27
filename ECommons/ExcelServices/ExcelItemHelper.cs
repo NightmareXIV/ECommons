@@ -134,7 +134,7 @@ public static class ExcelItemHelper
                 EquipSlotCategoryEnum.OffHand => row.OffHandPercent,
                 EquipSlotCategoryEnum.Head => row.HeadPercent,
                 EquipSlotCategoryEnum.Body => row.ChestPercent,
-                EquipSlotCategoryEnum.Globes => row.HandsPercent,
+                EquipSlotCategoryEnum.Gloves => row.HandsPercent,
                 EquipSlotCategoryEnum.Waist => row.WaistPercent,
                 EquipSlotCategoryEnum.Legs => row.LegsPercent,
                 EquipSlotCategoryEnum.Feet => row.FeetPercent,
