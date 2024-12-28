@@ -1637,7 +1637,7 @@ public static unsafe partial class ImGuiEx
 
     public static bool SmallButton(string label, bool enabled = true)
     {
-        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
         var ret = ImGui.SmallButton(label) && enabled;
         if(!enabled) ImGui.PopStyleVar();
         return ret;
@@ -1645,7 +1645,7 @@ public static unsafe partial class ImGuiEx
 
     public static bool Button(string label, bool enabled = true)
     {
-        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
         var ret = ImGui.Button(label) && enabled;
         if(!enabled) ImGui.PopStyleVar();
         return ret;
@@ -1653,7 +1653,7 @@ public static unsafe partial class ImGuiEx
 
     public static bool Button(string label, Vector2 size, bool enabled = true)
     {
-        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
         var ret = ImGui.Button(label, size) && enabled;
         if(!enabled) ImGui.PopStyleVar();
         return ret;
@@ -1662,7 +1662,7 @@ public static unsafe partial class ImGuiEx
     public static bool IconButton(string icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
     {
         ImGui.PushFont(UiBuilder.IconFont);
-        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
         var result = ImGui.Button($"{icon}##{icon}-{id}", size) && enabled;
         if(!enabled) ImGui.PopStyleVar();
         ImGui.PopFont();
@@ -1671,7 +1671,7 @@ public static unsafe partial class ImGuiEx
 
     public static bool IconButtonWithText(FontAwesomeIcon icon, string id, bool enabled = true)
     {
-        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
         var result = ImGuiComponents.IconButtonWithText(icon, $"{id}") && enabled;
         if(!enabled) ImGui.PopStyleVar();
         return result;
