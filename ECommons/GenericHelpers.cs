@@ -1662,7 +1662,7 @@ public static unsafe partial class GenericHelpers
             || (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5);
     }
 
-    public static void MoveItemToPosition<T>(List<T> list, Func<T, bool> sourceItemSelector, int targetedIndex)
+    public static void MoveItemToPosition<T>(IList<T> list, Func<T, bool> sourceItemSelector, int targetedIndex)
     {
         var sourceIndex = -1;
         for(var i = 0; i < list.Count; i++)
