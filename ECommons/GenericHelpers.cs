@@ -251,7 +251,7 @@ public static unsafe partial class GenericHelpers
     /// <param name="list"></param>
     /// <param name="index"></param>
     /// <returns></returns>
-    public static T SafeSelect<T>(this IList<T> list, int index)
+    public static T SafeSelect<T>(this IReadOnlyList<T> list, int index)
     {
         if(list == null) return default;
         if(index < 0 || index >= list.Count) return default;
@@ -348,7 +348,7 @@ public static unsafe partial class GenericHelpers
     }
 
     [Obsolete($"Use {nameof(SafeSelect)}")]
-    public static T GetOrDefault<T>(this IList<T> List, int index) => SafeSelect(List, index);
+    public static T GetOrDefault<T>(this IReadOnlyList<T> List, int index) => SafeSelect(List, index);
 
     [Obsolete($"Use {nameof(SafeSelect)}")]
     public static T GetOrDefault<T>(this T[] Array, int index) => SafeSelect(Array, index);
