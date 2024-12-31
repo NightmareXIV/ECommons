@@ -55,19 +55,23 @@ public static unsafe partial class ImGuiEx
         ImGui.SameLine(0, 1);
         if(ImGui.Button($"-##minus{label}", new(ImGui.GetFrameHeight())))
         {
+            ret = true;
             number -= step;
         }
         if(ImGui.IsItemHovered() && ImGui.GetIO().MouseDownDuration[0] > 0.5f && EzThrottler.Throttle("FancyInputHold", 50))
         {
+            ret = true;
             number -= step;
         }
         ImGui.SameLine(0, 1);
         if(ImGui.Button($"+##plus{label}", new(ImGui.GetFrameHeight())))
         {
+            ret = true;
             number += step;
         }
         if(ImGui.IsItemHovered() && ImGui.GetIO().MouseDownDuration[0] > 0.5f && EzThrottler.Throttle("FancyInputHold", 50))
         {
+            ret = true;
             number += step;
         }
         if(ret)
@@ -80,6 +84,11 @@ public static unsafe partial class ImGuiEx
             }
             else
             {
+                var negative = str[0] == '-';
+                if(negative)
+                {
+                    str = str[1..];
+                }
                 while(str.EndsWith("M", StringComparison.OrdinalIgnoreCase))
                 {
                     mult *= 1000000;
@@ -93,6 +102,7 @@ public static unsafe partial class ImGuiEx
                 if(int.TryParse(str, NumberStyles.AllowThousands, null, out var result))
                 {
                     number = result * mult;
+                    if(negative) number *= -1;
                 }
             }
         }
