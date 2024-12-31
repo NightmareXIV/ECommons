@@ -2,7 +2,7 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.Sheets;
-using System.Net;
+using System;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -14,59 +14,175 @@ public partial class AddonMaster
 
         public override string AddonDescription => "ARR Relic Trial of the Braves book";
 
-        // Enemies
-        public AtkComponentCheckBox* Enemy0 => Addon->Enemy0.CheckBox;
-        public AtkComponentCheckBox* Enemy1 => Addon->Enemy1.CheckBox;
-        public AtkComponentCheckBox* Enemy2 => Addon->Enemy2.CheckBox;
-        public AtkComponentCheckBox* Enemy3 => Addon->Enemy3.CheckBox;
-        public AtkComponentCheckBox* Enemy4 => Addon->Enemy4.CheckBox;
-        public AtkComponentCheckBox* Enemy5 => Addon->Enemy5.CheckBox;
-        public AtkComponentCheckBox* Enemy6 => Addon->Enemy6.CheckBox;
-        public AtkComponentCheckBox* Enemy7 => Addon->Enemy7.CheckBox;
-        public AtkComponentCheckBox* Enemy8 => Addon->Enemy8.CheckBox;
-        public AtkComponentCheckBox* Enemy9 => Addon->Enemy9.CheckBox;
+        public RelicNoteBookEnemy[] Enemies
+        {
+            get
+            {
+                RelicNoteBookEnemy[] relicNoteBookEnemy = new RelicNoteBookEnemy[10];
+                for (int i = 0; i < relicNoteBookEnemy.Length; i++)
+                {
+                    relicNoteBookEnemy[i] = new RelicNoteBookEnemy(this, Addon, GetEnemyCheckBox(i), i);
+                }
+                return relicNoteBookEnemy;
+            }
+        }
 
-        // Dungeons
-        public AtkComponentCheckBox* Dungeon0 => Addon->Dungeon0.CheckBox;
-        public AtkComponentCheckBox* Dungeon1 => Addon->Dungeon1.CheckBox;
-        public AtkComponentCheckBox* Dungeon2 => Addon->Dungeon2.CheckBox;
+        public RelicNoteBookDungeon[] Dungeons
+        {
+            get
+            {
+                RelicNoteBookDungeon[] relicNoteBookDungeon = new RelicNoteBookDungeon[2];
+                for (int i = 0; i < relicNoteBookDungeon.Length; i++)
+                {
+                    relicNoteBookDungeon[i] = new RelicNoteBookDungeon(this, Addon, GetDungeonCheckBox(i), i);
+                }
+                return relicNoteBookDungeon;
+            }
+        }
 
-        // FATEs
-        public AtkComponentCheckBox* Fate0 => Addon->Fate0.CheckBox;
-        public AtkComponentCheckBox* Fate1 => Addon->Fate1.CheckBox;
-        public AtkComponentCheckBox* Fate2 => Addon->Fate2.CheckBox;
+        public RelicNoteBookFate[] Fates
+        {
+            get
+            {
+                RelicNoteBookFate[] relicNoteBookFate = new RelicNoteBookFate[2];
+                for (int i = 0; i < relicNoteBookFate.Length; i++)
+                {
+                    relicNoteBookFate[i] = new RelicNoteBookFate(this, Addon, GetFateCheckBox(i), i);
+                }
+                return relicNoteBookFate;
+            }
+        }
 
-        // Leves
-        public AtkComponentCheckBox* Leve0 => Addon->Leve0.CheckBox;
-        public AtkComponentCheckBox* Leve1 => Addon->Leve1.CheckBox;
-        public AtkComponentCheckBox* Leve2 => Addon->Leve2.CheckBox;
+        public RelicNoteBookLeve[] Leves
+        {
+            get
+            {
+                RelicNoteBookLeve[] relicNoteBookEnemy = new RelicNoteBookLeve[10];
+                for (int i = 0; i < relicNoteBookEnemy.Length; i++)
+                {
+                    relicNoteBookEnemy[i] = new RelicNoteBookLeve(this, Addon, GetLeveCheckBox(i), i);
+                }
+                return relicNoteBookEnemy;
+            }
+        }
 
-        // Enemies
-        public void ClickEnemy0() => ClickCheckboxIfEnabled(Enemy0);
-        public void ClickEnemy1() => ClickCheckboxIfEnabled(Enemy1);
-        public void ClickEnemy2() => ClickCheckboxIfEnabled(Enemy2);
-        public void ClickEnemy3() => ClickCheckboxIfEnabled(Enemy3);
-        public void ClickEnemy4() => ClickCheckboxIfEnabled(Enemy4);
-        public void ClickEnemy5() => ClickCheckboxIfEnabled(Enemy5);
-        public void ClickEnemy6() => ClickCheckboxIfEnabled(Enemy6);
-        public void ClickEnemy7() => ClickCheckboxIfEnabled(Enemy7);
-        public void ClickEnemy8() => ClickCheckboxIfEnabled(Enemy8);
-        public void ClickEnemy9() => ClickCheckboxIfEnabled(Enemy9);
+        public class RelicNoteBookEnemy
+        {
+            private RelicNoteBook addonMaster;
+            private AddonRelicNoteBook* addon;
+            private AtkComponentCheckBox* checkbox;
+            private int index;
 
-        // Dungeons
-        public void ClickDungeon0() => ClickCheckboxIfEnabled(Dungeon0);
-        public void ClickDungeon1() => ClickCheckboxIfEnabled(Dungeon1);
-        public void ClickDungeon2() => ClickCheckboxIfEnabled(Dungeon2);
+            public RelicNoteBookEnemy(RelicNoteBook addonMaster, AddonRelicNoteBook* addon, AtkComponentCheckBox* checkbox, int index)
+            {
+                this.addonMaster = addonMaster;
+                this.addon = addon;
+                this.checkbox = checkbox;
+                this.index = index;
+            }
 
-        // FATEs
-        public void ClickFate0() => ClickCheckboxIfEnabled(Fate0);
-        public void ClickFate1() => ClickCheckboxIfEnabled(Fate1);
-        public void ClickFate2() => ClickCheckboxIfEnabled(Fate2);
+            public AtkComponentCheckBox* CheckBox => checkbox;
+            public bool IsEnabled => CheckBox->IsEnabled;
+            public void Click() => addonMaster.ClickCheckboxIfEnabled(CheckBox);
+        }
 
-        // Leves
-        public void ClickLeve0() => ClickCheckboxIfEnabled(Leve0);
-        public void ClickLeve1() => ClickCheckboxIfEnabled(Leve1);
-        public void ClickLeve2() => ClickCheckboxIfEnabled(Leve2);
+        public class RelicNoteBookDungeon
+        {
+            private RelicNoteBook addonMaster;
+            private AddonRelicNoteBook* addon;
+            private AtkComponentCheckBox* checkbox;
+            private int index;
 
+            public RelicNoteBookDungeon(RelicNoteBook addonMaster, AddonRelicNoteBook* addon, AtkComponentCheckBox* checkbox, int index)
+            {
+                this.addonMaster = addonMaster;
+                this.addon = addon;
+                this.checkbox = checkbox;
+                this.index = index;
+            }
+
+            public AtkComponentCheckBox* CheckBox => checkbox;
+            public bool IsEnabled => CheckBox->IsEnabled;
+            public void Click() => addonMaster.ClickCheckboxIfEnabled(CheckBox);
+        }
+
+        public class RelicNoteBookFate
+        {
+            private RelicNoteBook addonMaster;
+            private AddonRelicNoteBook* addon;
+            private AtkComponentCheckBox* checkbox;
+            private int index;
+
+            public RelicNoteBookFate(RelicNoteBook addonMaster, AddonRelicNoteBook* addon, AtkComponentCheckBox* checkbox, int index)
+            {
+                this.addonMaster = addonMaster;
+                this.addon = addon;
+                this.checkbox = checkbox;
+                this.index = index;
+            }
+
+            public AtkComponentCheckBox* CheckBox => checkbox;
+            public bool IsEnabled => CheckBox->IsEnabled;
+            public void Click() => addonMaster.ClickCheckboxIfEnabled(CheckBox);
+        }
+
+        public class RelicNoteBookLeve
+        {
+            private RelicNoteBook addonMaster;
+            private AddonRelicNoteBook* addon;
+            private AtkComponentCheckBox* checkbox;
+            private int index;
+
+            public RelicNoteBookLeve(RelicNoteBook addonMaster, AddonRelicNoteBook* addon, AtkComponentCheckBox* checkbox, int index)
+            {
+                this.addonMaster = addonMaster;
+                this.addon = addon;
+                this.checkbox = checkbox;
+                this.index = index;
+            }
+
+            public AtkComponentCheckBox* CheckBox => checkbox;
+            public bool IsEnabled => CheckBox->IsEnabled;
+            public void Click() => addonMaster.ClickCheckboxIfEnabled(CheckBox);
+        };
+
+        private AtkComponentCheckBox* GetEnemyCheckBox(int index) => index switch
+        {
+            0 => Addon->Enemy0.CheckBox,
+            1 => Addon->Enemy1.CheckBox,
+            2 => Addon->Enemy2.CheckBox,
+            3 => Addon->Enemy3.CheckBox,
+            4 => Addon->Enemy4.CheckBox,
+            5 => Addon->Enemy5.CheckBox,
+            6 => Addon->Enemy6.CheckBox,
+            7 => Addon->Enemy7.CheckBox,
+            8 => Addon->Enemy8.CheckBox,
+            9 => Addon->Enemy9.CheckBox,
+            _ => throw new ArgumentOutOfRangeException(nameof(index)),
+        };
+
+        private AtkComponentCheckBox* GetDungeonCheckBox(int index) => index switch
+        {
+            0 => Addon->Dungeon0.CheckBox,
+            1 => Addon->Dungeon1.CheckBox,
+            2 => Addon->Dungeon2.CheckBox,
+            _ => throw new ArgumentOutOfRangeException(nameof(index))
+        };
+
+        private AtkComponentCheckBox* GetFateCheckBox(int index) => index switch
+        {
+            0 => Addon->Fate0.CheckBox,
+            1 => Addon->Fate1.CheckBox,
+            2 => Addon->Fate2.CheckBox,
+            _ => throw new ArgumentOutOfRangeException(nameof(index))
+        };
+
+        private AtkComponentCheckBox* GetLeveCheckBox(int index) => index switch
+        {
+            0 => Addon->Leve0.CheckBox,
+            1 => Addon->Leve1.CheckBox,
+            2 => Addon->Leve2.CheckBox,
+            _ => throw new ArgumentOutOfRangeException(nameof(index))
+        };
     }
 }
