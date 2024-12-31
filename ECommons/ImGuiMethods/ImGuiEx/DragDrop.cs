@@ -28,20 +28,29 @@ public static unsafe partial class ImGuiEx
         Func<T, string> GetUniqueId;
         bool Small = false;
 
+        /// <summary>
+        /// Step 1. Call this before table begins.
+        /// </summary>
         public void Begin()
         {
             MoveCommands.Clear();
         }
 
         /// <summary>
-        /// Call this in the beginning of table's row (first column). This function just stores cursor.
+        /// Step 2. Call this in the beginning of table's row (first column). This function just stores cursor.
         /// </summary>
         public void NextRow()
         {
             InitialDragDropCurpos = ImGui.GetCursorPos();
         }
 
-        public void DrawButtonDummy(T item, List<T> list, int targetPosition)
+        /// <summary>
+        /// Step 3. Call this where you want your button be.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="list"></param>
+        /// <param name="targetPosition"></param>
+        public void DrawButtonDummy(T item, IList<T> list, int targetPosition)
         {
             void executeMove(string x)
             {
@@ -50,7 +59,8 @@ public static unsafe partial class ImGuiEx
             DrawButtonDummy(GetUniqueId(item), executeMove);
         }
 
-        public void DrawButtonDummy(string uniqueId, List<T> list, int targetPosition)
+        /// <inheritdoc cref="DrawButtonDummy(T, IList{T}, int)"/>
+        public void DrawButtonDummy(string uniqueId, IList<T> list, int targetPosition)
         {
             void executeMove(string x)
             {
@@ -59,6 +69,7 @@ public static unsafe partial class ImGuiEx
             DrawButtonDummy(uniqueId, executeMove);
         }
 
+        /// <inheritdoc cref="DrawButtonDummy(T, IList{T}, int)"/>
         public void DrawButtonDummy(string uniqueId, Action<string> onAcceptDragDropPayload)
         {
             ImGui.PushFont(UiBuilder.IconFont);
@@ -70,6 +81,11 @@ public static unsafe partial class ImGuiEx
             EndRow(uniqueId, onAcceptDragDropPayload);
         }
 
+        /// <summary>
+        /// Call this after calling TableNextRow to color the row that is being moved. Not mandatory.
+        /// </summary>
+        /// <param name="uniqueId"></param>
+        /// <returns>Whether row was colored</returns>
         public bool SetRowColor(string uniqueId)
         {
             var ret = false;
@@ -145,8 +161,13 @@ public static unsafe partial class ImGuiEx
             return uniqueId != null;
         }
 
+        /// <summary>
+        /// Step 4. Call this outside of the table.
+        /// </summary>
+        /// <param name="numRows">How many lines is in your biggest row.</param>
         public void End(int numRows = 1)
         {
+            var cur = ImGui.GetCursorPos();
             foreach(var x in MoveCommands)
             {
                 ImGui.SetCursorPos(x.ButtonPos);
@@ -157,6 +178,7 @@ public static unsafe partial class ImGuiEx
                 ImGui.Dummy(new Vector2(ImGui.GetContentRegionAvail().X, height));
                 x.AcceptDraw();
             }
+            ImGui.SetCursorPos(cur);
         }
     }
 }

@@ -1,15 +1,15 @@
 ﻿using Dalamud.Interface.Windowing;
 using ECommons.Configuration;
 using ECommons.DalamudServices;
-using ECommons.ImGuiMethods;
 using ECommons.Logging;
 using ECommons.Reflection;
 
 namespace ECommons.SimpleGui;
+#nullable disable
 
 public class ConfigWindow : Window
 {
-    public ConfigWindow() : base($"{DalamudReflector.GetPluginName()} v{ECommonsMain.Instance.GetType().Assembly.GetName().Version}###{DalamudReflector.GetPluginName()}")
+    public ConfigWindow(string name = null) : base($"{name ?? $"{DalamudReflector.GetPluginName()} v{ECommonsMain.Instance.GetType().Assembly.GetName().Version}"}###{DalamudReflector.GetPluginName()}")
     {
         SizeConstraints = new()
         {

@@ -1,36 +1,37 @@
 ﻿using Dalamud.Game;
-using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
 using Dalamud.Utility;
 using ECommons.ChatMethods;
-using ECommons.DalamudServices;
 using ECommons.ExcelServices;
-using ECommons.ImGuiMethods;
+using ECommons.ExcelServices.Sheets;
 using ECommons.Interop;
-using ECommons.Logging;
 using ECommons.MathHelpers;
 using ECommons.UIHelpers.AddonMasterImplementations;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using ImGuiNET;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
 using Lumina.Text.ReadOnly;
 using Newtonsoft.Json;
 using PInvoke;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Interface.Windowing;
+using ECommons.DalamudServices;
+using ECommons.ImGuiMethods;
+using ECommons.Logging;
+using ImGuiNET;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 #nullable disable
@@ -39,6 +40,37 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    private static string UidPrefix = $"{Random.Shared.Next(0, 0xFFFF):X4}";
+    private static ulong UidCnt = 0;
+    public static string GetTemporaryId() => $"{UidPrefix}{UidCnt++:X}";
+
+    public static bool TryGetValue<T>(this T? nullable, out T value) where T : struct
+    {
+        if(nullable.HasValue)
+        {
+            value = nullable.Value;
+            return true;
+        }
+        value = default;
+        return false;
+    }
+
+    public static bool TryGetValue<T>(this RowRef<T> rowRef, out T value) where T:struct, IExcelRow<T>
+    {
+        if(rowRef.ValueNullable != null)
+        {
+            value = rowRef.Value;
+            return true;
+        }
+        value = default;
+        return false;
+    }
+
+    public static TExtension GetExtension<TExtension, TBase>(this TBase row) where TExtension : struct, IExcelRow<TExtension>, IRowExtension<TExtension, TBase> where TBase : struct, IExcelRow<TBase>
+    {
+        return TExtension.GetExtended(row);
+    }
+
     public static SeString ReadSeString(Utf8String* utf8String)
     {
         if(utf8String != null)
@@ -185,8 +217,8 @@ public static unsafe partial class GenericHelpers
         return obj?.Address == other?.Address;
     }
 
-    /// <inheritdoc cref="SafeSelect{K, V}(IDictionary{K, V}, K, V)"/>
-    public static V? SafeSelect<K, V>(this IDictionary<K, V> dictionary, K? key) => SafeSelect(dictionary, key, default);
+    /// <inheritdoc cref="SafeSelect{K, V}(IReadOnlyDictionary{K, V}, K, V)"/>
+    public static V? SafeSelect<K, V>(this IReadOnlyDictionary<K, V> dictionary, K? key) => SafeSelect(dictionary, key, default);
 
     /// <summary>
     /// Safely selects a value from a <paramref name="dictionary"/>. Does not throws exceptions under any circumstances.
@@ -197,7 +229,7 @@ public static unsafe partial class GenericHelpers
     /// <param name="key"></param>
     /// <param name="defaultValue">Returns if <paramref name="dictionary"/> is <see langword="null"/> or <paramref name="key"/> is <see langword="null"/> or <paramref name="key"/> is not found in <paramref name="dictionary"/></param>
     /// <returns></returns>
-    public static V? SafeSelect<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue)
+    public static V? SafeSelect<K, V>(this IReadOnlyDictionary<K, V> dictionary, K key, V defaultValue)
     {
         if(dictionary == null) return default;
         if(key == null) return default;
@@ -219,7 +251,7 @@ public static unsafe partial class GenericHelpers
     /// <param name="list"></param>
     /// <param name="index"></param>
     /// <returns></returns>
-    public static T SafeSelect<T>(this IList<T> list, int index)
+    public static T SafeSelect<T>(this IReadOnlyList<T> list, int index)
     {
         if(list == null) return default;
         if(index < 0 || index >= list.Count) return default;
@@ -316,7 +348,7 @@ public static unsafe partial class GenericHelpers
     }
 
     [Obsolete($"Use {nameof(SafeSelect)}")]
-    public static T GetOrDefault<T>(this IList<T> List, int index) => SafeSelect(List, index);
+    public static T GetOrDefault<T>(this IReadOnlyList<T> List, int index) => SafeSelect(List, index);
 
     [Obsolete($"Use {nameof(SafeSelect)}")]
     public static T GetOrDefault<T>(this T[] Array, int index) => SafeSelect(Array, index);
@@ -904,6 +936,22 @@ public static unsafe partial class GenericHelpers
     {
         var parent = node->ParentNode;
         return parent == null ? node : GetRootNode(parent);
+    }
+    
+    /// <summary>
+    /// Removes whitespaces, line breaks, tabs, etc from string.
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    public static string Cleanup(this string s)
+    {
+        StringBuilder sb = new(s.Length);
+        foreach(var c in s)
+        {
+            if(c == ' ' || c == '\n' || c == '\r' || c == '\t') continue;
+            sb.Append(c);
+        }
+        return sb.ToString();
     }
 
     /// <summary>
@@ -1601,6 +1649,7 @@ public static unsafe partial class GenericHelpers
     /// </summary>
     /// <param name="textNodePtr"></param>
     /// <returns></returns>
+    [Obsolete("Incompatible with UI mods, use other methods")]
     public static bool IsSelectItemEnabled(AtkTextNode* textNodePtr)
     {
         var col = textNodePtr->TextColor;
@@ -1613,7 +1662,7 @@ public static unsafe partial class GenericHelpers
             || (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5);
     }
 
-    public static void MoveItemToPosition<T>(List<T> list, Func<T, bool> sourceItemSelector, int targetedIndex)
+    public static void MoveItemToPosition<T>(IList<T> list, Func<T, bool> sourceItemSelector, int targetedIndex)
     {
         var sourceIndex = -1;
         for(var i = 0; i < list.Count; i++)
@@ -1679,10 +1728,10 @@ public static unsafe partial class GenericHelpers
         => Svc.Data.GetSubrowExcelSheet<T>(language).GetSubrowOrDefault(rowId, subRowId);
 
     public static T? FindRow<T>(Func<T, bool> predicate) where T : struct, IExcelRow<T>
-         => GetSheet<T>().FirstOrDefault(predicate);
+         => GetSheet<T>().FirstOrNull(predicate);
 
     public static T? FindRow<T>(Func<T, bool> predicate, ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
-        => GetSubrowSheet<T>(language).SelectMany(m => m).Cast<T?>().FirstOrDefault(t => predicate(t.Value));
+        => GetSubrowSheet<T>(language).SelectMany(m => m).Cast<T?>().FirstOrDefault(t => predicate(t.Value), null);
 
     public static T[] FindRows<T>(Func<T, bool> predicate) where T : struct, IExcelRow<T>
         => GetSheet<T>().Where(predicate).ToArray();

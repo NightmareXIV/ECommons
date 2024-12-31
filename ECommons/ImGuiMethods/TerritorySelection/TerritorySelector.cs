@@ -3,6 +3,7 @@ using Dalamud.Interface.Windowing;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
 using ECommons.GameHelpers;
+using ECommons.Schedulers;
 using ImGuiNET;
 using Lumina.Excel.Sheets;
 using System;
@@ -15,22 +16,29 @@ namespace ECommons.ImGuiMethods.TerritorySelection;
 
 public unsafe class TerritorySelector : Window
 {
+    public enum Category { World, Housing, Inn, Dungeon, Raid, Trial, Deep_Dungeon, Other, All }
+    public enum Column { ID, Zone, Region, IntendedUse }
+    public enum DisplayMode { PlaceNameDutyUnion, PlaceNameAndDuty, PlaceNameOnly }
+
     public static bool Singleton = true;
-    public static Dictionary<string, TerritoryIntendedUseEnum[]> Categories = new()
+    public static Dictionary<Category, TerritoryIntendedUseEnum[]> Categories = new()
     {
-        ["World"] = [TerritoryIntendedUseEnum.City_Area, TerritoryIntendedUseEnum.Open_World,],
-        ["Housing"] = [TerritoryIntendedUseEnum.Housing_Instances, TerritoryIntendedUseEnum.Residential_Area,],
-        ["Inn"] = [TerritoryIntendedUseEnum.Inn,],
-        ["Dungeon"] = [TerritoryIntendedUseEnum.Dungeon, TerritoryIntendedUseEnum.Variant_Dungeon, TerritoryIntendedUseEnum.Criterion_Duty, TerritoryIntendedUseEnum.Criterion_Savage_Duty,],
-        ["Raid"] = [TerritoryIntendedUseEnum.Raid, TerritoryIntendedUseEnum.Raid_2, TerritoryIntendedUseEnum.Alliance_Raid, TerritoryIntendedUseEnum.Large_Scale_Raid, TerritoryIntendedUseEnum.Large_Scale_Savage_Raid,],
-        ["Trial"] = [TerritoryIntendedUseEnum.Trial],
-        ["Deep Dungeon"] = [TerritoryIntendedUseEnum.Deep_Dungeon],
+        [Category.World] = [TerritoryIntendedUseEnum.City_Area, TerritoryIntendedUseEnum.Open_World,],
+        [Category.Housing] = [TerritoryIntendedUseEnum.Housing_Instances, TerritoryIntendedUseEnum.Residential_Area,],
+        [Category.Inn] = [TerritoryIntendedUseEnum.Inn,],
+        [Category.Dungeon] = [TerritoryIntendedUseEnum.Dungeon, TerritoryIntendedUseEnum.Variant_Dungeon, TerritoryIntendedUseEnum.Criterion_Duty, TerritoryIntendedUseEnum.Criterion_Savage_Duty,],
+        [Category.Raid] = [TerritoryIntendedUseEnum.Raid, TerritoryIntendedUseEnum.Raid_2, TerritoryIntendedUseEnum.Alliance_Raid, TerritoryIntendedUseEnum.Large_Scale_Raid, TerritoryIntendedUseEnum.Large_Scale_Savage_Raid,],
+        [Category.Trial] = [TerritoryIntendedUseEnum.Trial],
+        [Category.Deep_Dungeon] = [TerritoryIntendedUseEnum.Deep_Dungeon],
     };
     public static readonly List<TerritorySelector> Selectors = [];
-    private readonly Dictionary<string, List<TerritoryType>> Cache = [];
+    private readonly Dictionary<Category, List<TerritoryType>> Cache = [];
 
     public bool OnlySelected = false;
     public string Filter = "";
+    public uint[] HiddenTerritories = [];
+    public Category[] HiddenCategories = [];
+    public Category? SelectedCategory = null;
     private WindowSystem WindowSystem;
     private HashSet<uint> SelectedTerritories;
     private uint SelectedTerritory;
@@ -38,6 +46,8 @@ public unsafe class TerritorySelector : Window
     private Action<TerritorySelector, HashSet<uint>> Callback;
     private Action<TerritorySelector, uint> CallbackSingle;
     private static bool? VisibleAction = null;
+    public Column[] ExtraColumns = [Column.ID, Column.Zone, Column.Region, Column.IntendedUse];
+    public DisplayMode Mode = DisplayMode.PlaceNameAndDuty;
 
     public Action<TerritoryType, Vector4?, string> ActionDrawPlaceName = (TerritoryType t, Vector4? col, string name) =>
     {
@@ -46,22 +56,22 @@ public unsafe class TerritorySelector : Window
 
     public TerritorySelector(uint SelectedTerritory, Action<TerritorySelector, uint> Callback, string TitleName = null) : base(TitleName)
     {
-        Setup([SelectedTerritory], null, Callback);
+        new TickScheduler(() => Setup([SelectedTerritory], null, Callback));
     }
 
     public TerritorySelector(Action<TerritorySelector, uint> Callback, string TitleName = null) : base(TitleName)
     {
-        Setup([], null, Callback);
+        new TickScheduler(() => Setup([], null, Callback));
     }
 
     public TerritorySelector(IEnumerable<uint> SelectedTerritories, Action<TerritorySelector, HashSet<uint>> Callback, string TitleName = null) : base(TitleName)
     {
-        Setup(SelectedTerritories?.ToHashSet() ?? [], Callback, null);
+        new TickScheduler(() => Setup(SelectedTerritories?.ToHashSet() ?? [], Callback, null));
     }
 
     public TerritorySelector(Action<TerritorySelector, HashSet<uint>> Callback, string TitleName = null) : base(TitleName)
     {
-        Setup([], Callback, null);
+        new TickScheduler(() => Setup([], Callback, null));
     }
 
     private void Setup(HashSet<uint> SelectedTerritories, Action<TerritorySelector, HashSet<uint>> Callback, Action<TerritorySelector, uint> CallbackSingle)
@@ -91,9 +101,9 @@ public unsafe class TerritorySelector : Window
         Svc.PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
         base.IsOpen = true;
         //yes I know it's not optimized but it's one-time call so whatever okay?
-        foreach(var c in Categories)
+        foreach(var c in Categories.Where(x => !HiddenCategories.Contains(x.Key)))
         {
-            foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>())
+            foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>().Where(x => !HiddenTerritories.Contains(x.RowId)))
             {
                 if(c.Value.Contains((TerritoryIntendedUseEnum)x.TerritoryIntendedUse.RowId) && x.PlaceName.ValueNullable?.Name.ExtractText().IsNullOrEmpty() == false)
                 {
@@ -107,20 +117,33 @@ public unsafe class TerritorySelector : Window
                 }
             }
         }
-        Cache["Other"] = [];
-        foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>())
+        if(!HiddenCategories.Contains(Category.Other))
         {
-            if(!Cache.Values.Any(c => c.Any(z => z.RowId == x.RowId)) && x.PlaceName.ValueNullable?.Name.ExtractText().IsNullOrEmpty() == false)
+            Cache[Category.Other] = [];
+            foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>().Where(x => !HiddenTerritories.Contains(x.RowId)))
             {
-                Cache["Other"].Add(x);
+                if(!Cache.Values.Any(c => c.Any(z => z.RowId == x.RowId)) && x.PlaceName.ValueNullable?.Name.ExtractText().IsNullOrEmpty() == false)
+                {
+                    Cache[Category.Other].Add(x);
+                }
             }
         }
-        Cache["All"] = [];
-        foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>())
+        if(!HiddenCategories.Contains(Category.All))
         {
-            if(x.PlaceName.ValueNullable?.Name.ExtractText().IsNullOrEmpty() == false)
+            Cache[Category.All] = [];
+            foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>().Where(x => !HiddenTerritories.Contains(x.RowId)))
             {
-                Cache["All"].Add(x);
+                if(x.PlaceName.ValueNullable?.Name.ExtractText().IsNullOrEmpty() == false)
+                {
+                    Cache[Category.All].Add(x);
+                }
+            }
+        }
+        foreach(var x in Cache.ToArray())
+        {
+            if(x.Value.Count == 0)
+            {
+                Cache.Remove(x);
             }
         }
     }
@@ -132,7 +155,7 @@ public unsafe class TerritorySelector : Window
         {
             foreach(var x in Cache)
             {
-                if(ImGui.BeginTabItem(x.Key))
+                if(ImGuiEx.BeginTabItem(x.Key.ToString(), SelectedCategory == x.Key?ImGuiTabItemFlags.SetSelected:ImGuiTabItemFlags.None))
                 {
                     ImGui.SetNextItemWidth(200f);
                     ImGui.InputTextWithHint($"##search", "Filter...", ref Filter, 50);
@@ -184,15 +207,26 @@ public unsafe class TerritorySelector : Window
 
                     if(ImGui.BeginChild("##ChildTable"))
                     {
-                        if(ImGui.BeginTable("##TSelector", 7, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.SizingFixedFit))
+                        if(ImGui.BeginTable("##TSelector", 2 + ExtraColumns.Length + (this.Mode == DisplayMode.PlaceNameAndDuty?1:0), ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.SizingFixedFit))
                         {
                             ImGui.TableSetupColumn(" ");
-                            ImGui.TableSetupColumn("ID");
-                            ImGui.TableSetupColumn("Place Name", ImGuiTableColumnFlags.WidthStretch);
-                            ImGui.TableSetupColumn("Duty");
-                            ImGui.TableSetupColumn("Zone");
-                            ImGui.TableSetupColumn("Region");
-                            ImGui.TableSetupColumn("Intended use");
+                            if(ExtraColumns.Contains(Column.ID)) ImGui.TableSetupColumn("ID");
+                            if(this.Mode == DisplayMode.PlaceNameDutyUnion)
+                            {
+                                ImGui.TableSetupColumn("Place Name/Duty", ImGuiTableColumnFlags.WidthStretch);
+                            }
+                            else if(this.Mode == DisplayMode.PlaceNameOnly)
+                            {
+                                ImGui.TableSetupColumn("Place Name", ImGuiTableColumnFlags.WidthStretch);
+                            }
+                            else
+                            {
+                                ImGui.TableSetupColumn("Place Name", ImGuiTableColumnFlags.WidthStretch);
+                                ImGui.TableSetupColumn("Duty");
+                            }
+                            if(ExtraColumns.Contains(Column.Zone)) ImGui.TableSetupColumn("Zone");
+                            if(ExtraColumns.Contains(Column.Region)) ImGui.TableSetupColumn("Region");
+                            if(ExtraColumns.Contains(Column.IntendedUse)) ImGui.TableSetupColumn("Intended use");
 
                             ImGui.TableHeadersRow();
 
@@ -213,7 +247,7 @@ public unsafe class TerritorySelector : Window
                                     && !zone.Contains(Filter, StringComparison.OrdinalIgnoreCase)
                                     && !region.Contains(Filter, StringComparison.OrdinalIgnoreCase)
                                     && !intended.Contains(Filter, StringComparison.OrdinalIgnoreCase)
-                                    && !x.Key.Contains(Filter, StringComparison.OrdinalIgnoreCase)
+                                    && !x.Key.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase)
                                     && !t.RowId.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 {
                                     continue;
@@ -265,36 +299,60 @@ public unsafe class TerritorySelector : Window
                                         }
                                     }
                                 }
-
-                                ImGui.TableNextColumn(); //id
-                                ImGuiEx.Text($"{t.RowId}");
-
-                                ImGui.TableNextColumn(); //Place name
-                                ActionDrawPlaceName(t, col ? ImGuiColors.DalamudOrange : ImGuiColors.DalamudYellow, name);
-
-                                ImGui.TableNextColumn(); //Duty
-                                if(!cfc.IsNullOrEmpty())
+                                if(ExtraColumns.Contains(Column.ID))
                                 {
-                                    ImGuiEx.Text($"{cfc}");
+                                    ImGui.TableNextColumn(); //id
+                                    ImGuiEx.Text($"{t.RowId}");
                                 }
-                                else if(!questBattle.IsNullOrEmpty())
+
+                                if(Mode == DisplayMode.PlaceNameDutyUnion)
                                 {
-                                    ImGuiEx.Text($"{questBattle}");
+                                    ImGui.TableNextColumn();
+                                    ImGuiEx.Text(cfc ?? questBattle ?? zone);
+                                }
+                                else if(Mode == DisplayMode.PlaceNameOnly)
+                                {
+                                    ImGui.TableNextColumn();
+                                    ImGuiEx.Text(zone);
                                 }
                                 else
                                 {
-                                    ImGuiEx.Text("");
+
+                                    ImGui.TableNextColumn(); //Place name
+                                    ActionDrawPlaceName(t, col ? ImGuiColors.DalamudOrange : ImGuiColors.DalamudYellow, name);
+
+                                    ImGui.TableNextColumn(); //Duty
+                                    if(!cfc.IsNullOrEmpty())
+                                    {
+                                        ImGuiEx.Text($"{cfc}");
+                                    }
+                                    else if(!questBattle.IsNullOrEmpty())
+                                    {
+                                        ImGuiEx.Text($"{questBattle}");
+                                    }
+                                    else
+                                    {
+                                        ImGuiEx.Text("");
+                                    }
                                 }
 
-                                ImGui.TableNextColumn(); //zone
-                                ImGuiEx.Text($"{zone}");
+                                if(ExtraColumns.Contains(Column.Zone))
+                                {
+                                    ImGui.TableNextColumn(); //zone
+                                    ImGuiEx.Text($"{zone}");
+                                }
 
-                                ImGui.TableNextColumn(); //Region
-                                ImGuiEx.Text($"{region}");
+                                if(ExtraColumns.Contains(Column.Region))
+                                {
+                                    ImGui.TableNextColumn(); //Region
+                                    ImGuiEx.Text($"{region}");
+                                }
 
-                                ImGui.TableNextColumn(); //use
-                                ImGuiEx.Text($"{intended}");
-
+                                if(ExtraColumns.Contains(Column.IntendedUse))
+                                {
+                                    ImGui.TableNextColumn(); //use
+                                    ImGuiEx.Text($"{intended}");
+                                }
                             }
 
 
@@ -306,6 +364,7 @@ public unsafe class TerritorySelector : Window
                 }
             }
             ImGui.EndTabBar();
+            SelectedCategory = null;
         }
     }
 

@@ -14,6 +14,7 @@ public partial class AddonMaster
 
         public MateriaAttachDialog(void* addon) : base(addon) { }
 
+        public int SuccessRate => Base->AtkValues[41].Int;
         public SeString SuccessRateSeString => GenericHelpers.ReadSeString(&Base->GetTextNodeById(26)->NodeText);
         public string SuccessRateText => SuccessRateSeString.ExtractText();
         public float SuccessRateFloat => SuccessRateText.Where(char.IsDigit).Append('.').Append('-').Any()

@@ -187,7 +187,7 @@ public static class MathHelper
     /// Gets a second point given initial point, angle and distance.
     /// </summary>
     /// <param name="initialPoint"></param>
-    /// <param name="angle"></param>
+    /// <param name="angle">Radians</param>
     /// <param name="distance"></param>
     /// <returns></returns>
     public static Vector2 GetPointFromAngleAndDistance(Vector2 initialPoint, float angle, float distance)
@@ -255,6 +255,13 @@ public static class MathHelper
         return (float)(MathF.PI / 180f * val);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="origin"></param>
+    /// <param name="angle">Radians</param>
+    /// <param name="p"></param>
+    /// <returns></returns>
     public static Vector3 RotateWorldPoint(Vector3 origin, float angle, Vector3 p)
     {
         if(angle == 0f) return p;

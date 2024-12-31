@@ -42,6 +42,20 @@ public static class ExcelTerritoryHelper
         return Sanctuaries.Contains(territoryType);
     }
 
+    public static TerritoryIntendedUseEnum GetTerritoryIntendedUse(this TerritoryType value)
+    {
+        return (TerritoryIntendedUseEnum)value.TerritoryIntendedUse.RowId;
+    }
+
+    public static TerritoryIntendedUseEnum GetTerritoryIntendedUse(uint value)
+    {
+        if(Svc.Data.GetExcelSheet<TerritoryType>().TryGetRow(value, out var sheet))
+        {
+            return sheet.GetTerritoryIntendedUse();
+        }
+        return (TerritoryIntendedUseEnum)(37707);
+    }
+
     public static bool NameExists(uint TerritoryType)
     {
         var data = Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(TerritoryType);

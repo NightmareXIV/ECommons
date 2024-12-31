@@ -154,4 +154,13 @@ public static unsafe class ClickHelperExtensions
         Svc.Log.Debug($"{evt->State.EventType} {evt->Param}");
         addon->ReceiveEvent(evt->State.EventType, (int)evt->Param, btnRes.AtkEventManager.Event);
     }
+
+    public static void ClickCheckBox(this AtkComponentCheckBox target, AtkUnitBase* addon)
+    {
+        //var btnRes = target.AtkComponentButton.AtkComponentBase.OwnerNode->AtkResNode;
+        var btnRes = target.OwnerNode->AtkResNode;
+        var evt = (AtkEvent*)btnRes.AtkEventManager.Event;
+        var data = stackalloc AtkEventData[1];
+        addon->ReceiveEvent(evt->State.EventType, (int)evt->Param, evt, data); // btnRes.AtkEventManager.Event);
+    }
 }

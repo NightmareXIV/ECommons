@@ -2,6 +2,7 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
+using AtkEvent = FFXIVClientStructs.FFXIV.Component.GUI.AtkEvent;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unmanaged
@@ -72,6 +73,17 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
         if (button->IsEnabled && button->AtkResNode->IsVisible())
         {
             button->ClickRadioButton(Base);
+            return true;
+        }
+        return false;
+    }
+
+    protected bool ClickCheckboxIfEnabled(AtkComponentCheckBox* checkbox)
+    {
+        if (checkbox->IsEnabled && checkbox->AtkResNode->IsVisible())
+        {
+            checkbox->ClickCheckBox(Base);
+            checkbox->SetChecked(true);
             return true;
         }
         return false;
