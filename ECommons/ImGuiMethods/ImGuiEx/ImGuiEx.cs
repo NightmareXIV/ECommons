@@ -30,6 +30,30 @@ public static unsafe partial class ImGuiEx
     public static readonly ImGuiTableFlags DefaultTableFlags = ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg | ImGuiTableFlags.Borders | ImGuiTableFlags.SizingFixedFit;
     private static Dictionary<string, int> SelectedPages = [];
 
+    public static bool BeginDefaultTable(string[] headers, bool drawHeader = true)
+    {
+        return BeginDefaultTable("##ECommonsDefaultTable", headers, drawHeader);
+    }
+
+    public static bool BeginDefaultTable(string id, string[] headers, bool drawHeader = true)
+    {
+        if(ImGui.BeginTable(id, headers.Length, DefaultTableFlags))
+        {
+            DefaultTableColumns(headers, drawHeader);
+            return true;
+        }
+        return false;
+    }
+
+    public static void DefaultTableColumns(IEnumerable<string> headers, bool drawHeader = true)
+    {
+        foreach(var x in headers)
+        {
+            var stretch = x.StartsWith('~');
+            ImGui.TableSetupColumn(stretch ? x[1..] : x, stretch ? ImGuiTableColumnFlags.WidthStretch : ImGuiTableColumnFlags.None);
+        }
+    }
+
     public static string ImGuiTrim(this string str)
     {
         if(str.Length < 5) return str;
