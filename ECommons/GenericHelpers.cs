@@ -1161,37 +1161,34 @@ public static unsafe partial class GenericHelpers
         return ref i;
     }
 
-    public static void LogWarning(this Exception e)
+    public static string ToStringFull(this Exception e)
     {
-        PluginLog.Warning($"{e.Message}\n{e.StackTrace ?? ""}");
+        var str = new StringBuilder($"{e.Message}\n{e.StackTrace}");
+        var inner = e.InnerException;
+        for(var i = 1; inner != null; i++)
+        {
+            str.Append($"\nAn inner exception ({i}) was thrown: {e.Message}\n{e.StackTrace}");
+            inner = inner.InnerException;
+        }
+        return str.ToString();
     }
 
-    public static void Log(this Exception e)
+    public static void Log(this Exception e, Action<string> exceptionFunc)
     {
-        PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
-    }
-    public static void LogVerbose(this Exception e)
-    {
-        PluginLog.LogVerbose($"{e.Message}\n{e.StackTrace ?? ""}");
-    }
-    public static void LogInternal(this Exception e)
-    {
-        InternalLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
-    }
-    public static void LogInfo(this Exception e)
-    {
-        PluginLog.Information($"{e.Message}\n{e.StackTrace ?? ""}");
+        exceptionFunc(e.ToStringFull());
     }
 
+    public static void LogWarning(this Exception e) => e.Log(PluginLog.Warning);
+    public static void Log(this Exception e) => e.Log(PluginLog.Error);
+    public static void LogVerbose(this Exception e) => e.Log(PluginLog.Verbose);
+    public static void LogInternal(this Exception e) => e.Log(InternalLog.Error);
+    public static void LogInfo(this Exception e) => e.Log(PluginLog.Information);
     public static void Log(this Exception e, string ErrorMessage)
     {
-        PluginLog.Error($"{ErrorMessage}\n{e.Message}\n{e.StackTrace ?? ""}");
+        PluginLog.Error($"{ErrorMessage}");
+        e.Log(PluginLog.Error);
     }
-
-    public static void LogDuo(this Exception e)
-    {
-        DuoLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
-    }
+    public static void LogDuo(this Exception e) => e.Log(DuoLog.Error);
 
     public static bool IsNoConditions()
     {
