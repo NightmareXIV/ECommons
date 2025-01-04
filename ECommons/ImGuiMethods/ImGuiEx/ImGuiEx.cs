@@ -106,7 +106,7 @@ public static unsafe partial class ImGuiEx
             number += step;
             btn = true;
         }
-        if(ret)
+        if(ret && !btn)
         {
             var mult = 1;
             str = str.Trim();
