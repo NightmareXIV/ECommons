@@ -5,6 +5,7 @@ using ECommons.DalamudServices;
 using ECommons.EzSharedDataManager;
 using ECommons.Logging;
 using ECommons.Schedulers;
+using ImGuiNET;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -70,6 +71,45 @@ public static class DalamudReflector
         }
     }
 
+    public static bool GetDtrEntryState(string name)
+    {
+        try
+        {
+            var config = DalamudReflector.GetService("Dalamud.Configuration.Internal.DalamudConfiguration");
+            var dtrList = config.GetFoP<List<string>>("DtrIgnore");
+            var enabled = !dtrList.Contains(name);
+            return enabled;
+        }
+        catch(Exception e)
+        {
+            e.Log();
+        }
+        return false;
+    }
+
+    public static void SetDtrEntryState(string name, bool enable)
+    {
+        try
+        {
+            var config = DalamudReflector.GetService("Dalamud.Configuration.Internal.DalamudConfiguration");
+            var dtrList = config.GetFoP<List<string>>("DtrIgnore");
+            var enabled = !dtrList.Contains(name);
+            if(enable && !enabled)
+            {
+                dtrList.Remove(name);
+                config.Call("QueueSave", []);
+            }
+            else if(!enable && enabled)
+            {
+                dtrList.Add(name);
+                config.Call("QueueSave", []);
+            }
+        }
+        catch(Exception e)
+        {
+            e.Log();
+        }
+    }
 
     public static void SetKeyState(VirtualKey key, int state)
     {

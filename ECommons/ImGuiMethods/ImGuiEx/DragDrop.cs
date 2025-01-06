@@ -50,7 +50,7 @@ public static unsafe partial class ImGuiEx
         /// <param name="item"></param>
         /// <param name="list"></param>
         /// <param name="targetPosition"></param>
-        public void DrawButtonDummy(T item, List<T> list, int targetPosition)
+        public void DrawButtonDummy(T item, IList<T> list, int targetPosition)
         {
             void executeMove(string x)
             {
@@ -59,8 +59,8 @@ public static unsafe partial class ImGuiEx
             DrawButtonDummy(GetUniqueId(item), executeMove);
         }
 
-        /// <inheritdoc cref="DrawButtonDummy(T, List{T}, int)"/>
-        public void DrawButtonDummy(string uniqueId, List<T> list, int targetPosition)
+        /// <inheritdoc cref="DrawButtonDummy(T, IList{T}, int)"/>
+        public void DrawButtonDummy(string uniqueId, IList<T> list, int targetPosition)
         {
             void executeMove(string x)
             {
@@ -69,7 +69,7 @@ public static unsafe partial class ImGuiEx
             DrawButtonDummy(uniqueId, executeMove);
         }
 
-        /// <inheritdoc cref="DrawButtonDummy(T, List{T}, int)"/>
+        /// <inheritdoc cref="DrawButtonDummy(T, IList{T}, int)"/>
         public void DrawButtonDummy(string uniqueId, Action<string> onAcceptDragDropPayload)
         {
             ImGui.PushFont(UiBuilder.IconFont);

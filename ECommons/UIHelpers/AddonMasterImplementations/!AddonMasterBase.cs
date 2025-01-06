@@ -78,6 +78,17 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
         return false;
     }
 
+    protected bool ClickCheckboxIfEnabled(AtkComponentCheckBox* checkbox)
+    {
+        if (checkbox->IsEnabled && checkbox->AtkResNode->IsVisible())
+        {
+            checkbox->ClickCheckBox(Base);
+            checkbox->SetChecked(true);
+            return true;
+        }
+        return false;
+    }
+
     protected AtkEvent CreateAtkEvent(byte flags = 0)
     {
         var ret = stackalloc AtkEvent[]
