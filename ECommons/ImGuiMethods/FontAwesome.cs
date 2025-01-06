@@ -19,4 +19,24 @@ public static class FontAwesome
         ImGuiEx.Text(col, icon);
         ImGui.PopFont();
     }
+    public static void PrintV(Vector4? col, string icon)
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        ImGuiEx.TextV(col, icon);
+        ImGui.PopFont();
+    }
+
+    public static void Print(Vector4? col, FontAwesomeIcon icon)
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        ImGuiEx.Text(col, icon.ToIconString());
+        ImGui.PopFont();
+    }
+
+    public static void PrintV(Vector4? col, FontAwesomeIcon icon)
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        ImGuiEx.TextV(col, icon.ToIconString());
+        ImGui.PopFont();
+    }
 }
