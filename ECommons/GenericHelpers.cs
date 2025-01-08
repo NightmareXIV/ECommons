@@ -954,38 +954,42 @@ public static unsafe partial class GenericHelpers
         return sb.ToString();
     }
 
+    [Obsolete("Dalamud has added their own ExtractText method for Lumina strings that is not compatible with ECommons. Therefore, extension method can not be used on Lumina strings anymore. For the consistency, ExtractText method is renamed to GetText.")]
+    public static string ExtractText(this ReadOnlySeString s, bool onlyFirst = false) => s.GetText(onlyFirst);
     /// <summary>
     /// Discards any non-text payloads from <see cref="SeString"/>
     /// </summary>
     /// <param name="s"></param>
     /// <param name="onlyFirst">Whether to find first text payload and only return it</param>
     /// <returns>String that only includes text payloads</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ExtractText(this ReadOnlySeString s, bool onlyFirst = false)
+    public static string GetText(this ReadOnlySeString s, bool onlyFirst = false)
     {
-        return s.ToDalamudString().ExtractText(onlyFirst);
+        return s.ToDalamudString().GetText(onlyFirst);
     }
 
+    [Obsolete("Dalamud has added their own ExtractText method for Lumina strings that is not compatible with ECommons. Therefore, extension method can not be used on Lumina strings anymore. For the consistency, ExtractText method is renamed to GetText.")]
+    public static string ExtractText(this Utf8String s, bool onlyFirst = false) => s.GetText(onlyFirst);
     /// <summary>
     /// Reads SeString from unmanaged memory and discards any non-text payloads from <see cref="SeString"/>
     /// </summary>
     /// <param name="s"></param>
     /// <param name="onlyFirst">Whether to find first text payload and only return it</param>
     /// <returns>String that only includes text payloads</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ExtractText(this Utf8String s, bool onlyFirst = false)
+    public static string GetText(this Utf8String s, bool onlyFirst = false)
     {
         var str = GenericHelpers.ReadSeString(&s);
-        return str.ExtractText(false);
+        return str.GetText(false);
     }
 
+    [Obsolete("Dalamud has added their own ExtractText method for Lumina strings that is not compatible with ECommons. Therefore, extension method can not be used on Lumina strings anymore. For the consistency, ExtractText method is renamed to GetText.")]
+    public static string ExtractText(this SeString seStr, bool onlyFirst = false) => seStr.GetText(onlyFirst);
     /// <summary>
     /// Discards any non-text payloads from <see cref="SeString"/>
     /// </summary>
     /// <param name="seStr"></param>
     /// <param name="onlyFirst">Whether to find first text payload and only return it</param>
     /// <returns>String that only includes text payloads</returns>
-    public static string ExtractText(this SeString seStr, bool onlyFirst = false)
+    public static string GetText(this SeString seStr, bool onlyFirst = false)
     {
         StringBuilder sb = new();
         foreach(var x in seStr.Payloads)
