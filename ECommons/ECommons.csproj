@@ -33,13 +33,11 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <!-- <DalamudLibPath>$(appdata)\xivlauncher\Addon\Hooks\dev\</DalamudLibPath> -->
-        <DalamudLibPath>/home/knavejack/Documents/Projects/DalamudLibPath/</DalamudLibPath>
+        <DalamudLibPath>$(appdata)\xivlauncher\Addon\Hooks\dev\</DalamudLibPath>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
-        <!-- <DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath> -->
-        <DalamudLibPath>/home/knavejack/Documents/Projects/DalamudLibPath/</DalamudLibPath>
+        <DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
