@@ -3,11 +3,12 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.Sheets;
 using System;
+using System.Text.RegularExpressions;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
 {
-    public unsafe class RelicNoteBook : AddonMasterBase<AddonRelicNoteBook>
+    public unsafe partial class RelicNoteBook : AddonMasterBase<AddonRelicNoteBook>
     {
         public RelicNoteBook(nint addon) : base(addon) { }
         public RelicNoteBook(void* addon) : base(addon) { }
@@ -79,6 +80,15 @@ public partial class AddonMaster
                 this.addon = addon;
                 this.checkbox = checkbox;
                 this.index = index;
+            }
+
+            public int Count
+            {
+                get
+                {
+                    var match = ExtractNumber().Match(addon->GetTextNodeById(9)->NodeText.ExtractText());
+                    return match.Success ? int.Parse(match.Value) : 0;
+                }
             }
 
             public AtkComponentCheckBox* CheckBox => checkbox;
@@ -184,5 +194,8 @@ public partial class AddonMaster
             2 => Addon->Leve2.CheckBox,
             _ => throw new ArgumentOutOfRangeException(nameof(index))
         };
+
+        [GeneratedRegex(@"\d+")]
+        private static partial Regex ExtractNumber();
     }
 }
