@@ -82,15 +82,6 @@ public partial class AddonMaster
                 this.index = index;
             }
 
-            public int Count
-            {
-                get
-                {
-                    var match = ExtractNumber().Match(addon->GetTextNodeById(9)->NodeText.ExtractText());
-                    return match.Success ? int.Parse(match.Value) : 0;
-                }
-            }
-
             public AtkComponentCheckBox* CheckBox => checkbox;
             public bool IsEnabled => CheckBox->IsEnabled;
             public void Click() => addonMaster.ClickCheckboxIfEnabled(CheckBox);
