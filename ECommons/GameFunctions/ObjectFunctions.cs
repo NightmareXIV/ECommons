@@ -46,7 +46,19 @@ public static unsafe class ObjectFunctions
 
     public static NameplateKind GetNameplateKind(this IGameObject o)
     {
+        if (o == null || o.Address == IntPtr.Zero)
+        {
+            // Log the error for debugging purposes
+            Svc.Log.Debug($"IGameObject or its address is null.");
+        }
+
         GetNameplateColorNative ??= EzDelegate.Get<GetNameplateColorDelegate>(GetNameplateColorSig);
+        if (GetNameplateColorNative == null)
+        {
+            // Log the error for debugging purposes
+            Svc.Log.Debug($"Failed to get the native delegate for GetNameplateColor.");
+        }
+
         return (NameplateKind)GetNameplateColorNative(o.Address);
     }
 

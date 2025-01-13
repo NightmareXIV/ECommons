@@ -16,7 +16,7 @@ public partial class AddonMaster
 
         public AtkComponentButton* EndDesynthesisButton => Addon->GetButtonNodeById(28);
         public SeString EndDesynthesisButtonSeString => GenericHelpers.ReadSeString(&EndDesynthesisButton->UldManager.SearchNodeById(2)->GetAsAtkTextNode()->NodeText);
-        public string EndDesynthesisButtonText => EndDesynthesisButtonSeString.ExtractText();
+        public string EndDesynthesisButtonText => EndDesynthesisButtonSeString.GetText();
         public bool DesynthesisActive => Svc.Data.GetExcelSheet<Addon>()!.GetRow(5867)!.Text.ToString().Equals(EndDesynthesisButtonText);
         public bool DesynthesisInactive => Svc.Data.GetExcelSheet<Addon>()!.GetRow(5868)!.Text.ToString().Equals(EndDesynthesisButtonText);
 

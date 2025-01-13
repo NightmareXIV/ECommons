@@ -14,7 +14,7 @@ public unsafe partial class AddonMaster
 
         public uint ItemId => Addon->AtkValues[2].UInt;
         public int ItemIconId => Addon->AtkValues[3].Int;
-        public string ItemName => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[4].String).ExtractText();
+        public string ItemName => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[4].String).GetText();
 
         public AtkComponentButton* ApplyButton => Base->GetButtonNodeById(68);
         public AtkComponentButton* SelectAnotherButton => Base->GetButtonNodeById(69);

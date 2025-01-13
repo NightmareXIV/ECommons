@@ -18,7 +18,7 @@ public partial class AddonMaster
         {
             get
             {
-                var match = ExtractNumber().Match(Addon->GetTextNodeById(9)->NodeText.ExtractText());
+                var match = ExtractNumber().Match(Addon->GetTextNodeById(9)->NodeText.GetText());
                 return match.Success ? int.Parse(match.Value) : 0;
             }
         }
@@ -27,7 +27,7 @@ public partial class AddonMaster
         {
             get
             {
-                var match = ExtractNumber().Match(Addon->GetTextNodeById(12)->NodeText.ExtractText());
+                var match = ExtractNumber().Match(Addon->GetTextNodeById(12)->NodeText.GetText());
                 return match.Success ? int.Parse(match.Value) : 0;
             }
         }
@@ -64,14 +64,14 @@ public partial class AddonMaster
 
             public AtkComponentCheckBox* CheckBox => checkbox;
             public bool IsEnabled => CheckBox->IsEnabled;
-            public string ItemName => CheckBox->GetTextNodeById(23)->GetAsAtkTextNode()->NodeText.ExtractText();
+            public string ItemName => CheckBox->GetTextNodeById(23)->GetAsAtkTextNode()->NodeText.GetText();
             public uint ItemID => addon->ItemIds[index];
             public bool IsCollectable => Svc.Data.GetExcelSheet<Item>()?.GetRowOrDefault(ItemID)?.IsCollectable ?? false;
             public int ItemLevel
             {
                 get
                 {
-                    var match = ExtractNumber().Match(CheckBox->GetTextNodeById(21)->GetAsAtkTextNode()->NodeText.ExtractText());
+                    var match = ExtractNumber().Match(CheckBox->GetTextNodeById(21)->GetAsAtkTextNode()->NodeText.GetText());
                     return match.Success ? int.Parse(match.Value) : 0;
                 }
             }
@@ -79,7 +79,7 @@ public partial class AddonMaster
             {
                 get
                 {
-                    var match = ExtractNumber().Match(CheckBox->GetTextNodeById(10)->GetAsAtkTextNode()->NodeText.ExtractText());
+                    var match = ExtractNumber().Match(CheckBox->GetTextNodeById(10)->GetAsAtkTextNode()->NodeText.GetText());
                     return match.Success ? int.Parse(match.Value) : 0;
                 }
             }
@@ -87,7 +87,7 @@ public partial class AddonMaster
             {
                 get
                 {
-                    var match = ExtractNumber().Match(CheckBox->GetTextNodeById(16)->GetAsAtkTextNode()->NodeText.ExtractText());
+                    var match = ExtractNumber().Match(CheckBox->GetTextNodeById(16)->GetAsAtkTextNode()->NodeText.GetText());
                     return match.Success ? int.Parse(match.Value) : 0;
                 }
             }
