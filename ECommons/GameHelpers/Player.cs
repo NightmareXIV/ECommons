@@ -12,7 +12,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel.Sheets;
-using System;
 using System.Numerics;
 using GrandCompany = ECommons.ExcelServices.GrandCompany;
 #nullable disable
@@ -25,6 +24,7 @@ public static unsafe class Player
     public static IPlayerCharacter Object => Svc.ClientState.LocalPlayer;
     public static bool Available => Svc.ClientState.LocalPlayer != null;
     public static bool Interactable => Available && Object.IsTargetable;
+    public static bool IsBusy => GenericHelpers.IsOccupied() || Object.IsCasting || IsMoving || IsAnimationLocked;
     public static ulong CID => Svc.ClientState.LocalContentId;
     public static StatusList Status => Svc.ClientState.LocalPlayer?.StatusList;
     public static string Name => Svc.ClientState.LocalPlayer?.Name.ToString();
@@ -50,6 +50,7 @@ public static unsafe class Player
     public static TerritoryIntendedUseEnum TerritoryIntendedUse => (TerritoryIntendedUseEnum)(Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(Territory)?.TerritoryIntendedUse.ValueNullable?.RowId ?? default);
     public static bool IsInDuty => GameMain.Instance()->CurrentContentFinderConditionId != 0;
     public static bool IsOnIsland => MJIManager.Instance()->IsPlayerInSanctuary == 1;
+    public static bool IsInPvP => GameMain.IsInPvPInstance();
 
     public static Job Job => GetJob(Svc.ClientState.LocalPlayer);
     public static GrandCompany GrandCompany => (GrandCompany)PlayerState.Instance()->GrandCompany;
