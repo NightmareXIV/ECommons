@@ -2,6 +2,7 @@
 using ECommons.Reflection;
 using Newtonsoft.Json;
 using System.Reflection;
+using System.Text;
 
 namespace ECommons.Configuration;
 /// <summary>
