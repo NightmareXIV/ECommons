@@ -46,7 +46,7 @@ public partial class AddonMaster
             {
                 Am = am;
                 Index = index;
-                ItemName = MemoryHelper.ReadSeStringNullTerminated((nint)Am.Addon->AtkValues[10 + index].String).ExtractText();
+                ItemName = MemoryHelper.ReadSeStringNullTerminated((nint)Am.Addon->AtkValues[10 + index].String).GetText();
                 ItemId = Am.Addon->AtkValues[30 + index].UInt;
                 IconId = Am.Addon->AtkValues[50 + index].Int;
                 Rank = Am.Addon->AtkValues[70 + index].UInt;

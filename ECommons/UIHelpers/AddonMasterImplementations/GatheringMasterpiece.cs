@@ -9,7 +9,7 @@ public partial class AddonMaster
         public GatheringMasterpiece(nint addon) : base(addon) { }
         public GatheringMasterpiece(void* addon) : base(addon) { }
 
-        public string ItemName => Addon->ItemName->NodeText.ExtractText();
+        public string ItemName => Addon->ItemName->NodeText.GetText();
         public uint ItemID => Addon->AtkUnitBase.AtkValues[2].UInt;
 
         public int CurrentCollectability => Addon->AtkUnitBase.AtkValues[13].Int;

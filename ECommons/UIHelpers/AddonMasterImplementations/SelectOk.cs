@@ -14,7 +14,7 @@ public partial class AddonMaster
         public SelectOk(void* addon) : base(addon) { }
 
         public SeString SeString => GenericHelpers.ReadSeString(&Addon->PromptText->NodeText);
-        public string Text => SeString.ExtractText();
+        public string Text => SeString.GetText();
 
         public override string AddonDescription { get; } = "Generic confirmation window (OK button)";
 
