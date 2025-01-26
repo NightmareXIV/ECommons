@@ -14,6 +14,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel.Sheets;
 using System.Numerics;
 using GrandCompany = ECommons.ExcelServices.GrandCompany;
+using Aetheryte = Lumina.Excel.Sheets.Aetheryte;
 #nullable disable
 
 namespace ECommons.GameHelpers;
@@ -48,6 +49,7 @@ public static unsafe class Player
 
     public static uint Territory => Svc.ClientState.TerritoryType;
     public static TerritoryIntendedUseEnum TerritoryIntendedUse => (TerritoryIntendedUseEnum)(Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(Territory)?.TerritoryIntendedUse.ValueNullable?.RowId ?? default);
+    public static uint HomeAetheryteTerritory => Svc.Data.GetExcelSheet<Aetheryte>().GetRowOrDefault(PlayerState.Instance()->HomeAetheryteId).Value.Territory.RowId;
     public static bool IsInDuty => GameMain.Instance()->CurrentContentFinderConditionId != 0;
     public static bool IsOnIsland => MJIManager.Instance()->IsPlayerInSanctuary == 1;
     public static bool IsInPvP => GameMain.IsInPvPInstance();
