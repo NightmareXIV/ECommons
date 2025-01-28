@@ -25,7 +25,7 @@ public static unsafe class Player
     public static IPlayerCharacter Object => Svc.ClientState.LocalPlayer;
     public static bool Available => Svc.ClientState.LocalPlayer != null;
     public static bool Interactable => Available && Object.IsTargetable;
-    public static bool IsBusy => GenericHelpers.IsOccupied() || Object.IsCasting || IsMoving || IsAnimationLocked;
+    public static bool IsBusy => GenericHelpers.IsOccupied() || Object.IsCasting || IsMoving || IsAnimationLocked || Svc.Condition[ConditionFlag.InCombat];
     public static ulong CID => Svc.ClientState.LocalContentId;
     public static StatusList Status => Svc.ClientState.LocalPlayer?.StatusList;
     public static string Name => Svc.ClientState.LocalPlayer?.Name.ToString();
@@ -35,6 +35,8 @@ public static unsafe class Player
     public static int Level => Svc.ClientState.LocalPlayer?.Level ?? 0;
     public static bool IsLevelSynced => PlayerState.Instance()->IsLevelSynced == 1;
     public static int SyncedLevel => PlayerState.Instance()->SyncedLevel;
+    public static int UnsyncedLevel => GetUnsyncedLevel(GetJob(Object));
+    public static int GetUnsyncedLevel(Job job) => PlayerState.Instance()->ClassJobLevels[Svc.Data.GetExcelSheet<ClassJob>().GetRowOrDefault((uint)job).Value.ExpArrayIndex];
 
     public static bool IsInHomeWorld => !Player.Available?false:Svc.ClientState.LocalPlayer.HomeWorld.RowId == Svc.ClientState.LocalPlayer.CurrentWorld.RowId;
     public static bool IsInHomeDC => !Player.Available ? false : Svc.ClientState.LocalPlayer.CurrentWorld.Value.DataCenter.RowId == Svc.ClientState.LocalPlayer.HomeWorld.Value.DataCenter.RowId;
