@@ -39,6 +39,7 @@ public static unsafe partial class ImGuiEx
     {
         if(ImGui.BeginTable(id, headers.Length, DefaultTableFlags))
         {
+            if(drawHeader) ImGui.TableHeadersRow();
             DefaultTableColumns(headers, drawHeader);
             return true;
         }
