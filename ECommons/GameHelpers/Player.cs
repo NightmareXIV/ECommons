@@ -70,6 +70,8 @@ public static unsafe class Player
     public static float AnimationLock => *(float*)((nint)ActionManager.Instance() + 8);
     public static bool IsAnimationLocked => AnimationLock > 0;
     public static bool IsMoving => AgentMap.Instance()->IsPlayerMoving == 1;
+    public static bool IsDead => Svc.Condition[ConditionFlag.Unconscious];
+    public static bool Revivable => IsDead && AgentRevive.Instance()->ReviveState != 0;
     public static bool Mounted => Svc.Condition[ConditionFlag.Mounted];
     public static bool Mounting => Svc.Condition[ConditionFlag.Unknown57]; // condition 57 is set while mount up animation is playing
     public static unsafe bool Dismounting => **(byte**)(Svc.ClientState.LocalPlayer.Address + 1432) == 1;
