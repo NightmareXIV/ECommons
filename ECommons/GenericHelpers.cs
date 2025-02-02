@@ -1183,15 +1183,53 @@ public static unsafe partial class GenericHelpers
         exceptionFunc(e.ToStringFull());
     }
 
-    public static void LogWarning(this Exception e) => e.Log(PluginLog.Warning);
     public static void Log(this Exception e) => e.Log(PluginLog.Error);
-    public static void LogVerbose(this Exception e) => e.Log(PluginLog.Verbose);
-    public static void LogInternal(this Exception e) => e.Log(InternalLog.Error);
-    public static void LogInfo(this Exception e) => e.Log(PluginLog.Information);
     public static void Log(this Exception e, string ErrorMessage)
     {
         PluginLog.Error($"{ErrorMessage}");
         e.Log(PluginLog.Error);
+    }
+
+    public static void LogFatal(this Exception e) => e.Log(PluginLog.Fatal);
+    public static void LogFatal(this Exception e, string ErrorMessage)
+    {
+        PluginLog.Fatal($"{ErrorMessage}");
+        e.Log(PluginLog.Fatal);
+    }
+
+    public static void LogWarning(this Exception e) => e.Log(PluginLog.Warning);
+    public static void LogWarning(this Exception e, string errorMessage)
+    {
+        PluginLog.Warning(errorMessage);
+        e.Log(PluginLog.Warning);
+    }
+
+    public static void LogVerbose(this Exception e) => e.Log(PluginLog.Verbose);
+    public static void LogVerbose(this Exception e, string ErrorMessage)
+    {
+        PluginLog.Verbose(ErrorMessage);
+        e.Log(PluginLog.Verbose);
+    }
+
+    public static void LogInternal(this Exception e) => e.Log(InternalLog.Error);
+    public static void LogInternal(this Exception e, string ErrorMessage)
+    {
+        InternalLog.Error(ErrorMessage);
+        e.Log(InternalLog.Error);
+    }
+
+    public static void LogDebug(this Exception e) => e.Log(PluginLog.Debug);
+    public static void LogDebug(this Exception e, string ErrorMessage)
+    {
+        PluginLog.Debug(ErrorMessage);
+        e.Log(PluginLog.Debug);
+    }
+
+    public static void LogInfo(this Exception e) => e.Log(PluginLog.Information);
+    public static void LogInfo(this Exception e, string ErrorMessage)
+    {
+        PluginLog.Information(ErrorMessage);
+        e.Log(PluginLog.Information);
     }
     public static void LogDuo(this Exception e) => e.Log(DuoLog.Error);
 

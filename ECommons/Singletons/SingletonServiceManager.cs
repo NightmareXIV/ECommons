@@ -1,12 +1,9 @@
-using ECommons;
 using ECommons.Logging;
 using ECommons.Reflection;
-using ECommons.Reflection.FieldPropertyUnion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace ECommons.Singletons;
 /// <summary>
@@ -59,8 +56,18 @@ public static class SingletonServiceManager
             {
                 try
                 {
-                    PluginLog.Debug($"Creating singleton instance of {x.UnionType.FullName}");
-                    x.SetValue(null, Activator.CreateInstance(x.UnionType, true));
+                    var ctors = x.UnionType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    if(ctors.Length > 0)
+                    {
+                        var parameters = ctors[0].GetParameters();
+                        var args = new object[parameters.Length];
+                        for (var i = 0; i < parameters.Length; i++)
+                            args[i] = parameters[i].ParameterType.IsValueType ? Activator.CreateInstance(parameters[i].ParameterType) : null;
+                        PluginLog.Debug($"Creating singleton instance of {x.UnionType.FullName}");
+                        x.SetValue(null, Activator.CreateInstance(x.UnionType, args));
+                    }
+                    else
+                        PluginLog.Warning($"Failed to create singleton instance of {x.UnionType.FullName}. Type does not have any constructors.");
                 }
                 catch(TargetInvocationException tie)
                 {
