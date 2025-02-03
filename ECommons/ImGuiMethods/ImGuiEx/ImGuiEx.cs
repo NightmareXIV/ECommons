@@ -52,6 +52,7 @@ public static unsafe partial class ImGuiEx
             var stretch = x.StartsWith('~');
             ImGui.TableSetupColumn(stretch ? x[1..] : x, stretch ? ImGuiTableColumnFlags.WidthStretch : ImGuiTableColumnFlags.None);
         }
+        if(drawHeader) ImGui.TableHeadersRow();
     }
 
     public static string ImGuiTrim(this string str)

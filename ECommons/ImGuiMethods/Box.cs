@@ -1,4 +1,6 @@
-﻿namespace ECommons.ImGuiMethods;
+﻿using System.Reflection;
+
+namespace ECommons.ImGuiMethods;
 
 public class Box<T>
 {

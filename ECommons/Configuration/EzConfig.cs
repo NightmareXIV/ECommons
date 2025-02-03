@@ -124,11 +124,27 @@ public static class EzConfig
     {
         WasCalled = true;
         serializationFactory ??= DefaultSerializationFactory;
-        var serialized = serializationFactory.Serialize(Configuration, prettyPrint) ?? throw new NullReferenceException();
+        string serializedString = null;
+        byte[] serializedBinary = null;
+        if(serializationFactory.IsBinary)
+        {
+            serializedBinary = serializationFactory.SerializeAsBin(Configuration) ?? throw new NullReferenceException();
+        }
+        else
+        {
+            serializedString = serializationFactory.Serialize(Configuration) ?? throw new NullReferenceException();
+        }
         if(appendConfigDirectory) path = Path.Combine(EzConfig.GetPluginConfigDirectory(), path);
         if(UseExternalWriter)
         {
-            ExternalWriter.PlaceWriteOrder(new(path, serialized));
+            if(serializationFactory.IsBinary)
+            {
+                ExternalWriter.PlaceWriteOrder(new(path, serializedBinary));
+            }
+            else
+            {
+                ExternalWriter.PlaceWriteOrder(new(path, serializedString));
+            }
         }
         else
         {
@@ -147,11 +163,15 @@ public static class EzConfig
                             File.Move(antiCorruptionPath, saveTo);
                             PluginLog.Warning($"Success. Please manually check {saveTo} file contents.");
                         }
-                        //PluginLog.Verbose($"From caller {GenericHelpers.GetCallStackID(999)} engaging anti-corruption mechanism, writing file to {antiCorruptionPath}");
-                        File.WriteAllText(antiCorruptionPath, serialized, Encoding.UTF8);
-                        //PluginLog.Verbose($"Now moving {antiCorruptionPath} to {path}");
+                        if(serializationFactory.IsBinary)
+                        {
+                            File.WriteAllBytes(antiCorruptionPath, serializedBinary);
+                        }
+                        else
+                        {
+                            File.WriteAllText(antiCorruptionPath, serializedString, Encoding.UTF8);
+                        }
                         File.Move(antiCorruptionPath, path, true);
-                        //PluginLog.Verbose($"Configuration successfully saved.");
                     }
                 }
                 catch(Exception e)
@@ -187,7 +207,14 @@ public static class EzConfig
         {
             return new T();
         }
-        return serializationFactory.Deserialize<T>(File.ReadAllText(path, Encoding.UTF8)) ?? new T();
+        if(serializationFactory.IsBinary)
+        {
+            return serializationFactory.Deserialize<T>(File.ReadAllBytes(path)) ?? new T();
+        }
+        else
+        {
+            return serializationFactory.Deserialize<T>(File.ReadAllText(path, Encoding.UTF8)) ?? new T();
+        }
     }
 
     internal static void Dispose()

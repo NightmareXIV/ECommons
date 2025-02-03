@@ -2,6 +2,7 @@
 using ECommons.Reflection;
 using Newtonsoft.Json;
 using System.Reflection;
+using System.Text;
 
 namespace ECommons.Configuration;
 /// <summary>
@@ -10,6 +11,7 @@ namespace ECommons.Configuration;
 public class DefaultSerializationFactory : ISerializationFactory
 {
     public virtual string DefaultConfigFileName => "DefaultConfig.json";
+    public virtual bool IsBinary => false;
 
     /// <summary>
     /// Deserialization method.
@@ -36,6 +38,11 @@ public class DefaultSerializationFactory : ISerializationFactory
         return JsonConvert.DeserializeObject<T>(inputData, settings);
     }
 
+    public virtual T? Deserialize<T>(byte[] inputData)
+    {
+        return this.Deserialize<T>(Encoding.UTF8.GetString(inputData));
+    }
+
     /// <summary>
     /// Serialization method
     /// </summary>
@@ -60,5 +67,15 @@ public class DefaultSerializationFactory : ISerializationFactory
             };
         }
         return JsonConvert.SerializeObject(config, settings);
+    }
+
+    public string Serialize(object config)
+    {
+        return this.Serialize(config, false);
+    }
+
+    public virtual byte[] SerializeAsBin(object config)
+    {
+        return Encoding.UTF8.GetBytes(this.Serialize(config));
     }
 }

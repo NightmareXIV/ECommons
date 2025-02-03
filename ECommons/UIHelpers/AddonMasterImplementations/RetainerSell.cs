@@ -26,7 +26,7 @@ public partial class AddonMaster
             set => Callback.Fire(Base, true, 3, value);
         }
 
-        public string ItemName => Addon->GetTextNodeById(7)->NodeText.ExtractText();
+        public string ItemName => Addon->GetTextNodeById(7)->NodeText.GetText();
 
         public override string AddonDescription { get; } = "Retainer item sell window";
 
