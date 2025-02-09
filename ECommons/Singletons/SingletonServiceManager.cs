@@ -2,6 +2,7 @@ using ECommons.Logging;
 using ECommons.Reflection;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
@@ -61,10 +62,12 @@ public static class SingletonServiceManager
                     {
                         var parameters = ctors[0].GetParameters();
                         var args = new object[parameters.Length];
-                        for (var i = 0; i < parameters.Length; i++)
+                        for(var i = 0; i < parameters.Length; i++)
+                        {
                             args[i] = parameters[i].ParameterType.IsValueType ? Activator.CreateInstance(parameters[i].ParameterType) : null;
+                        }
                         PluginLog.Debug($"Creating singleton instance of {x.UnionType.FullName}");
-                        x.SetValue(null, Activator.CreateInstance(x.UnionType, args));
+                        x.SetValue(null, Activator.CreateInstance(x.UnionType, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, args, null, null));
                     }
                     else
                         PluginLog.Warning($"Failed to create singleton instance of {x.UnionType.FullName}. Type does not have any constructors.");
