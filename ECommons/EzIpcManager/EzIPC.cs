@@ -65,7 +65,7 @@ public static class EzIPC
                 var attr = method.GetCustomAttributes(true).OfType<EzIPCAttribute>().FirstOrDefault();
                 if(attr != null)
                 {
-                    PluginLog.Information($"[EzIPC Provider] Attempting to register {instanceType.Name}.{method.Name} as IPC method ({method.GetParameters().Length})");
+                    PluginLog.Debug($"[EzIPC Provider] Attempting to register {instanceType.Name}.{method.Name} as IPC method ({method.GetParameters().Length})");
                     var ipcName = attr.IPCName ?? method.Name;
                     ipcName = ipcName.Replace("%m", method.Name);
                     ipcName = ipcName.Replace("%p", Svc.PluginInterface.InternalName);
@@ -74,11 +74,11 @@ public static class EzIPC
                     var genericArray = (Type[])[.. method.GetParameters().Select(x => x.ParameterType), isAction ? attr.ActionLastGenericType : method.ReturnType];
                     var genericMethod = reg.MakeGenericMethod([.. genericArray]);
                     var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
-                    PluginLog.Information($"[EzIPC Provider] Registering IPC method {name} with method {instanceType.FullName}.{method.Name}");
+                    PluginLog.Debug($"[EzIPC Provider] Registering IPC method {name} with method {instanceType.FullName}.{method.Name}");
                     genericMethod.Invoke(Svc.PluginInterface, [name]).Call(isAction ? "RegisterAction" : "RegisterFunc", [ReflectionHelper.CreateDelegate(method, instance)], true);
                     var token = new EzIPCDisposalToken(name, false, () =>
                     {
-                        PluginLog.Information($"[EzIPC Provider] Unregistering IPC method {name}");
+                        PluginLog.Debug($"[EzIPC Provider] Unregistering IPC method {name}");
                         genericMethod.Invoke(Svc.PluginInterface, [name]).Call(isAction ? "UnregisterAction" : "UnregisterFunc", [], true);
                     });
                     ret.Add(token);
@@ -107,7 +107,7 @@ public static class EzIPC
                     if(isNonGenericAction || reference.UnionType.GetGenericTypeDefinition().EqualsAny([.. FuncTypes, .. ActionTypes]))
                     {
                         var wrapper = attr.Wrapper == SafeWrapper.Inherit ? safeWrapper : attr.Wrapper;
-                        PluginLog.Information($"[EzIPC Subscriber] Attempting to assign IPC method to {instanceType.Name}.{reference.Name} with wrapper {wrapper}");
+                        PluginLog.Debug($"[EzIPC Subscriber] Attempting to assign IPC method to {instanceType.Name}.{reference.Name} with wrapper {wrapper}");
                         var isAction = isNonGenericAction || reference.UnionType.GetGenericTypeDefinition().EqualsAny(ActionTypes);
                         var genericArgsLen = reference.UnionType.GetGenericArguments().Length;
                         var reg = FindIpcSubscriber(genericArgsLen + (isAction ? 1 : 0)) ?? throw new NullReferenceException("Could not retrieve GetIpcSubscriber. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
@@ -147,7 +147,7 @@ public static class EzIPC
                 var attr = method.GetCustomAttributes(true).OfType<EzIPCEventAttribute>().FirstOrDefault();
                 if(attr != null)
                 {
-                    PluginLog.Information($"[EzIPC Subscriber] Attempting to register {instanceType.Name}.{method.Name} as IPC event ({method.GetParameters().Length})");
+                    PluginLog.Debug($"[EzIPC Subscriber] Attempting to register {instanceType.Name}.{method.Name} as IPC event ({method.GetParameters().Length})");
                     var ipcName = attr.IPCName ?? method.Name;
                     ipcName = ipcName.Replace("%m", method.Name);
                     ipcName = ipcName.Replace("%p", Svc.PluginInterface.InternalName);
@@ -156,12 +156,12 @@ public static class EzIPC
                     var genericArray = (Type[])[.. method.GetParameters().Select(x => x.ParameterType), attr.ActionLastGenericType];
                     var genericMethod = reg.MakeGenericMethod([.. genericArray]);
                     var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
-                    PluginLog.Information($"[EzIPC Subscriber] Registering IPC event {name} with method {instanceType.FullName}.{method.Name}");
+                    PluginLog.Debug($"[EzIPC Subscriber] Registering IPC event {name} with method {instanceType.FullName}.{method.Name}");
                     var d = ReflectionHelper.CreateDelegate(method, instance);
                     genericMethod.Invoke(Svc.PluginInterface, [name]).Call("Subscribe", [d], true);
                     var token = new EzIPCDisposalToken(name, true, () =>
                     {
-                        PluginLog.Information($"[EzIPC Subscriber] Unregistering IPC event {name}");
+                        PluginLog.Debug($"[EzIPC Subscriber] Unregistering IPC event {name}");
                         genericMethod.Invoke(Svc.PluginInterface, [name]).Call("Unsubscribe", [d], true);
                     });
                     Unregister.Add(token);
@@ -189,7 +189,7 @@ public static class EzIPC
                     var isNonGenericAction = reference.UnionType == typeof(Action);
                     if(isNonGenericAction || reference.UnionType.GetGenericTypeDefinition().EqualsAny(ActionTypes))
                     {
-                        PluginLog.Information($"[EzIPC Provider] Attempting to assign IPC event to {instanceType.Name}.{reference.Name}");
+                        PluginLog.Debug($"[EzIPC Provider] Attempting to assign IPC event to {instanceType.Name}.{reference.Name}");
                         var reg = FindIpcProvider(reference.UnionType.GetGenericArguments().Length + 1) ?? throw new NullReferenceException("Could not retrieve GetIpcProvider. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
                         var genericArgs = reference.UnionType.IsGenericType ? reference.UnionType.GetGenericArguments() : [];
                         var genericMethod = reg.MakeGenericMethod([.. genericArgs, attr.ActionLastGenericType]);
