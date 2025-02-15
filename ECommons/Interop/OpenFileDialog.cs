@@ -21,7 +21,9 @@ public class OpenFileDialog
     [DllImport("Comdlg32.dll", CharSet = CharSet.Auto)]
     private static extern bool GetOpenFileName([In, Out] OpenFileName ofn);
 
-    public static void SelectFile(Action<OpenFileName> successCallback, Action cancelCallback = null, string initialDir = null, string title = "Select a file...", IEnumerable<(string Description, IEnumerable<string> Extensions)> fileTypes = null)
+    public static void SelectFile(Action<OpenFileName> successCallback, Action cancelCallback = null, string initialDir = null, string title = "Select a file...", IEnumerable<(string Description, IEnumerable<string> Extensions)> fileTypes = null) => SelectFile(new(), successCallback, cancelCallback, initialDir, title, fileTypes);
+
+    public static void SelectFile(OpenFileName ofn, Action<OpenFileName> successCallback, Action cancelCallback = null, string initialDir = null, string title = "Select a file...", IEnumerable<(string Description, IEnumerable<string> Extensions)> fileTypes = null)
     {
         if(SelectorSemaphore.Wait(0))
         {
@@ -30,7 +32,6 @@ public class OpenFileDialog
                 PluginLog.Debug("Starting file selection");
                 try
                 {
-                    var ofn = new OpenFileName();
 
                     if(WindowFunctions.TryFindGameWindow(out var hwnd))
                     {
@@ -64,11 +65,11 @@ public class OpenFileDialog
                     PluginLog.Debug("Preparing to call winapi");
                     if(GetOpenFileName(ofn))
                     {
-                        successCallback(ofn);
+                        successCallback?.Invoke(ofn);
                     }
                     else
                     {
-                        cancelCallback();
+                        cancelCallback?.Invoke();
                     }
                     PluginLog.Debug("Dialog closed");
                 }
