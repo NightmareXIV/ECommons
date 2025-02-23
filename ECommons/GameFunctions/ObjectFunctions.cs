@@ -36,17 +36,30 @@ public static unsafe class ObjectFunctions
     {
         GetNameplateColorNative ??= EzDelegate.Get<GetNameplateColorDelegate>(GetNameplateColorSig);
         var plateType = GetNameplateColorNative(a.Address);
+        //4, 5, 6: Enemy players in PvP
         //7: yellow, can be attacked, not engaged
         //8: dead
         //9: red, engaged with your party
         //11: orange, aggroed to your party but not attacked yet
         //10: purple, engaged with other party
-        return plateType == 7 || plateType == 9 || plateType == 11 || plateType == 10;
+        return plateType == 4 || plateType == 5 || plateType == 6 || plateType == 7 || plateType == 9 || plateType == 11 || plateType == 10;
     }
 
     public static NameplateKind GetNameplateKind(this IGameObject o)
     {
+        if (o == null || o.Address == IntPtr.Zero)
+        {
+            // Log the error for debugging purposes
+            Svc.Log.Debug($"IGameObject or its address is null.");
+        }
+
         GetNameplateColorNative ??= EzDelegate.Get<GetNameplateColorDelegate>(GetNameplateColorSig);
+        if (GetNameplateColorNative == null)
+        {
+            // Log the error for debugging purposes
+            Svc.Log.Debug($"Failed to get the native delegate for GetNameplateColor.");
+        }
+
         return (NameplateKind)GetNameplateColorNative(o.Address);
     }
 

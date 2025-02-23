@@ -14,6 +14,7 @@ using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
+using Lumina.Extensions;
 using Lumina.Text.ReadOnly;
 using Newtonsoft.Json;
 using PInvoke;
@@ -1182,15 +1183,53 @@ public static unsafe partial class GenericHelpers
         exceptionFunc(e.ToStringFull());
     }
 
-    public static void LogWarning(this Exception e) => e.Log(PluginLog.Warning);
     public static void Log(this Exception e) => e.Log(PluginLog.Error);
-    public static void LogVerbose(this Exception e) => e.Log(PluginLog.Verbose);
-    public static void LogInternal(this Exception e) => e.Log(InternalLog.Error);
-    public static void LogInfo(this Exception e) => e.Log(PluginLog.Information);
     public static void Log(this Exception e, string ErrorMessage)
     {
         PluginLog.Error($"{ErrorMessage}");
         e.Log(PluginLog.Error);
+    }
+
+    public static void LogFatal(this Exception e) => e.Log(PluginLog.Fatal);
+    public static void LogFatal(this Exception e, string ErrorMessage)
+    {
+        PluginLog.Fatal($"{ErrorMessage}");
+        e.Log(PluginLog.Fatal);
+    }
+
+    public static void LogWarning(this Exception e) => e.Log(PluginLog.Warning);
+    public static void LogWarning(this Exception e, string errorMessage)
+    {
+        PluginLog.Warning(errorMessage);
+        e.Log(PluginLog.Warning);
+    }
+
+    public static void LogVerbose(this Exception e) => e.Log(PluginLog.Verbose);
+    public static void LogVerbose(this Exception e, string ErrorMessage)
+    {
+        PluginLog.Verbose(ErrorMessage);
+        e.Log(PluginLog.Verbose);
+    }
+
+    public static void LogInternal(this Exception e) => e.Log(InternalLog.Error);
+    public static void LogInternal(this Exception e, string ErrorMessage)
+    {
+        InternalLog.Error(ErrorMessage);
+        e.Log(InternalLog.Error);
+    }
+
+    public static void LogDebug(this Exception e) => e.Log(PluginLog.Debug);
+    public static void LogDebug(this Exception e, string ErrorMessage)
+    {
+        PluginLog.Debug(ErrorMessage);
+        e.Log(PluginLog.Debug);
+    }
+
+    public static void LogInfo(this Exception e) => e.Log(PluginLog.Information);
+    public static void LogInfo(this Exception e, string ErrorMessage)
+    {
+        PluginLog.Information(ErrorMessage);
+        e.Log(PluginLog.Information);
     }
     public static void LogDuo(this Exception e) => e.Log(DuoLog.Error);
 
@@ -1712,7 +1751,6 @@ public static unsafe partial class GenericHelpers
     [Obsolete($"Use MemoryHelper.ReadRaw")]
     public static byte[] ReadRaw(IntPtr memoryAddress, int length) => MemoryHelper.ReadRaw(memoryAddress, length);
 
-
     public static ExcelSheet<T> GetSheet<T>(ClientLanguage? language = null) where T : struct, IExcelRow<T>
         => Svc.Data.GetExcelSheet<T>(language ?? Svc.ClientState.ClientLanguage);
 
@@ -1726,7 +1764,10 @@ public static unsafe partial class GenericHelpers
         => GetSheet<T>(language).GetRowOrDefault(rowId);
 
     public static T? GetRow<T>(uint rowId, ushort subRowId, ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
-        => Svc.Data.GetSubrowExcelSheet<T>(language).GetSubrowOrDefault(rowId, subRowId);
+        => GetSubrowSheet<T>(language).GetSubrowOrDefault(rowId, subRowId);
+
+    public static SubrowCollection<T>? GetSubRow<T>(uint rowId, ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
+        => GetSubrowSheet<T>(language).GetRowOrDefault(rowId);
 
     public static T? FindRow<T>(Func<T, bool> predicate) where T : struct, IExcelRow<T>
          => GetSheet<T>().FirstOrNull(predicate);
@@ -1736,6 +1777,24 @@ public static unsafe partial class GenericHelpers
 
     public static T[] FindRows<T>(Func<T, bool> predicate) where T : struct, IExcelRow<T>
         => GetSheet<T>().Where(predicate).ToArray();
+
+    public static bool TryGetRow<T>(uint rowId, [NotNullWhen(returnValue: true)] out T row) where T : struct, IExcelRow<T>
+        => GetSheet<T>().TryGetRow(rowId, out row);
+
+    public static bool TryGetRow<T>(uint rowId, ClientLanguage? language, [NotNullWhen(returnValue: true)] out T row) where T : struct, IExcelRow<T>
+        => GetSheet<T>(language).TryGetRow(rowId, out row);
+
+    public static bool TryGetRow<T>(uint rowId, ushort subRowId, [NotNullWhen(returnValue: true)] out T row) where T : struct, IExcelSubrow<T>
+        => GetSubrowSheet<T>().TryGetSubrow(rowId, subRowId, out row);
+
+    public static bool TryGetRow<T>(uint rowId, ushort subRowId, ClientLanguage? language, [NotNullWhen(returnValue: true)] out T row) where T : struct, IExcelSubrow<T>
+        => GetSubrowSheet<T>(language).TryGetSubrow(rowId, subRowId, out row);
+
+    public static bool TryFindRow<T>(Predicate<T> predicate, out T row) where T : struct, IExcelRow<T>
+        => GetSheet<T>().TryGetFirst(predicate, out row);
+
+    public static bool TryFindRow<T>(Predicate<T> predicate, ClientLanguage? language, out T row) where T : struct, IExcelRow<T>
+        => GetSheet<T>(language).TryGetFirst(predicate, out row);
 
     public static IEnumerable<T> AllRows<T>(this SubrowExcelSheet<T> subrowSheet) where T:struct, IExcelSubrow<T>
     {

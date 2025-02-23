@@ -52,6 +52,7 @@ public static unsafe partial class ImGuiEx
             var stretch = x.StartsWith('~');
             ImGui.TableSetupColumn(stretch ? x[1..] : x, stretch ? ImGuiTableColumnFlags.WidthStretch : ImGuiTableColumnFlags.None);
         }
+        if(drawHeader) ImGui.TableHeadersRow();
     }
 
     public static string ImGuiTrim(this string str)
@@ -80,31 +81,34 @@ public static unsafe partial class ImGuiEx
         var lbl = label.StartsWith("##") ? label : $"##{label}";
         var ret = ImGui.InputText(lbl, ref str, 50, ImGuiInputTextFlags.AutoSelectAll);
         var btn = false;
-        ImGui.SameLine(0, 1);
-        if(ImGui.Button($"-##minus{label}", new(ImGui.GetFrameHeight())))
+        if(step > 0)
         {
-            ret = true;
-            number -= step;
-            btn = true;
-        }
-        if(ImGui.IsItemHovered() && ImGui.GetIO().MouseDownDuration[0] > 0.5f && EzThrottler.Throttle("FancyInputHold", 50))
-        {
-            ret = true;
-            number -= step;
-            btn = true;
-        }
-        ImGui.SameLine(0, 1);
-        if(ImGui.Button($"+##plus{label}", new(ImGui.GetFrameHeight())))
-        {
-            ret = true;
-            number += step;
-            btn = true;
-        }
-        if(ImGui.IsItemHovered() && ImGui.GetIO().MouseDownDuration[0] > 0.5f && EzThrottler.Throttle("FancyInputHold", 50))
-        {
-            ret = true;
-            number += step;
-            btn = true;
+            ImGui.SameLine(0, 1);
+            if(ImGui.Button($"-##minus{label}", new(ImGui.GetFrameHeight())))
+            {
+                ret = true;
+                number -= step;
+                btn = true;
+            }
+            if(ImGui.IsItemHovered() && ImGui.GetIO().MouseDownDuration[0] > 0.5f && EzThrottler.Throttle("FancyInputHold", 50))
+            {
+                ret = true;
+                number -= step;
+                btn = true;
+            }
+            ImGui.SameLine(0, 1);
+            if(ImGui.Button($"+##plus{label}", new(ImGui.GetFrameHeight())))
+            {
+                ret = true;
+                number += step;
+                btn = true;
+            }
+            if(ImGui.IsItemHovered() && ImGui.GetIO().MouseDownDuration[0] > 0.5f && EzThrottler.Throttle("FancyInputHold", 50))
+            {
+                ret = true;
+                number += step;
+                btn = true;
+            }
         }
         if(ret && !btn)
         {

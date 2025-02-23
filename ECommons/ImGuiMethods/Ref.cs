@@ -36,7 +36,7 @@ public static class Ref<T>
             Storage[key] = new(defaultValue);
             if (defaultValue == null && typeof(T) == typeof(string))
             {
-                Storage[key].SetFoP("Value", string.Empty);
+                Storage[key].GetType().GetFields()[0].SetValue(Storage[key], "");
             }
             return ref Storage[key].Value;
         }

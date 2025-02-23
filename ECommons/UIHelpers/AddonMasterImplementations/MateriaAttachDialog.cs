@@ -16,7 +16,7 @@ public partial class AddonMaster
 
         public int SuccessRate => Base->AtkValues[41].Int;
         public SeString SuccessRateSeString => GenericHelpers.ReadSeString(&Base->GetTextNodeById(26)->NodeText);
-        public string SuccessRateText => SuccessRateSeString.ExtractText();
+        public string SuccessRateText => SuccessRateSeString.GetText();
         public float SuccessRateFloat => SuccessRateText.Where(char.IsDigit).Append('.').Append('-').Any()
                             ? float.Parse(string.Join("", SuccessRateText.Where(char.IsDigit).Append('.').Append('-')))
                             : 0.0f;

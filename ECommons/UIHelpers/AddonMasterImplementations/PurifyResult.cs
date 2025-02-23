@@ -12,7 +12,7 @@ public partial class AddonMaster
         public PurifyResult(void* addon) : base(addon) { }
 
         public SeString BannerSeString => GenericHelpers.ReadSeString(&Base->GetTextNodeById(2)->NodeText);
-        public string BannerText => BannerSeString.ExtractText();
+        public string BannerText => BannerSeString.GetText();
         public AtkComponentButton* AutomaticButton => Addon->GetButtonNodeById(19);
         public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(20);
 

@@ -59,7 +59,7 @@ public partial class AddonMaster
 
             public AtkTextNode* TextNode => am.ListItems[Index].Value->ButtonTextNode;
             public readonly SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[ListIndex].String);
-            public readonly string Text => SeString.ExtractText();
+            public readonly string Text => SeString.GetText();
             public readonly bool Enabled => am.ListItems[Index].Value->IsEnabled;
 
             public readonly bool Select()
