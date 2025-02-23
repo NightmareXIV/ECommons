@@ -1236,9 +1236,21 @@ public static unsafe partial class ImGuiEx
         return ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X;
     }
 
+    [Obsolete("Use ImGuiEx.Spacing(Vector2, bool) instead")]
     public static void Spacing(float pix = 10f, bool accountForScale = true)
     {
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (accountForScale ? pix : pix * ImGuiHelpers.GlobalScale));
+    }
+
+    public static void Spacing(Vector2? size = null, bool accountForScale = true)
+    {
+        size ??= new Vector2(10f);
+
+        var x = size.Value.X * (accountForScale ? ImGuiHelpers.GlobalScale : 1f);
+        var y = size.Value.Y * (accountForScale ? ImGuiHelpers.GlobalScale : 1f);
+
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + x);
+        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + y);
     }
 
     public static float Scale(this float f)
