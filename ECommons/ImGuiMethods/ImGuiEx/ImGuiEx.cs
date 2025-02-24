@@ -53,6 +53,12 @@ public static unsafe partial class ImGuiEx
         return f * ImGuiHelpers.GlobalScale * (Svc.PluginInterface.UiBuilder.DefaultFontSpec.SizePt / 12f);
     }
 
+    /// <seealso cref="Scale(float)"/>
+    public static float? Scale(this float? f)
+    {
+        return f?.Scale();
+    }
+
     public static bool BeginDefaultTable(string[] headers, bool drawHeader = true)
     {
         return BeginDefaultTable("##ECommonsDefaultTable", headers, drawHeader);
