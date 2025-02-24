@@ -32,7 +32,7 @@ public partial class AddonMaster
         {
             get
             {
-                RelicNoteBookDungeon[] relicNoteBookDungeon = new RelicNoteBookDungeon[2];
+                RelicNoteBookDungeon[] relicNoteBookDungeon = new RelicNoteBookDungeon[3];
                 for (int i = 0; i < relicNoteBookDungeon.Length; i++)
                 {
                     relicNoteBookDungeon[i] = new RelicNoteBookDungeon(this, Addon, GetDungeonCheckBox(i), i);
@@ -45,7 +45,7 @@ public partial class AddonMaster
         {
             get
             {
-                RelicNoteBookFate[] relicNoteBookFate = new RelicNoteBookFate[2];
+                RelicNoteBookFate[] relicNoteBookFate = new RelicNoteBookFate[3];
                 for (int i = 0; i < relicNoteBookFate.Length; i++)
                 {
                     relicNoteBookFate[i] = new RelicNoteBookFate(this, Addon, GetFateCheckBox(i), i);
