@@ -55,7 +55,6 @@ ECommonsMain.Init(pluginInterface, this, Modules.<Module>);
 
 where \<Module> is one of the following:
 - All (For all modules)
-- Localization
 - SplatoonAPI
 - DalamudReflector
 - ObjectLife
