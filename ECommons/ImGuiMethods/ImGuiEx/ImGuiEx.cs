@@ -1266,6 +1266,8 @@ public static unsafe partial class ImGuiEx
         return ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X;
     }
 
+    public static void Spacing() => Spacing(null);
+
     [Obsolete("Use ImGuiEx.Spacing(Vector2, bool) instead")]
     public static void Spacing(float pix = 10f, bool accountForScale = true)
     {
