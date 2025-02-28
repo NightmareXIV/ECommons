@@ -30,6 +30,35 @@ public static unsafe partial class ImGuiEx
     public static readonly ImGuiTableFlags DefaultTableFlags = ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg | ImGuiTableFlags.Borders | ImGuiTableFlags.SizingFixedFit;
     private static Dictionary<string, int> SelectedPages = [];
 
+    /// <seealso cref="Scale(float)"/>
+    public static Vector2? Scale(this Vector2? v)
+    {
+        if(v == null) return null;
+        return new Vector2(v.Value.X.Scale(), v.Value.Y.Scale());
+    }
+
+    /// <seealso cref="Scale(float)"/>
+    public static Vector2 Scale(this Vector2 v)
+    {
+        return new Vector2(v.X.Scale(), v.Y.Scale());
+    }
+
+    /// <summary>
+    ///     Scale a float value based on the two independent Dalamud UI scaling factors.
+    /// </summary>
+    /// <param name="f">The float value to scale.</param>
+    /// <returns>The float value scaled with the user's style settings.</returns>
+    public static float Scale(this float f)
+    {
+        return f * ImGuiHelpers.GlobalScale * (Svc.PluginInterface.UiBuilder.DefaultFontSpec.SizePt / 12f);
+    }
+
+    /// <seealso cref="Scale(float)"/>
+    public static float? Scale(this float? f)
+    {
+        return f?.Scale();
+    }
+
     public static bool BeginDefaultTable(string[] headers, bool drawHeader = true)
     {
         return BeginDefaultTable("##ECommonsDefaultTable", headers, drawHeader);
@@ -267,6 +296,7 @@ public static unsafe partial class ImGuiEx
     }
 
     public static void TreeNodeCollapsingHeader(string name, Action action, ImGuiTreeNodeFlags extraFlags = ImGuiTreeNodeFlags.None) => TreeNodeCollapsingHeader(name, true, action, extraFlags);
+
     /// <summary>
     /// Another interpretation of <see cref="ImGui.CollapsingHeader(string)"/> but with narrow design and border.
     /// </summary>
@@ -435,7 +465,6 @@ public static unsafe partial class ImGuiEx
     /// <inheritdoc cref="SelectableNode(Vector4?, string, bool)"/>
     public static bool SelectableNode(string id, ref bool selected, bool enabled = true) => SelectableNode(null, id, ref selected, enabled:enabled);
 
-
     /// <summary>
     /// Selectable item made from TreeNode
     /// </summary>
@@ -529,7 +558,7 @@ public static unsafe partial class ImGuiEx
                 {
                     if(ThreadLoadImageHandler.TryGetIconTextureWrap((uint)cond.GetIcon(), false, out var texture))
                     {
-                        ImGui.Image(texture.ImGuiHandle, new Vector2(24f));
+                        ImGui.Image(texture.ImGuiHandle, new Vector2(24f.Scale()));
                         ImGui.SameLine();
                     }
                     if(ImGuiEx.CollectionCheckbox(name, cond, selectedJobs)) ret = true;
@@ -1090,6 +1119,8 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
+    public static bool ButtonCtrlScaled(string text, Vector2? size, string affix = " (Hold CTRL)") => ButtonCtrl(text, size.Scale(), affix);
+
     public static bool BeginPopupNextToElement(string popupId)
     {
         ImGui.SameLine(0, 0);
@@ -1118,7 +1149,6 @@ public static unsafe partial class ImGuiEx
     {
         if(ImGui.IsWindowCollapsed()) return false;
 
-        var scale = ImGuiHelpers.GlobalScale;
         var currentID = ImGui.GetID(0);
         if(currentID != headerLastWindowID || headerLastFrame != Svc.PluginInterface.UiBuilder.FrameCount)
         {
@@ -1129,15 +1159,15 @@ public static unsafe partial class ImGuiEx
                 headerCurrentPos = 1;
             headerImGuiButtonWidth = 0f;
             if(CurrentWindowHasCloseButton())
-                headerImGuiButtonWidth += 17 * scale;
+                headerImGuiButtonWidth += 17f.Scale();
             if(!GetCurrentWindowFlags().HasFlag(ImGuiWindowFlags.NoCollapse))
-                headerImGuiButtonWidth += 17 * scale;
+                headerImGuiButtonWidth += 17f.Scale();
         }
 
         options ??= new();
         var prevCursorPos = ImGui.GetCursorPos();
-        var buttonSize = new Vector2(20 * scale);
-        var buttonPos = new Vector2((ImGui.GetWindowWidth() - buttonSize.X - headerImGuiButtonWidth * scale * headerCurrentPos) - (ImGui.GetStyle().FramePadding.X * scale), ImGui.GetScrollY() + 1);
+        var buttonSize = new Vector2(20f.Scale());
+        var buttonPos = new Vector2((ImGui.GetWindowWidth() - buttonSize.X - headerImGuiButtonWidth.Scale() * headerCurrentPos) - (ImGui.GetStyle().FramePadding.X.Scale()), ImGui.GetScrollY() + 1);
         ImGui.SetCursorPos(buttonPos);
         var drawList = ImGui.GetWindowDrawList();
         drawList.PushClipRectFullScreen();
@@ -1236,15 +1266,23 @@ public static unsafe partial class ImGuiEx
         return ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X;
     }
 
+    public static void Spacing() => Spacing(null);
+
+    [Obsolete("Use ImGuiEx.Spacing(Vector2, bool) instead")]
     public static void Spacing(float pix = 10f, bool accountForScale = true)
     {
-        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (accountForScale ? pix : pix * ImGuiHelpers.GlobalScale));
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (accountForScale ? pix : pix.Scale()));
     }
 
-    public static float Scale(this float f)
+    public static void Spacing(Vector2? size = null, bool accountForScale = true)
     {
-        // Dalamud global scale and font size are now indepedent from each other, so both need to factored in.
-        return f * ImGuiHelpers.GlobalScale * (Svc.PluginInterface.UiBuilder.DefaultFontSpec.SizePt / 12f);
+        size ??= new Vector2(10f);
+
+        if (accountForScale)
+            size = size.Scale();
+
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + size!.Value.X);
+        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + size!.Value.Y);
     }
 
     public static void SetTooltip(string text)
@@ -1695,6 +1733,20 @@ public static unsafe partial class ImGuiEx
         return IconButton(icon.ToIconString(), id, size, enabled);
     }
 
+    public static bool IconButtonScaled(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true) => IconButton(icon, id, size.Scale(), enabled);
+
+    public static bool IconButton(string icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
+        var result = ImGui.Button($"{icon}##{icon}-{id}", size) && enabled;
+        if(!enabled) ImGui.PopStyleVar();
+        ImGui.PopFont();
+        return result;
+    }
+
+    public static bool IconButtonScaled(string icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true) => IconButton(icon, id, size.Scale(), enabled);
+
     public static bool SmallButton(string label, bool enabled = true)
     {
         if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
@@ -1719,15 +1771,7 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
-    public static bool IconButton(string icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
-    {
-        ImGui.PushFont(UiBuilder.IconFont);
-        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
-        var result = ImGui.Button($"{icon}##{icon}-{id}", size) && enabled;
-        if(!enabled) ImGui.PopStyleVar();
-        ImGui.PopFont();
-        return result;
-    }
+    public static bool ButtonScaled(string label, Vector2 size, bool enabled = true) => Button(label, size.Scale(), enabled);
 
     public static bool IconButtonWithText(FontAwesomeIcon icon, string id, bool enabled = true)
     {
@@ -1737,17 +1781,17 @@ public static unsafe partial class ImGuiEx
         return result;
     }
 
-    public static Vector2 CalcIconSize(FontAwesomeIcon icon, bool isButton = false)
-    {
-        return CalcIconSize(icon.ToIconString(), isButton);
-    }
-
     public static Vector2 CalcIconSize(string icon, bool isButton = false)
     {
         ImGui.PushFont(UiBuilder.IconFont);
         var result = ImGui.CalcTextSize($"{icon}");
         ImGui.PopFont();
         return result + (isButton ? ImGui.GetStyle().FramePadding * 2f : Vector2.Zero);
+    }
+
+    public static Vector2 CalcIconSize(FontAwesomeIcon icon, bool isButton = false)
+    {
+        return CalcIconSize(icon.ToIconString(), isButton);
     }
 
     public static float Measure(Action func, bool includeSpacing = true)

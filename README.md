@@ -3,12 +3,6 @@
   <p>ECommons is a multi-functional library designed to work within Dalamud Plugins. It features a variety of different systems and shortcuts which cuts out a lot of boiler plate code normally used to do standard plugin tasks.</p>
 </section>
 
-# WARNING
-## Starting from 2.2.0.2, if you have previously used TaskManager it's namespace has changed, simply add `using ECommons.Automation.LegacyTaskManager;` and you're all good.
-
-# WARNING
-## Starting from v2.2.0.1, Windows Forms and Windows Targeting are now disabled by default. This affects only couple functions, please set a build configuration with forms manually if you need so.
-
 <section id="getting-started">
 <a href="#getting-started" alt="Getting Started"><h2>Getting Started</h2></a>
 Add ECommons as a submodule to your project:
@@ -61,9 +55,18 @@ ECommonsMain.Init(pluginInterface, this, Modules.<Module>);
 
 where \<Module> is one of the following:
 - All (For all modules)
-- Localization
 - SplatoonAPI
 - DalamudReflector
 - ObjectLife
 - ObjectFunctions
 </section>
+
+---
+
+> [!WARNING]
+> As of [`2024-04-15`](https://github.com/NightmareXIV/ECommons/commit/b4be673) `TaskManager`'s namespace has changed.\
+> Add `using ECommons.Automation.LegacyTaskManager;` as an immediate fix.
+
+> [!WARNING]
+> As of [`2024-04-14`](https://github.com/NightmareXIV/ECommons/commit/6f1fd30) Windows Forms and Windows Targeting are now disabled by default.\
+> Manually set a build configuration with forms as a fix.
