@@ -11,13 +11,13 @@ namespace ECommons.UIHelpers;
 
 public abstract unsafe class AtkReader(AtkUnitBase* UnitBase, int BeginOffset = 0)
 {
-    public List<T> Loop<T>(int Offset, int Size, int MaxLength) where T : AtkReader
+    public List<T> Loop<T>(int Offset, int Size, int MaxLength, bool IgnoreNull = false) where T : AtkReader
     {
         var ret = new List<T>();
         for(var i = 0; i < MaxLength; i++)
         {
             var r = (AtkReader)Activator.CreateInstance(typeof(T), [(nint)UnitBase, Offset + (i * Size)]);
-            if(r.IsNull) break;
+            if(r.IsNull && !IgnoreNull) break;
             ret.Add((T)r);
         }
         return ret;
