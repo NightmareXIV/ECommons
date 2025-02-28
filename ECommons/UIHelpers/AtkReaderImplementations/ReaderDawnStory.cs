@@ -23,5 +23,6 @@ public unsafe class ReaderDawnStory(AtkUnitBase* UnitBase, int BeginOffset = 0) 
     public class EntryName(nint UnitBasePtr, int BeginOffset = 0) : AtkReader(UnitBasePtr, BeginOffset)
     {
         public SeString Name => this.ReadSeString(0);
+        public SeString Level => this.ReadSeString(1);
     }
 }

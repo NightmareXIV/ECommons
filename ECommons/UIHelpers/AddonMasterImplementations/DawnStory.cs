@@ -28,7 +28,7 @@ public unsafe partial class AddonMaster
             {
                 for(int i = 0; i < Reader.EntryCount; i++)
                 {
-                    if(Reader.Entries[i].Callback != 0)
+                    if(!Reader.EntryNames[i].Level.GetText().IsNullOrEmpty())
                     {
                         yield return new(this, i);
                     }
@@ -46,10 +46,7 @@ public unsafe partial class AddonMaster
             public void Select()
             {
                 var c = m.Reader.Entries[index].Callback;
-                if(c != 0)
-                {
-                    Callback.Fire(m.Base, true, 12, c);
-                }
+                Callback.Fire(m.Base, true, 12, c);
             }
         }
     }
