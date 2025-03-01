@@ -10,6 +10,8 @@ namespace ECommons.UIHelpers.AtkReaderImplementations;
 public unsafe class ReaderDawnStory(AtkUnitBase* UnitBase, int BeginOffset = 0) : AtkReader(UnitBase, BeginOffset)
 {
     public uint CurrentSelection => this.ReadUInt(21) ?? 0;
+    public uint AvailableExpansions => this.ReadUInt(8) ?? 0;
+    public uint CurrentExpansion => this.ReadUInt(423) ?? 0;
     public uint EntryCount => this.ReadUInt(22) ?? 0;
     public List<Entry> Entries => this.Loop<Entry>(23, 3, (int)this.EntryCount);
     public List<EntryName> EntryNames => this.Loop<EntryName>(263, 2, (int)this.EntryCount, true);
