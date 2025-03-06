@@ -59,14 +59,14 @@ public static unsafe partial class ImGuiEx
         return f?.Scale();
     }
 
-    public static bool BeginDefaultTable(string[] headers, bool drawHeader = true)
+    public static bool BeginDefaultTable(string[] headers, bool drawHeader = true, ImGuiTableFlags extraFlags = ImGuiTableFlags.None)
     {
-        return BeginDefaultTable("##ECommonsDefaultTable", headers, drawHeader);
+        return BeginDefaultTable("##ECommonsDefaultTable", headers, drawHeader, extraFlags);
     }
 
-    public static bool BeginDefaultTable(string id, string[] headers, bool drawHeader = true)
+    public static bool BeginDefaultTable(string id, string[] headers, bool drawHeader = true, ImGuiTableFlags extraFlags = ImGuiTableFlags.None)
     {
-        if(ImGui.BeginTable(id, headers.Length, DefaultTableFlags))
+        if(ImGui.BeginTable(id, headers.Length, DefaultTableFlags | extraFlags))
         {
             DefaultTableColumns(headers, drawHeader);
             return true;
