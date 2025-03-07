@@ -46,10 +46,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\..\.editorconfig" Link=".editorconfig" />
-    </ItemGroup>
-
-    <ItemGroup>
         <Reference Include="Mono.Cecil">
             <HintPath>$(DalamudLibPath)Mono.Cecil.dll</HintPath>
             <Private>False</Private>
