@@ -10,7 +10,6 @@ namespace ECommons.ImGuiMethods;
 /// Unified colour wrapper. Implicitly converts to needed formats and supports importing from most formats.
 /// </summary>
 /// <remarks>
-/// <para>Takes in uints as 0xRRGGBB or 0xRRGGBBAA</para>
 /// <para>Contains built in redefinable colors (refinable after calling ECommonsMain.Init)</para>
 /// </remarks>
 public struct EzColor
@@ -24,6 +23,9 @@ public struct EzColor
 
     public EzColor() { }
     public EzColor(Vector4 vec) : this(vec.X, vec.Y, vec.Z, vec.W) { }
+    /// <summary>
+    /// Takes in uints as 0xRRGGBB or 0xRRGGBBAA
+    /// </summary>
     public EzColor(uint col) : this(ImGui.ColorConvertU32ToFloat4(AppendAlpha(col))) { }
     public EzColor(float r, float g, float b, float a = 1)
     {
@@ -42,6 +44,9 @@ public struct EzColor
     public static EzColor From(Vector4 col)
         => From(col.X, col.Y, col.Z, col.W);
 
+    /// <summary>
+    /// Takes in uints as 0xRRGGBB or 0xRRGGBBAA
+    /// </summary>
     public static EzColor From(uint col)
         => From(ImGui.ColorConvertU32ToFloat4(AppendAlpha(col)));
 
