@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace ECommons.ImGuiMethods;
 public static unsafe partial class ImGuiEx
@@ -127,5 +128,47 @@ public static unsafe partial class ImGuiEx
             return true;
         }
         return false;
+    }
+
+    public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, bool smallButton = false, bool inverted = false) => CollectionButtonCheckbox(name, value, collection, EzColor.Red, smallButton, inverted);
+    public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, Vector4 color, bool smallButton = false, bool inverted = false)
+    {
+        var col = collection.Contains(value);
+        if(inverted) col = !col;
+        var ret = false;
+        if(col)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, color);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, color);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, color);
+        }
+        if(smallButton ? ImGui.SmallButton(name) : ImGui.Button(name))
+        {
+            if(col)
+            {
+                if(inverted)
+                {
+                    collection.Add(value);
+                }
+                else
+                {
+                    collection.Remove(value);
+                }
+            }
+            else
+            {
+                if(inverted)
+                {
+                    collection.Remove(value);
+                }
+                else
+                {
+                    collection.Add(value);
+                }
+            }
+            ret = true;
+        }
+        if(col) ImGui.PopStyleColor(3);
+        return ret;
     }
 }

@@ -104,111 +104,6 @@ public static unsafe partial class ImGuiEx
         return text;
     }
 
-    public static bool InputFancyNumeric(string label, ref int number, int step)
-    {
-        var str = $"{number:N0}";
-        var lbl = label.StartsWith("##") ? label : $"##{label}";
-        var ret = ImGui.InputText(lbl, ref str, 50, ImGuiInputTextFlags.AutoSelectAll);
-        var btn = false;
-        if(step > 0)
-        {
-            ImGui.SameLine(0, 1);
-            if(ImGui.Button($"-##minus{label}", new(ImGui.GetFrameHeight())))
-            {
-                ret = true;
-                number -= step;
-                btn = true;
-            }
-            if(ImGui.IsItemHovered() && ImGui.GetIO().MouseDownDuration[0] > 0.5f && EzThrottler.Throttle("FancyInputHold", 50))
-            {
-                ret = true;
-                number -= step;
-                btn = true;
-            }
-            ImGui.SameLine(0, 1);
-            if(ImGui.Button($"+##plus{label}", new(ImGui.GetFrameHeight())))
-            {
-                ret = true;
-                number += step;
-                btn = true;
-            }
-            if(ImGui.IsItemHovered() && ImGui.GetIO().MouseDownDuration[0] > 0.5f && EzThrottler.Throttle("FancyInputHold", 50))
-            {
-                ret = true;
-                number += step;
-                btn = true;
-            }
-        }
-        if(ret && !btn)
-        {
-            var mult = 1;
-            str = str.Trim();
-            if(str == "")
-            {
-                number = 0;
-            }
-            else
-            {
-                var negative = str[0] == '-';
-                if(negative)
-                {
-                    str = str[1..];
-                }
-                while(str.EndsWith("M", StringComparison.OrdinalIgnoreCase))
-                {
-                    mult *= 1000000;
-                    str = str[0..^1];
-                }
-                while(str.EndsWith("K", StringComparison.OrdinalIgnoreCase))
-                {
-                    mult *= 1000;
-                    str = str[0..^1];
-                }
-                if(int.TryParse(str, NumberStyles.AllowThousands, null, out var result))
-                {
-                    number = result * mult;
-                    if(negative) number *= -1;
-                }
-            }
-        }
-        if(!label.StartsWith("##"))
-        {
-            ImGui.SameLine();
-            ImGuiEx.Text(label);
-        }
-        return ret || btn;
-    }
-
-    /// <summary>
-    /// An <see cref="ImGui.InputInt"/> for nullable int. Consists of checkbox and input component that is enabled/disabled based on checkbox state.
-    /// </summary>
-    /// <param name="width"></param>
-    /// <param name="label"></param>
-    /// <param name="valueNullable"></param>
-    /// <param name="step"></param>
-    /// <param name="step_fast"></param>
-    /// <param name="flags"></param>
-    /// <returns></returns>
-    public static bool InputInt(float width, string label, ref int? valueNullable, int step = 1, int step_fast = 100, ImGuiInputTextFlags flags = ImGuiInputTextFlags.None)
-    {
-        ImGui.PushID($"NullableInputInt{label}");
-        var enabled = valueNullable != null;
-        var chk = ImGui.Checkbox($"##checkbox", ref enabled);
-        if(chk)
-        {
-            valueNullable = enabled?0:null;
-        }
-        ImGui.PopID();
-        var value = valueNullable ?? 0;
-        if(!enabled) ImGui.BeginDisabled();
-        ImGui.SameLine();
-        ImGui.SetNextItemWidth(width);
-        var ret = ImGui.InputInt(label, ref value, step, step_fast, flags);
-        if(ret) valueNullable = value;
-        if(!enabled) ImGui.EndDisabled();
-        return ret || chk;
-    }
-
     /// <inheritdoc cref="Pagination(string, System.Action[], out System.Action?, int, int)"/>
     public static Action[] Pagination(Action[] actions, int perPage = 0, int maxPages = 0) => Pagination(GenericHelpers.GetCallStackID(), actions, perPage, maxPages);
 
@@ -313,7 +208,7 @@ public static unsafe partial class ImGuiEx
             ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthStretch);
             ImGui.TableNextRow();
             ImGui.TableNextColumn();
-            var ret = ImGuiEx.TreeNode(name, ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.Selected | extraFlags);
+            var ret = TreeNode(name, ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.Selected | extraFlags);
             ImGui.PopStyleVar();
             if(ret)
             {
@@ -396,13 +291,13 @@ public static unsafe partial class ImGuiEx
 
         ImGui.SameLine();
         ImGui.PushFont(UiBuilder.IconFont);
-        ImGuiEx.Text(pass ? ImGuiColors.ParsedGreen : ImGuiColors.DalamudRed, pass ? FontAwesomeIcon.Check.ToIconString() : "\uf00d");
+        Text(pass ? ImGuiColors.ParsedGreen : ImGuiColors.DalamudRed, pass ? FontAwesomeIcon.Check.ToIconString() : "\uf00d");
         ImGui.PopFont();
         if(ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
             ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
-            ImGuiEx.Text(prependText);
+            Text(prependText);
             ImGui.PopTextWrapPos();
             foreach(var info in pluginInfos)
             {
@@ -411,22 +306,22 @@ public static unsafe partial class ImGuiEx
                 {
                     if(info.MinVersion == null || plugin.Version >= info.MinVersion)
                     {
-                        ImGuiEx.Text(ImGuiColors.ParsedGreen, $"- {info.VanityName ?? info.InternalName}" + (info.MinVersion == null ? "" : $" {info.MinVersion}+"));
+                        Text(ImGuiColors.ParsedGreen, $"- {info.VanityName ?? info.InternalName}" + (info.MinVersion == null ? "" : $" {info.MinVersion}+"));
                     }
                     else
                     {
-                        ImGuiEx.Text(ImGuiColors.ParsedGreen, $"- {info.VanityName ?? info.InternalName} ");
+                        Text(ImGuiColors.ParsedGreen, $"- {info.VanityName ?? info.InternalName} ");
                         ImGui.SameLine(0, 0);
-                        ImGuiEx.Text(ImGuiColors.DalamudRed, $"{info.MinVersion}+ ");
+                        Text(ImGuiColors.DalamudRed, $"{info.MinVersion}+ ");
                         ImGui.SameLine(0, 0);
-                        ImGuiEx.Text($"(outdated)");
+                        Text($"(outdated)");
                     }
                 }
                 else
                 {
-                    ImGuiEx.Text(ImGuiColors.DalamudRed, $"- {info.VanityName ?? info.InternalName} " + (info.MinVersion == null ? "" : $"{info.MinVersion}+ "));
+                    Text(ImGuiColors.DalamudRed, $"- {info.VanityName ?? info.InternalName} " + (info.MinVersion == null ? "" : $"{info.MinVersion}+ "));
                     ImGui.SameLine(0, 0);
-                    ImGuiEx.Text($"(not installed)");
+                    Text($"(not installed)");
                 }
             }
             ImGui.EndTooltip();
@@ -454,7 +349,7 @@ public static unsafe partial class ImGuiEx
     public static bool SelectableNode(Vector4? color, string id, bool enabled = true)
     {
         if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
-        var ret = ImGuiEx.TreeNode(color, id, ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.Leaf) && enabled;
+        var ret = TreeNode(color, id, ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.Leaf) && enabled;
         if(!enabled) ImGui.PopStyleVar();
         return ret;
     }
@@ -477,7 +372,7 @@ public static unsafe partial class ImGuiEx
     public static bool SelectableNode(Vector4? color, string id, ref bool selected, ImGuiTreeNodeFlags extraFlags = ImGuiTreeNodeFlags.Leaf, bool enabled = true)
     {
         if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
-        ImGuiEx.TreeNode(color, id, ImGuiTreeNodeFlags.NoTreePushOnOpen | (selected ? ImGuiTreeNodeFlags.Selected : ImGuiTreeNodeFlags.None) | extraFlags);
+        TreeNode(color, id, ImGuiTreeNodeFlags.NoTreePushOnOpen | (selected ? ImGuiTreeNodeFlags.Selected : ImGuiTreeNodeFlags.None) | extraFlags);
         var ret = enabled && ImGui.IsItemClicked(ImGuiMouseButton.Left);
         if(ret) selected = !selected;
         if(!enabled) ImGui.PopStyleVar();
@@ -485,7 +380,7 @@ public static unsafe partial class ImGuiEx
     }
 
     ///<inheritdoc cref="TreeNode(Vector4?, string, ImGuiTreeNodeFlags)"/>
-    public static bool TreeNode(string name, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.SpanFullWidth) => ImGuiEx.TreeNode(null, name, flags);
+    public static bool TreeNode(string name, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.SpanFullWidth) => TreeNode(null, name, flags);
 
     /// <summary>
     /// Just like <see cref="ImGui.TreeNode"/> but with color option and that spans full width by default.
@@ -561,7 +456,7 @@ public static unsafe partial class ImGuiEx
                         ImGui.Image(texture.ImGuiHandle, new Vector2(24f.Scale()));
                         ImGui.SameLine();
                     }
-                    if(ImGuiEx.CollectionCheckbox(name, cond, selectedJobs)) ret = true;
+                    if(CollectionCheckbox(name, cond, selectedJobs)) ret = true;
                 }
             }
             ImGui.EndCombo();
@@ -583,7 +478,7 @@ public static unsafe partial class ImGuiEx
     {
         if(sameLine) ImGui.SameLine();
         ImGui.PushFont(UiBuilder.IconFont);
-        ImGuiEx.Text(color ?? ImGuiColors.DalamudGrey3, symbolOverride ?? FontAwesomeIcon.InfoCircle.ToIconString());
+        Text(color ?? ImGuiColors.DalamudGrey3, symbolOverride ?? FontAwesomeIcon.InfoCircle.ToIconString());
         ImGui.PopFont();
         if(ImGui.IsItemHovered())
         {
@@ -593,72 +488,6 @@ public static unsafe partial class ImGuiEx
             ImGui.PopTextWrapPos();
             ImGui.EndTooltip();
         }
-    }
-
-    /// <summary>
-    /// <see cref="ImGui.SliderInt"/> but with double-click to edit support.
-    /// </summary>
-    /// <param name="label"></param>
-    /// <param name="v"></param>
-    /// <param name="v_min"></param>
-    /// <param name="v_max"></param>
-    /// <param name="format"></param>
-    /// <param name="flags"></param>
-    /// <returns></returns>
-    public static bool SliderInt(string label, ref int v, int v_min, int v_max, string format, ImGuiSliderFlags flags)
-    {
-        var ret = ImGui.SliderInt(label, ref v, v_min, v_max, format, flags);
-        ActivateIfDoubleClicked();
-        return ret;
-    }
-
-    ///<inheritdoc cref="SliderInt(string, ref int, int, int, string, ImGuiSliderFlags)"/>
-    public static bool SliderInt(string label, ref int v, int v_min, int v_max, string format)
-    {
-        var ret = ImGui.SliderInt(label, ref v, v_min, v_max, format);
-        ActivateIfDoubleClicked();
-        return ret;
-    }
-
-    ///<inheritdoc cref="SliderInt(string, ref int, int, int, string, ImGuiSliderFlags)"/>
-    public static bool SliderInt(string label, ref int v, int v_min, int v_max)
-    {
-        var ret = ImGui.SliderInt(label, ref v, v_min, v_max);
-        ActivateIfDoubleClicked();
-        return ret;
-    }
-
-    /// <summary>
-    /// <see cref="ImGui.SliderFloat"/> but with double-click to edit support.
-    /// </summary>
-    /// <param name="label"></param>
-    /// <param name="v"></param>
-    /// <param name="v_min"></param>
-    /// <param name="v_max"></param>
-    /// <param name="format"></param>
-    /// <param name="flags"></param>
-    /// <returns></returns>
-    public static bool SliderFloat(string label, ref float v, float v_min, float v_max, string format, ImGuiSliderFlags flags)
-    {
-        var ret = ImGui.SliderFloat(label, ref v, v_min, v_max, format, flags);
-        ActivateIfDoubleClicked();
-        return ret;
-    }
-
-    ///<inheritdoc cref="SliderFloat(string, ref float, float, float, string, ImGuiSliderFlags)"/>
-    public static bool SliderFloat(string label, ref float v, float v_min, float v_max, string format)
-    {
-        var ret = ImGui.SliderFloat(label, ref v, v_min, v_max, format);
-        ActivateIfDoubleClicked();
-        return ret;
-    }
-
-    ///<inheritdoc cref="SliderFloat(string, ref float, float, float, string, ImGuiSliderFlags)"/>
-    public static bool SliderFloat(string label, ref float v, float v_min, float v_max)
-    {
-        var ret = ImGui.SliderFloat(label, ref v, v_min, v_max);
-        ActivateIfDoubleClicked();
-        return ret;
     }
 
     /// <summary>
@@ -739,23 +568,6 @@ public static unsafe partial class ImGuiEx
         return 0;
     }
 
-    public unsafe static bool InputTextWrapMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
-    {
-        float wrapWidth = width ?? ImGui.GetContentRegionAvail().X; // determine wrap width
-        bool result = ImGui.InputTextMultiline(id, ref text, maxLength,
-            new(width ?? ImGui.GetContentRegionAvail().X, ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)),
-            ImGuiInputTextFlags.CallbackEdit, // flag stuff 
-            (data) => {
-                return TextEditCallback(data, wrapWidth); // Callback Action
-            });
-        return result;
-    }
-
-    public static bool InputTextMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
-    {
-        return ImGui.InputTextMultiline(id, ref text, maxLength, new(width ?? ImGui.GetContentRegionAvail().X, ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)));
-    }
-
     public static bool EnumOrderer<T>(string id, List<T> order) where T : IConvertible
     {
         var ret = false;
@@ -785,14 +597,14 @@ public static unsafe partial class ImGuiEx
                 ret = true;
             }
             ImGui.SameLine();
-            ImGuiEx.Text($"{e.ToString().Replace("_", " ")}");
+            Text($"{e.ToString().Replace("_", " ")}");
             ImGui.PopID();
         }
         return ret;
     }
 
     /// <summary>
-    /// Checks whether item is hovered and double-clicked. Sets cursor to hand to indicate that it can be clicked.
+    /// Checks whether item is hovered and clicked. Sets cursor to hand to indicate that it can be clicked.
     /// </summary>
     /// <param name="tooltip">Optional tooltip</param>
     /// <param name="btn">Which button to check</param>
@@ -812,84 +624,11 @@ public static unsafe partial class ImGuiEx
         return false;
     }
 
-    [Obsolete($"Use {nameof(Button)}")]
-    public static bool ButtonCond(string name, Func<bool> condition)
-    {
-        var dis = !condition();
-        if(dis) ImGui.BeginDisabled();
-        var ret = ImGui.Button(name);
-        if(dis) ImGui.EndDisabled();
-        return ret;
-    }
-
-    public static bool InputLong(string id, ref long num)
-    {
-        var txt = num.ToString();
-        var ret = ImGui.InputText(id, ref txt, 50);
-        long.TryParse(txt, out num);
-        return ret;
-    }
-
     public static bool CollapsingHeader(string text, Vector4? col = null)
     {
         if(col != null) ImGui.PushStyleColor(ImGuiCol.Text, col.Value);
         var ret = ImGui.CollapsingHeader(text);
         if(col != null) ImGui.PopStyleColor();
-        return ret;
-    }
-
-    /// <summary>
-    /// Provides a button that can be used to switch <see langword="bool"/>? variables. Left click - to toggle between <see langword="true"/> and <see langword="null"/>, right click - to toggle between <see langword="false"/> and <see langword="null"/>.
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="value"></param>
-    /// <param name="TrueColor">Color when <paramref name="value"/> is true</param>
-    /// <param name="FalseColor">Color when <paramref name="value"/> is false</param>
-    /// <param name="smallButton">Whether a button should be small</param>
-    /// <returns></returns>
-    public static bool ButtonCheckbox(string name, ref bool? value, Vector4? TrueColor = null, Vector4? FalseColor = null, bool smallButton = false)
-    {
-        TrueColor ??= EColor.Green;
-        FalseColor ??= EColor.Red;
-        var col = value;
-        var ret = false;
-        if(col == true)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Button, TrueColor.Value);
-            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, TrueColor.Value);
-            ImGui.PushStyleColor(ImGuiCol.ButtonActive, TrueColor.Value);
-        }
-        else if(col == false)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Button, FalseColor.Value);
-            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, FalseColor.Value);
-            ImGui.PushStyleColor(ImGuiCol.ButtonActive, FalseColor.Value);
-        }
-        if(smallButton ? ImGui.SmallButton(name) : ImGui.Button(name))
-        {
-            if(value == null || value == false)
-            {
-                value = true;
-            }
-            else
-            {
-                value = false;
-            }
-            ret = true;
-        }
-        if(ImGui.IsItemClicked(ImGuiMouseButton.Right))
-        {
-            if(value == null || value == true)
-            {
-                value = false;
-            }
-            else
-            {
-                value = true;
-            }
-            ret = true;
-        }
-        if(col != null) ImGui.PopStyleColor(3);
         return ret;
     }
 
@@ -914,143 +653,6 @@ public static unsafe partial class ImGuiEx
     {
         var bytes = (byte*)&col;
         return new Vector4((float)bytes[3] / 255f, (float)bytes[2] / 255f, (float)bytes[1] / 255f, (float)bytes[0] / 255f);
-    }
-
-    /// <summary>
-    /// Draws a button that acts like a checkbox.
-    /// </summary>
-    /// <param name="name">Button text</param>
-    /// <param name="value">Value</param>
-    /// <param name="smallButton">Whether button should be small</param>
-    /// <returns>true when clicked, otherwise false</returns>
-    public static bool ButtonCheckbox(string name, ref bool value, bool smallButton) => ButtonCheckbox(name, ref value, EColor.Red, smallButton);
-
-    /// <summary>
-    /// Draws a button that acts like a checkbox.
-    /// </summary>
-    /// <param name="name">Button text</param>
-    /// <param name="value">Value</param>
-    /// <param name="color">Active button color</param>
-    /// <param name="smallButton">Whether button should be small</param>
-    /// <returns>true when clicked, otherwise false</returns>
-    public static bool ButtonCheckbox(string name, ref bool value, uint color, bool smallButton = false) => ButtonCheckbox(name, ref value, color.ToVector4(), smallButton);
-
-    /// <summary>
-    /// Draws a button that acts like a checkbox.
-    /// </summary>
-    /// <param name="name">Button text</param>
-    /// <param name="value">Value</param>
-    /// <param name="color">Active button color</param>
-    /// <param name="smallButton">Whether button should be small</param>
-    /// <returns>true when clicked, otherwise false</returns>
-    public static bool ButtonCheckbox(string name, ref bool value, Vector4 color, bool smallButton = false)
-    {
-        var col = value;
-        var ret = false;
-        if(col)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Button, color);
-            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, color);
-            ImGui.PushStyleColor(ImGuiCol.ButtonActive, color);
-        }
-        if(smallButton ? ImGui.SmallButton(name) : ImGui.Button(name))
-        {
-            value = !value;
-            ret = true;
-        }
-        if(col) ImGui.PopStyleColor(3);
-        return ret;
-    }
-
-    public static bool ButtonCheckbox(FontAwesomeIcon icon, ref bool value, Vector4? color = null, bool inverted = false)
-    {
-        ImGui.PushFont(UiBuilder.IconFont);
-        var ret = ButtonCheckbox(icon.ToIconString(), ref value, color, inverted);
-        ImGui.PopFont();
-        return ret;
-    }
-
-    public static bool ButtonCheckbox(string name, ref bool value, Vector4? color = null, bool inverted = false)
-    {
-        var ret = false;
-        color ??= EColor.Green;
-        var col = !inverted?value:!value;
-        if(col)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Button, color.Value);
-            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, color.Value);
-            ImGui.PushStyleColor(ImGuiCol.ButtonActive, color.Value);
-        }
-        if(ImGui.Button(name))
-        {
-            value = !value;
-            ret = true;
-        }
-        if(col) ImGui.PopStyleColor(3);
-        return ret;
-    }
-
-    public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, bool smallButton = false, bool inverted = false) => CollectionButtonCheckbox(name, value, collection, EColor.Red, smallButton, inverted);
-
-    public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, Vector4 color, bool smallButton = false, bool inverted = false)
-    {
-        var col = collection.Contains(value);
-        if(inverted) col = !col;
-        var ret = false;
-        if(col)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Button, color);
-            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, color);
-            ImGui.PushStyleColor(ImGuiCol.ButtonActive, color);
-        }
-        if(smallButton ? ImGui.SmallButton(name) : ImGui.Button(name))
-        {
-            if(col)
-            {
-                if(inverted)
-                {
-                    collection.Add(value);
-                }
-                else
-                {
-                    collection.Remove(value);
-                }
-            }
-            else
-            {
-                if(inverted)
-                {
-                    collection.Remove(value);
-                }
-                else
-                {
-                    collection.Add(value);
-                }
-            }
-            ret = true;
-        }
-        if(col) ImGui.PopStyleColor(3);
-        return ret;
-    }
-
-    /// <summary>
-    /// Draws two radio buttons for a boolean value.
-    /// </summary>
-    /// <param name="labelTrue">True choice radio button text</param>
-    /// <param name="labelFalse">False choice radio button text</param>
-    /// <param name="value">Value</param>
-    /// <param name="sameLine">Whether to draw radio buttons on the same line</param>
-    /// <param name="prefix">Will be invoked before each radio button draw</param>
-    /// <param name="suffix">Will be invoked after each radio button draw</param>
-    public static void RadioButtonBool(string labelTrue, string labelFalse, ref bool value, bool sameLine = false, Action prefix = null, Action suffix = null)
-    {
-        prefix?.Invoke();
-        if(ImGui.RadioButton(labelTrue, value)) value = true;
-        suffix?.Invoke();
-        if(sameLine) ImGui.SameLine();
-        prefix?.Invoke();
-        if(ImGui.RadioButton(labelFalse, !value)) value = false;
-        suffix?.Invoke();
     }
 
     /// <summary>
@@ -1079,47 +681,6 @@ public static unsafe partial class ImGuiEx
             }
         }
     }
-
-    public static bool ButtonCtrl(string text, string affix = " (Hold CTRL)") => ButtonCtrl(text, null, affix);
-
-    /// <summary>
-    /// Button that is disabled unless CTRL key is held
-    /// </summary>
-    /// <param name="text">Button ID</param>
-    /// <param name="size">Optional size of the button, null if size is to be calculated automatically</param>
-    /// <param name="affix">Button affix</param>
-    /// <returns></returns>
-    public static bool ButtonCtrl(string text, Vector2? size, string affix = " (Hold CTRL)")
-    {
-        var disabled = !ImGui.GetIO().KeyCtrl;
-        if(disabled)
-        {
-            ImGui.BeginDisabled();
-        }
-        var name = string.Empty;
-        if(text.Contains($"###"))
-        {
-            var p = text.Split($"###");
-            name = $"{p[0]}{affix}###{p[1]}";
-        }
-        else if(text.Contains($"##"))
-        {
-            var p = text.Split($"##");
-            name = $"{p[0]}{affix}##{p[1]}";
-        }
-        else
-        {
-            name = $"{text}{affix}";
-        }
-        var ret = size == null ? ImGui.Button(name) : ImGui.Button(name, size.Value);
-        if(disabled)
-        {
-            ImGui.EndDisabled();
-        }
-        return ret;
-    }
-
-    public static bool ButtonCtrlScaled(string text, Vector2? size, string affix = " (Hold CTRL)") => ButtonCtrl(text, size.Scale(), affix);
 
     public static bool BeginPopupNextToElement(string popupId)
     {
@@ -1209,56 +770,10 @@ public static unsafe partial class ImGuiEx
         return ImGui.GetStyle().Colors[(int)col] with { X = (float)r / 255f, Y = (float)g / 255f, Z = (float)b / 255f };
     }
 
-    /// <summary>
-    /// Displays ImGui.SliderFloat for internal int value.
-    /// </summary>
-    /// <param name="id">ImGui ID</param>
-    /// <param name="value">Integer value</param>
-    /// <param name="min">Minimal value</param>
-    /// <param name="max">Maximum value</param>
-    /// <param name="divider">Value is divided by divider before being presented to user</param>
-    /// <returns></returns>
-    public static bool SliderIntAsFloat(string id, ref int value, int min, int max, float divider = 1000)
-    {
-        var f = (float)value / divider;
-        var ret = ImGui.SliderFloat(id, ref f, (float)min / divider, (float)max / divider);
-        if(ret)
-        {
-            value = (int)(f * divider);
-        }
-        return ret;
-    }
-
     public static bool IsKeyPressed(int key, bool repeat)
     {
         var repeat2 = (byte)(repeat ? 1 : 0);
         return ImGuiNative.igIsKeyPressed((ImGuiKey)key, repeat2) != 0;
-    }
-
-    public static void TextUnderlined(uint color, string text)
-    {
-        ImGui.PushStyleColor(ImGuiCol.Text, color);
-        TextUnderlined(text);
-        ImGui.PopStyleColor();
-    }
-
-    public static void TextUnderlined(Vector4 color, string text)
-    {
-        ImGui.PushStyleColor(ImGuiCol.Text, color);
-        TextUnderlined(text);
-        ImGui.PopStyleColor();
-    }
-
-    public static void TextUnderlined(string text)
-    {
-        var size = ImGui.CalcTextSize(text);
-        var cur = ImGui.GetCursorScreenPos();
-        cur.Y += size.Y;
-        ImGui.GetWindowDrawList().PathLineTo(cur);
-        cur.X += size.X;
-        ImGui.GetWindowDrawList().PathLineTo(cur);
-        ImGui.GetWindowDrawList().PathStroke(ImGuiColors.DalamudWhite.ToUint());
-        ImGuiEx.Text(text);
     }
 
     public static float GetWindowContentRegionWidth()
@@ -1304,84 +819,6 @@ public static unsafe partial class ImGuiEx
         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X * percent + mod);
     }
 
-    private static Dictionary<string, Box<string>> InputListValuesString = [];
-    public static void InputListString(string name, List<string> list, Dictionary<string, string> overrideValues = null, string defaultValue = null)
-    {
-        if(!InputListValuesString.ContainsKey(name)) InputListValuesString[name] = new("");
-        InputList(name, list, overrideValues, delegate
-        {
-            var buttonSize = ImGuiHelpers.GetButtonSize("Add");
-            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - buttonSize.X - ImGui.GetStyle().ItemSpacing.X);
-            ImGui.InputText($"##{name.Replace("#", "_")}", ref InputListValuesString[name].Value, 100);
-            ImGui.SameLine();
-            if(ImGui.Button("Add"))
-            {
-                list.Add(InputListValuesString[name].Value);
-                InputListValuesString[name].Value = "";
-            }
-        });
-    }
-
-    private static Dictionary<string, Box<uint>> InputListValuesUint = [];
-    public static void InputListUint(string name, List<uint> list, Dictionary<uint, string> overrideValues = null)
-    {
-        if(!InputListValuesUint.ContainsKey(name)) InputListValuesUint[name] = new(0);
-        InputList(name, list, overrideValues, delegate
-        {
-            var buttonSize = ImGuiHelpers.GetButtonSize("Add");
-            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - buttonSize.X - ImGui.GetStyle().ItemSpacing.X);
-            ImGuiEx.InputUint($"##{name.Replace("#", "_")}", ref InputListValuesUint[name].Value);
-            ImGui.SameLine();
-            if(ImGui.Button("Add"))
-            {
-                list.Add(InputListValuesUint[name].Value);
-                InputListValuesUint[name].Value = 0;
-            }
-        });
-    }
-
-    public static void InputList<T>(string name, List<T> list, Dictionary<T, string> overrideValues, Action addFunction)
-    {
-        var text = list.Count == 0 ? "- No values -" : (list.Count == 1 ? $"{(overrideValues != null && overrideValues.ContainsKey(list[0]) ? overrideValues[list[0]] : list[0])}" : $"- {list.Count} elements -");
-        if(ImGui.BeginCombo(name, text))
-        {
-            addFunction();
-            var rem = -1;
-            for(var i = 0; i < list.Count; i++)
-            {
-                var id = $"{name}ECommonsDeleItem{i}";
-                var x = list[i];
-                ImGui.Selectable($"{(overrideValues != null && overrideValues.ContainsKey(x) ? overrideValues[x] : x)}");
-                if(ImGui.IsItemClicked(ImGuiMouseButton.Right))
-                {
-                    ImGui.OpenPopup(id);
-                }
-                if(ImGui.BeginPopup(id))
-                {
-                    if(ImGui.Selectable("Delete##ECommonsDeleItem"))
-                    {
-                        rem = i;
-                    }
-                    if(ImGui.Selectable("Clear (hold shift+ctrl)##ECommonsDeleItem")
-                        && ImGui.GetIO().KeyShift && ImGui.GetIO().KeyCtrl)
-                    {
-                        rem = -2;
-                    }
-                    ImGui.EndPopup();
-                }
-            }
-            if(rem > -1)
-            {
-                list.RemoveAt(rem);
-            }
-            if(rem == -2)
-            {
-                list.Clear();
-            }
-            ImGui.EndCombo();
-        }
-    }
-
     public static void WithTextColor(Vector4 col, Action func)
     {
         ImGui.PushStyleColor(ImGuiCol.Text, col);
@@ -1397,93 +834,6 @@ public static unsafe partial class ImGuiEx
             SetTooltip(s);
             ImGui.PopTextWrapPos();
         }
-    }
-
-    /// <summary>
-    /// Aligns text vertically to a standard size button.
-    /// </summary>
-    /// <param name="col">Color</param>
-    /// <param name="s">Text</param>
-    public static void TextV(Vector4? col, string s)
-    {
-        if(col != null) ImGui.PushStyleColor(ImGuiCol.Text, col.Value);
-        ImGuiEx.TextV(s);
-        if(col != null) ImGui.PopStyleColor();
-    }
-
-    /// <summary>
-    /// Aligns text vertically to a standard size button.
-    /// </summary>
-    /// <param name="s">Text</param>
-    public static void TextV(string s)
-    {
-        ImGui.AlignTextToFramePadding();
-        ImGui.TextUnformatted(s);
-    }
-
-    public static void Text(string s)
-    {
-        ImGui.TextUnformatted(s);
-    }
-
-    public static void Text(ImFontPtr font, string s)
-    {
-        ImGui.PushFont(font);
-        ImGui.TextUnformatted(s);
-        ImGui.PopFont();
-    }
-
-    public static void Text(Vector4 col, string s)
-    {
-        ImGui.PushStyleColor(ImGuiCol.Text, col);
-        ImGui.TextUnformatted(s);
-        ImGui.PopStyleColor();
-    }
-
-    public static void Text(Vector4? col, ImFontPtr? font, string s)
-    {
-        if(font != null) ImGui.PushFont(font.Value);
-        if(col != null)ImGui.PushStyleColor(ImGuiCol.Text, col.Value);
-        ImGui.TextUnformatted(s);
-        if(col != null)ImGui.PopStyleColor();
-        if(font != null) ImGui.PopFont();
-    }
-
-    public static void Text(uint col, string s)
-    {
-        ImGui.PushStyleColor(ImGuiCol.Text, col);
-        ImGui.TextUnformatted(s);
-        ImGui.PopStyleColor();
-    }
-
-    public static void Text(uint col, ImFontPtr font, string s)
-    {
-        ImGui.PushFont(font);
-        ImGui.PushStyleColor(ImGuiCol.Text, col);
-        ImGui.TextUnformatted(s);
-        ImGui.PopStyleColor();
-        ImGui.PopFont();
-    }
-
-    public static void TextWrapped(string s)
-    {
-        ImGui.PushTextWrapPos();
-        ImGui.TextUnformatted(s);
-        ImGui.PopTextWrapPos();
-    }
-
-    public static void TextWrapped(Vector4? col, string s)
-    {
-        ImGui.PushTextWrapPos(0);
-        ImGuiEx.Text(col, s);
-        ImGui.PopTextWrapPos();
-    }
-
-    public static void TextWrapped(uint col, string s)
-    {
-        ImGui.PushTextWrapPos();
-        ImGuiEx.Text(col, s);
-        ImGui.PopTextWrapPos();
     }
 
     public static Vector4 GetParsedColor(int percent)
@@ -1522,41 +872,6 @@ public static unsafe partial class ImGuiEx
         }
     }
 
-    /// <summary>
-    /// Draws a checkbox that will be on the same line as previous if there is space, otherwise will move to the next line.
-    /// </summary>
-    /// <param name="label">Checkbox label</param>
-    /// <param name="v">Boolean to toggle</param>
-    /// <remarks><see cref="ImGui.SameLine()"/> does not need to be called just before using this.</remarks>
-    /// <returns></returns>
-    public static bool CheckboxWrapped(string label, ref bool v)
-    {
-        ImGui.SameLine();
-        var labelW = ImGui.CalcTextSize(label);
-        var finishPos = ImGui.GetCursorPosX() + labelW.X + ImGui.GetStyle().ItemSpacing.X + ImGui.GetStyle().ItemInnerSpacing.X + ImGui.GetStyle().FramePadding.Length() + ImGui.GetCursorStartPos().X;
-        if (finishPos >= ImGui.GetContentRegionMax().X)
-            ImGui.NewLine();
-
-        return ImGui.Checkbox(label, ref v);
-    }
-
-    /// <summary>
-    /// Draws a button that will be on the same line as previous if there is space, otherwise will move to the next line.
-    /// </summary>
-    /// <param name="label">Button label</param>
-    /// <remarks><see cref="ImGui.SameLine()"/> does not need to be called just before using this.</remarks>
-    /// <returns></returns>
-    public static bool ButtonWrapped(string label)
-    {
-        ImGui.SameLine();
-        var labelW = ImGuiHelpers.GetButtonSize(label);
-        var finishPos = ImGui.GetCursorPosX() + labelW.X;
-        if (finishPos >= ImGui.GetContentRegionMax().X)
-            ImGui.NewLine();
-
-        return ImGui.Button(label);
-    }
-
     public static void EzTabBar(string id, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, null, tabs);
     public static void EzTabBar(string id, string KoFiTransparent, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, KoFiTransparent, null, tabs);
     public static void EzTabBar(string id, string KoFiTransparent, string openTabName, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, KoFiTransparent, openTabName, ImGuiTabBarFlags.None, tabs);
@@ -1570,7 +885,7 @@ public static unsafe partial class ImGuiEx
             {
                 ImGui.PushStyleColor(ImGuiCol.Text, x.color.Value);
             }
-            if(ImGuiEx.BeginTabItem(x.name, openTabName == x.name ? ImGuiTabItemFlags.SetSelected : ImGuiTabItemFlags.None))
+            if(BeginTabItem(x.name, openTabName == x.name ? ImGuiTabItemFlags.SetSelected : ImGuiTabItemFlags.None))
             {
                 if(x.color != null)
                 {
@@ -1593,193 +908,9 @@ public static unsafe partial class ImGuiEx
         ImGui.EndTabBar();
     }
 
-    public static void InvisibleButton(int width = 0)
-    {
-        ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0);
-        ImGui.Button(" ");
-        ImGui.PopStyleVar();
-    }
-
-    public static Dictionary<string, Box<string>> EnumComboSearch = [];
-
-    /// <summary>
-    /// Draws an easy combo selector for an enum with a search field for long lists.
-    /// </summary>
-    /// <typeparam name="T">Enum</typeparam>
-    /// <param name="name">ImGui ID</param>
-    /// <param name="refConfigField">Value</param>
-    /// <param name="names">Optional Name overrides</param>
-    public static bool EnumCombo<T>(string name, ref T refConfigField, IDictionary<T, string> names) where T : Enum, IConvertible
-    {
-        return EnumCombo(name, ref refConfigField, null, names);
-    }
-
-    /// <summary>
-    /// Draws an easy combo selector for an enum with a search field for long lists.
-    /// </summary>
-    /// <typeparam name="T">Enum</typeparam>
-    /// <param name="name">ImGui ID</param>
-    /// <param name="refConfigField">Value</param>
-    /// <param name="filter">Optional filter</param>
-    /// <param name="names">Optional Name overrides</param>
-    /// <returns></returns>
-    public static bool EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : Enum, IConvertible
-    {
-        var ret = false;
-        if(ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString().Replace("_", " "), ImGuiComboFlags.HeightLarge))
-        {
-            var values = Enum.GetValues(typeof(T));
-            Box<string> fltr = null;
-            if(values.Length > 10)
-            {
-                if(!EnumComboSearch.ContainsKey(name)) EnumComboSearch.Add(name, new(""));
-                fltr = EnumComboSearch[name];
-                ImGuiEx.SetNextItemFullWidth();
-                ImGui.InputTextWithHint($"##{name.Replace("#", "_")}", "Filter...", ref fltr.Value, 50);
-            }
-            foreach(var x in values)
-            {
-                var equals = EqualityComparer<T>.Default.Equals((T)x, refConfigField);
-                var element = (names != null && names.TryGetValue((T)x, out n)) ? n : x.ToString().Replace("_", " ");
-                if((filter == null || filter((T)x))
-                    && (fltr == null || element.Contains(fltr.Value, StringComparison.OrdinalIgnoreCase))
-                    && ImGui.Selectable(element, equals)
-                    )
-                {
-                    ret = true;
-                    refConfigField = (T)x;
-                }
-                if(ImGui.IsWindowAppearing() && equals) ImGui.SetScrollHereY();
-            }
-            ImGui.EndCombo();
-        }
-        return ret;
-    }
-
-    public static bool EnumRadio<T>(ref T refConfigField, bool sameLine = false, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : Enum, IConvertible
-    {
-        var ret = false;
-        var values = Enum.GetValues(typeof(T));
-        var first = true;
-        foreach(var x in values)
-        {
-            if(!first && sameLine) ImGui.SameLine();
-            first = false;
-            var equals = EqualityComparer<T>.Default.Equals((T)x, refConfigField);
-            var element = (names != null && names.TryGetValue((T)x, out var n)) ? n : x.ToString().Replace("_", " ");
-            if((filter == null || filter((T)x))
-                && ImGui.RadioButton(element, equals)
-                )
-            {
-                ret = true;
-                refConfigField = (T)x;
-            }
-        }
-        return ret;
-    }
-
-    public static Dictionary<string, Box<string>> ComboSearch = [];
-    public static bool Combo<T>(string name, ref T refConfigField, IEnumerable<T> values, Func<T, bool> filter = null, Dictionary<T, string> names = null)
-    {
-        var ret = false;
-        if(ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString(), ImGuiComboFlags.HeightLarge))
-        {
-            Box<string> fltr = null;
-            if(values.Count() > 10)
-            {
-                if(!ComboSearch.ContainsKey(name)) ComboSearch.Add(name, new(""));
-                fltr = ComboSearch[name];
-                ImGuiEx.SetNextItemFullWidth();
-                ImGui.InputTextWithHint($"##{name}fltr", "Filter...", ref fltr.Value, 50);
-            }
-            foreach(var x in values)
-            {
-                var equals = EqualityComparer<T>.Default.Equals(x, refConfigField);
-                var element = (names != null && names.TryGetValue(x, out n)) ? n : x.ToString();
-                if((filter == null || filter(x))
-                    && (fltr == null || element.Contains(fltr.Value, StringComparison.OrdinalIgnoreCase))
-                    && ImGui.Selectable(element, equals)
-                    )
-                {
-                    ret = true;
-                    refConfigField = x;
-                }
-                if(ImGui.IsWindowAppearing() && equals) ImGui.SetScrollHereY();
-            }
-            ImGui.EndCombo();
-        }
-        return ret;
-    }
-
-    public static bool SmallIconButton(FontAwesomeIcon icon, string id = "ECommonsButton")
-    {
-        return SmallIconButton(icon.ToIconString(), id);
-    }
-
-    public static bool SmallIconButton(string icon, string id = "ECommonsButton")
-    {
-        ImGui.PushFont(UiBuilder.IconFont);
-        var result = ImGui.SmallButton($"{icon}##{icon}-{id}");
-        ImGui.PopFont();
-        return result;
-    }
-
     public static bool Ctrl => ImGui.GetIO().KeyCtrl;
     public static bool Alt => ImGui.GetIO().KeyAlt;
     public static bool Shift => ImGui.GetIO().KeyShift;
-
-    public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
-    {
-        return IconButton(icon.ToIconString(), id, size, enabled);
-    }
-
-    public static bool IconButtonScaled(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true) => IconButton(icon, id, size.Scale(), enabled);
-
-    public static bool IconButton(string icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
-    {
-        ImGui.PushFont(UiBuilder.IconFont);
-        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
-        var result = ImGui.Button($"{icon}##{icon}-{id}", size) && enabled;
-        if(!enabled) ImGui.PopStyleVar();
-        ImGui.PopFont();
-        return result;
-    }
-
-    public static bool IconButtonScaled(string icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true) => IconButton(icon, id, size.Scale(), enabled);
-
-    public static bool SmallButton(string label, bool enabled = true)
-    {
-        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
-        var ret = ImGui.SmallButton(label) && enabled;
-        if(!enabled) ImGui.PopStyleVar();
-        return ret;
-    }
-
-    public static bool Button(string label, bool enabled = true)
-    {
-        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
-        var ret = ImGui.Button(label) && enabled;
-        if(!enabled) ImGui.PopStyleVar();
-        return ret;
-    }
-
-    public static bool Button(string label, Vector2 size, bool enabled = true)
-    {
-        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
-        var ret = ImGui.Button(label, size) && enabled;
-        if(!enabled) ImGui.PopStyleVar();
-        return ret;
-    }
-
-    public static bool ButtonScaled(string label, Vector2 size, bool enabled = true) => Button(label, size.Scale(), enabled);
-
-    public static bool IconButtonWithText(FontAwesomeIcon icon, string id, bool enabled = true)
-    {
-        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
-        var result = ImGuiComponents.IconButtonWithText(icon, $"{id}") && enabled;
-        if(!enabled) ImGui.PopStyleVar();
-        return result;
-    }
 
     public static Vector2 CalcIconSize(string icon, bool isButton = false)
     {
@@ -1802,169 +933,6 @@ public static unsafe partial class ImGuiEx
         var diff = ImGui.GetCursorPosX() - pos;
         ImGui.Dummy(Vector2.Zero);
         return diff + (includeSpacing ? ImGui.GetStyle().ItemSpacing.X : 0);
-    }
-
-    public static void InputHex(string name, ref uint hexInt)
-    {
-        var text = $"{hexInt:X}";
-        if(ImGui.InputText(name, ref text, 50))
-        {
-            if(uint.TryParse(text.Replace("0x", ""), NumberStyles.HexNumber, null, out var num))
-            {
-                hexInt = num;
-            }
-        }
-    }
-
-    public static void InputHex(string name, ref long hexInt)
-    {
-        var text = $"{hexInt:X}";
-        if(ImGui.InputText(name, ref text, 50))
-        {
-            if(long.TryParse(text.Replace("0x", ""), NumberStyles.HexNumber, null, out var num))
-            {
-                hexInt = num;
-            }
-        }
-    }
-
-    public static void InputHex(string name, ref byte hexByte)
-    {
-        var text = $"{hexByte:X}";
-        if(ImGui.InputText(name, ref text, 2))
-        {
-            if(byte.TryParse(text, NumberStyles.HexNumber, null, out var num))
-            {
-                hexByte = num;
-            }
-        }
-    }
-
-    public static void InputUint(string name, ref uint uInt)
-    {
-        var text = $"{uInt}";
-        if(ImGui.InputText(name, ref text, 16))
-        {
-            if(uint.TryParse(text, out var num))
-            {
-                uInt = num;
-            }
-        }
-    }
-
-    public static void TextCopy(Vector4 col, string text)
-    {
-        ImGui.PushStyleColor(ImGuiCol.Text, col);
-        TextCopy(text);
-        ImGui.PopStyleColor();
-    }
-
-    public static void TextCopy(string text)
-    {
-        ImGui.TextUnformatted(text);
-        if(ImGui.IsItemHovered())
-        {
-            ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-        }
-        if(ImGui.IsItemClicked(ImGuiMouseButton.Left))
-        {
-#pragma warning disable
-            GenericHelpers.Copy(text);
-#pragma warning restore
-        }
-    }
-
-    public static void TextWrappedCopy(string text)
-    {
-        ImGuiEx.TextWrapped(text);
-        if(ImGui.IsItemHovered())
-        {
-            ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-        }
-        if(ImGui.IsItemClicked(ImGuiMouseButton.Left))
-        {
-#pragma warning disable
-            GenericHelpers.Copy(text);
-#pragma warning restore
-        }
-    }
-
-    public static void TextWrappedCopy(Vector4 col, string text)
-    {
-        ImGuiEx.TextWrapped(col, text);
-        if(ImGui.IsItemHovered())
-        {
-            ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-        }
-        if(ImGui.IsItemClicked(ImGuiMouseButton.Left))
-        {
-#pragma warning disable
-            GenericHelpers.Copy(text);
-#pragma warning restore
-        }
-    }
-
-    public static void TextCentered(string text)
-    {
-        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2);
-        Text(text);
-    }
-
-    public static void TextCentered(Vector4 col, string text)
-    {
-        ImGui.PushStyleColor(ImGuiCol.Text, col);
-        TextCentered(text);
-        ImGui.PopStyleColor();
-    }
-
-    public static void Text(Vector4? col, string text)
-    {
-        if(col == null)
-        {
-            Text(text);
-        }
-        else
-        {
-            Text(col.Value, text);
-        }
-    }
-
-    public static void TextCentered(Vector4? col, string text)
-    {
-        if(col == null)
-        {
-            TextCentered(text);
-        }
-        else
-        {
-            TextCentered(col.Value, text);
-        }
-    }
-
-    public static void ButtonCopy(string buttonText, string copy)
-    {
-        if(ImGui.Button(buttonText.Replace("$COPY", copy)))
-        {
-#pragma warning disable
-            GenericHelpers.Copy(copy);
-#pragma warning restore
-        }
-    }
-
-    public static void CenterColumnText(string text, bool underlined = false)
-    {
-        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (ImGui.GetColumnWidth() * 0.5f) - (ImGui.CalcTextSize(text).X * 0.5f));
-        if(underlined)
-            TextUnderlined(text);
-        else
-            Text(text);
-    }
-
-    public static void CenterColumnText(Vector4 colour, string text, bool underlined = false)
-    {
-        ImGui.PushStyleColor(ImGuiCol.Text, colour);
-        CenterColumnText(text, underlined);
-        ImGui.PopStyleColor();
     }
 
     /// <summary>
