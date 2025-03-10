@@ -88,6 +88,7 @@ public struct EzColor
     public static EzColor BlueSky { get; set; } = new(0x0085FF);
     public static EzColor White { get; set; } = new(0xFFFFFF);
     public static EzColor Black { get; set; } = new(0x000000);
+    public static EzColor Transparent { get; set; } = new(0x00000000);
     public static EzColor YellowBright { get; set; } = new(0xFFFF00);
     public static EzColor Yellow { get; set; } = new(0xAAAA00);
     public static EzColor YellowDark { get; set; } = new(0x444400);
