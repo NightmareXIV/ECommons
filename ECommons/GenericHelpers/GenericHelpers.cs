@@ -45,16 +45,6 @@ public static unsafe partial class GenericHelpers
         return false;
     }
 
-    public static SeString ReadSeString(Utf8String* utf8String)
-    {
-        if(utf8String != null)
-        {
-            return SeString.Parse(utf8String->AsSpan());
-        }
-
-        return string.Empty;
-    }
-
     /// <summary>
     /// Generates range of numbers with step = 1.
     /// </summary>
@@ -85,51 +75,6 @@ public static unsafe partial class GenericHelpers
             ret[i] = (int)(inclusiveStart + i);
         }
         return ret;
-    }
-
-    /// <summary>
-    /// Reads SeString.
-    /// </summary>
-    /// <param name="str"></param>
-    /// <returns></returns>
-    public static SeString Read(this Utf8String str)
-    {
-        return GenericHelpers.ReadSeString(&str);
-    }
-
-    /// <summary>
-    /// Reads Span of bytes into <see langword="string"/>.
-    /// </summary>
-    /// <param name="bytes"></param>
-    /// <returns></returns>
-    public static string Read(this Span<byte> bytes)
-    {
-        for(var i = 0; i < bytes.Length; i++)
-        {
-            if(bytes[i] == 0)
-            {
-                fixed(byte* ptr = bytes)
-                {
-                    return Marshal.PtrToStringUTF8((nint)ptr, i);
-                }
-            }
-        }
-        fixed(byte* ptr = bytes)
-        {
-            return Marshal.PtrToStringUTF8((nint)ptr, bytes.Length);
-        }
-    }
-
-    /// <summary>
-    /// Returns <see langword="true"/> if screen isn't faded. 
-    /// </summary>
-    /// <returns></returns>
-    public static bool IsScreenReady()
-    {
-        { if(TryGetAddonByName<AtkUnitBase>("NowLoading", out var addon) && addon->IsVisible) return false; }
-        { if(TryGetAddonByName<AtkUnitBase>("FadeMiddle", out var addon) && addon->IsVisible) return false; }
-        { if(TryGetAddonByName<AtkUnitBase>("FadeBack", out var addon) && addon->IsVisible) return false; }
-        return true;
     }
 
     public static bool AddressEquals(this IGameObject obj, IGameObject other)
@@ -545,24 +490,6 @@ public static unsafe partial class GenericHelpers
     public static bool EqualsAny<T>(this T obj, IEnumerable<T> values)
     {
         return values.Any(x => x.Equals(obj));
-    }
-
-    /// <summary>
-    /// Attempts to find out whether SelectString entry is enabled based on text color. 
-    /// </summary>
-    /// <param name="textNodePtr"></param>
-    /// <returns></returns>
-    [Obsolete("Incompatible with UI mods, use other methods")]
-    public static bool IsSelectItemEnabled(AtkTextNode* textNodePtr)
-    {
-        var col = textNodePtr->TextColor;
-        //EEE1C5FF
-        return (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5)
-            //7D523BFF
-            || (col.A == 0xFF && col.R == 0x7D && col.G == 0x52 && col.B == 0x3B)
-            || (col.A == 0xFF && col.R == 0xFF && col.G == 0xFF && col.B == 0xFF)
-            // EEE1C5FF
-            || (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5);
     }
 
     public static void SetMinSize(this Window window, float width = 100, float height = 100) => SetMinSize(window, new Vector2(width, height));

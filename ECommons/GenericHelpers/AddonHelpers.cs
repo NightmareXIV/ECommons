@@ -71,6 +71,36 @@ public static unsafe partial class GenericHelpers
     }
 
     /// <summary>
+    /// Attempts to find out whether SelectString entry is enabled based on text color. 
+    /// </summary>
+    /// <param name="textNodePtr"></param>
+    /// <returns></returns>
+    [Obsolete("Incompatible with UI mods, use other methods")]
+    public static bool IsSelectItemEnabled(AtkTextNode* textNodePtr)
+    {
+        var col = textNodePtr->TextColor;
+        //EEE1C5FF
+        return (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5)
+            //7D523BFF
+            || (col.A == 0xFF && col.R == 0x7D && col.G == 0x52 && col.B == 0x3B)
+            || (col.A == 0xFF && col.R == 0xFF && col.G == 0xFF && col.B == 0xFF)
+            // EEE1C5FF
+            || (col.A == 0xFF && col.R == 0xEE && col.G == 0xE1 && col.B == 0xC5);
+    }
+
+    /// <summary>
+    /// Returns <see langword="true"/> if screen isn't faded. 
+    /// </summary>
+    /// <returns></returns>
+    public static bool IsScreenReady()
+    {
+        { if(TryGetAddonByName<AtkUnitBase>("NowLoading", out var addon) && addon->IsVisible) return false; }
+        { if(TryGetAddonByName<AtkUnitBase>("FadeMiddle", out var addon) && addon->IsVisible) return false; }
+        { if(TryGetAddonByName<AtkUnitBase>("FadeBack", out var addon) && addon->IsVisible) return false; }
+        return true;
+    }
+
+    /// <summary>
     /// Slower than <see cref="TryGetAddonByName"/>
     /// </summary>
     /// <typeparam name="T"></typeparam>

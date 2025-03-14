@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace ECommons;
@@ -225,6 +226,45 @@ public static unsafe partial class GenericHelpers
             }
         }
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// Reads SeString.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <returns></returns>
+    public static SeString Read(this Utf8String str) => ReadSeString(&str);
+
+    /// <summary>
+    /// Reads Span of bytes into <see langword="string"/>.
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <returns></returns>
+    public static string Read(this Span<byte> bytes)
+    {
+        for(var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] == 0)
+            {
+                fixed(byte* ptr = bytes)
+                {
+                    return Marshal.PtrToStringUTF8((nint)ptr, i);
+                }
+            }
+        }
+        fixed(byte* ptr = bytes)
+        {
+            return Marshal.PtrToStringUTF8((nint)ptr, bytes.Length);
+        }
+    }
+    public static SeString ReadSeString(Utf8String* utf8String)
+    {
+        if(utf8String != null)
+        {
+            return SeString.Parse(utf8String->AsSpan());
+        }
+
+        return string.Empty;
     }
     #endregion
 }
