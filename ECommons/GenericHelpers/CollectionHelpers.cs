@@ -344,13 +344,28 @@ public static unsafe partial class GenericHelpers
     /// <param name="key"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static V GetOrCreate<K, V>(this IDictionary<K, V> dictionary, K key) where V : new()
+    public static V GetOrCreate<K, V>(this IDictionary<K, V> dictionary, K key)
     {
         if(dictionary.TryGetValue(key, out var result))
         {
             return result;
         }
-        var newValue = new V();
+        V newValue;
+        if(typeof(V).FullName == typeof(string).FullName)
+        {
+            newValue = (V)(object)"";
+        }
+        else
+        {
+            try
+            {
+                newValue = (V)Activator.CreateInstance(typeof(V));
+            }
+            catch(Exception)
+            {
+                newValue = default;
+            }
+        }
         dictionary.Add(key, newValue);
         return newValue;
     }
