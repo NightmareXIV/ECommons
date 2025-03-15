@@ -64,9 +64,9 @@ public static unsafe partial class ImGuiEx
         return BeginDefaultTable("##ECommonsDefaultTable", headers, drawHeader, extraFlags);
     }
 
-    public static bool BeginDefaultTable(string id, string[] headers, bool drawHeader = true, ImGuiTableFlags extraFlags = ImGuiTableFlags.None)
+    public static bool BeginDefaultTable(string id, string[] headers, bool drawHeader = true, ImGuiTableFlags extraFlags = ImGuiTableFlags.None, bool flagsOverride = false)
     {
-        if(ImGui.BeginTable(id, headers.Length, DefaultTableFlags | extraFlags))
+        if(ImGui.BeginTable(id, headers.Length, flagsOverride?extraFlags:DefaultTableFlags | extraFlags))
         {
             DefaultTableColumns(headers, drawHeader);
             return true;
