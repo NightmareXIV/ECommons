@@ -44,7 +44,7 @@ public static class ECommonsMain
 #if DEBUG
 var type = "debug build without forms";
 #elif RELEASE
-var type = "release build without forms";
+        var type = "release build without forms";
 #elif DEBUGFORMS
 var type = "debug build with forms";
 #elif RELEASEFORMS

@@ -40,7 +40,7 @@ public class DefaultSerializationFactory : ISerializationFactory
 
     public virtual T? Deserialize<T>(byte[] inputData)
     {
-        return this.Deserialize<T>(Encoding.UTF8.GetString(inputData));
+        return Deserialize<T>(Encoding.UTF8.GetString(inputData));
     }
 
     /// <summary>
@@ -71,11 +71,11 @@ public class DefaultSerializationFactory : ISerializationFactory
 
     public string Serialize(object config)
     {
-        return this.Serialize(config, false);
+        return Serialize(config, false);
     }
 
     public virtual byte[] SerializeAsBin(object config)
     {
-        return Encoding.UTF8.GetBytes(this.Serialize(config));
+        return Encoding.UTF8.GetBytes(Serialize(config));
     }
 }

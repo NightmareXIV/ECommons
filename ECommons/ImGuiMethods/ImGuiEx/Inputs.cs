@@ -200,10 +200,10 @@ public static partial class ImGuiEx
         return ret;
     }
 
-    public unsafe static bool InputTextWrapMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
+    public static unsafe bool InputTextWrapMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
     {
-        float wrapWidth = width ?? ImGui.GetContentRegionAvail().X; // determine wrap width
-        bool result = ImGui.InputTextMultiline(id, ref text, maxLength,
+        var wrapWidth = width ?? ImGui.GetContentRegionAvail().X; // determine wrap width
+        var result = ImGui.InputTextMultiline(id, ref text, maxLength,
             new(width ?? ImGui.GetContentRegionAvail().X, ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)),
             ImGuiInputTextFlags.CallbackEdit, // flag stuff 
             (data) =>

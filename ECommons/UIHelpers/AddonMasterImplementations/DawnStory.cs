@@ -21,12 +21,12 @@ public unsafe partial class AddonMaster
         }
 
         public override string AddonDescription { get; } = "Duty Support window";
-        public ReaderDawnStory Reader => new(this.Base);
+        public ReaderDawnStory Reader => new(Base);
         public IEnumerable<Entry> Entries
         {
             get
             {
-                for(int i = 0; i < Reader.EntryCount; i++)
+                for(var i = 0; i < Reader.EntryCount; i++)
                 {
                     if(!Reader.EntryNames[i].Level.GetText().IsNullOrEmpty())
                     {

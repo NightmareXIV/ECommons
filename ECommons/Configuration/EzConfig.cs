@@ -18,7 +18,7 @@ namespace ECommons.Configuration;
 /// </summary>
 public static class EzConfig
 {
-    public static string? PluginConfigDirectoryOverride { get; set; } =  null;
+    public static string? PluginConfigDirectoryOverride { get; set; } = null;
     public static bool UseExternalWriter = false;
     public static string GetPluginConfigDirectory()
     {

@@ -13,8 +13,8 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel.Sheets;
 using System.Numerics;
-using GrandCompany = ECommons.ExcelServices.GrandCompany;
 using Aetheryte = Lumina.Excel.Sheets.Aetheryte;
+using GrandCompany = ECommons.ExcelServices.GrandCompany;
 #nullable disable
 
 namespace ECommons.GameHelpers;
@@ -38,7 +38,7 @@ public static unsafe class Player
     public static int UnsyncedLevel => GetUnsyncedLevel(GetJob(Object));
     public static int GetUnsyncedLevel(Job job) => PlayerState.Instance()->ClassJobLevels[Svc.Data.GetExcelSheet<ClassJob>().GetRowOrDefault((uint)job).Value.ExpArrayIndex];
 
-    public static bool IsInHomeWorld => !Player.Available?false:Svc.ClientState.LocalPlayer.HomeWorld.RowId == Svc.ClientState.LocalPlayer.CurrentWorld.RowId;
+    public static bool IsInHomeWorld => !Player.Available ? false : Svc.ClientState.LocalPlayer.HomeWorld.RowId == Svc.ClientState.LocalPlayer.CurrentWorld.RowId;
     public static bool IsInHomeDC => !Player.Available ? false : Svc.ClientState.LocalPlayer.CurrentWorld.Value.DataCenter.RowId == Svc.ClientState.LocalPlayer.HomeWorld.Value.DataCenter.RowId;
     public static string HomeWorld => Svc.ClientState.LocalPlayer?.HomeWorld.Value.Name.ToString();
     public static string CurrentWorld => Svc.ClientState.LocalPlayer?.CurrentWorld.Value.Name.ToString();

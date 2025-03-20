@@ -29,7 +29,7 @@ public partial class AddonMaster
             {
                 var reader = new ReaderMiragePrismPrismSetConvert(Base);
                 var entries = new Item[reader.Items.Count];
-                for (var i = 0; i < entries.Length; i++)
+                for(var i = 0; i < entries.Length; i++)
                     entries[i] = new(reader.Items[i]);
                 return entries;
             }
@@ -42,11 +42,11 @@ public partial class AddonMaster
 
         public bool? TryHandOver(int slot)
         {
-            if (SlotsFilled.Contains(slot)) return true;
+            if(SlotsFilled.Contains(slot)) return true;
 
             var contextMenu = (AtkUnitBase*)Svc.GameGui.GetAddonByName("ContextIconMenu", 1);
 
-            if (contextMenu is null || !contextMenu->IsVisible)
+            if(contextMenu is null || !contextMenu->IsVisible)
             {
                 Callback.Fire(Base, true, 13, slot);
                 return false;

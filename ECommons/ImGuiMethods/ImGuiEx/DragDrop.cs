@@ -1,11 +1,11 @@
-﻿using Dalamud.Interface.Utility;
-using Dalamud.Interface;
+﻿using Dalamud.Interface;
+using Dalamud.Interface.Utility;
+using ECommons.Logging;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
-using System.Numerics;
-using ECommons.Logging;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Runtime.ConstrainedExecution;
 
 namespace ECommons.ImGuiMethods;
@@ -15,18 +15,18 @@ public static unsafe partial class ImGuiEx
     {
         public RealtimeDragDrop(string dragDropId, Func<T, string> getUniqueId, bool smallButton = false)
         {
-            this.DragDropID = dragDropId;
-            this.GetUniqueId = getUniqueId;
-            this.Small = smallButton;
+            DragDropID = dragDropId;
+            GetUniqueId = getUniqueId;
+            Small = smallButton;
         }
 
-        List<(Vector2 RowPos, Vector2 ButtonPos, Action BeginDraw, Action AcceptDraw)> MoveCommands = [];
-        Vector2 InitialDragDropCurpos;
-        Vector2 ButtonDragDropCurpos;
-        string DragDropID;
-        string? CurrentDrag = null;
-        Func<T, string> GetUniqueId;
-        bool Small = false;
+        private List<(Vector2 RowPos, Vector2 ButtonPos, Action BeginDraw, Action AcceptDraw)> MoveCommands = [];
+        private Vector2 InitialDragDropCurpos;
+        private Vector2 ButtonDragDropCurpos;
+        private string DragDropID;
+        private string? CurrentDrag = null;
+        private Func<T, string> GetUniqueId;
+        private bool Small = false;
 
         /// <summary>
         /// Step 1. Call this before table begins.
@@ -147,12 +147,12 @@ public static unsafe partial class ImGuiEx
             }
         }
 
-        public bool AcceptPayload([NotNullWhen(true)]out string? uniqueId, ImGuiDragDropFlags flags = ImGuiDragDropFlags.None)
+        public bool AcceptPayload([NotNullWhen(true)] out string? uniqueId, ImGuiDragDropFlags flags = ImGuiDragDropFlags.None)
         {
             uniqueId = null;
             if(ImGui.BeginDragDropTarget())
             {
-                if(ImGuiDragDrop.AcceptDragDropPayload(this.DragDropID, out var payload, flags))
+                if(ImGuiDragDrop.AcceptDragDropPayload(DragDropID, out var payload, flags))
                 {
                     uniqueId = payload;
                 }

@@ -21,7 +21,7 @@ public unsafe partial class AddonMaster
             get
             {
                 var ret = new Reward[5];
-                for (var i = 0; i < ret.Length; i++)
+                for(var i = 0; i < ret.Length; i++)
                     ret[i] = new(this, i);
                 return ret;
             }

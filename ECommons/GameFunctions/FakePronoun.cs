@@ -29,8 +29,8 @@ public static unsafe class FakePronoun
             {
                 if(pronoun == "<me>")
                 {
-                    
-                    return (GameObject*)(Svc.Objects.OfType<IPlayerCharacter>().FirstOrDefault(x => x.Name.ToString().Contains(' '))?.Address ??Svc.Objects.OfType<IPlayerCharacter>().FirstOrDefault()?.Address ?? 0);
+
+                    return (GameObject*)(Svc.Objects.OfType<IPlayerCharacter>().FirstOrDefault(x => x.Name.ToString().Contains(' '))?.Address ?? Svc.Objects.OfType<IPlayerCharacter>().FirstOrDefault()?.Address ?? 0);
                 }
                 else if(uint.TryParse(pronoun[1..2], out var pos))
                 {

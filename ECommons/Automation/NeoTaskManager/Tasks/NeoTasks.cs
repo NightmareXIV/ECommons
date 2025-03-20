@@ -18,7 +18,7 @@ namespace ECommons.Automation.NeoTaskManager.Tasks;
 /// <summary>
 /// A collection of functions that are very commonly used in various plugins
 /// </summary>
-public unsafe static class NeoTasks
+public static unsafe class NeoTasks
 {
     public static TaskManagerTask ApproachObjectViaAutomove(Func<IGameObject> getObjectFunc, float distance = 4f, TaskManagerConfiguration? configuration = null)
     {

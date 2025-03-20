@@ -1,10 +1,10 @@
-using System.Linq;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
 using Lumina.Data;
 using Lumina.Excel.Sheets;
-using TerritoryHelper = ECommons.TerritoryName;
+using System.Linq;
 using SheetContentType = Lumina.Excel.Sheets.ContentType;
+using TerritoryHelper = ECommons.TerritoryName;
 
 #nullable disable
 
@@ -130,7 +130,7 @@ public static class Content
                 .TerritoryIntendedUse
                 .ValueNullable?.RowId;
 
-            if (intendedUseRow != null)
+            if(intendedUseRow != null)
                 return (TerritoryIntendedUseEnum)intendedUseRow;
 
             return null;
@@ -180,7 +180,7 @@ public static class Content
     {
         get
         {
-            if (ContentFinderConditionRow is null)
+            if(ContentFinderConditionRow is null)
                 return false;
 
             var contentName =
@@ -218,7 +218,7 @@ public static class Content
         {
             var instanceContentRow = ContentFinderConditionRow?.Content.RowId;
 
-            if (instanceContentRow != null)
+            if(instanceContentRow != null)
                 return Svc.Data.Excel.GetSheet<InstanceContent>(Language.English)!
                     .GetRowOrDefault((uint)instanceContentRow);
 
@@ -241,7 +241,7 @@ public static class Content
         {
             var contentTypeRowId = ContentFinderConditionRow?.ContentType.RowId;
 
-            if (contentTypeRowId != null)
+            if(contentTypeRowId != null)
                 return Svc.Data.Excel.GetSheet<SheetContentType>(Language.English)!
                     .GetRowOrDefault((uint)contentTypeRowId);
 

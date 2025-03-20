@@ -36,8 +36,8 @@ public partial class AddonMaster
         {
             get
             {
-                GatheredItem[] gatheredItems = new GatheredItem[8];
-                for (int i = 0; i < gatheredItems.Length; i++)
+                var gatheredItems = new GatheredItem[8];
+                for(var i = 0; i < gatheredItems.Length; i++)
                 {
                     gatheredItems[i] = new GatheredItem(this, Addon, GetCheckBox(i), i);
                 }

@@ -1,4 +1,4 @@
-﻿#if (DEBUGFORMS || RELEASEFORMS)
+﻿#if(DEBUGFORMS || RELEASEFORMS)
 using System.Windows.Forms;
 
 namespace ECommons.Automation;

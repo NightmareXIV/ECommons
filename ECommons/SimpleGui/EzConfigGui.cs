@@ -68,9 +68,9 @@ public static class EzConfigGui
     /// </summary>
     public static void RemoveWindow<T>() where T : Window
     {
-        if (!typeof(T).IsSubclassOf(typeof(Window))) return;
+        if(!typeof(T).IsSubclassOf(typeof(Window))) return;
         var window = WindowSystem.Windows.FirstOrDefault(w => w.GetType() == typeof(T));
-        if (window != null)
+        if(window != null)
             WindowSystem.RemoveWindow(window);
     }
 }

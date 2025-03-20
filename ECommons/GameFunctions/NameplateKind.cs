@@ -51,7 +51,7 @@ public enum NameplateKind
     /// Represents a hostile character engaged with the player and damaged.
     /// </summary>
     HostileEngagedSelfDamaged = 9,
-    
+
     /// <summary>
     /// Represents a hostile character engaged with another player.
     /// </summary>

@@ -16,7 +16,7 @@ public unsafe class ReaderLetterHistory(AtkUnitBase* Addon) : AtkReader(Addon)
         public uint NumItems => ReadUInt(80) ?? 0;
         public List<Item> Items => Loop<Item>(102, 5, 20);
         public string Gil => ReadString(300);
-        
+
     }
 
     public unsafe class Item(nint Addon, int start) : AtkReader(Addon, start)

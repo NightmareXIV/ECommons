@@ -30,7 +30,7 @@ public partial class AddonMaster
             get
             {
                 var ret = new Portraits[NumPortraits];
-                for (var i = 0; i < ret.Length; i++)
+                for(var i = 0; i < ret.Length; i++)
                     ret[i] = new(Addon, Addon->AtkValues[23 + 7 * i].Int);
                 return ret;
             }

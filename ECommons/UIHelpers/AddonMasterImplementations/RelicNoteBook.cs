@@ -19,8 +19,8 @@ public partial class AddonMaster
         {
             get
             {
-                RelicNoteBookEnemy[] relicNoteBookEnemy = new RelicNoteBookEnemy[10];
-                for (int i = 0; i < relicNoteBookEnemy.Length; i++)
+                var relicNoteBookEnemy = new RelicNoteBookEnemy[10];
+                for(var i = 0; i < relicNoteBookEnemy.Length; i++)
                 {
                     relicNoteBookEnemy[i] = new RelicNoteBookEnemy(this, Addon, GetEnemyCheckBox(i), i);
                 }
@@ -32,8 +32,8 @@ public partial class AddonMaster
         {
             get
             {
-                RelicNoteBookDungeon[] relicNoteBookDungeon = new RelicNoteBookDungeon[3];
-                for (int i = 0; i < relicNoteBookDungeon.Length; i++)
+                var relicNoteBookDungeon = new RelicNoteBookDungeon[3];
+                for(var i = 0; i < relicNoteBookDungeon.Length; i++)
                 {
                     relicNoteBookDungeon[i] = new RelicNoteBookDungeon(this, Addon, GetDungeonCheckBox(i), i);
                 }
@@ -45,8 +45,8 @@ public partial class AddonMaster
         {
             get
             {
-                RelicNoteBookFate[] relicNoteBookFate = new RelicNoteBookFate[3];
-                for (int i = 0; i < relicNoteBookFate.Length; i++)
+                var relicNoteBookFate = new RelicNoteBookFate[3];
+                for(var i = 0; i < relicNoteBookFate.Length; i++)
                 {
                     relicNoteBookFate[i] = new RelicNoteBookFate(this, Addon, GetFateCheckBox(i), i);
                 }
@@ -58,8 +58,8 @@ public partial class AddonMaster
         {
             get
             {
-                RelicNoteBookLeve[] relicNoteBookEnemy = new RelicNoteBookLeve[10];
-                for (int i = 0; i < relicNoteBookEnemy.Length; i++)
+                var relicNoteBookEnemy = new RelicNoteBookLeve[10];
+                for(var i = 0; i < relicNoteBookEnemy.Length; i++)
                 {
                     relicNoteBookEnemy[i] = new RelicNoteBookLeve(this, Addon, GetLeveCheckBox(i), i);
                 }

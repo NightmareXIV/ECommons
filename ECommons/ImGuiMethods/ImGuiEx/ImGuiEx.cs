@@ -66,7 +66,7 @@ public static unsafe partial class ImGuiEx
 
     public static bool BeginDefaultTable(string id, string[] headers, bool drawHeader = true, ImGuiTableFlags extraFlags = ImGuiTableFlags.None, bool flagsOverride = false)
     {
-        if(ImGui.BeginTable(id, headers.Length, flagsOverride?extraFlags:DefaultTableFlags | extraFlags))
+        if(ImGui.BeginTable(id, headers.Length, flagsOverride ? extraFlags : DefaultTableFlags | extraFlags))
         {
             DefaultTableColumns(headers, drawHeader);
             return true;
@@ -88,7 +88,7 @@ public static unsafe partial class ImGuiEx
     {
         if(str.Length < 5) return str;
         var size = ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize("...").X;
-        for (int i = 1; i < str.Length; i++)
+        for(var i = 1; i < str.Length; i++)
         {
             if(ImGui.CalcTextSize(str[..i]).X > size)
             {
@@ -214,7 +214,7 @@ public static unsafe partial class ImGuiEx
             {
                 ImGui.TableNextRow();
                 ImGui.TableNextColumn();
-                if(ImGui.BeginTable($"2{name}", 1, ImGuiTableFlags.NoSavedSettings | (usePadding?ImGuiTableFlags.PadOuterX:ImGuiTableFlags.None)))
+                if(ImGui.BeginTable($"2{name}", 1, ImGuiTableFlags.NoSavedSettings | (usePadding ? ImGuiTableFlags.PadOuterX : ImGuiTableFlags.None)))
                 {
                     ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthStretch);
                     ImGui.TableNextRow();
@@ -278,7 +278,7 @@ public static unsafe partial class ImGuiEx
     /// <param name="all">Whether to check for all plugins from the list or just one of them</param>
     public static void PluginAvailabilityIndicator(IEnumerable<RequiredPluginInfo> pluginInfos, string? prependText = null, bool all = true)
     {
-        prependText ??= all?"The following plugins are required to be installed and enabled:":"One of the following plugins is required to be installed and enabled";
+        prependText ??= all ? "The following plugins are required to be installed and enabled:" : "One of the following plugins is required to be installed and enabled";
         bool pass;
         if(all)
         {
@@ -358,7 +358,7 @@ public static unsafe partial class ImGuiEx
     public static bool SelectableNode(string id, bool enabled = true) => SelectableNode(null, id, enabled);
 
     /// <inheritdoc cref="SelectableNode(Vector4?, string, bool)"/>
-    public static bool SelectableNode(string id, ref bool selected, bool enabled = true) => SelectableNode(null, id, ref selected, enabled:enabled);
+    public static bool SelectableNode(string id, ref bool selected, bool enabled = true) => SelectableNode(null, id, ref selected, enabled: enabled);
 
     /// <summary>
     /// Selectable item made from TreeNode
@@ -509,16 +509,16 @@ public static unsafe partial class ImGuiEx
     private static int FindWrapPosition(string text, float wrapWidth)
     {
         float currentWidth = 0;
-        int lastSpacePos = -1;
-        for (int i = 0; i < text.Length; i++)
+        var lastSpacePos = -1;
+        for(var i = 0; i < text.Length; i++)
         {
-            char c = text[i];
+            var c = text[i];
             currentWidth += ImGui.CalcTextSize(c.ToString()).X;
-            if (char.IsWhiteSpace(c))
+            if(char.IsWhiteSpace(c))
             {
                 lastSpacePos = i;
             }
-            if (currentWidth > wrapWidth)
+            if(currentWidth > wrapWidth)
             {
                 return lastSpacePos >= 0 ? lastSpacePos : i;
             }
@@ -528,22 +528,22 @@ public static unsafe partial class ImGuiEx
 
     private static unsafe int TextEditCallback(ImGuiInputTextCallbackData* data, float wrapWidth)
     {
-        string text = Marshal.PtrToStringAnsi((IntPtr)data->Buf, data->BufTextLen);
+        var text = Marshal.PtrToStringAnsi((IntPtr)data->Buf, data->BufTextLen);
         var lines = text.Split('\n').ToList();
-        bool textModified = false;
+        var textModified = false;
         // Traverse each line to check if it exceeds the wrap width
-        for (int i = 0; i < lines.Count; i++)
+        for(var i = 0; i < lines.Count; i++)
         {
-            float lineWidth = ImGui.CalcTextSize(lines[i]).X;
-            while (lineWidth + 10f > wrapWidth)
+            var lineWidth = ImGui.CalcTextSize(lines[i]).X;
+            while(lineWidth + 10f > wrapWidth)
             {
                 // Find where to break the line
-                int wrapPos = FindWrapPosition(lines[i], wrapWidth);
-                if (wrapPos >= 0)
+                var wrapPos = FindWrapPosition(lines[i], wrapWidth);
+                if(wrapPos >= 0)
                 {
                     // Insert a newline at the wrap position
-                    string part1 = lines[i].Substring(0, wrapPos);
-                    string part2 = lines[i].Substring(wrapPos).TrimStart();
+                    var part1 = lines[i].Substring(0, wrapPos);
+                    var part2 = lines[i].Substring(wrapPos).TrimStart();
                     lines[i] = part1;
                     lines.Insert(i + 1, part2);
                     textModified = true;
@@ -556,10 +556,10 @@ public static unsafe partial class ImGuiEx
             }
         }
         // Merge all lines back to the buffer
-        if (textModified)
+        if(textModified)
         {
-            string newText = string.Join("\n", lines);
-            byte[] newTextBytes = Encoding.UTF8.GetBytes(newText.PadRight(data->BufSize, '\0'));
+            var newText = string.Join("\n", lines);
+            var newTextBytes = Encoding.UTF8.GetBytes(newText.PadRight(data->BufSize, '\0'));
             Marshal.Copy(newTextBytes, 0, (IntPtr)data->Buf, newTextBytes.Length);
             data->BufTextLen = newText.Length;
             data->BufDirty = 1;
@@ -793,7 +793,7 @@ public static unsafe partial class ImGuiEx
     {
         size ??= new Vector2(10f);
 
-        if (accountForScale)
+        if(accountForScale)
             size = size.Scale();
 
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + size!.Value.X);

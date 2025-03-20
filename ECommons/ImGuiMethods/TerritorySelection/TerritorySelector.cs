@@ -155,7 +155,7 @@ public unsafe class TerritorySelector : Window
         {
             foreach(var x in Cache)
             {
-                if(ImGuiEx.BeginTabItem(x.Key.ToString(), SelectedCategory == x.Key?ImGuiTabItemFlags.SetSelected:ImGuiTabItemFlags.None))
+                if(ImGuiEx.BeginTabItem(x.Key.ToString(), SelectedCategory == x.Key ? ImGuiTabItemFlags.SetSelected : ImGuiTabItemFlags.None))
                 {
                     ImGui.SetNextItemWidth(200f);
                     ImGui.InputTextWithHint($"##search", "Filter...", ref Filter, 50);
@@ -207,15 +207,15 @@ public unsafe class TerritorySelector : Window
 
                     if(ImGui.BeginChild("##ChildTable"))
                     {
-                        if(ImGui.BeginTable("##TSelector", 2 + ExtraColumns.Length + (this.Mode == DisplayMode.PlaceNameAndDuty?1:0), ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.SizingFixedFit))
+                        if(ImGui.BeginTable("##TSelector", 2 + ExtraColumns.Length + (Mode == DisplayMode.PlaceNameAndDuty ? 1 : 0), ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.SizingFixedFit))
                         {
                             ImGui.TableSetupColumn(" ");
                             if(ExtraColumns.Contains(Column.ID)) ImGui.TableSetupColumn("ID");
-                            if(this.Mode == DisplayMode.PlaceNameDutyUnion)
+                            if(Mode == DisplayMode.PlaceNameDutyUnion)
                             {
                                 ImGui.TableSetupColumn("Place Name/Duty", ImGuiTableColumnFlags.WidthStretch);
                             }
-                            else if(this.Mode == DisplayMode.PlaceNameOnly)
+                            else if(Mode == DisplayMode.PlaceNameOnly)
                             {
                                 ImGui.TableSetupColumn("Place Name", ImGuiTableColumnFlags.WidthStretch);
                             }
