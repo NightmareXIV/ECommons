@@ -71,7 +71,7 @@ public class EzHook<T> where T : System.Delegate
     public void Pause()
     {
         byte[] orig = null;
-        if(HookDelegate != null)
+        if(HookDelegate != null && HookDelegate.IsEnabled)
         {
             Log($"Disabling hook {typeof(T).FullName} at {Address:X16}");
             if(EzHookCommon.TrackMemory > 0) SafeMemory.ReadBytes(Address, EzHookCommon.TrackMemory, out orig);
