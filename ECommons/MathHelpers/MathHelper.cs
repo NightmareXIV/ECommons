@@ -287,6 +287,9 @@ public static class MathHelper
         return (float)i;
     }
 
+    public static Vector2 ToVector2(this int i) => new(i);
+    public static Vector2 ToVector2(this float i) => new(i);
+    public static Vector2 ToVector2(this System.Drawing.Point p) => new(p.X, p.Y);
     public static Vector2 ToVector2(this Vector3 vector3)
     {
         return new Vector2(vector3.X, vector3.Z);
@@ -301,6 +304,8 @@ public static class MathHelper
     {
         return new Vector3(vector2.X, Y, vector2.Y);
     }
+
+    public static Vector3 ToVector3(this (float X, float Y, float Z) t) => new(t.X, t.Y, t.Z);
 
     /// <summary>
     /// Degrees
