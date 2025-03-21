@@ -6,48 +6,53 @@ using System.Numerics;
 namespace ECommons.ImGuiMethods;
 public static partial class ImGuiEx
 {
-    public static void Text(string s) => ImGui.TextUnformatted(s);
-
-    public static void Text(Vector4? col, string s)
+    public static void Text(string s)
     {
-        if(col is { } c)
-            Text(c, s);
-        else
-            Text(s);
+        ImGui.TextUnformatted(s);
     }
 
     public static void Text(ImFontPtr font, string s)
     {
-        using var _ = ImRaii.PushFont(font);
-        Text(s);
+        ImGui.PushFont(font);
+        ImGui.TextUnformatted(s);
+        ImGui.PopFont();
     }
 
     public static void Text(Vector4 col, string s)
     {
-        using var _ = ImRaii.PushColor(ImGuiCol.Text, col);
-        Text(s);
+        ImGui.PushStyleColor(ImGuiCol.Text, col);
+        ImGui.TextUnformatted(s);
+        ImGui.PopStyleColor();
+    }
+
+    public static void Text(Vector4? col, ImFontPtr? font, string s)
+    {
+        if(font != null) ImGui.PushFont(font.Value);
+        if(col != null) ImGui.PushStyleColor(ImGuiCol.Text, col.Value);
+        ImGui.TextUnformatted(s);
+        if(col != null) ImGui.PopStyleColor();
+        if(font != null) ImGui.PopFont();
     }
 
     public static void Text(uint col, string s)
     {
-        using var _ = ImRaii.PushColor(ImGuiCol.Text, col);
-        Text(s);
-    }
-
-    public static void Text(EzColor col, string s) => Text(col.Vector4, s);
-
-    public static void Text(Vector4? col, ImFontPtr? font, string s)
-    {
-        using var f = font.HasValue ? ImRaii.PushFont(font.Value) : null;
-        using var c = col.HasValue ? ImRaii.PushColor(ImGuiCol.Text, col.Value) : null;
-        Text(s);
+        ImGui.PushStyleColor(ImGuiCol.Text, col);
+        ImGui.TextUnformatted(s);
+        ImGui.PopStyleColor();
     }
 
     public static void Text(uint col, ImFontPtr font, string s)
     {
-        using var f = ImRaii.PushFont(font);
-        using var c = ImRaii.PushColor(ImGuiCol.Text, col);
-        Text(s);
+        ImGui.PushFont(font);
+        ImGui.PushStyleColor(ImGuiCol.Text, col);
+        ImGui.TextUnformatted(s);
+        ImGui.PopStyleColor();
+        ImGui.PopFont();
+    }
+
+    public static void Text(EzColor col, string s)
+    {
+        Text(col.Vector4, s);
     }
 
     /// <summary>
@@ -57,8 +62,9 @@ public static partial class ImGuiEx
     /// <param name="s">Text</param>
     public static void TextV(Vector4? col, string s)
     {
-        using var _ = col.HasValue ? ImRaii.PushColor(ImGuiCol.Text, col.Value) : null;
-        TextV(s);
+        if(col != null) ImGui.PushStyleColor(ImGuiCol.Text, col.Value);
+        ImGuiEx.TextV(s);
+        if(col != null) ImGui.PopStyleColor();
     }
 
     /// <summary>
@@ -71,29 +77,46 @@ public static partial class ImGuiEx
         Text(s);
     }
 
+    public static void Text(Vector4? col, string text)
+    {
+        if(col == null)
+        {
+            Text(text);
+        }
+        else
+        {
+            Text(col.Value, text);
+        }
+    }
+
+
     public static void TextWrapped(string s)
     {
-        using var _ = ImRaii.TextWrapPos(0);
-        Text(s);
+        ImGui.PushTextWrapPos();
+        ImGui.TextUnformatted(s);
+        ImGui.PopTextWrapPos();
     }
 
     public static void TextWrapped(Vector4? col, string s)
     {
-        using var _ = ImRaii.TextWrapPos(0);
-        Text(col, s);
+        ImGui.PushTextWrapPos(0);
+        ImGuiEx.Text(col, s);
+        ImGui.PopTextWrapPos();
     }
 
     public static void TextWrapped(uint col, string s)
     {
-        using var _ = ImRaii.TextWrapPos(0);
-        Text(col, s);
+        ImGui.PushTextWrapPos();
+        ImGuiEx.Text(col, s);
+        ImGui.PopTextWrapPos();
     }
 
     /// <inheritdoc cref="TextCopy(string)"/>
     public static void TextCopy(Vector4 col, string text)
     {
-        using var _ = ImRaii.PushColor(ImGuiCol.Text, col);
+        ImGui.PushStyleColor(ImGuiCol.Text, col);
         TextCopy(text);
+        ImGui.PopStyleColor();
     }
 
     /// <summary>
@@ -101,9 +124,17 @@ public static partial class ImGuiEx
     /// </summary>
     public static void TextCopy(string text)
     {
-        Text(text);
-        if(HoveredAndClicked())
+        ImGui.TextUnformatted(text);
+        if(ImGui.IsItemHovered())
+        {
+            ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+        }
+        if(ImGui.IsItemClicked(ImGuiMouseButton.Left))
+        {
+#pragma warning disable
             GenericHelpers.Copy(text);
+#pragma warning restore
+        }
     }
 
     /// <summary>
@@ -132,43 +163,55 @@ public static partial class ImGuiEx
 
     public static void TextCentered(Vector4 col, string text)
     {
-        using var _ = ImRaii.PushColor(ImGuiCol.Text, col);
+        ImGui.PushStyleColor(ImGuiCol.Text, col);
         TextCentered(text);
+        ImGui.PopStyleColor();
     }
 
     public static void TextCentered(Vector4? col, string text)
     {
-        if(col is { } c)
-            TextCentered(c, text);
+        if(col != null)
+        {
+            TextCentered(col.Value, text);
+        }
         else
+        {
             TextCentered(text);
+        }
     }
 
     public static void CenterColumnText(string text, bool underlined = false)
     {
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (ImGui.GetColumnWidth() * 0.5f) - (ImGui.CalcTextSize(text).X * 0.5f));
         if(underlined)
+        {
             TextUnderlined(text);
+        }
         else
+        {
             Text(text);
+        }
     }
 
     public static void CenterColumnText(Vector4 colour, string text, bool underlined = false)
     {
-        using var _ = ImRaii.PushColor(ImGuiCol.Text, colour);
+        ImGui.PushStyleColor(ImGuiCol.Text, colour);
         CenterColumnText(text, underlined);
+        ImGui.PopStyleColor();
     }
 
     public static void TextUnderlined(uint color, string text)
     {
-        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        ImGui.PushStyleColor(ImGuiCol.Text, color);
         TextUnderlined(text);
+        ImGui.PopStyleColor();
     }
 
     public static void TextUnderlined(Vector4 color, string text)
     {
-        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        ImGui.PushStyleColor(ImGuiCol.Text, color);
         TextUnderlined(text);
+        ImGui.PopStyleColor();
     }
 
     public static void TextUnderlined(string text)
@@ -180,6 +223,6 @@ public static partial class ImGuiEx
         cur.X += size.X;
         ImGui.GetWindowDrawList().PathLineTo(cur);
         ImGui.GetWindowDrawList().PathStroke(ImGuiColors.DalamudWhite.ToUint());
-        Text(text);
+        ImGuiEx.Text(text);
     }
 }

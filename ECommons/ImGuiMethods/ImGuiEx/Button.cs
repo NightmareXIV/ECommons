@@ -11,21 +11,30 @@ public static partial class ImGuiEx
 {
     public static bool Button(string label, bool enabled = true)
     {
-        using var _ = ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.6f, enabled);
+        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
         var ret = ImGui.Button(label) && enabled;
+        if(!enabled) ImGui.PopStyleVar();
         return ret;
     }
 
     public static bool Button(string label, Vector2 size, bool enabled = true)
     {
-        using var _ = ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.6f, enabled);
+        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
         var ret = ImGui.Button(label, size) && enabled;
+        if(!enabled) ImGui.PopStyleVar();
         return ret;
     }
 
-    public static bool ButtonScaled(string label, Vector2 size, bool enabled = true) => Button(label, size.Scale(), enabled);
+    public static bool ButtonScaled(string label, Vector2 size, bool enabled = true)
+    {
+        return Button(label, size.Scale(), enabled);
+    }
 
-    public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true) => IconButton(icon.ToIconString(), id, size, enabled);
+    public static bool IconButton(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
+    {
+        return IconButton(icon.ToIconString(), id, size, enabled);
+    }
+
     public static bool IconButton(string icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
     {
         ImGui.PushFont(UiBuilder.IconFont);
@@ -36,8 +45,15 @@ public static partial class ImGuiEx
         return result;
     }
 
-    public static bool IconButtonScaled(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true) => IconButton(icon, id, size.Scale(), enabled);
-    public static bool IconButtonScaled(string icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true) => IconButton(icon, id, size.Scale(), enabled);
+    public static bool IconButtonScaled(FontAwesomeIcon icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
+    {
+        return IconButton(icon, id, size.Scale(), enabled);
+    }
+
+    public static bool IconButtonScaled(string icon, string id = "ECommonsButton", Vector2 size = default, bool enabled = true)
+    {
+        return IconButton(icon, id, size.Scale(), enabled);
+    }
 
     public static bool IconButtonWithText(FontAwesomeIcon icon, string id, bool enabled = true)
     {
@@ -55,7 +71,11 @@ public static partial class ImGuiEx
         return ret;
     }
 
-    public static bool SmallIconButton(FontAwesomeIcon icon, string id = "ECommonsButton") => SmallIconButton(icon.ToIconString(), id);
+    public static bool SmallIconButton(FontAwesomeIcon icon, string id = "ECommonsButton")
+    {
+        return SmallIconButton(icon.ToIconString(), id);
+    }
+
     public static bool SmallIconButton(string icon, string id = "ECommonsButton")
     {
         ImGui.PushFont(UiBuilder.IconFont);
@@ -102,7 +122,10 @@ public static partial class ImGuiEx
         return ImGui.Button(label);
     }
 
-    public static bool ButtonCtrl(string text, string affix = " (Hold CTRL)") => ButtonCtrl(text, null, affix);
+    public static bool ButtonCtrl(string text, string affix = " (Hold CTRL)")
+    {
+        return ButtonCtrl(text, null, affix);
+    }
 
     /// <summary>
     /// Button that is disabled unless CTRL key is held
@@ -113,7 +136,11 @@ public static partial class ImGuiEx
     /// <returns></returns>
     public static bool ButtonCtrl(string text, Vector2? size, string affix = " (Hold CTRL)")
     {
-        using var _ = ImRaii.Disabled(!Ctrl);
+        var disabled = !ImGui.GetIO().KeyCtrl;
+        if(disabled)
+        {
+            ImGui.BeginDisabled();
+        }
         var name = string.Empty;
         if(text.Contains($"###"))
         {
@@ -130,10 +157,17 @@ public static partial class ImGuiEx
             name = $"{text}{affix}";
         }
         var ret = size == null ? ImGui.Button(name) : ImGui.Button(name, size.Value);
+        if(disabled)
+        {
+            ImGui.EndDisabled();
+        }
         return ret;
     }
 
-    public static bool ButtonCtrlScaled(string text, Vector2? size, string affix = " (Hold CTRL)") => ButtonCtrl(text, size.Scale(), affix);
+    public static bool ButtonCtrlScaled(string text, Vector2? size, string affix = " (Hold CTRL)")
+    {
+        return ButtonCtrl(text, size.Scale(), affix);
+    }
 
     /// <summary>
     /// Draws a button that acts like a checkbox.
@@ -142,7 +176,10 @@ public static partial class ImGuiEx
     /// <param name="value">Value</param>
     /// <param name="smallButton">Whether button should be small</param>
     /// <returns>true when clicked, otherwise false</returns>
-    public static bool ButtonCheckbox(string name, ref bool value, bool smallButton) => ButtonCheckbox(name, ref value, EzColor.Red.Vector4, smallButton);
+    public static bool ButtonCheckbox(string name, ref bool value, bool smallButton)
+    {
+        return ButtonCheckbox(name, ref value, EzColor.Red.Vector4, smallButton);
+    }
 
     /// <summary>
     /// Draws a button that acts like a checkbox.
@@ -152,7 +189,10 @@ public static partial class ImGuiEx
     /// <param name="color">Active button color</param>
     /// <param name="smallButton">Whether button should be small</param>
     /// <returns>true when clicked, otherwise false</returns>
-    public static bool ButtonCheckbox(string name, ref bool value, uint color, bool smallButton = false) => ButtonCheckbox(name, ref value, color.ToVector4(), smallButton);
+    public static bool ButtonCheckbox(string name, ref bool value, uint color, bool smallButton = false)
+    {
+        return ButtonCheckbox(name, ref value, color.ToVector4(), smallButton);
+    }
 
     /// <summary>
     /// Draws a button that acts like a checkbox.
