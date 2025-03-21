@@ -219,16 +219,15 @@ public static partial class ImGuiEx
         foreach(var row in _filtered.Cast<T>())
         {
             var hovered = _hoveredItem == i;
-            using(ImRaii.PushId(i))
+            ImGui.PushID(i);
+            if(ImGui.Selectable(toName(row), hovered) || (enterClicked && hovered))
             {
-                if(ImGui.Selectable(toName(row), hovered) || enterClicked && hovered)
-                {
-                    selected = row;
-                    ImGui.PopID();
-                    ImGui.EndCombo();
-                    return true;
-                }
+                selected = row;
+                ImGui.PopID();
+                ImGui.EndCombo();
+                return true;
             }
+            ImGui.PopID();
             i++;
         }
 
