@@ -1,6 +1,7 @@
 ﻿using ECommons.DalamudServices;
 using ImGuiNET;
 using Lumina.Excel.Sheets;
+using System;
 using System.Buffers.Binary;
 using System.Numerics;
 
@@ -79,14 +80,16 @@ public readonly struct EzColor
         return From(BinaryPrimitives.ReverseEndianness(abgr));
     }
 
+    [Obsolete("Verify")]
     public static EzColor FromUiForeground(uint id)
     {
-        return FromABGR(Svc.Data.GetExcelSheet<UIColor>().GetRow(id).UIForeground);
+        return FromABGR(Svc.Data.GetExcelSheet<UIColor>().GetRow(id).Dark);
     }
 
+    [Obsolete("Verify")]
     public static EzColor FromUiGlow(uint id)
     {
-        return FromABGR(Svc.Data.GetExcelSheet<UIColor>().GetRow(id).UIGlow);
+        return FromABGR(Svc.Data.GetExcelSheet<UIColor>().GetRow(id).Light);
     }
 
     public static EzColor FromStain(uint id)

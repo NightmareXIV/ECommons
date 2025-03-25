@@ -27,7 +27,7 @@ public static unsafe class NeoTasks
             var obj = getObjectFunc();
             if(obj == null) return false;
             if(!Player.Interactable) return false;
-            if(AgentMap.Instance()->IsPlayerMoving == 1)
+            if(AgentMap.Instance()->IsPlayerMoving)
             {
                 if(Player.DistanceTo(obj) < distance && EzThrottler.Throttle("TaskFunction.AutomoveOff", 200))
                 {

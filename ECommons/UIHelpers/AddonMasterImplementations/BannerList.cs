@@ -89,8 +89,8 @@ public partial class AddonMaster
                 UseAsInstantPortrait = Addon->AtkValues[27 + offset].Int;
 
                 var offset2 = 2 * (ListIndex - 1);
-                GearSetName = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[791 + offset2].String);
-                GearSetILvl = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[792 + offset2].String);
+                GearSetName = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[791 + offset2].String.Value);
+                GearSetILvl = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[792 + offset2].String.Value);
             }
         }
 

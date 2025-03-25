@@ -55,10 +55,10 @@ public partial class AddonMaster
             public readonly int Index { get; init; } = index;
             public readonly int ListIndex => Index + offset;
             // Dalamud added context menu entries all have a callback index of -1, which results in looping the list and calling something else. AFAIK, native entries are always a single payload of rawtext.
-            public readonly bool IsNativeEntry => Addon->AtkValues[ListIndex].Type == FFXIVClientStructs.FFXIV.Component.GUI.ValueType.ManagedString && new ReadOnlySeStringSpan(((AtkValue*)(nint)(&Addon->AtkValues[ListIndex]))->String).PayloadCount == 1;
+            public readonly bool IsNativeEntry => Addon->AtkValues[ListIndex].Type == FFXIVClientStructs.FFXIV.Component.GUI.ValueType.ManagedString && new ReadOnlySeStringSpan(((AtkValue*)(nint)(&Addon->AtkValues[ListIndex]))->String.Value).PayloadCount == 1;
 
             public AtkTextNode* TextNode => am.ListItems[Index].Value->ButtonTextNode;
-            public readonly SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[ListIndex].String);
+            public readonly SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[ListIndex].String.Value);
             public readonly string Text => SeString.GetText();
             public readonly bool Enabled => am.ListItems[Index].Value->IsEnabled;
 
