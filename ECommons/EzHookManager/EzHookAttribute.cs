@@ -36,4 +36,9 @@ public class EzHookAttribute : Attribute
         Detour = detourName;
         AutoEnable = autoEnable;
     }
+
+    public override string? ToString()
+    {
+        return $"EzHook(Signature={Signature}, Offset={Offset}, Detour={Detour}, AutoEnable={AutoEnable})";
+    }
 }

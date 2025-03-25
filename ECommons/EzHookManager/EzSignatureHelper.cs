@@ -1,4 +1,5 @@
-﻿using ECommons.Reflection;
+﻿using ECommons.Logging;
+using ECommons.Reflection;
 using System;
 using System.Reflection;
 
@@ -9,9 +10,9 @@ public static class EzSignatureHelper
     {
         foreach(var x in obj.GetType().GetFields(ReflectionHelper.AllFlags))
         {
+            var attr = x.GetCustomAttribute<EzHookAttribute>();
             try
             {
-                var attr = x.GetCustomAttribute<EzHookAttribute>();
                 if(attr != null)
                 {
                     var detourName = attr.Detour ?? (x.Name.EndsWith("Hook") ? x.Name[..^4] : x.Name) + "Detour";
@@ -28,6 +29,7 @@ public static class EzSignatureHelper
             }
             catch(Exception e)
             {
+                PluginLog.Error($"An error during initialization of attribute {attr} on {x.Name}");
                 e.Log();
             }
         }
