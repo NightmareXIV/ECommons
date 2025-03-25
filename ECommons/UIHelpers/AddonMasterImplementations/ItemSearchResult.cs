@@ -18,10 +18,10 @@ public partial class AddonMaster
             get
             {
                 List<Pointer<AtkComponentListItemRenderer>> items = [];
-                foreach (var node in Enumerable.Range(0, ListComponent->GetItemCount()))
+                foreach(var node in Enumerable.Range(0, ListComponent->GetItemCount()))
                 {
                     var item = ListComponent->GetItemRenderer(node);
-                    if (item == null)
+                    if(item == null)
                         continue;
                     items.Add(item);
                 }
@@ -34,7 +34,7 @@ public partial class AddonMaster
             get
             {
                 var ret = new Entry[ListItems.Count];
-                for (var i = 0; i < ret.Length; i++)
+                for(var i = 0; i < ret.Length; i++)
                     ret[i] = new(this, Addon, i);
                 return ret;
             }

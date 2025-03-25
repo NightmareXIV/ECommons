@@ -35,7 +35,7 @@ public unsafe partial class AddonMaster
             {
                 var ret = new List<Character>();
                 var charaSpan = AgentLobby.Instance()->LobbyData.CharaSelectEntries.ToArray();
-                for (var i = 0; i < charaSpan.Length; i++)
+                for(var i = 0; i < charaSpan.Length; i++)
                 {
                     var s = charaSpan[i];
                     ret.Add(new(this, i, s));

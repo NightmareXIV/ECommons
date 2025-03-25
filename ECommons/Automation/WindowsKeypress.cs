@@ -1,6 +1,9 @@
 ﻿using ECommons.Interop;
 using ECommons.Logging;
 using PInvoke;
+using System;
+using System.Collections.Generic;
+using VirtualKey = Dalamud.Game.ClientState.Keys.VirtualKey;
 
 namespace ECommons.Automation;
 
@@ -50,6 +53,63 @@ public static partial class WindowsKeypress
             PluginLog.Error("Couldn't find game window!");
         }
     }
+
+    public static bool SendKeypress(VirtualKey key, IEnumerable<VirtualKey>? modifiers) => SendKeypress((int)key, modifiers?.SelectMulti(k => (int)k));
+    public static bool SendKeypress(LimitedKeys key, IEnumerable<LimitedKeys>? modifiers) => SendKeypress((int)key, modifiers?.SelectMulti(k => (int)k));
+    public static bool SendKeypress(int key, IEnumerable<int>? modifiers)
+    {
+        if(WindowFunctions.TryFindGameWindow(out var hwnd))
+        {
+            if(modifiers is { })
+                foreach(var mod in modifiers)
+                    User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYDOWN, mod, IntPtr.Zero);
+
+            User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYDOWN, key, IntPtr.Zero);
+            User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYUP, key, IntPtr.Zero);
+
+            if(modifiers is { })
+                foreach(var mod in modifiers)
+                    User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYUP, mod, IntPtr.Zero);
+            return true;
+        }
+        PluginLog.Error("Couldn't find game window!");
+        return false;
+    }
+
+    public static bool SendKeyHold(VirtualKey key, IEnumerable<VirtualKey>? modifiers) => SendKeyHold((int)key, modifiers?.SelectMulti(k => (int)k));
+    public static bool SendKeyHold(LimitedKeys key, IEnumerable<LimitedKeys>? modifiers) => SendKeyHold((int)key, modifiers?.SelectMulti(k => (int)k));
+    public static bool SendKeyHold(int key, IEnumerable<int>? modifiers)
+    {
+        if(WindowFunctions.TryFindGameWindow(out var hwnd))
+        {
+            if(modifiers is { })
+                foreach(var mod in modifiers)
+                    User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYDOWN, mod, IntPtr.Zero);
+
+            User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYDOWN, key, IntPtr.Zero);
+            return true;
+        }
+        PluginLog.Error("Couldn't find game window!");
+        return false;
+    }
+
+    public static bool SendKeyRelease(VirtualKey key, IEnumerable<VirtualKey>? modifiers) => SendKeyRelease((int)key, modifiers?.SelectMulti(k => (int)k));
+    public static bool SendKeyRelease(LimitedKeys key, IEnumerable<LimitedKeys>? modifiers) => SendKeyRelease((int)key, modifiers?.SelectMulti(k => (int)k));
+    public static bool SendKeyRelease(int key, IEnumerable<int>? modifiers)
+    {
+        if(WindowFunctions.TryFindGameWindow(out var hwnd))
+        {
+            if(modifiers is { })
+                foreach(var mod in modifiers)
+                    User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYUP, mod, IntPtr.Zero);
+
+            User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYUP, key, IntPtr.Zero);
+            return true;
+        }
+        PluginLog.Error("Couldn't find game window!");
+        return false;
+    }
+
     internal static int MAKEWPARAM(int l, int h)
     {
         return (l & 0xFFFF) | (h << 16);

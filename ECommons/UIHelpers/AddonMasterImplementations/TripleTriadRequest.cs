@@ -12,7 +12,7 @@ public partial class AddonMaster
         public TripleTriadRequest(nint addon) : base(addon) { }
         public TripleTriadRequest(void* addon) : base(addon) { }
 
-        public string Opponent => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[7].String).GetText();
+        public string Opponent => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[7].String.Value).GetText();
         public int CurrentMGP => Addon->AtkValues[9].Int;
 
         public int RegionalRule1 => Addon->AtkValues[102].Int;

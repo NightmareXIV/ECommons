@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace ECommons.ExcelServices;
-public static class ExcelCombos
+namespace ECommons.ImGuiMethods;
+public static partial class ImGuiEx
 {
     // from koenari https://github.com/Koenari/HimbeertoniRaidTool/blob/b28313e6d62de940acc073f203e3032e846bfb13/HimbeertoniRaidTool/UI/ImGuiHelper.cs#L188
 
@@ -123,7 +123,7 @@ public static class ExcelCombos
         Func<T, bool> preFilter, ImGuiComboFlags flags = ImGuiComboFlags.None) where T : struct, IExcelRow<T>
     {
         var sheet = Svc.Data.GetExcelSheet<T>();
-        if (sheet is null)
+        if(sheet is null)
         {
             selected = default;
             return false;
@@ -183,9 +183,9 @@ public static class ExcelCombos
         _comboDic.TryAdd(id, (false, false));
         (var toggle, var wasEnterClickedLastTime) = _comboDic[id];
         selected = default;
-        if (!ImGui.BeginCombo(id + (toggle ? "##x" : ""), preview, flags)) return false;
+        if(!ImGui.BeginCombo(id + (toggle ? "##x" : ""), preview, flags)) return false;
 
-        if (wasEnterClickedLastTime || ImGui.IsKeyPressed(ImGuiKey.Escape))
+        if(wasEnterClickedLastTime || ImGui.IsKeyPressed(ImGuiKey.Escape))
         {
             toggle = !toggle;
             _search = string.Empty;
@@ -194,41 +194,40 @@ public static class ExcelCombos
         var enterClicked = ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter);
         wasEnterClickedLastTime = enterClicked;
         _comboDic[id] = (toggle, wasEnterClickedLastTime);
-        if (ImGui.IsKeyPressed(ImGuiKey.UpArrow))
+        if(ImGui.IsKeyPressed(ImGuiKey.UpArrow))
             _hoveredItem--;
-        if (ImGui.IsKeyPressed(ImGuiKey.DownArrow))
+        if(ImGui.IsKeyPressed(ImGuiKey.DownArrow))
             _hoveredItem++;
         _hoveredItem = Math.Clamp(_hoveredItem, 0, Math.Max(_filtered?.Count - 1 ?? 0, 0));
-        if (ImGui.IsWindowAppearing() && ImGui.IsWindowFocused() && !ImGui.IsAnyItemActive())
+        if(ImGui.IsWindowAppearing() && ImGui.IsWindowFocused() && !ImGui.IsAnyItemActive())
         {
             _search = string.Empty;
             _filtered = null;
             ImGui.SetKeyboardFocusHere(0);
         }
 
-        if (ImGui.InputText("##ExcelSheetComboSearch", ref _search, 128))
+        if(ImGui.InputText("##ExcelSheetComboSearch", ref _search, 128))
             _filtered = null;
 
-        if (_filtered == null)
+        if(_filtered == null)
         {
             _filtered = possibilities.Where(preFilter).Where(s => searchPredicate(s, _search)).Cast<object>().ToHashSet();
             _hoveredItem = 0;
         }
 
         var i = 0;
-        foreach (var row in _filtered.Cast<T>())
+        foreach(var row in _filtered.Cast<T>())
         {
             var hovered = _hoveredItem == i;
-            using (ImRaii.PushId(i))
+            ImGui.PushID(i);
+            if(ImGui.Selectable(toName(row), hovered) || (enterClicked && hovered))
             {
-                if (ImGui.Selectable(toName(row), hovered) || enterClicked && hovered)
-                {
-                    selected = row;
-                    ImGui.PopID();
-                    ImGui.EndCombo();
-                    return true;
-                }
+                selected = row;
+                ImGui.PopID();
+                ImGui.EndCombo();
+                return true;
             }
+            ImGui.PopID();
             i++;
         }
 

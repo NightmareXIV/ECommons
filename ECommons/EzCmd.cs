@@ -12,13 +12,14 @@ public static class EzCmd
     internal static List<string> RegisteredCommands = [];
 
     //[Obsolete("Please use Cmd Attribute to the method in IDalamudPlugin to Add your command.")]
-    public static void Add(string command, IReadOnlyCommandInfo.HandlerDelegate action, string helpMessage = null)
+    public static void Add(string command, IReadOnlyCommandInfo.HandlerDelegate action, string helpMessage = null, int displayOrder = -1)
     {
         RegisteredCommands.Add(command);
         var cInfo = new CommandInfo(action)
         {
             HelpMessage = helpMessage ?? "",
-            ShowInHelp = helpMessage != null
+            ShowInHelp = helpMessage != null,
+            DisplayOrder = displayOrder
         };
         /*GenericHelpers.Safe(delegate
         {

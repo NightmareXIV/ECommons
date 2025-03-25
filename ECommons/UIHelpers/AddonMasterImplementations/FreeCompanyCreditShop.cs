@@ -22,7 +22,7 @@ public partial class AddonMaster
             get
             {
                 var ret = new Item[ItemCount];
-                for (var i = 0; i < ret.Length; i++)
+                for(var i = 0; i < ret.Length; i++)
                     ret[i] = new(this, i);
                 return ret;
             }
@@ -46,7 +46,7 @@ public partial class AddonMaster
             {
                 Am = am;
                 Index = index;
-                ItemName = MemoryHelper.ReadSeStringNullTerminated((nint)Am.Addon->AtkValues[10 + index].String).GetText();
+                ItemName = MemoryHelper.ReadSeStringNullTerminated((nint)Am.Addon->AtkValues[10 + index].String.Value).GetText();
                 ItemId = Am.Addon->AtkValues[30 + index].UInt;
                 IconId = Am.Addon->AtkValues[50 + index].Int;
                 Rank = Am.Addon->AtkValues[70 + index].UInt;
@@ -57,9 +57,9 @@ public partial class AddonMaster
 
             public readonly void Buy(int quantity)
             {
-                if (quantity <= MaxPurchaseSize)
+                if(quantity <= MaxPurchaseSize)
                 {
-                    if (quantity * Price <= Am.CompanyCredits)
+                    if(quantity * Price <= Am.CompanyCredits)
                         Callback.Fire(Am.Addon, true, 0, Index, quantity);
                     else
                         PluginLog.LogError($"Unable to purchase {quantity}x of {ItemId}. Insufficient company credits (requires {quantity * Price}, have {Am.CompanyCredits})");
@@ -73,7 +73,7 @@ public partial class AddonMaster
 
         public void Buy(uint itemId, int quantity)
         {
-            if (Items.TryGetFirst(x => x.ItemId == itemId, out var item))
+            if(Items.TryGetFirst(x => x.ItemId == itemId, out var item))
                 item.Buy(quantity);
             else
                 PluginLog.LogError($"Item id \"{itemId}\" not found in {nameof(FreeCompanyCreditShop)}.{nameof(Items)}");

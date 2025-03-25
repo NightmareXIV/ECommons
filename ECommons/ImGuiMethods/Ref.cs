@@ -27,31 +27,31 @@ public static class Ref<T>
 
     public static ref T? Get(string key, T? defaultValue)
     {
-        if (Storage.TryGetValue(key, out var ret))
+        if(Storage.TryGetValue(key, out var ret))
         {
             return ref ret.Value;
         }
         else
         {
             Storage[key] = new(defaultValue);
-            if (defaultValue == null && typeof(T) == typeof(string))
+            if(defaultValue == null && typeof(T) == typeof(string))
             {
                 Storage[key].GetType().GetFields()[0].SetValue(Storage[key], "");
             }
             return ref Storage[key].Value;
         }
     }
-    
+
     public static ref T? Get(string s, Func<T?>? defaultValueGenerator)
     {
-        if (Storage.TryGetValue(s, out var ret))
+        if(Storage.TryGetValue(s, out var ret))
         {
             return ref ret.Value;
         }
         else
         {
-            Storage[s] = new(defaultValueGenerator == null?default:defaultValueGenerator.Invoke());
-            if (defaultValueGenerator == null && typeof(T) == typeof(string))
+            Storage[s] = new(defaultValueGenerator == null ? default : defaultValueGenerator.Invoke());
+            if(defaultValueGenerator == null && typeof(T) == typeof(string))
             {
                 Storage[s].SetFoP("Value", string.Empty);
             }

@@ -62,7 +62,7 @@ public static class ExcelItemHelper
     public static int GetStat(this Item item, BaseParamEnum param, bool isHq = false)
     {
         var ret = 0;
-        for(int i = 0; i < item.BaseParam.Count; i++)
+        for(var i = 0; i < item.BaseParam.Count; i++)
         {
             if(item.BaseParam[i].RowId == (int)param)
             {
@@ -71,7 +71,7 @@ public static class ExcelItemHelper
         }
         if(isHq)
         {
-            for(int i = 0; i < item.BaseParamSpecial.Count; i++)
+            for(var i = 0; i < item.BaseParamSpecial.Count; i++)
             {
                 if(item.BaseParamSpecial[i].RowId == (int)param)
                 {

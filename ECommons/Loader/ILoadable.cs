@@ -2,5 +2,5 @@
 
 public interface ILoadable
 {
-    public bool IsDisposed { get; }
+    bool IsDisposed { get; }
 }

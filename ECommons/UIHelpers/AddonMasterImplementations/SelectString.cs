@@ -26,10 +26,10 @@ public partial class AddonMaster
             get
             {
                 List<Pointer<AtkComponentListItemRenderer>> items = [];
-                foreach (var node in Enumerable.Range(0, ListComponent->GetItemCount()))
+                foreach(var node in Enumerable.Range(0, ListComponent->GetItemCount()))
                 {
                     var item = ListComponent->GetItemRenderer(node);
-                    if (item == null)
+                    if(item == null)
                         continue;
                     items.Add(item);
                 }
@@ -42,7 +42,7 @@ public partial class AddonMaster
             get
             {
                 var ret = new Entry[EntryCount];
-                for (var i = 0; i < ret.Length; i++)
+                for(var i = 0; i < ret.Length; i++)
                 {
                     ret[i] = new(this, Addon, i);
                 }
@@ -58,7 +58,7 @@ public partial class AddonMaster
             public int Index { get; init; } = index;
 
             public readonly AtkTextNode* TextNode => am.ListItems[Index].Value->ButtonTextNode;
-            public readonly SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->PopupMenu.PopupMenu.EntryNames[Index]);
+            public readonly SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->PopupMenu.PopupMenu.EntryNames[Index].Value);
             public readonly string Text => SeString.GetText();
 
             public readonly void Select()

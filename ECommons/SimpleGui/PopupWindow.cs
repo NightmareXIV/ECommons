@@ -30,12 +30,12 @@ public class PopupWindow : Window
     private void Configure(Action content)
     {
         this.SetSizeConstraints(new(100), new(float.MaxValue));
-        this.drawAction = content;
-        this.RespectCloseHotkey = false;
-        this.AllowPinning = false;
-        this.WindowSystem = new();
+        drawAction = content;
+        RespectCloseHotkey = false;
+        AllowPinning = false;
+        WindowSystem = new();
         WindowSystem.AddWindow(this);
-        this.IsOpen = true;
+        IsOpen = true;
         Svc.PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
     }
 

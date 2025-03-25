@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <TargetFramework>net8.0-windows</TargetFramework>
+        <TargetFramework>net9.0-windows7.0</TargetFramework>
         <Platforms>x64</Platforms>
         <LangVersion>preview</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -15,11 +15,12 @@
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <OutputPath>bin\$(Configuration)\</OutputPath>
-        <NoWarn>CS1591;CA1401;CS0649;CS8632;CS0414;CS0169;IDE1006;CS0419</NoWarn>
+        <NoWarn>CS1591; CA1401; CS0649; CS8632; CS0414; CS0169; IDE1006; CS0419; CS8601; CS8604; CS8600; CS8602; CS8629; CS8625; CS8603; CS8620; CS8714; </NoWarn>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
         <Optimize>True</Optimize>
         <IsTrimmable>false</IsTrimmable>
         <Nullable>enable</Nullable>
+        <WarningsAsErrors>RS0030</WarningsAsErrors>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'DebugForms' or '$(Configuration)' == 'ReleaseForms'">
@@ -46,7 +47,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\..\.editorconfig" Link=".editorconfig" />
+      <None Remove="BannedSymbols.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="BannedSymbols.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="3.3.4">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
@@ -84,6 +96,10 @@
         </Reference>
         <Reference Include="FFXIVClientStructs">
             <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="InteropGenerator.Runtime">
+            <HintPath>$(DalamudLibPath)InteropGenerator.Runtime.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="PInvoke.User32">

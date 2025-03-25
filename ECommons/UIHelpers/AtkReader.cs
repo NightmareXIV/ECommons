@@ -11,13 +11,13 @@ namespace ECommons.UIHelpers;
 
 public abstract unsafe class AtkReader(AtkUnitBase* UnitBase, int BeginOffset = 0)
 {
-    public List<T> Loop<T>(int Offset, int Size, int MaxLength) where T : AtkReader
+    public List<T> Loop<T>(int Offset, int Size, int MaxLength, bool IgnoreNull = false) where T : AtkReader
     {
         var ret = new List<T>();
         for(var i = 0; i < MaxLength; i++)
         {
             var r = (AtkReader)Activator.CreateInstance(typeof(T), [(nint)UnitBase, Offset + (i * Size)]);
-            if(r.IsNull) break;
+            if(r.IsNull && !IgnoreNull) break;
             ret.Add((T)r);
         }
         return ret;
@@ -88,7 +88,7 @@ public abstract unsafe class AtkReader(AtkUnitBase* UnitBase, int BeginOffset = 
             return null;
         }
         if(!value.Type.EqualsAny(ValueType.String, ValueType.String8, ValueType.WideString, ValueType.ManagedString)) throw new InvalidCastException($"Value {num} from Addon {GenericHelpers.Read(UnitBase->Name)} was requested as SeString but it was {value.Type}");
-        return MemoryHelper.ReadSeStringNullTerminated((nint)value.String);
+        return MemoryHelper.ReadSeStringNullTerminated((nint)value.String.Value);
     }
 
     protected string ReadString(int n)
@@ -101,7 +101,7 @@ public abstract unsafe class AtkReader(AtkUnitBase* UnitBase, int BeginOffset = 
             return null;
         }
         if(!value.Type.EqualsAny(ValueType.String, ValueType.ManagedString, ValueType.String8, ValueType.WideString)) throw new InvalidCastException($"Value {num} from Addon {GenericHelpers.Read(UnitBase->Name)} was requested as String but it was {value.Type}");
-        return MemoryHelper.ReadStringNullTerminated((nint)value.String);
+        return MemoryHelper.ReadStringNullTerminated((nint)value.String.Value);
     }
 
     private void EnsureCount(AtkUnitBase* Addon, int num)

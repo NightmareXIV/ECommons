@@ -24,7 +24,7 @@ public partial class AddonMaster
                 var reader = new ReaderLetterViewer(Base);
                 var entries = new Item[reader.Items.Count];
                 for(var i = 0; i < entries.Length; i++)
-                    entries[i] = new (reader.Items[i]);
+                    entries[i] = new(reader.Items[i]);
                 return entries;
             }
         }

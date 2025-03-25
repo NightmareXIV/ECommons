@@ -9,25 +9,25 @@ namespace ECommons.Reflection.FieldPropertyUnion;
 /// </summary>
 public interface IFieldPropertyUnion
 {
-    public Type UnionType { get; }
-    public bool IsSpecialName { get; }
-    public object? GetRawConstantValue();
-    public object? GetValue(object? obj);
-    public void SetValue(object? obj, object? value);
-    public void SetValue(object? obj, object? value, BindingFlags invokeAttr, Binder? binder, CultureInfo? culture);
+    Type UnionType { get; }
+    bool IsSpecialName { get; }
+    object? GetRawConstantValue();
+    object? GetValue(object? obj);
+    void SetValue(object? obj, object? value);
+    void SetValue(object? obj, object? value, BindingFlags invokeAttr, Binder? binder, CultureInfo? culture);
 
     //MemberInfo
-    public string Name { get; }
-    public MemberTypes MemberType { get; }
-    public Type? DeclaringType { get; }
-    public Type? ReflectedType { get; }
-    public System.Reflection.Module Module { get; }
-    public bool IsDefined(Type attributeType, bool inherit);
-    public object[] GetCustomAttributes(bool inherit);
-    public object[] GetCustomAttributes(Type attributeType, bool inherit);
-    public T? GetCustomAttribute<T>() where T : Attribute;
-    public IEnumerable<T> GetCustomAttributes<T>() where T : Attribute;
+    string Name { get; }
+    MemberTypes MemberType { get; }
+    Type? DeclaringType { get; }
+    Type? ReflectedType { get; }
+    System.Reflection.Module Module { get; }
+    bool IsDefined(Type attributeType, bool inherit);
+    object[] GetCustomAttributes(bool inherit);
+    object[] GetCustomAttributes(Type attributeType, bool inherit);
+    T? GetCustomAttribute<T>() where T : Attribute;
+    IEnumerable<T> GetCustomAttributes<T>() where T : Attribute;
 
-    public IEnumerable<CustomAttributeData> CustomAttributes { get; }
-    public bool IsCollectible { get; }
+    IEnumerable<CustomAttributeData> CustomAttributes { get; }
+    bool IsCollectible { get; }
 }

@@ -22,7 +22,7 @@ public partial class AddonMaster
 
         public void Checkbox()
         {
-            if (Addon->BulkDesynthCheckboxNode != null && !Addon->BulkDesynthCheckboxNode->IsChecked)
+            if(Addon->BulkDesynthCheckboxNode != null && !Addon->BulkDesynthCheckboxNode->IsChecked)
             {
                 Addon->BulkDesynthCheckboxNode->IsChecked = true;
                 DesynthesizeButton->SetEnabledState(true);

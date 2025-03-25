@@ -1,7 +1,11 @@
-﻿namespace ECommons.MathHelpers;
+﻿using System;
+using System.Buffers.Binary;
+
+namespace ECommons.MathHelpers;
 
 public static class Endianness
 {
+    [Obsolete("Use BinaryPrimitives.ReverseEndianness")]
     public static uint SwapBytes(this uint x)
     {
         return ((x & 0x000000ff) << 24) +

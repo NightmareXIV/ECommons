@@ -9,7 +9,7 @@ using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace ECommons.Hooks.ActionEffectTypes;
 
-public unsafe readonly record struct ActionEffectSet
+public readonly unsafe record struct ActionEffectSet
 {
     public readonly Action? Action { get; }
 

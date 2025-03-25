@@ -24,10 +24,10 @@ public partial class AddonMaster
             get
             {
                 List<Pointer<AtkComponentListItemRenderer>> items = [];
-                foreach (var node in Enumerable.Range(0, ListComponent->GetItemCount()))
+                foreach(var node in Enumerable.Range(0, ListComponent->GetItemCount()))
                 {
                     var item = ListComponent->GetItemRenderer(node);
-                    if (item == null)
+                    if(item == null)
                         continue;
                     items.Add(item);
                 }
@@ -41,7 +41,7 @@ public partial class AddonMaster
             get
             {
                 var ret = new Entry[EntriesCount];
-                for (var i = 0; i < ret.Length; i++)
+                for(var i = 0; i < ret.Length; i++)
                     ret[i] = new(this, Addon, i);
                 return ret;
             }
@@ -55,16 +55,16 @@ public partial class AddonMaster
             public readonly int Index { get; init; } = index;
             public readonly int ListIndex => Index + offset;
             // Dalamud added context menu entries all have a callback index of -1, which results in looping the list and calling something else. AFAIK, native entries are always a single payload of rawtext.
-            public readonly bool IsNativeEntry => Addon->AtkValues[ListIndex].Type == FFXIVClientStructs.FFXIV.Component.GUI.ValueType.ManagedString && new ReadOnlySeStringSpan(((AtkValue*)(nint)(&Addon->AtkValues[ListIndex]))->String).PayloadCount == 1;
+            public readonly bool IsNativeEntry => Addon->AtkValues[ListIndex].Type == FFXIVClientStructs.FFXIV.Component.GUI.ValueType.ManagedString && new ReadOnlySeStringSpan(((AtkValue*)(nint)(&Addon->AtkValues[ListIndex]))->String.Value).PayloadCount == 1;
 
             public AtkTextNode* TextNode => am.ListItems[Index].Value->ButtonTextNode;
-            public readonly SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[ListIndex].String);
+            public readonly SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[ListIndex].String.Value);
             public readonly string Text => SeString.GetText();
             public readonly bool Enabled => am.ListItems[Index].Value->IsEnabled;
 
             public readonly bool Select()
             {
-                if (IsNativeEntry && Enabled)
+                if(IsNativeEntry && Enabled)
                 {
                     Callback.Fire((AtkUnitBase*)Addon, true, 0, Index, 0);
                     return true;

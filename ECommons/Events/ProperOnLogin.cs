@@ -47,7 +47,10 @@ public static class ProperOnLogin
             }
             if(fireImmediately && PlayerPresent)
             {
-                GenericHelpers.Safe(action);
+                Svc.Framework.RunOnFrameworkThread(() =>
+                {
+                    GenericHelpers.Safe(action);
+                });
             }
         }
     }
@@ -74,7 +77,10 @@ public static class ProperOnLogin
             }
             if(fireImmediately && Player.Interactable)
             {
-                GenericHelpers.Safe(action);
+                Svc.Framework.RunOnFrameworkThread(() =>
+                {
+                    GenericHelpers.Safe(action);
+                });
             }
         }
     }

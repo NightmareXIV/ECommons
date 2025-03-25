@@ -11,7 +11,7 @@ namespace ECommons.MathHelpers;
 /// Ultimate number union. Offers same performance as using numbers directly.
 /// </summary>
 [StructLayout(LayoutKind.Explicit, Size = 8)]
-public unsafe readonly struct Number : IEquatable<Number>
+public readonly unsafe struct Number : IEquatable<Number>
 {
     [FieldOffset(0)] private readonly long LongValue;
     [FieldOffset(0)] private readonly ulong ULongValue;
@@ -104,7 +104,7 @@ public unsafe readonly struct Number : IEquatable<Number>
         return !(left == right);
     }
 
-    public readonly override string ToString()
+    public override readonly string ToString()
     {
         return $"{LongValue}";
     }

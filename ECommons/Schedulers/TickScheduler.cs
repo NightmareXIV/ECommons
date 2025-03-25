@@ -13,7 +13,7 @@ public class TickScheduler : IScheduler
     public TickScheduler(Action function, long delayMS = 0)
     {
         ExecuteAt = Environment.TickCount64 + delayMS;
-        this.Action = function;
+        Action = function;
         Svc.Framework.Update += Execute;
     }
 

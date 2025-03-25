@@ -13,7 +13,7 @@ public static class MathHelper
     {
         return Math.Abs(Vector2.Distance(a, b) - (Vector2.Distance(a, point) + Vector2.Distance(point, b))) <= tolerance;
     }
-    
+
     ///<inheritdoc cref="CalculateCircularMovement(Vector2, Vector2, Vector2, out List{List{Vector2}}, float, int, ValueTuple{float, float}?)"/>
     public static List<Vector3> CalculateCircularMovement(Vector3 centerPoint, Vector3 initialPoint, Vector3 exitPoint, out List<List<Vector3>> candidates, float precision = 36f, int exitPointTolerance = 1, (float Min, float Max)? clampRadius = null)
     {
@@ -68,7 +68,7 @@ public static class MathHelper
         List<Vector2> points = [];
         var distance = Vector2.Distance(centerPoint, initialPoint);
         //if(clampRadius != null) distance.ValidateRange(clampRadius.Value.Min, clampRadius.Value.Max);
-        for(var x = 0f;x < 360f;x += step)
+        for(var x = 0f; x < 360f; x += step)
         {
             var p = MathF.SinCos(x.DegToRad());
             points.Add(new Vector2(p.Sin * distance, p.Cos * distance) + centerPoint);
@@ -78,9 +78,9 @@ public static class MathHelper
         var finalPoints = points.OrderBy(x => Vector2.Distance(exitPoint, x)).Take(exitPointTolerance).ToArray();
         if(finalPoints.Length > 1)
         {
-            for(int i = 0; i < finalPoints.Length-1; i++)
+            for(var i = 0; i < finalPoints.Length - 1; i++)
             {
-                if(IsPointPerpendicularToLineSegment(initialPoint, finalPoints[i], finalPoints[i+1]) && Vector2.Distance(initialPoint, FindClosestPointOnLine(initialPoint, finalPoints[i], finalPoints[i + 1])) < distance / 2f)
+                if(IsPointPerpendicularToLineSegment(initialPoint, finalPoints[i], finalPoints[i + 1]) && Vector2.Distance(initialPoint, FindClosestPointOnLine(initialPoint, finalPoints[i], finalPoints[i + 1])) < distance / 2f)
                 {
                     candidates = retCandidates;
                     return [];
@@ -96,7 +96,7 @@ public static class MathHelper
                     var pointIndex = points.IndexOf(point);
                     if(pointIndex == -1) throw new Exception($"Could not find {point} in \n{points.Print("\n")}");
                     var list = new List<Vector2>();
-                    int iterations = 0;
+                    var iterations = 0;
                     do
                     {
                         iterations++;
@@ -114,9 +114,9 @@ public static class MathHelper
         retCandidates = [.. retCandidates.OrderBy(CalculateDistance)];
         if(clampRadius != null)
         {
-            foreach(var list in retCandidates) 
+            foreach(var list in retCandidates)
             {
-                for(int i = 0; i < list.Count; i++)
+                for(var i = 0; i < list.Count; i++)
                 {
                     if(GetAngleBetweenLines(list[i], centerPoint, initialPoint, centerPoint).RadToDeg() > step / 10)
                     {
@@ -198,7 +198,7 @@ public static class MathHelper
     /// <summary>Calculates the positive remainder when dividing a dividend by a divisor.</summary>
     public static double Mod(double dividend, double divisor)
     {
-        double remainder = dividend % divisor;
+        var remainder = dividend % divisor;
         if(remainder < 0)
         {
             if(divisor < 0)
@@ -213,7 +213,7 @@ public static class MathHelper
     /// <summary>Calculates the positive remainder when dividing a dividend by a divisor.</summary>
     public static float Mod(float dividend, float divisor)
     {
-        float remainder = dividend % divisor;
+        var remainder = dividend % divisor;
         if(remainder < 0)
         {
             if(divisor < 0)
@@ -228,7 +228,7 @@ public static class MathHelper
     /// <summary>Calculates the positive remainder when dividing a dividend by a divisor.</summary>
     public static int Mod(int dividend, int divisor)
     {
-        int remainder = dividend % divisor;
+        var remainder = dividend % divisor;
         if(remainder < 0)
         {
             if(divisor < 0)
@@ -287,6 +287,9 @@ public static class MathHelper
         return (float)i;
     }
 
+    public static Vector2 ToVector2(this int i) => new(i);
+    public static Vector2 ToVector2(this float i) => new(i);
+    public static Vector2 ToVector2(this System.Drawing.Point p) => new(p.X, p.Y);
     public static Vector2 ToVector2(this Vector3 vector3)
     {
         return new Vector2(vector3.X, vector3.Z);
@@ -301,6 +304,8 @@ public static class MathHelper
     {
         return new Vector3(vector2.X, Y, vector2.Y);
     }
+
+    public static Vector3 ToVector3(this (float X, float Y, float Z) t) => new(t.X, t.Y, t.Z);
 
     /// <summary>
     /// Degrees

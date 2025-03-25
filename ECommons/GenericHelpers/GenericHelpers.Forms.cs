@@ -1,4 +1,5 @@
 ﻿
+using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using ECommons.Logging;
 using ImGuiNET;
@@ -17,9 +18,6 @@ public static partial class GenericHelpers
     /// <param name="text">Text to copy</param>
     /// <param name="silent">Whether to display success/failure popup</param>
     /// <returns>Whether operation succeeded</returns>
-#if !(DEBUGFORMS || RELEASEFORMS)
-    [Obsolete("You have selected not to use Windows Forms; copying will be done via ImGui. This has been known to cause serious issues in past. If you are working with clipboard a lot, consider enabling Windows Forms.")]
-#endif
     public static bool Copy(string text, bool silent = false)
     {
         try
@@ -29,7 +27,7 @@ public static partial class GenericHelpers
 #if (DEBUGFORMS || RELEASEFORMS)
                 Clipboard.Clear();
 #else
-                ImGui.SetClipboardText("");
+                Svc.Framework.RunOnFrameworkThread(() => ImGui.SetClipboardText(""));
 #endif
                 if(!silent) Notify.Success("Clipboard cleared");
             }
@@ -38,7 +36,7 @@ public static partial class GenericHelpers
 #if (DEBUGFORMS || RELEASEFORMS)
                 Clipboard.SetText(text);
 #else
-                ImGui.SetClipboardText(text);
+                Svc.Framework.RunOnFrameworkThread(() => ImGui.SetClipboardText(text));
 #endif
                 if(!silent) Notify.Success("Text copied to clipboard");
             }
@@ -61,6 +59,7 @@ public static partial class GenericHelpers
     /// </summary>
     /// <param name="silent">Whether to display popup when error occurs.</param>
     /// <returns>Contents of the clipboard; null if clipboard couldn't be read.</returns>
+    /// <remarks>Be sure to run on the framework/draw thread if using ImGui to avoid potential crashes.</remarks>
 #if !(DEBUGFORMS || RELEASEFORMS)
     [Obsolete("You have selected not to use Windows Forms; pasting will be done via ImGui. This has been known to cause serious issues in past. If you are working with clipboard a lot, consider enabling Windows Forms.")]
 #endif

@@ -5,6 +5,7 @@ namespace ECommons.ImGuiMethods;
 /// <summary>
 /// A set of fancy color for use in plugins. You can redefine them after calling ECommonsMain.Init to match necessary style!
 /// </summary>
+//[System.Obsolete("Please switch to EzColor")]
 public static class EColor
 {
     public static Vector4 RedBright = ImGuiEx.Vector4FromRGB(0xFF0000);
