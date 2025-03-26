@@ -18,8 +18,11 @@ public static class ProperOnLogin
 
     public static void FireArtificially()
     {
-        OnUpdateAvailable(null);
-        OnUpdateInteractable(null);
+        Svc.Framework.RunOnFrameworkThread(() =>
+        {
+            OnUpdateAvailable(null);
+            OnUpdateInteractable(null);
+        });
     }
 
     [Obsolete("Use either RegisterAvailable or RegisterInteractable")]

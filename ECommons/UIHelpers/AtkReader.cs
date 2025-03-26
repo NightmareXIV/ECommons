@@ -88,7 +88,7 @@ public abstract unsafe class AtkReader(AtkUnitBase* UnitBase, int BeginOffset = 
             return null;
         }
         if(!value.Type.EqualsAny(ValueType.String, ValueType.String8, ValueType.WideString, ValueType.ManagedString)) throw new InvalidCastException($"Value {num} from Addon {GenericHelpers.Read(UnitBase->Name)} was requested as SeString but it was {value.Type}");
-        return MemoryHelper.ReadSeStringNullTerminated((nint)value.String);
+        return MemoryHelper.ReadSeStringNullTerminated((nint)value.String.Value);
     }
 
     protected string ReadString(int n)
@@ -101,7 +101,7 @@ public abstract unsafe class AtkReader(AtkUnitBase* UnitBase, int BeginOffset = 
             return null;
         }
         if(!value.Type.EqualsAny(ValueType.String, ValueType.ManagedString, ValueType.String8, ValueType.WideString)) throw new InvalidCastException($"Value {num} from Addon {GenericHelpers.Read(UnitBase->Name)} was requested as String but it was {value.Type}");
-        return MemoryHelper.ReadStringNullTerminated((nint)value.String);
+        return MemoryHelper.ReadStringNullTerminated((nint)value.String.Value);
     }
 
     private void EnsureCount(AtkUnitBase* Addon, int num)

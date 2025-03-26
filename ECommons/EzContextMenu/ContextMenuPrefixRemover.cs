@@ -85,7 +85,7 @@ public static unsafe class ContextMenuPrefixRemover
             var entry = addon->AtkValues[7 + i];
             if(entry.Type.EqualsAny(ValueType.String, ValueType.ManagedString, ValueType.String8))
             {
-                var seString = MemoryHelper.ReadSeStringNullTerminated((nint)entry.String);
+                var seString = MemoryHelper.ReadSeStringNullTerminated((nint)entry.String.Value);
                 if(seString.Payloads.Count < 2) continue;
                 for(var x = 1; x < seString.Payloads.Count; x++)
                 {
@@ -98,7 +98,7 @@ public static unsafe class ContextMenuPrefixRemover
                         }
                     }
                 }
-                MemoryHelper.WriteSeString((nint)entry.String, seString);
+                MemoryHelper.WriteSeString((nint)entry.String.Value, seString);
             }
         }
     }

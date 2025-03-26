@@ -24,6 +24,7 @@ public static unsafe class Player
     public static readonly Number MaxLevel = 100;
     public static IPlayerCharacter Object => Svc.ClientState.LocalPlayer;
     public static bool Available => Svc.ClientState.LocalPlayer != null;
+    public static bool AvailableThreadSafe => GameObjectManager.Instance()->Objects.IndexSorted[0].Value != null;
     public static bool Interactable => Available && Object.IsTargetable;
     public static bool IsBusy => GenericHelpers.IsOccupied() || Object.IsCasting || IsMoving || IsAnimationLocked || Svc.Condition[ConditionFlag.InCombat];
     public static ulong CID => Svc.ClientState.LocalContentId;
@@ -69,7 +70,7 @@ public static unsafe class Player
     public static float Rotation => Object.Rotation;
     public static float AnimationLock => *(float*)((nint)ActionManager.Instance() + 8);
     public static bool IsAnimationLocked => AnimationLock > 0;
-    public static bool IsMoving => AgentMap.Instance()->IsPlayerMoving == 1;
+    public static bool IsMoving => AgentMap.Instance()->IsPlayerMoving;
     public static bool IsDead => Svc.Condition[ConditionFlag.Unconscious];
     public static bool Revivable => IsDead && AgentRevive.Instance()->ReviveState != 0;
     public static bool Mounted => Svc.Condition[ConditionFlag.Mounted];
