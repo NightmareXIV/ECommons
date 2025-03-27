@@ -29,7 +29,7 @@ public static unsafe class ExcelActionHelper
         }
         else
         {
-            var name = dataNullable?.Name.ExtractText();
+            var name = dataNullable?.Name.GetText();
             if(name.IsNullOrEmpty())
             {
                 return $"#{dataNullable.Value.RowId}";

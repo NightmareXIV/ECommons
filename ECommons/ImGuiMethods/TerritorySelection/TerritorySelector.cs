@@ -105,7 +105,7 @@ public unsafe class TerritorySelector : Window
         {
             foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>().Where(x => !HiddenTerritories.Contains(x.RowId)))
             {
-                if(c.Value.Contains((TerritoryIntendedUseEnum)x.TerritoryIntendedUse.RowId) && x.PlaceName.ValueNullable?.Name.ExtractText().IsNullOrEmpty() == false)
+                if(c.Value.Contains((TerritoryIntendedUseEnum)x.TerritoryIntendedUse.RowId) && x.PlaceName.ValueNullable?.Name.GetText().IsNullOrEmpty() == false)
                 {
                     if(!Cache.TryGetValue(c.Key, out var value))
                     {
@@ -122,7 +122,7 @@ public unsafe class TerritorySelector : Window
             Cache[Category.Other] = [];
             foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>().Where(x => !HiddenTerritories.Contains(x.RowId)))
             {
-                if(!Cache.Values.Any(c => c.Any(z => z.RowId == x.RowId)) && x.PlaceName.ValueNullable?.Name.ExtractText().IsNullOrEmpty() == false)
+                if(!Cache.Values.Any(c => c.Any(z => z.RowId == x.RowId)) && x.PlaceName.ValueNullable?.Name.GetText().IsNullOrEmpty() == false)
                 {
                     Cache[Category.Other].Add(x);
                 }
@@ -133,7 +133,7 @@ public unsafe class TerritorySelector : Window
             Cache[Category.All] = [];
             foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>().Where(x => !HiddenTerritories.Contains(x.RowId)))
             {
-                if(x.PlaceName.ValueNullable?.Name.ExtractText().IsNullOrEmpty() == false)
+                if(x.PlaceName.ValueNullable?.Name.GetText().IsNullOrEmpty() == false)
                 {
                     Cache[Category.All].Add(x);
                 }
@@ -232,11 +232,11 @@ public unsafe class TerritorySelector : Window
 
                             foreach(var t in x.Value)
                             {
-                                var cfc = t.ContentFinderCondition.ValueNullable?.Name.ExtractText() ?? "";
-                                var questBattle = t.QuestBattle.ValueNullable?.Quest.GetValueOrDefault<Quest>()?.Name.ExtractText() ?? "";
-                                var name = t.PlaceName.ValueNullable?.Name.ExtractText() ?? "";
-                                var zone = t.PlaceNameZone.ValueNullable?.Name.ExtractText() ?? "";
-                                var region = t.PlaceNameRegion.ValueNullable?.Name.ExtractText() ?? "";
+                                var cfc = t.ContentFinderCondition.ValueNullable?.Name.GetText() ?? "";
+                                var questBattle = t.QuestBattle.ValueNullable?.Quest.GetValueOrDefault<Quest>()?.Name.GetText() ?? "";
+                                var name = t.PlaceName.ValueNullable?.Name.GetText() ?? "";
+                                var zone = t.PlaceNameZone.ValueNullable?.Name.GetText() ?? "";
+                                var region = t.PlaceNameRegion.ValueNullable?.Name.GetText() ?? "";
                                 var intended = ((TerritoryIntendedUseEnum)t.TerritoryIntendedUse.RowId).ToString().Replace("_", " ") ?? "";
                                 var col = t.RowId == Svc.ClientState.TerritoryType && Player.Available;
 

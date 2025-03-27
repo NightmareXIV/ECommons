@@ -31,7 +31,7 @@ public unsafe partial class AddonMaster
             var data = Svc.Data.GetExcelSheet<WorldDCGroupType>()?.GetRowOrDefault((uint)dc);
             if(data != null)
             {
-                if(data.Value.Name.ExtractText().IsNullOrEmpty()) return false;
+                if(data.Value.Name.GetText().IsNullOrEmpty()) return false;
                 if(data.Value.Region == 0) return false;
                 UncheckedSelect(dc);
                 return true;

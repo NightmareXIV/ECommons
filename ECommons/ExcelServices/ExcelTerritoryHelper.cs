@@ -65,7 +65,7 @@ public static class ExcelTerritoryHelper
 
     public static bool NameExists(this TerritoryType? t)
     {
-        var nonExists = t?.Name.ExtractText().IsNullOrEmpty() != false && t?.ContentFinderCondition.ValueNullable?.Name.ExtractText().IsNullOrEmpty() != false;
+        var nonExists = t?.Name.GetText().IsNullOrEmpty() != false && t?.ContentFinderCondition.ValueNullable?.Name.GetText().IsNullOrEmpty() != false;
         return !nonExists;
     }
 
@@ -101,7 +101,7 @@ public static class ExcelTerritoryHelper
 
     public static TerritoryType? Get(uint ID) => Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(ID);
 
-    public static string GetBG(this TerritoryType? t) => t?.Bg.ExtractText();
+    public static string GetBG(this TerritoryType? t) => t?.Bg.GetText();
 
-    public static string GetBG(uint ID) => Get(ID)?.Bg.ExtractText();
+    public static string GetBG(uint ID) => Get(ID)?.Bg.GetText();
 }

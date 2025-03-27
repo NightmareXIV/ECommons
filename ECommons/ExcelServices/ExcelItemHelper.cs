@@ -48,7 +48,7 @@ public static class ExcelItemHelper
         if(item == null) return "? Unknown ?";
         if(!ItemNameCache.TryGetValue(item.Value.RowId, out var name))
         {
-            name = item.Value.Name.ExtractText();
+            name = item.Value.Name.GetText();
             ItemNameCache[item.Value.RowId] = name;
         }
         if(name == "")
