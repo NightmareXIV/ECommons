@@ -54,7 +54,7 @@ public static unsafe class CharacterFunctions
 
     public static bool IsInWater(this ICharacter chr)
     {
-        return *(byte*)(chr.Address + 1452) == 1;
+        return *(byte*)(chr.Address + 1436) == 1;
     }
 
     public static CombatRole GetRole(this ICharacter c)
