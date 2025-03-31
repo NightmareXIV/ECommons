@@ -6,6 +6,7 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Linq;
+using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -19,7 +20,7 @@ public partial class AddonMaster
         public SeString SeStringNullTerminated => MemoryHelper.ReadSeStringNullTerminated(new nint(Addon->AtkValues[0].String));
         public string Text => SeString.GetText();
         public string TextLegacy => string.Join(string.Empty, SeStringNullTerminated.Payloads.OfType<TextPayload>().Select(t => t.Text)).Replace('\n', ' ').Trim();
-        public int ButtonsVisible => Enumerable.Range(1, 3).Count(x => Addon->AtkValues[x].String != null);
+        public int ButtonsVisible => Enumerable.Range(1, 3).Count(x => Addon->AtkValues[x].Type.EqualsAny(ValueType.String, ValueType.String8, ValueType.ManagedString, ValueType.WideString));
 
         public AtkComponentButton* ThirdButton => Addon->GetButtonNodeById(14);
 
