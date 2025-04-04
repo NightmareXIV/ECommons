@@ -101,7 +101,10 @@ var type = "unknown build";
         GenericHelpers.Safe(DalamudReflector.Dispose);
         if(EzConfigGui.WindowSystem != null)
         {
-            Svc.PluginInterface.UiBuilder.OpenConfigUi -= EzConfigGui.Open;
+            if (EzConfigGui.Type is EzConfigGui.WindowType.Main or EzConfigGui.WindowType.Both)
+                Svc.PluginInterface.UiBuilder.OpenMainUi -= EzConfigGui.Open;
+            if (EzConfigGui.Type is EzConfigGui.WindowType.Config or EzConfigGui.WindowType.Both)
+                Svc.PluginInterface.UiBuilder.OpenConfigUi -= EzConfigGui.Open;
             Svc.PluginInterface.UiBuilder.Draw -= EzConfigGui.Draw;
             if(EzConfigGui.Config != null)
             {

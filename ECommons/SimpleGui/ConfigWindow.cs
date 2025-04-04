@@ -9,7 +9,7 @@ namespace ECommons.SimpleGui;
 
 public class ConfigWindow : Window
 {
-    public ConfigWindow(string name = null) : base($"{name ?? $"{DalamudReflector.GetPluginName()} v{ECommonsMain.Instance.GetType().Assembly.GetName().Version}"}###{DalamudReflector.GetPluginName()}")
+    public ConfigWindow(string? name = null) : base($"{name ?? $"{DalamudReflector.GetPluginName()} v{ECommonsMain.Instance.GetType().Assembly.GetName().Version}"}###{DalamudReflector.GetPluginName()}")
     {
         SizeConstraints = new()
         {
