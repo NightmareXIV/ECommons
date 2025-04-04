@@ -22,7 +22,7 @@ public static class EzConfigGui
     /// Initialize the EzConfig WindowSystem
     /// </summary>
     /// <param name="draw">Draw method. If initialized this way, a new instance of <see cref="ConfigWindow"/> will be created. Any window parameters will need to be set in separate method instead of the constructor.</param>
-    /// <param name="config">Config to auto save</param>
+    /// <param name="config">Config to auto save on close</param>
     /// <param name="nameOverride">Override for the titlebar name. Default value is {InternalName v0.0.0.0}</param>
     /// <param name="windowType">Determines which UiBuilder event to subscribe to</param>
     public static void Init(Action draw, IPluginConfiguration config = null, string nameOverride = null, WindowType windowType = WindowType.Config)
@@ -35,7 +35,7 @@ public static class EzConfigGui
     /// Initialize the EzConfig WindowSystem
     /// </summary>
     /// <param name="window">Window instance. If window is not of type <see cref="ConfigWindow"/> then config autosaving will not function.</param>
-    /// <param name="config">Config to auto save</param>
+    /// <param name="config">Config to auto save on close</param>
     /// <param name="nameOverride">Override for the titlebar name. Default value is {InternalName v0.0.0.0}</param>
     /// <param name="windowType">Determines which UiBuilder event to subscribe to</param>
     public static T Init<T>(T window, IPluginConfiguration config = null, string nameOverride = null, WindowType windowType = WindowType.Config) where T : Window
@@ -55,6 +55,7 @@ public static class EzConfigGui
         Config = config;
         Window ??= new ConfigWindow(nameOverride);
         WindowSystem.AddWindow(Window);
+        Type = windowType;
         Svc.PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
         switch(windowType)
         {
