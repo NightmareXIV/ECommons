@@ -1,10 +1,5 @@
-﻿using Dalamud.Game.Text.SeStringHandling;
-using FFXIVClientStructs.FFXIV.Component.GUI;
-using System;
+﻿using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommons.UIHelpers.AtkReaderImplementations;
 public unsafe class ReaderTripleTriadCoinExchange(AtkUnitBase* UnitBase, int BeginOffset = 0) : AtkReader(UnitBase, BeginOffset)
