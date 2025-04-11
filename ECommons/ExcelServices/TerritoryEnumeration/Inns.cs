@@ -14,6 +14,7 @@ public static class Inns
     public const ushort Bokairo_Inn = 629;
     public const ushort The_Pendants_Personal_Suite = 843;
     public const ushort Andron = 990;
+    public const ushort The_Forard_Cabins = 1205;
     private static ushort[] list = null;
     public static ushort[] List
     {

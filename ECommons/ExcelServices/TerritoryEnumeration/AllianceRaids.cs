@@ -20,6 +20,9 @@ public static class AllianceRaids
     public const ushort the_Puppets_Bunker = 917;
     public const ushort The_Tower_at_Paradigms_Breach = 966;
     public const ushort Aglaia = 1054;
+    public const ushort Euphrosyne = 1118;
+    public const ushort Thalia = 1178;
+    public const ushort Jueno_The_First_Walk = 1248;
     private static ushort[] list = null;
     public static ushort[] List
     {

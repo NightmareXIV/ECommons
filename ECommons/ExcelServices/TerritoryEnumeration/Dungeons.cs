@@ -9,8 +9,8 @@ public static class Dungeons
 {
     public const ushort the_Wanderers_Palace = 159;
     public const ushort Pharos_Sirius = 160;
-    public const ushort Halatali = 162;
-    public const ushort the_Sunken_Temple_of_Qarn = 163;
+    public const ushort Halatali = 1245;
+    public const ushort the_Sunken_Temple_of_Qarn = 1267;
     public const ushort Amdapor_Keep = 167;
     public const ushort Cutters_Cry = 170;
     public const ushort Dzemael_Darkhold = 171;
@@ -112,6 +112,15 @@ public static class Dungeons
     public const ushort the_Aery = 1065;
     public const ushort the_Vault = 1066;
     public const ushort the_Fell_Court_of_Troia = 1070;
+    public const ushort Worqor_Zormor = 1193;
+    public const ushort The_Skydeep_Cenote = 1194;
+    public const ushort Vanguard = 1198;
+    public const ushort Alexandria = 1199;
+    public const ushort Tender_Valley = 1203;
+    public const ushort Strayborough = 1204;
+    public const ushort Origenics = 1208;
+    public const ushort Yuweyawata = 1242;
+    public const ushort The_Underkeep = 1266;
     private static ushort[] list = null;
     public static ushort[] List
     {
