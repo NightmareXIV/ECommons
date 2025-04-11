@@ -89,6 +89,14 @@ public static class Trials
     public const ushort Storms_Crown = 1071;
     public const ushort Storms_Crown_Extreme = 1072;
     public const ushort Containment_Bay_S1T7_Unreal = 1090;
+    public const ushort Worqor_Lar_Dor = 1195;
+    public const ushort Worqor_Lar_Dor_Extreme = 1196;
+    public const ushort Summit_of_Everkeep = 1200;
+    public const ushort Summit_of_Everkeep_Extreme = 1201;
+    public const ushort Interphos = 1202;
+    public const ushort Interphos_Extreme = 1243;
+    public const ushort Recollection = 1270;
+    public const ushort Recollection_Extreme = 1271;
     private static ushort[] list = null;
     public static ushort[] List
     {

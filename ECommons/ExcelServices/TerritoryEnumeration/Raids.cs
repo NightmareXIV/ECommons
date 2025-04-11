@@ -119,6 +119,23 @@ public static class Raids
     public const ushort Abyssos_The_Eighth_Circle = 1087;
     public const ushort Abyssos_The_Eighth_Circle_Savage = 1088;
     public const ushort The_Omega_Protocol_Ultimate = 1122;
+    public const ushort AAC_Light_Heavyweight_M1 = 1225;
+    public const ushort AAC_Light_Heavyweight_M1_Savage = 1226;
+    public const ushort AAC_Light_Heavyweight_M2 = 1227;
+    public const ushort AAC_Light_Heavyweight_M2_Savage = 1228;
+    public const ushort AAC_Light_Heavyweight_M3 = 1229;
+    public const ushort AAC_Light_Heavyweight_M3_Savage = 1230;
+    public const ushort AAC_Light_Heavyweight_M4 = 1231;
+    public const ushort AAC_Light_Heavyweight_M4_Savage = 1232;
+    public const ushort Futures_Rewritten_Ultimate = 1238;
+    public const ushort AAC_Cruiserweight_M1 = 1256;
+    public const ushort AAC_Cruiserweight_M1_Savage = 1257;
+    public const ushort AAC_Cruiserweight_M2 = 1258;
+    public const ushort AAC_Cruiserweight_M2_Savage = 1259;
+    public const ushort AAC_Cruiserweight_M3 = 1260;
+    public const ushort AAC_Cruiserweight_M3_Savage = 1261;
+    public const ushort AAC_Cruiserweight_M4 = 1262;
+    public const ushort AAC_Cruiserweight_M4_Savage =  1263;
     private static ushort[] list = null;
     public static ushort[] List
     {

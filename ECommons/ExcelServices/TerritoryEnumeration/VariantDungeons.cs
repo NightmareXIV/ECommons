@@ -8,6 +8,8 @@ namespace ECommons.ExcelServices.TerritoryEnumeration;
 public static class VariantDungeons
 {
     public const ushort The_Sildihn_Subterrane = 1069;
+    public const ushort Mount_Rokkon = 1137;
+    public const ushort Aloalo_Island = 1176;
     private static ushort[] list = null;
     public static ushort[] List
     {

@@ -25,6 +25,8 @@ public static class MainCities
     public const ushort Eulmore = 820;
     public const ushort Old_Sharlayan = 962;
     public const ushort Radz_at_Han = 963;
+    public const ushort Tuliyollal = 1185;
+    public const ushort Solution_Nine = 1205;
     private static ushort[] list = null;
     public static ushort[] List
     {
