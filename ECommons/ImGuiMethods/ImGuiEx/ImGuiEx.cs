@@ -443,7 +443,7 @@ public static unsafe partial class ImGuiEx
         {
             preview = selectedJobs.Select(x => x.ToString().Replace("_", " ")).Print();
         }
-        if(ImGui.BeginCombo(id, preview))
+        if(ImGui.BeginCombo(id, preview, ImGuiComboFlags.HeightLarge))
         {
             if(ImGui.IsWindowAppearing() && options?.Contains(JobSelectorOption.ClearFilterOnOpen) == true)
                 ImGui.SetNextItemWidth(150f);
@@ -463,7 +463,6 @@ public static unsafe partial class ImGuiEx
                 ImGuiEx.CollectionCheckbox("Melee DPS", Enum.GetValues<Job>().Where(x => x.IsMeleeDps()), selectedJobs);
                 ImGui.SameLine();
                 ImGuiEx.CollectionCheckbox("Ranged DPS", Enum.GetValues<Job>().Where(x => x.IsRangedDps()), selectedJobs);
-                ImGui.SameLine();
                 ImGuiEx.CollectionCheckbox("Magical ranged DPS", Enum.GetValues<Job>().Where(x => x.IsMagicalRangedDps()), selectedJobs);
                 ImGui.SameLine();
                 ImGuiEx.CollectionCheckbox("Physical ranged DPS", Enum.GetValues<Job>().Where(x => x.IsPhysicalRangedDps()), selectedJobs);
