@@ -51,6 +51,14 @@ public static class OpenAreas // 1
     public const ushort Ultima_Thule = 960;
     public const ushort Elpis = 961;
     public const ushort Castrum_Marinum_Drydocks = 967;
+    public const ushort Tuliyollal = 1185;
+    public const ushort Solution_Nine = 1186;
+    public const ushort Urqopacha = 1187;
+    public const ushort Kozamauka = 1188;
+    public const ushort Yak_Tel = 1189;
+    public const ushort Shaaloani = 1190;
+    public const ushort Heritage_Found = 1191;
+    public const ushort Living_Memory = 1192;
     private static ushort[] list = null;
     public static ushort[] List
     {
