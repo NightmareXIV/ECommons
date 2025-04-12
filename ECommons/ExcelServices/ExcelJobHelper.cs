@@ -60,6 +60,11 @@ public static class ExcelJobHelper
         return Svc.Data.GetExcelSheet<ClassJob>().GetRow((uint)j);
     }
 
+    public static Job GetJob(this ClassJob cj)
+    {
+        return (Job)cj.RowId;
+    }
+
     public static int GetIcon(this Job j)
     {
         return j == Job.ADV ? 62143 : (062100 + (int)j);
