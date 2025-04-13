@@ -91,9 +91,10 @@ public static unsafe partial class ImGuiEx
             var ret = false;
             if(CurrentDrag == uniqueId)
             {
-                var col = GradientColor.Get(EzColor.Green, EzColor.Green with { A = EzColor.Green.A / 4 }, 500).ToUint();
+                var col = GradientColor.Get(EColor.Green, EColor.Green with { W = EColor.Green.W / 4 }, 500).ToUint();
                 ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, col);
                 ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg1, col);
+                ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, col);
                 ret = true;
             }
             return ret;
