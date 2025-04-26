@@ -69,9 +69,9 @@ public static partial class ImGuiEx
                     mult *= 1000;
                     str = str[0..^1];
                 }
-                if(int.TryParse(str, NumberStyles.AllowThousands, null, out var result))
+                if(double.TryParse(str, NumberStyles.AllowThousands | NumberStyles.AllowDecimalPoint, null, out var dresult))
                 {
-                    number = result * mult;
+                    number = (int)(dresult * (double)mult);
                     if(negative) number *= -1;
                 }
             }
