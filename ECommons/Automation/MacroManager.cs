@@ -10,8 +10,6 @@ namespace ECommons.Automation;
 
 public static unsafe class MacroManager
 {
-    private static Chat chat = null;
-
     public static void Execute(string multilineString)
     {
         Execute(multilineString.Replace("\r", "").Split("\n"));
@@ -25,7 +23,6 @@ public static unsafe class MacroManager
     public static void Execute(IEnumerable<string> commands)
     {
         var macroPtr = IntPtr.Zero;
-        chat ??= new();
         GenericHelpers.Safe(delegate
         {
             var count = (byte)Math.Max(Macro.numLines, commands.Count());
@@ -37,7 +34,7 @@ public static unsafe class MacroManager
             {
                 throw new InvalidOperationException("Macro contained lines more than 180 symbols!");
             }
-            if(commands.Any(x => x.Contains("\n") || x.Contains("\r") || x.Contains("\0") || chat.SanitiseText(x).Length != x.Length))
+            if(commands.Any(x => x.Contains("\n") || x.Contains("\r") || x.Contains("\0") || Chat.SanitiseText(x).Length != x.Length))
             {
                 throw new InvalidOperationException("Macro contained invalid symbols!");
             }
