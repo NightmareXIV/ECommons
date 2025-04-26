@@ -10,6 +10,9 @@ public class EzThrottler<T>
 {
     private Dictionary<T, long> Throttlers = [];
     public IReadOnlyCollection<T> ThrottleNames => Throttlers.Keys;
+
+    public bool Throttle(T name, TimeSpan ts, bool reThrottle = false) => Throttle(name, (int)ts.TotalMilliseconds, reThrottle);
+
     public bool Throttle(T name, int miliseconds = 500, bool rethrottle = false)
     {
         if(!Throttlers.ContainsKey(name))
