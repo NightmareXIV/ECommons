@@ -2,6 +2,7 @@
 using Dalamud.Hooking;
 using ECommons.DalamudServices;
 using ECommons.Logging;
+using ECommons.Schedulers;
 using System;
 using System.Collections.Generic;
 
@@ -18,15 +19,18 @@ public static class ObjectLife
 
     internal static void Init()
     {
-        IGameObjectLifeTime = [];
-#pragma warning disable CS0618 // Type or member is obsolete
-        IGameObject_ctor_hook = Svc.Hook.HookFromAddress<IGameObject_ctor>(Svc.SigScanner.ScanText("48 8D 05 ?? ?? ?? ?? C7 81 ?? ?? ?? ?? ?? ?? ?? ?? 48 89 01 48 8B C1 C3"), IGameObject_ctor_detour);
-#pragma warning restore CS0618 // Type or member is obsolete
-        IGameObject_ctor_hook.Enable();
-        foreach(var x in Svc.Objects)
+        new TickScheduler(() =>
         {
-            IGameObjectLifeTime[x.Address] = Environment.TickCount64;
-        }
+            IGameObjectLifeTime = [];
+#pragma warning disable CS0618 // Type or member is obsolete
+            IGameObject_ctor_hook = Svc.Hook.HookFromAddress<IGameObject_ctor>(Svc.SigScanner.ScanText("48 8D 05 ?? ?? ?? ?? C7 81 ?? ?? ?? ?? ?? ?? ?? ?? 48 89 01 48 8B C1 C3"), IGameObject_ctor_detour);
+#pragma warning restore CS0618 // Type or member is obsolete
+            IGameObject_ctor_hook.Enable();
+            foreach(var x in Svc.Objects)
+            {
+                IGameObjectLifeTime[x.Address] = Environment.TickCount64;
+            }
+        });
     }
 
     internal static void Dispose()
