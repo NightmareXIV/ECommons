@@ -50,7 +50,12 @@ public partial class AddonMaster
                 for(var i = 0; i < NumEntries; i++)
                 {
                     var missionName = Addon->AtkValues[670 + i * 2];
-                    uint missionId = Addon->AtkValues[37 + i * 5].UInt;
+                    uint missionId = Addon->AtkValues[32 + i * 5].UInt;
+
+                    // category header?
+                    if (missionId == 0)
+                        continue;
+
                     if(missionName.Type.EqualsAny(ValueType.String, ValueType.ManagedString, ValueType.String8))
                     {
                         var mission = new StellarMissions(this, i)
