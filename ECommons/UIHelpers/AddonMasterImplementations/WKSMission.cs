@@ -50,11 +50,18 @@ public partial class AddonMaster
                 for(var i = 0; i < NumEntries; i++)
                 {
                     var missionName = Addon->AtkValues[670 + i * 2];
+                    uint missionId = Addon->AtkValues[32 + i * 5].UInt;
+
+                    // category header?
+                    if (missionId == 0)
+                        continue;
+
                     if(missionName.Type.EqualsAny(ValueType.String, ValueType.ManagedString, ValueType.String8))
                     {
                         var mission = new StellarMissions(this, i)
                         {
-                            Name = MemoryHelper.ReadSeStringNullTerminated((nint)missionName.String.Value).GetText()
+                            Name = MemoryHelper.ReadSeStringNullTerminated((nint)missionName.String.Value).GetText(),
+                            MissionId = missionId
                         };
                         ret.Add(mission);
                     }
@@ -70,18 +77,11 @@ public partial class AddonMaster
         public class StellarMissions(WKSMission master, int index)
         {
             public string Name;
+            public uint MissionId;
 
             public void Select()
             {
-                var mission = Svc.Data.GetExcelSheet<WKSMissionUnit>().FirstOrNull(x => x.Unknown0.GetText() == Name);
-                if(mission == null)
-                {
-                    PluginLog.Error($"Failed to select Steller Mission, requested name not found: {Name}");
-                }
-                else
-                {
-                    Callback.Fire(master.Base, true, 12, (int)mission?.RowId, index);
-                }
+                Callback.Fire(master.Base, true, 12, (int)MissionId, index);
             }
         }
 
