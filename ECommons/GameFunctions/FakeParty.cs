@@ -7,6 +7,10 @@ namespace ECommons.GameFunctions;
 
 public static class FakeParty
 {
+    /// <summary>
+    /// Must be used ONLY on Framework update thread.
+    /// </summary>
+    /// <returns></returns>
     public static IEnumerable<IPlayerCharacter> Get()
     {
         if(Svc.Condition[ConditionFlag.DutyRecorderPlayback])
