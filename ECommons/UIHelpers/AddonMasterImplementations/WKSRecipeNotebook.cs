@@ -21,6 +21,8 @@ public partial class AddonMaster
         public AtkComponentButton* HQItemsButton => Addon->GetButtonNodeById(40);
         public AtkComponentButton* SynthesizeButton => Addon->GetButtonNodeById(50);
 
+        public string SelectedCraftingItem => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[46].String.Value).GetText();
+
         public CraftItems[] CraftingItems
         {
             get
