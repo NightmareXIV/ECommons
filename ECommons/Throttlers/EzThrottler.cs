@@ -9,7 +9,7 @@ public static class EzThrottler
 
     public static IReadOnlyCollection<string> ThrottleNames => Throttler.ThrottleNames;
 
-    public static bool Throttle(string name, TimeSpan ts, bool reThrottle = false) => Throttler.Throttle(name, ts.Milliseconds, reThrottle);
+    public static bool Throttle(string name, TimeSpan ts, bool reThrottle = false) => Throttler.Throttle(name, ts, reThrottle);
 
     public static bool Throttle(string name, int miliseconds = 500, bool rethrottle = false) => Throttler.Throttle(name, miliseconds, rethrottle);
 
