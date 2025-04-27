@@ -130,7 +130,7 @@ public static unsafe partial class ImGuiEx
         return false;
     }
 
-    public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, bool smallButton = false, bool inverted = false) => CollectionButtonCheckbox(name, value, collection, EzColor.Red, smallButton, inverted);
+    public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, bool smallButton = false, bool inverted = false) => CollectionButtonCheckbox(name, value, collection, EColor.Red, smallButton, inverted);
     public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, Vector4 color, bool smallButton = false, bool inverted = false)
     {
         var col = collection.Contains(value);

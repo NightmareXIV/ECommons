@@ -178,7 +178,7 @@ public static partial class ImGuiEx
     /// <returns>true when clicked, otherwise false</returns>
     public static bool ButtonCheckbox(string name, ref bool value, bool smallButton)
     {
-        return ButtonCheckbox(name, ref value, EzColor.Red.Vector4, smallButton);
+        return ButtonCheckbox(name, ref value, EColor.Red, smallButton);
     }
 
     /// <summary>
@@ -232,7 +232,7 @@ public static partial class ImGuiEx
     public static bool ButtonCheckbox(string name, ref bool value, Vector4? color = null, bool inverted = false)
     {
         var ret = false;
-        color ??= EzColor.Green;
+        color ??= EColor.Green;
         var col = !inverted ? value : !value;
         if(col)
         {
@@ -260,8 +260,8 @@ public static partial class ImGuiEx
     /// <returns></returns>
     public static bool ButtonCheckbox(string name, ref bool? value, Vector4? TrueColor = null, Vector4? FalseColor = null, bool smallButton = false)
     {
-        TrueColor ??= EzColor.Green;
-        FalseColor ??= EzColor.Red;
+        TrueColor ??= EColor.Green;
+        FalseColor ??= EColor.Red;
         var col = value;
         var ret = false;
         if(col == true)
