@@ -13,8 +13,17 @@ public class EzThrottler<T>
 
     public bool Throttle(T name, TimeSpan ts, bool reThrottle = false) => Throttle(name, (int)ts.TotalMilliseconds, reThrottle);
 
+    [Obsolete("The 'rethrottle' argument will be removed in a future version. It will behave as if 'false' is always passed. Please update your code accordingly.")]
     public bool Throttle(T name, int miliseconds = 500, bool rethrottle = false)
     {
+        _ = rethrottle;
+        return Throttle(name, miliseconds);
+    }
+
+    public bool Throttle(T name, int miliseconds = 500)
+    {
+        Update();
+
         if(!Throttlers.ContainsKey(name))
         {
             Throttlers[name] = Environment.TickCount64 + miliseconds;
@@ -27,7 +36,6 @@ public class EzThrottler<T>
         }
         else
         {
-            if(rethrottle) Throttlers[name] = Environment.TickCount64 + miliseconds;
             return false;
         }
     }
@@ -62,6 +70,18 @@ public class EzThrottler<T>
         foreach(var x in Throttlers)
         {
             ImGuiEx.Text(Check(x.Key) ? ImGuiColors.HealerGreen : ImGuiColors.DalamudRed, $"{x.Key}: [{GetRemainingTime(x.Key)}ms remains] ({x.Value})");
+        }
+    }
+
+    private void Update()
+    {
+        // Remove expired throttlers
+        foreach(var x in Throttlers)
+        {
+            if(x.Value < Environment.TickCount64)
+            {
+                Throttlers.Remove(x.Key);
+            }
         }
     }
 }
