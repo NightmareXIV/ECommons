@@ -22,7 +22,14 @@ public class EzThrottler<T>
 
     public bool Throttle(T name, int miliseconds = 500)
     {
-        Update();
+        // Remove expired throttlers
+        foreach(var x in Throttlers)
+        {
+            if(x.Value < Environment.TickCount64)
+            {
+                Throttlers.Remove(x.Key);
+            }
+        }
 
         if(!Throttlers.ContainsKey(name))
         {
@@ -70,18 +77,6 @@ public class EzThrottler<T>
         foreach(var x in Throttlers)
         {
             ImGuiEx.Text(Check(x.Key) ? ImGuiColors.HealerGreen : ImGuiColors.DalamudRed, $"{x.Key}: [{GetRemainingTime(x.Key)}ms remains] ({x.Value})");
-        }
-    }
-
-    private void Update()
-    {
-        // Remove expired throttlers
-        foreach(var x in Throttlers)
-        {
-            if(x.Value < Environment.TickCount64)
-            {
-                Throttlers.Remove(x.Key);
-            }
         }
     }
 }
