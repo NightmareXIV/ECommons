@@ -146,7 +146,6 @@ var type = "unknown build";
         GenericHelpers.Safe(Purgatory.Purge);
         GenericHelpers.Safe(ExternalWriter.Dispose);
         //SingletonManager.Dispose();
-        Chat.instance = null;
         Instance = null;
     }
 }

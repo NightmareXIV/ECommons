@@ -325,7 +325,7 @@ public static unsafe partial class GenericHelpers
         return x.Select(x => (x?.ToString() ?? "")).Join(separator);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete("Use SafeSelect")]
     public static V GetSafe<K, V>(this IDictionary<K, V> dic, K key, V Default = default)
     {
         if(dic?.TryGetValue(key, out var value) == true)
