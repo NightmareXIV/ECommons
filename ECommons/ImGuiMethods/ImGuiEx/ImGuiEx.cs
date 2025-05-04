@@ -448,7 +448,7 @@ public static unsafe partial class ImGuiEx
             if(ImGui.IsWindowAppearing() && options?.Contains(JobSelectorOption.ClearFilterOnOpen) == true)
                 ImGui.SetNextItemWidth(150f);
             ImGui.InputTextWithHint("##filter", "Filter...", ref JobSelectorFilter, 50);
-            if(options.Contains(JobSelectorOption.BulkSelectors))
+            if(options?.Contains(JobSelectorOption.BulkSelectors) == true)
             {
                 ImGuiEx.CollectionCheckbox("DoW/DoM", Enum.GetValues<Job>().Where(x => x.IsCombat()), selectedJobs);
                 ImGui.SameLine();
