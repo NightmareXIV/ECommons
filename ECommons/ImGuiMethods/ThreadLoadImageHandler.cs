@@ -115,6 +115,7 @@ public class ThreadLoadImageHandler
                                     var content = result.Content.ReadAsByteArrayAsync().Result;
 
                                     IDalamudTextureWrap texture = null;
+                                    List<Exception> exceptions = [];
                                     foreach(var conversion in _conversionsToBitmap)
                                     {
                                         if(conversion == null) continue;
@@ -122,13 +123,16 @@ public class ThreadLoadImageHandler
                                         try
                                         {
                                             texture = Svc.Texture.CreateFromImageAsync(conversion(content)).Result;
-                                            if(texture != null) break;
+                                            if(texture != null) goto Success;
                                         }
                                         catch(Exception ex)
                                         {
-                                            ex.Log();
+                                            exceptions.Add(ex);
                                         }
                                     }
+                                    PluginLog.Error($"While loading {keyValuePair.Key} an exception occurred:");
+                                    exceptions.Each(x => x.Log());
+                                Success:
                                     keyValuePair.Value.TextureWrap = texture;
                                 }
                                 else
