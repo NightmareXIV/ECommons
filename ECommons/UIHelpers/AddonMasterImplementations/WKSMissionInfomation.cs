@@ -13,6 +13,16 @@ public partial class AddonMaster
         public WKSMissionInfomation(nint addon) : base(addon) { }
         public WKSMissionInfomation(void* addon) : base(addon) { }
 
+        public string Name
+        {
+            get
+            {
+                return MemoryHelper
+                    .ReadSeStringNullTerminated((nint)Addon->AtkValues[0].String.Value)
+                    .GetText();
+            }
+        }
+
         public uint CurrentScore
         {
             get
