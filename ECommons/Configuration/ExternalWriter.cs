@@ -143,8 +143,11 @@ public static class ExternalWriter
 
             for(var i = 0; i < iterations; i++)
             {
-                fs1.Read(one, 0, BYTES_TO_READ);
-                fs2.Read(two, 0, BYTES_TO_READ);
+                if(fs1.Read(one, 0, BYTES_TO_READ) != BYTES_TO_READ)
+                    return false;
+
+                if(fs2.Read(two, 0, BYTES_TO_READ) != BYTES_TO_READ)
+                    return false;
 
                 if(BitConverter.ToInt64(one, 0) != BitConverter.ToInt64(two, 0))
                     return false;

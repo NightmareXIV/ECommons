@@ -51,7 +51,7 @@ public partial class AddonMaster
 
         public class CraftItems(WKSRecipeNotebook master, int index)
         {
-            public string Name;
+            public string Name { get; set; } = string.Empty;
 
             public void Select()
             {
