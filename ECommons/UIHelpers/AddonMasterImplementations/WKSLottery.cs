@@ -4,11 +4,7 @@ using ECommons.Automation;
 using ECommons.DalamudServices;
 using ECommons.Logging;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 
@@ -38,7 +34,7 @@ public partial class AddonMaster
                     SeString itemName = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[91 + i * 7].String.Value).GetText();
                     string itemNameText = itemName.ToString();
 
-                    var ItemList = new WheelItems(this)
+                    var ItemList = new WheelItems()
                     {
                         itemId = itemId,
                         itemAmount = itemAmount,
@@ -65,7 +61,7 @@ public partial class AddonMaster
                     SeString itemName = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[140 + i * 7].String.Value).GetText();
                     string itemNameText = itemName.ToString();
 
-                    var ItemList = new WheelItems(this)
+                    var ItemList = new WheelItems()
                     {
                         itemId = itemId,
                         itemAmount = itemAmount,
@@ -77,7 +73,7 @@ public partial class AddonMaster
             }
         }
 
-        public class WheelItems(WKSLottery master)
+        public class WheelItems
         {
             public uint itemId;
             public required string itemName;

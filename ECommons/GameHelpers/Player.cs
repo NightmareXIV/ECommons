@@ -73,7 +73,7 @@ public static unsafe class Player
     public static bool IsMoving => AgentMap.Instance()->IsPlayerMoving || IsJumping;
     public static bool IsJumping => Svc.Condition[ConditionFlag.Jumping] || Svc.Condition[ConditionFlag.Jumping61] || Character->IsJumping();
     public static bool Mounted => Svc.Condition[ConditionFlag.Mounted];
-    public static bool Mounting => Svc.Condition[ConditionFlag.Unknown57]; // condition 57 is set while mount up animation is playing
+    public static bool Mounting => Svc.Condition[ConditionFlag.MountOrOrnamentTransition];
     public static bool CanMount => Svc.Data.GetExcelSheet<TerritoryType>().GetRow(Territory).Mount && PlayerState.Instance()->NumOwnedMounts > 0;
     public static bool CanFly => Control.CanFly;
 
@@ -81,7 +81,7 @@ public static unsafe class Player
     public static bool IsAnimationLocked => AnimationLock > 0;
     public static bool IsDead => Svc.Condition[ConditionFlag.Unconscious];
     public static bool Revivable => IsDead && AgentRevive.Instance()->ReviveState != 0;
-    
+
     public static float DistanceTo(Vector3 other) => Vector3.Distance(Position, other);
     public static float DistanceTo(Vector2 other) => Vector2.Distance(Position.ToVector2(), other);
     public static float DistanceTo(IGameObject other) => Vector3.Distance(Position, other.Position);

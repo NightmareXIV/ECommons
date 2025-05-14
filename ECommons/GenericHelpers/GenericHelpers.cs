@@ -246,7 +246,7 @@ public static unsafe partial class GenericHelpers
                || Svc.Condition[ConditionFlag.InThatPosition]
                //|| Svc.Condition[ConditionFlag.TradeOpen]
                || Svc.Condition[ConditionFlag.Crafting]
-               || Svc.Condition[ConditionFlag.Crafting40]
+               || Svc.Condition[ConditionFlag.ExecutingCraftingAction]
                || Svc.Condition[ConditionFlag.PreparingToCraft]
                || Svc.Condition[ConditionFlag.InThatPosition]
                || Svc.Condition[ConditionFlag.Unconscious]
