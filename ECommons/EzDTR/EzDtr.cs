@@ -38,7 +38,7 @@ public class EzDtr : IDisposable
         if(Entry.Shown)
         {
             Entry.Text = Text();
-            if (OnClick != null)
+            if(OnClick != null)
                 Entry.OnClick = OnClick;
         }
     }
