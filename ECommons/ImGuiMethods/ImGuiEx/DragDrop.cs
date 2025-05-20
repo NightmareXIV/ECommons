@@ -81,23 +81,34 @@ public static unsafe partial class ImGuiEx
             EndRow(uniqueId, onAcceptDragDropPayload);
         }
 
+        public uint HighlightColor => GradientColor.Get(EColor.Green, EColor.Green with { W = EColor.Green.W / 4 }, 500).ToUint();
+
         /// <summary>
         /// Call this after calling TableNextRow to color the row that is being moved. Not mandatory.
         /// </summary>
         /// <param name="uniqueId"></param>
+        /// <param name="setColor"></param>
         /// <returns>Whether row was colored</returns>
-        public bool SetRowColor(string uniqueId)
+        public bool SetRowColor(string uniqueId, bool setColor = true)
         {
             var ret = false;
             if(CurrentDrag == uniqueId)
             {
-                var col = GradientColor.Get(EColor.Green, EColor.Green with { W = EColor.Green.W / 4 }, 500).ToUint();
-                ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, col);
-                ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg1, col);
-                ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, col);
+                if(setColor)
+                {
+                    var col = HighlightColor;
+                    ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, col);
+                    ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg1, col);
+                    ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, col);
+                }
                 ret = true;
             }
             return ret;
+        }
+
+        public bool SetRowColor(T element, bool setColor = true)
+        {
+            return SetRowColor(GetUniqueId(element), setColor);
         }
 
         private void EndRow(string uniqueId, Action<string> onAcceptDragDropPayload)
