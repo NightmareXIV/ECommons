@@ -1,6 +1,7 @@
 ﻿using ECommons.DalamudServices;
 using ImGuiNET;
 using Lumina.Excel.Sheets;
+using System;
 using System.Buffers.Binary;
 using System.Numerics;
 
@@ -19,14 +20,25 @@ public struct EzColor
     public float B { get; set; }
     public float A { get; set; }
     public readonly Vector4 Vector4 => (Vector4)this;
-    public readonly uint U32 => (uint)this;
+    [Obsolete("Use ARGB")]
+    public readonly uint U32 => ImGui.ColorConvertFloat4ToU32(this);
+    public readonly uint ARGB => ((uint)(A * 255) << 24) | ((uint)(R * 255) << 16) | ((uint)(G * 255) << 8) | (uint)(B * 255);
+    public readonly uint RGBA => ((uint)(R * 255) << 24) | ((uint)(G * 255) << 16) | ((uint)(B * 255) << 8) | (uint)(A * 255);
 
     public EzColor() { }
     public EzColor(Vector4 vec) : this(vec.X, vec.Y, vec.Z, vec.W) { }
     /// <summary>
     /// Takes in uints as 0xRRGGBB or 0xRRGGBBAA
     /// </summary>
-    public EzColor(uint col) : this(ImGui.ColorConvertU32ToFloat4(AppendAlpha(col))) { }
+    public EzColor(uint col)
+    {
+        var withAlpha = AppendAlpha(col);
+        R = ((withAlpha >> 24) & 0xFF) / 255f;
+        G = ((withAlpha >> 16) & 0xFF) / 255f;
+        B = ((withAlpha >> 8) & 0xFF) / 255f;
+        A = (withAlpha & 0xFF) / 255f;
+    }
+
     public EzColor(float r, float g, float b, float a = 1)
     {
         R = r;
@@ -34,6 +46,8 @@ public struct EzColor
         B = b;
         A = a;
     }
+
+    public override readonly string ToString() => $"RGBA: [{R}, {G}, {B}, {A}] {nameof(Vector4)}: [{Vector4}] {nameof(ARGB)}: [{ARGB:X8}] {nameof(RGBA)}: [{RGBA:X8}]";
 
     public static EzColor From(float r, float g, float b, float a = 1)
         => new() { R = r, G = g, B = b, A = a };
@@ -48,7 +62,7 @@ public struct EzColor
     /// Takes in uints as 0xRRGGBB or 0xRRGGBBAA
     /// </summary>
     public static EzColor From(uint col)
-        => From(ImGui.ColorConvertU32ToFloat4(AppendAlpha(col)));
+        => new(col);
 
     public static EzColor From(ImGuiCol col)
         => From(ImGui.GetColorU32(col));
@@ -79,11 +93,11 @@ public struct EzColor
     public static EzColor RedBright { get; set; } = new(0xFF0000);
     public static EzColor Red { get; set; } = new(0xAA0000);
     public static EzColor RedDark { get; set; } = new(0x440000);
-    public static EzColor GreenBright { get; set; } = new(0x00ff00);
-    public static EzColor Green { get; set; } = new(0x00aa00);
+    public static EzColor GreenBright { get; set; } = new(0x00FF00);
+    public static EzColor Green { get; set; } = new(0x00AA00);
     public static EzColor GreenDark { get; set; } = new(0x004400);
-    public static EzColor BlueBright { get; set; } = new(0x0000ff);
-    public static EzColor Blue { get; set; } = new(0x0000aa);
+    public static EzColor BlueBright { get; set; } = new(0x0000FF);
+    public static EzColor Blue { get; set; } = new(0x0000AA);
     public static EzColor BlueSea { get; set; } = new(0x0058AA);
     public static EzColor BlueSky { get; set; } = new(0x0085FF);
     public static EzColor White { get; set; } = new(0xFFFFFF);
@@ -95,7 +109,7 @@ public struct EzColor
     public static EzColor OrangeBright { get; set; } = new(0xFF7F00);
     public static EzColor Orange { get; set; } = new(0xAA5400);
     public static EzColor CyanBright { get; set; } = new(0x00FFFF);
-    public static EzColor Cyan { get; set; } = new(0x00aaaa);
+    public static EzColor Cyan { get; set; } = new(0x00AAAA);
     public static EzColor VioletBright { get; set; } = new(0xFF00FF);
     public static EzColor Violet { get; set; } = new(0xAA00AA);
     public static EzColor VioletDark { get; set; } = new(0x440044);
