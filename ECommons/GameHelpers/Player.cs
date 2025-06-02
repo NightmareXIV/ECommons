@@ -68,10 +68,10 @@ public static unsafe class Player
     public static uint JobId => Player.Object?.ClassJob.RowId ?? 0;
     public static uint OnlineStatus => Player.Object?.OnlineStatus.RowId ?? 0;
 
-    public static Vector3 Position => Object.Position;
-    public static float Rotation => Object.Rotation;
-    public static bool IsMoving => AgentMap.Instance()->IsPlayerMoving || IsJumping;
-    public static bool IsJumping => Svc.Condition[ConditionFlag.Jumping] || Svc.Condition[ConditionFlag.Jumping61] || Character->IsJumping();
+    public static Vector3 Position => Available ? Object.Position : Vector3.Zero;
+    public static float Rotation => Available ? Object.Rotation : 0;
+    public static bool IsMoving => Available && (AgentMap.Instance()->IsPlayerMoving || IsJumping);
+    public static bool IsJumping => Available && (Svc.Condition[ConditionFlag.Jumping] || Svc.Condition[ConditionFlag.Jumping61] || Character->IsJumping());
     public static bool Mounted => Svc.Condition[ConditionFlag.Mounted];
     public static bool Mounting => Svc.Condition[ConditionFlag.MountOrOrnamentTransition];
     public static bool CanMount => Svc.Data.GetExcelSheet<TerritoryType>().GetRow(Territory).Mount && PlayerState.Instance()->NumOwnedMounts > 0;
