@@ -1,11 +1,7 @@
 ﻿using Dalamud.Memory;
 using ECommons.Automation;
-using ECommons.DalamudServices;
-using ECommons.Logging;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using Lumina.Excel.Sheets;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
@@ -76,7 +72,7 @@ public partial class AddonMaster
 
         public class StellarMissions(WKSMission master, int index)
         {
-            public string Name;
+            public string Name { get; set; } = string.Empty;
             public uint MissionId;
 
             public void Select()

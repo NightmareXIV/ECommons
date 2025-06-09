@@ -5,6 +5,7 @@ using ECommons.Configuration;
 using ECommons.DalamudServices;
 using ECommons.Events;
 using ECommons.EzContextMenu;
+using ECommons.EzDTR;
 using ECommons.EzEventManager;
 using ECommons.EzHookManager;
 using ECommons.EzIpcManager;
@@ -145,6 +146,7 @@ var type = "unknown build";
         GenericHelpers.Safe(ContextMenuPrefixRemover.Dispose);
         GenericHelpers.Safe(Purgatory.Purge);
         GenericHelpers.Safe(ExternalWriter.Dispose);
+        GenericHelpers.Safe(EzDtr.DisposeAll);
         //SingletonManager.Dispose();
         Instance = null;
     }

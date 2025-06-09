@@ -221,15 +221,15 @@ public static partial class ImGuiEx
         return ret;
     }
 
-    public static bool ButtonCheckbox(FontAwesomeIcon icon, ref bool value, Vector4? color = null, bool inverted = false)
+    public static bool ButtonCheckbox(FontAwesomeIcon icon, ref bool value, Vector4? color = null, bool inverted = false, Vector2? size = null)
     {
         ImGui.PushFont(UiBuilder.IconFont);
-        var ret = ButtonCheckbox(icon.ToIconString(), ref value, color, inverted);
+        var ret = ButtonCheckbox(icon.ToIconString(), ref value, color, inverted, size);
         ImGui.PopFont();
         return ret;
     }
 
-    public static bool ButtonCheckbox(string name, ref bool value, Vector4? color = null, bool inverted = false)
+    public static bool ButtonCheckbox(string name, ref bool value, Vector4? color = null, bool inverted = false, Vector2? size = null)
     {
         var ret = false;
         color ??= EColor.Green;
@@ -240,7 +240,7 @@ public static partial class ImGuiEx
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, color.Value);
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, color.Value);
         }
-        if(ImGui.Button(name))
+        if((size == null)?ImGui.Button(name):ImGui.Button(name, size.Value))
         {
             value = !value;
             ret = true;

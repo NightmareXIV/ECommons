@@ -370,6 +370,26 @@ public static unsafe partial class GenericHelpers
         return newValue;
     }
 
+    public static V GetOrCreate<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue)
+    {
+        if(dictionary.TryGetValue(key, out var result))
+        {
+            return result;
+        }
+        dictionary.Add(key, defaultValue);
+        return defaultValue;
+    }
+
+    public static V GetOrCreate<K, V>(this IDictionary<K, V> dictionary, K key, Func<V> defaultValueGenerator)
+    {
+        if(dictionary.TryGetValue(key, out var result))
+        {
+            return result;
+        }
+        dictionary.Add(key, defaultValueGenerator());
+        return dictionary[key];
+    }
+
     /// <summary>
     /// Executes action for each element of collection.
     /// </summary>
