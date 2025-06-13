@@ -55,8 +55,8 @@ public static partial class ImGuiEx
         Text(col.Vector4, s);
     }
 
+    public static void Text(FontAwesomeIcon icon, string s) => Text(ImGui.GetStyle().Colors[(int)ImGuiCol.Text], icon, s);
     public static void Text(Vector4 col, FontAwesomeIcon icon, string? tooltip = null) => Text(col, icon, null, tooltip);
-
     public static void Text(Vector4 col, FontAwesomeIcon icon, string? s = null, string? tooltip = null)
     {
         ImGui.PushStyleColor(ImGuiCol.Text, col);
