@@ -55,13 +55,17 @@ public static partial class ImGuiEx
         Text(col.Vector4, s);
     }
 
-    public static void Text(FontAwesomeIcon icon, string s) => Text(ImGui.GetStyle().Colors[(int)ImGuiCol.Text], icon, s);
-    public static void Text(Vector4 col, FontAwesomeIcon icon, string? tooltip = null) => Text(col, icon, null, tooltip);
-    public static void Text(Vector4 col, FontAwesomeIcon icon, string? s = null, string? tooltip = null)
+    public static void Icon(FontAwesomeIcon icon) => IconWithText(ImGui.GetStyle().Colors[(int)ImGuiCol.Text], icon);
+    public static void Icon(Vector4 col, FontAwesomeIcon icon) => IconWithText(col, icon);
+    public static void IconWithText(FontAwesomeIcon icon, string s) => IconWithText(ImGui.GetStyle().Colors[(int)ImGuiCol.Text], icon, s);
+    public static void IconWithText(Vector4 col, FontAwesomeIcon icon, string s) => IconWithText(col, icon, s, null);
+    public static void IconWithTooltip(FontAwesomeIcon icon, string tooltip) => IconWithText(ImGui.GetStyle().Colors[(int)ImGuiCol.Text], icon, null, tooltip);
+    public static void IconWithTooltip(Vector4 col, FontAwesomeIcon icon, string? tooltip = null) => IconWithText(col, icon, null, tooltip);
+    public static void IconWithText(Vector4 col, FontAwesomeIcon icon, string? s = null, string? tooltip = null)
     {
         ImGui.PushStyleColor(ImGuiCol.Text, col);
         ImGui.PushFont(UiBuilder.IconFont);
-        ImGui.TextUnformatted($"{icon}");
+        ImGui.TextUnformatted(icon.ToIconString());
         ImGui.PopFont();
         ImGui.SameLine();
         if(s != null)
