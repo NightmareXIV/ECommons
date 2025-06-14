@@ -1,5 +1,5 @@
-﻿using Dalamud.Interface.Colors;
-using Dalamud.Interface.Utility.Raii;
+﻿using Dalamud.Interface;
+using Dalamud.Interface.Colors;
 using ImGuiNET;
 using System.Numerics;
 
@@ -53,6 +53,34 @@ public static partial class ImGuiEx
     public static void Text(EzColor col, string s)
     {
         Text(col.Vector4, s);
+    }
+
+    public static void Icon(FontAwesomeIcon icon) => IconWithText(ImGui.GetStyle().Colors[(int)ImGuiCol.Text], icon);
+    public static void Icon(Vector4 col, FontAwesomeIcon icon) => IconWithText(col, icon);
+    public static void IconWithText(FontAwesomeIcon icon, string s) => IconWithText(ImGui.GetStyle().Colors[(int)ImGuiCol.Text], icon, s);
+    public static void IconWithText(Vector4 col, FontAwesomeIcon icon, string s) => IconWithText(col, icon, s, null);
+    public static void IconWithTooltip(FontAwesomeIcon icon, string tooltip) => IconWithText(ImGui.GetStyle().Colors[(int)ImGuiCol.Text], icon, null, tooltip);
+    public static void IconWithTooltip(Vector4 col, FontAwesomeIcon icon, string? tooltip = null) => IconWithText(col, icon, null, tooltip);
+    public static void IconWithText(Vector4 col, FontAwesomeIcon icon, string? s = null, string? tooltip = null)
+    {
+        ImGui.PushStyleColor(ImGuiCol.Text, col);
+        ImGui.PushFont(UiBuilder.IconFont);
+        ImGui.TextUnformatted(icon.ToIconString());
+        ImGui.PopFont();
+        ImGui.SameLine();
+        if(s != null)
+            ImGui.TextUnformatted(s);
+        ImGui.PopStyleColor();
+
+        if(tooltip != null)
+            Tooltip(tooltip);
+    }
+
+    public static void CodeText(string s)
+    {
+        ImGui.PushFont(UiBuilder.MonoFont);
+        ImGui.TextUnformatted(s);
+        ImGui.PopFont();
     }
 
     /// <summary>
@@ -111,29 +139,28 @@ public static partial class ImGuiEx
         ImGui.PopTextWrapPos();
     }
 
-    /// <inheritdoc cref="TextCopy(string)"/>
-    public static void TextCopy(Vector4 col, string text)
+    /// <inheritdoc cref="TextCopy(string, string)"/>
+    public static void TextCopy(Vector4 col, string text, string? copyText = null)
     {
         ImGui.PushStyleColor(ImGuiCol.Text, col);
-        TextCopy(text);
+        TextCopy(text, copyText);
         ImGui.PopStyleColor();
     }
 
     /// <summary>
     /// Displays text that will also be copied to clipboard if clicked.
     /// </summary>
-    public static void TextCopy(string text)
+    public static void TextCopy(string displayText, string? copyText = null)
     {
-        ImGui.TextUnformatted(text);
+        copyText ??= displayText;
+        ImGui.TextUnformatted(displayText);
         if(ImGui.IsItemHovered())
         {
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
         }
         if(ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
-#pragma warning disable
-            GenericHelpers.Copy(text);
-#pragma warning restore
+            GenericHelpers.Copy(copyText);
         }
     }
 
