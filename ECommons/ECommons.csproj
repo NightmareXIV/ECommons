@@ -38,6 +38,7 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
+        <Dalamud_Home Condition="'$(DALAMUD_HOME)' == ''" >$(HOME)/.xlcore/dalamud/Hooks/dev/</Dalamud_Home>
         <DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
