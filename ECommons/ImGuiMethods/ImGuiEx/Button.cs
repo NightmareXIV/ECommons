@@ -335,8 +335,12 @@ public static partial class ImGuiEx
             public string? Tooltip { get; set; }
             public Func<bool>? Condition { get; set; }
 
-            public static ButtonStyle operator +(ButtonStyle a, ButtonStyle b)
+            public static ButtonStyle operator +(ButtonStyle? a, ButtonStyle? b)
             {
+                if(a == null && b == null) return new ButtonStyle();
+                if(a == null) return b!;
+                if(b == null) return a;
+
                 return new ButtonStyle
                 {
                     NoButtonBg = b.NoButtonBg ?? a.NoButtonBg,
