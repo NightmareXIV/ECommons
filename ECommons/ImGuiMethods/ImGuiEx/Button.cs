@@ -1,9 +1,10 @@
 ﻿using Dalamud.Interface;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
+using ECommons.MathHelpers;
 using ImGuiNET;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace ECommons.ImGuiMethods;
@@ -221,15 +222,15 @@ public static partial class ImGuiEx
         return ret;
     }
 
-    public static bool ButtonCheckbox(FontAwesomeIcon icon, ref bool value, Vector4? color = null, bool inverted = false)
+    public static bool ButtonCheckbox(FontAwesomeIcon icon, ref bool value, Vector4? color = null, bool inverted = false, Vector2? size = null)
     {
         ImGui.PushFont(UiBuilder.IconFont);
-        var ret = ButtonCheckbox(icon.ToIconString(), ref value, color, inverted);
+        var ret = ButtonCheckbox(icon.ToIconString(), ref value, color, inverted, size);
         ImGui.PopFont();
         return ret;
     }
 
-    public static bool ButtonCheckbox(string name, ref bool value, Vector4? color = null, bool inverted = false)
+    public static bool ButtonCheckbox(string name, ref bool value, Vector4? color = null, bool inverted = false, Vector2? size = null)
     {
         var ret = false;
         color ??= EColor.Green;
@@ -240,7 +241,7 @@ public static partial class ImGuiEx
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, color.Value);
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, color.Value);
         }
-        if(ImGui.Button(name))
+        if((size == null) ? ImGui.Button(name) : ImGui.Button(name, size.Value))
         {
             value = !value;
             ret = true;
@@ -312,5 +313,155 @@ public static partial class ImGuiEx
         var ret = ImGui.Button(name);
         if(dis) ImGui.EndDisabled();
         return ret;
+    }
+
+    /// <summary>
+    /// Better version of Dalamud's <see cref="ImGuiHelpers.HorizontalButtonGroup"/>
+    /// </summary>
+    public class EzButtonGroup
+    {
+        private readonly List<(string Label, Action Action, ButtonStyle Style)> buttons = [];
+        private readonly List<(FontAwesomeIcon Icon, string Label, Action Action, ButtonStyle Style)> iconWithTextButtons = [];
+        private readonly List<(FontAwesomeIcon Icon, Action Action, ButtonStyle Style)> iconOnlyButtons = [];
+        public bool IsCentered { get; set; }
+        public float Height { get; set; } = ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y * 2;
+        public float Width { get; private set; }
+
+        public class ButtonStyle
+        {
+            public bool? NoButtonBg { get; set; }
+            public Vector4? ButtonColor { get; set; }
+            public Vector4? TextColor { get; set; }
+            public string? Tooltip { get; set; }
+            public Func<bool>? Condition { get; set; }
+
+            public static ButtonStyle operator +(ButtonStyle a, ButtonStyle b)
+            {
+                return new ButtonStyle
+                {
+                    NoButtonBg = b.NoButtonBg ?? a.NoButtonBg,
+                    ButtonColor = b.ButtonColor ?? a.ButtonColor,
+                    TextColor = b.TextColor ?? a.TextColor,
+                    Tooltip = b.Tooltip ?? a.Tooltip,
+                    Condition = b.Condition ?? a.Condition
+                };
+            }
+        }
+
+        public void Add(string label, Action action, ButtonStyle? style = null) => buttons.Add((label, action, style));
+        public void Add(string label, Action action, string tooltip, ButtonStyle? style = null) => buttons.Add((label, action, style + new ButtonStyle { Tooltip = tooltip }));
+        public void AddIconWithText(FontAwesomeIcon icon, string label, Action action, ButtonStyle? style = null) => iconWithTextButtons.Add((icon, label, action, style));
+        public void AddIconWithText(FontAwesomeIcon icon, string label, Action action, string tooltip, ButtonStyle? style = null) => iconWithTextButtons.Add((icon, label, action, style + new ButtonStyle { Tooltip = tooltip }));
+        public void AddIconOnly(FontAwesomeIcon icon, Action action, ButtonStyle? style = null) => iconOnlyButtons.Add((icon, action, style));
+        public void AddIconOnly(FontAwesomeIcon icon, Action action, string tooltip, ButtonStyle? style = null) => iconOnlyButtons.Add((icon, action, style + new ButtonStyle { Tooltip = tooltip }));
+
+        public void Draw()
+        {
+            var buttonSizes = new List<Vector2>();
+
+            // Calculate total width and store button sizes
+            foreach(var (label, _, _) in buttons)
+            {
+                var size = ImGuiHelpers.GetButtonSize(label);
+                buttonSizes.Add(size);
+                Width += size.X + ImGui.GetStyle().ItemSpacing.X;
+            }
+
+            foreach(var (icon, label, _, _) in iconWithTextButtons)
+            {
+                var size = ImGuiHelpers.GetButtonSize(label);
+                size.X += ImGui.CalcTextSize(icon.ToIconString()).X + ImGui.GetStyle().ItemSpacing.X;
+                buttonSizes.Add(size);
+                Width += size.X + ImGui.GetStyle().ItemSpacing.X;
+            }
+
+            foreach(var (icon, _, _) in iconOnlyButtons)
+            {
+                var size = ImGui.CalcTextSize(icon.ToIconString());
+                buttonSizes.Add(size);
+                Width += size.X + ImGui.GetStyle().ItemSpacing.X;
+            }
+
+            // Remove last spacing
+            Width -= ImGui.GetStyle().ItemSpacing.X;
+
+            if(IsCentered)
+            {
+                var windowWidth = ImGui.GetContentRegionAvail().X;
+                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (windowWidth - Width) * 0.5f);
+            }
+
+            // Draw buttons
+            var buttonIndex = 0;
+            foreach(var (label, action, style) in buttons)
+            {
+                if(buttonIndex > 0)
+                    ImGui.SameLine();
+
+                DrawButton(style, () =>
+                {
+                    if(ImGui.Button(label, new Vector2(buttonSizes[buttonIndex].X, Height)))
+                        action();
+                });
+
+                buttonIndex++;
+            }
+
+            foreach(var (icon, label, action, style) in iconWithTextButtons)
+            {
+                if(buttonIndex > 0)
+                    ImGui.SameLine();
+
+                DrawButton(style, () =>
+                {
+                    if(ImGuiComponents.IconButtonWithText(icon, label))
+                        action();
+                });
+
+                buttonIndex++;
+            }
+
+            foreach(var (icon, action, style) in iconOnlyButtons)
+            {
+                if(buttonIndex > 0)
+                    ImGui.SameLine();
+
+                DrawButton(style, () =>
+                {
+                    if(IconButton(icon))
+                        action();
+                });
+
+                buttonIndex++;
+            }
+        }
+
+        private void DrawButton(ButtonStyle? style, Action drawButton)
+        {
+            if(style?.Condition is { } cond && !cond()) return;
+
+            if(style?.NoButtonBg == true)
+            {
+                ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero);
+                ImGui.PushStyleColor(ImGuiCol.ButtonHovered, Vector4.Zero);
+                ImGui.PushStyleColor(ImGuiCol.ButtonActive, Vector4.Zero);
+            }
+            else
+            {
+                var bCol = style?.ButtonColor ?? ImGui.GetStyle().Colors[(int)ImGuiCol.Button];
+                ImGui.PushStyleColor(ImGuiCol.Button, bCol);
+                ImGui.PushStyleColor(ImGuiCol.ButtonHovered, bCol.AddNoW(0.1f));
+                ImGui.PushStyleColor(ImGuiCol.ButtonActive, bCol.AddNoW(0.2f));
+            }
+
+            if(style?.TextColor is { } tCol) ImGui.PushStyleColor(ImGuiCol.Text, tCol);
+            drawButton();
+            if(style?.TextColor is { }) ImGui.PopStyleColor();
+
+            ImGui.PopStyleColor(3);
+
+            if(style?.Tooltip is { })
+                Tooltip(style.Tooltip);
+        }
     }
 }

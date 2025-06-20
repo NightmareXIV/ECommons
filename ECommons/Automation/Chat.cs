@@ -219,7 +219,7 @@ public unsafe static class Chat
         return sanitised;
     }
 
-    [Obsolete("Use Chat.<MethodName> directly instead of Chat.<MethodName>")]
+    [Obsolete("Use Chat.<MethodName> directly instead of Chat.Instance.<MethodName>")]
     public static class Instance
     {
         public static void ExecuteCommand(string message) => Chat.ExecuteCommand(message);
