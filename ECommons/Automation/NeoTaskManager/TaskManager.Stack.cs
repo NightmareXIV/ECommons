@@ -68,7 +68,7 @@ public partial class TaskManager
     /// Immediately executes <paramref name="executeAction"/> in between <see cref="BeginStack"/> and <see cref="EnqueueStack"/>. Handles exceptions. If an exception is thrown, will reset discard instead. 
     /// </summary>
     /// <param name="executeAction"></param>
-    public void EnqueueStackSafely(Action executeAction)
+    public void EnqueueStack(Action executeAction)
     {
         BeginStack();
         try
@@ -88,7 +88,7 @@ public partial class TaskManager
     /// Immediately executes <paramref name="executeAction"/> in between <see cref="BeginStack"/> and <see cref="InsertStack"/>. Handles exceptions. If an exception is thrown, will reset discard instead. 
     /// </summary>
     /// <param name="executeAction"></param>
-    public void InsertStackSafely(Action executeAction)
+    public void InsertStack(Action executeAction)
     {
         BeginStack();
         try
