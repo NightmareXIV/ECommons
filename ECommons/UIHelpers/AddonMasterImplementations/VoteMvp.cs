@@ -8,9 +8,9 @@ public partial class AddonMaster
         public VoteMvp(nint addon) : base(addon) { }
         public VoteMvp(void* addon) : base(addon) { }
 
-        public AtkComponentButton* OkButton => Addon->GetButtonNodeById(10);
-        public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(11);
-        public AtkComponentButton* SettingsButton => Addon->GetButtonNodeById(12);
+        public AtkComponentButton* OkButton => Addon->GetComponentButtonById(10);
+        public AtkComponentButton* CancelButton => Addon->GetComponentButtonById(11);
+        public AtkComponentButton* SettingsButton => Addon->GetComponentButtonById(12);
 
         public override string AddonDescription { get; } = "Player commendations simple voting window";
 

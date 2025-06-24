@@ -20,8 +20,8 @@ public unsafe partial class AddonMaster
 
         public override string AddonDescription { get; } = "Dye confirmation window";
 
-        public AtkComponentButton* YesButton => Base->GetButtonNodeById(6);
-        public AtkComponentButton* NoButton => Base->GetButtonNodeById(7);
+        public AtkComponentButton* YesButton => Base->GetComponentButtonById(6);
+        public AtkComponentButton* NoButton => Base->GetComponentButtonById(7);
 
         public bool Yes() => ClickButtonIfEnabled(YesButton);
         public bool No() => ClickButtonIfEnabled(NoButton);

@@ -12,7 +12,7 @@ public partial class AddonMaster
 
         public CollectablesShop(void* addon) : base(addon) { }
 
-        public AtkComponentButton* TradeButton => Addon->GetButtonNodeById(51);
+        public AtkComponentButton* TradeButton => Addon->GetComponentButtonById(51);
         public AtkComponentRadioButton* CarpenterButton => Addon->GetComponentNodeById(3)->GetAsAtkComponentRadioButton();
         public AtkComponentRadioButton* BlacksmithButton => Addon->GetComponentNodeById(4)->GetAsAtkComponentRadioButton();
         public AtkComponentRadioButton* ArmourerButton => Addon->GetComponentNodeById(5)->GetAsAtkComponentRadioButton();

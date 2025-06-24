@@ -8,7 +8,7 @@ public partial class AddonMaster
         public ContentsFinderStatus(nint addon) : base(addon) { }
         public ContentsFinderStatus(void* addon) : base(addon) { }
 
-        public AtkComponentButton* WithdrawButton => Addon->GetButtonNodeById(40);
+        public AtkComponentButton* WithdrawButton => Addon->GetComponentButtonById(40);
 
         public override string AddonDescription => "Duty finder status window";
 

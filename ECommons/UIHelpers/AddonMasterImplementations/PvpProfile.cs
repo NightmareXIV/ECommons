@@ -8,7 +8,7 @@ public partial class AddonMaster
         public PvpProfile(nint addon) : base(addon) { }
         public PvpProfile(void* addon) : base(addon) { }
 
-        public AtkComponentButton* SeriesMalmstonesButton => Addon->GetButtonNodeById(21);
+        public AtkComponentButton* SeriesMalmstonesButton => Addon->GetComponentButtonById(21);
 
         public override string AddonDescription { get; } = "PvP Profile";
 

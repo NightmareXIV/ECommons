@@ -17,12 +17,12 @@ public partial class AddonMaster
         public WKSMission(nint addon) : base(addon) { }
         public WKSMission(void* addon) : base(addon) { }
 
-        public AtkComponentButton* HelpButton => Addon->GetButtonNodeById(7);
-        public AtkComponentButton* MissionSelectionButton => Addon->GetButtonNodeById(8);
-        public AtkComponentButton* MissionLogButton => Addon->GetButtonNodeById(9);
-        public AtkComponentButton* BasicMissionsButton => Addon->GetButtonNodeById(13);
-        public AtkComponentButton* ProvisionalMissionsButton => Addon->GetButtonNodeById(14);
-        public AtkComponentButton* CriticalMissionsButton => Addon->GetButtonNodeById(15);
+        public AtkComponentButton* HelpButton => Addon->GetComponentButtonById(7);
+        public AtkComponentButton* MissionSelectionButton => Addon->GetComponentButtonById(8);
+        public AtkComponentButton* MissionLogButton => Addon->GetComponentButtonById(9);
+        public AtkComponentButton* BasicMissionsButton => Addon->GetComponentButtonById(13);
+        public AtkComponentButton* ProvisionalMissionsButton => Addon->GetComponentButtonById(14);
+        public AtkComponentButton* CriticalMissionsButton => Addon->GetComponentButtonById(15);
 
         public uint NumEntries => Addon->AtkValues[29].UInt;
         public string SelectedMission

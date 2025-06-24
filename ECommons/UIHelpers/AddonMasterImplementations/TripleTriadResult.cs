@@ -15,8 +15,8 @@ public partial class AddonMaster
         public uint MGPReward => Addon->AtkValues[7].UInt;
         public bool WonGame => WonValue == 0;
 
-        public AtkComponentButton* RematchButton => Addon->GetButtonNodeById(21);
-        public AtkComponentButton* QuitButton => Addon->GetButtonNodeById(22);
+        public AtkComponentButton* RematchButton => Addon->GetComponentButtonById(21);
+        public AtkComponentButton* QuitButton => Addon->GetComponentButtonById(22);
 
         public override string AddonDescription { get; } = "Triple triad result window";
 

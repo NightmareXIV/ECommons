@@ -11,7 +11,7 @@ public partial class AddonMaster
         public Dialogue(nint addon) : base(addon) { }
         public Dialogue(void* addon) : base(addon) { }
 
-        public AtkComponentButton* OkButton => Addon->GetButtonNodeById(4);
+        public AtkComponentButton* OkButton => Addon->GetComponentButtonById(4);
 
         public override string AddonDescription { get; } = "Title screen error code window";
 

@@ -14,7 +14,7 @@ public partial class AddonMaster
         public uint CurrentLevelXp => Addon->AtkValues[10].UInt;
         public uint TotalLevelXp => Addon->AtkValues[11].UInt;
 
-        public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(124);
+        public AtkComponentButton* CloseButton => Addon->GetComponentButtonById(124);
 
         public override string AddonDescription { get; } = "PvP Series rewards window";
 

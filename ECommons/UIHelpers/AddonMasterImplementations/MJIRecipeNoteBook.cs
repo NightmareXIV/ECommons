@@ -10,7 +10,7 @@ public partial class AddonMaster
     {
         public MJIRecipeNoteBook(nint addon) : base(addon) { }
         public MJIRecipeNoteBook(void* addon) : base(addon) { }
-        public AtkComponentButton* CraftButton => Addon->GetButtonNodeById(34);
+        public AtkComponentButton* CraftButton => Addon->GetComponentButtonById(34);
 
         public override string AddonDescription => "Island Sanctuary crafting log window";
 
