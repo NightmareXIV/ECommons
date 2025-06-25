@@ -8,7 +8,7 @@ public partial class AddonMaster
         public GcArmyTraining(nint addon) : base(addon) { }
         public GcArmyTraining(void* addon) : base(addon) { }
 
-        public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(39);
+        public AtkComponentButton* CloseButton => Addon->GetComponentButtonById(39);
 
         public override string AddonDescription { get; } = "Squadron training window";
 

@@ -8,15 +8,15 @@ public partial class AddonMaster
         public GcArmyMenberProfile(nint addon) : base(addon) { }
         public GcArmyMenberProfile(void* addon) : base(addon) { }
 
-        public AtkComponentButton* ViewMembersButton => Addon->GetButtonNodeById(2);
-        public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(3);
+        public AtkComponentButton* ViewMembersButton => Addon->GetComponentButtonById(2);
+        public AtkComponentButton* CloseButton => Addon->GetComponentButtonById(3);
 
         public void ViewMembers() => ClickButtonIfEnabled(ViewMembersButton);
         public void Close() => ClickButtonIfEnabled(CloseButton);
 
-        public AtkComponentButton* QuestionButton => Addon->GetButtonNodeById(36);
-        public AtkComponentButton* PostponeButton => Addon->GetButtonNodeById(37);
-        public AtkComponentButton* DismissButton => Addon->GetButtonNodeById(38);
+        public AtkComponentButton* QuestionButton => Addon->GetComponentButtonById(36);
+        public AtkComponentButton* PostponeButton => Addon->GetComponentButtonById(37);
+        public AtkComponentButton* DismissButton => Addon->GetComponentButtonById(38);
 
         public void Question() => ClickButtonIfEnabled(QuestionButton);
         public void Postpone() => ClickButtonIfEnabled(PostponeButton);

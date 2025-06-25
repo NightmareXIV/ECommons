@@ -15,9 +15,9 @@ public partial class AddonMaster
         public WKSLottery(nint addon) : base(addon) { }
         public WKSLottery(void* addon) : base(addon) { }
 
-        public AtkComponentButton* WheelLeftButton => Addon->GetButtonNodeById(29);
-        public AtkComponentButton* WheelRightButton => Addon->GetButtonNodeById(39);
-        public AtkComponentButton* SpinWheelButton => Addon->GetButtonNodeById(64);
+        public AtkComponentButton* WheelLeftButton => Addon->GetComponentButtonById(29);
+        public AtkComponentButton* WheelRightButton => Addon->GetComponentButtonById(39);
+        public AtkComponentButton* SpinWheelButton => Addon->GetComponentButtonById(64);
 
         public WheelItems[] LeftWheelItems
         {

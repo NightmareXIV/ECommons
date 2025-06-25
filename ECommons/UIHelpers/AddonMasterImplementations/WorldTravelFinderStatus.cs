@@ -19,7 +19,7 @@ public partial class AddonMaster
         public World? StartingWorld => GenericHelpers.FindRow<World>(x => !string.IsNullOrEmpty(x!.Name) && x.Name == StartingWorldString);
         public World? DestinationWorld => GenericHelpers.FindRow<World>(x => !string.IsNullOrEmpty(x!.Name) && x.Name == DestinationWorldString);*/
 
-        public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(13);
+        public AtkComponentButton* CancelButton => Addon->GetComponentButtonById(13);
 
         public override string AddonDescription => "In-game world travel status window";
 

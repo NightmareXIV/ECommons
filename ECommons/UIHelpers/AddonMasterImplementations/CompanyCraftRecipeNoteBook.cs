@@ -8,7 +8,7 @@ public unsafe partial class AddonMaster
         public CompanyCraftRecipeNoteBook(nint addon) : base(addon) { }
         public CompanyCraftRecipeNoteBook(void* addon) : base(addon) { }
 
-        public AtkComponentButton* BeginButton => Base->GetButtonNodeById(34);
+        public AtkComponentButton* BeginButton => Base->GetComponentButtonById(34);
 
         public override string AddonDescription { get; } = "Free Company crafting log";
 

@@ -11,10 +11,10 @@ public partial class AddonMaster
         public MoogleCollection(nint addon) : base(addon) { }
         public MoogleCollection(void* addon) : base(addon) { }
 
-        public AtkComponentButton* OpenDutyFinderButton => Addon->GetButtonNodeById(42);
-        public AtkComponentButton* OpenAreaMapButton => Addon->GetButtonNodeById(43);
-        public AtkComponentButton* RewardsButton => Addon->GetButtonNodeById(44);
-        public AtkComponentButton* AccessSpecialSiteButton => Addon->GetButtonNodeById(59);
+        public AtkComponentButton* OpenDutyFinderButton => Addon->GetComponentButtonById(42);
+        public AtkComponentButton* OpenAreaMapButton => Addon->GetComponentButtonById(43);
+        public AtkComponentButton* RewardsButton => Addon->GetComponentButtonById(44);
+        public AtkComponentButton* AccessSpecialSiteButton => Addon->GetComponentButtonById(59);
 
         public override string AddonDescription => "Mogpendium window";
 

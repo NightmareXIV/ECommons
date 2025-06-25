@@ -11,10 +11,10 @@ public partial class AddonMaster
         public ManeuversArmorBoarding(nint addon) : base(addon) { }
         public ManeuversArmorBoarding(void* addon) : base(addon) { }
 
-        public AtkComponentButton* CruiseChaserButton => Addon->GetButtonNodeById(4);
-        public AtkComponentButton* OppressorButton => Addon->GetButtonNodeById(5);
-        public AtkComponentButton* BruteJusticeButton => Addon->GetButtonNodeById(6);
-        public AtkComponentButton* MountButton => Addon->GetButtonNodeById(11);
+        public AtkComponentButton* CruiseChaserButton => Addon->GetComponentButtonById(4);
+        public AtkComponentButton* OppressorButton => Addon->GetComponentButtonById(5);
+        public AtkComponentButton* BruteJusticeButton => Addon->GetComponentButtonById(6);
+        public AtkComponentButton* MountButton => Addon->GetComponentButtonById(11);
 
         public override string AddonDescription { get; } = "Rival Wings mount choice window";
 

@@ -20,7 +20,7 @@ public partial class AddonMaster
         {
         }
 
-        public AtkComponentButton* DeliverButton => Base->GetButtonNodeById(38);
+        public AtkComponentButton* DeliverButton => Base->GetComponentButtonById(38);
 
         public bool IsEnabled => DeliverButton->IsEnabled;
 
