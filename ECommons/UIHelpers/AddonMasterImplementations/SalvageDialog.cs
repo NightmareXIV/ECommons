@@ -12,8 +12,8 @@ public partial class AddonMaster
         // this has no bearing on the checkbox
         public bool BulkDesynthEnabled { get => Addon->BulkDesynthEnabled; set => Addon->BulkDesynthEnabled = value; }
 
-        public AtkComponentButton* DesynthesizeButton => Addon->GetButtonNodeById(24);
-        public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(25);
+        public AtkComponentButton* DesynthesizeButton => Addon->GetComponentButtonById(24);
+        public AtkComponentButton* CancelButton => Addon->GetComponentButtonById(25);
 
         public override string AddonDescription { get; } = "Desynthesis window";
 

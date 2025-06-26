@@ -8,15 +8,15 @@ public partial class AddonMaster
         public GcArmyChangeClass(nint addon) : base(addon) { }
         public GcArmyChangeClass(void* addon) : base(addon) { }
 
-        public AtkComponentButton* GladiatorButton => Addon->GetButtonNodeById(6);
-        public AtkComponentButton* MarauderButton => Addon->GetButtonNodeById(7);
-        public AtkComponentButton* PugilistButton => Addon->GetButtonNodeById(11);
-        public AtkComponentButton* LancerButton => Addon->GetButtonNodeById(12);
-        public AtkComponentButton* RogueButton => Addon->GetButtonNodeById(13);
-        public AtkComponentButton* ArcherButton => Addon->GetButtonNodeById(14);
-        public AtkComponentButton* ConjurerButton => Addon->GetButtonNodeById(18);
-        public AtkComponentButton* ThaumaturgeButton => Addon->GetButtonNodeById(19);
-        public AtkComponentButton* ArcanistButton => Addon->GetButtonNodeById(20);
+        public AtkComponentButton* GladiatorButton => Addon->GetComponentButtonById(6);
+        public AtkComponentButton* MarauderButton => Addon->GetComponentButtonById(7);
+        public AtkComponentButton* PugilistButton => Addon->GetComponentButtonById(11);
+        public AtkComponentButton* LancerButton => Addon->GetComponentButtonById(12);
+        public AtkComponentButton* RogueButton => Addon->GetComponentButtonById(13);
+        public AtkComponentButton* ArcherButton => Addon->GetComponentButtonById(14);
+        public AtkComponentButton* ConjurerButton => Addon->GetComponentButtonById(18);
+        public AtkComponentButton* ThaumaturgeButton => Addon->GetComponentButtonById(19);
+        public AtkComponentButton* ArcanistButton => Addon->GetComponentButtonById(20);
 
         public override string AddonDescription { get; } = "Squadron change class window";
 

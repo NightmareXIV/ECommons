@@ -16,8 +16,8 @@ public unsafe partial class AddonMaster
         public int ItemIconId => Addon->AtkValues[3].Int;
         public string ItemName => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[4].String.Value).GetText();
 
-        public AtkComponentButton* ApplyButton => Base->GetButtonNodeById(68);
-        public AtkComponentButton* SelectAnotherButton => Base->GetButtonNodeById(69);
+        public AtkComponentButton* ApplyButton => Base->GetComponentButtonById(68);
+        public AtkComponentButton* SelectAnotherButton => Base->GetComponentButtonById(69);
 
         public override string AddonDescription { get; } = "Item dyeing window";
 

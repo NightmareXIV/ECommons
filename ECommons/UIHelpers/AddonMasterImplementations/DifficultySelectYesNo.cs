@@ -12,8 +12,8 @@ public partial class AddonMaster
 
         public DifficultySelectYesNo(void* addon) : base(addon) { }
 
-        public AtkComponentButton* ProceedButton => Addon->GetButtonNodeById(12);
-        public AtkComponentButton* LeaveButton => Addon->GetButtonNodeById(13);
+        public AtkComponentButton* ProceedButton => Addon->GetComponentButtonById(12);
+        public AtkComponentButton* LeaveButton => Addon->GetComponentButtonById(13);
 
         public AtkComponentRadioButton* NormalButton => Addon->GetComponentNodeById(5)->GetAsAtkComponentRadioButton(); // which: 64
         public AtkComponentRadioButton* EasyButton => Addon->GetComponentNodeById(6)->GetAsAtkComponentRadioButton(); // which: 65

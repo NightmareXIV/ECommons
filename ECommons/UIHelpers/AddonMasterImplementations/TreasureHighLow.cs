@@ -13,15 +13,15 @@ public partial class AddonMaster
         /// <remarks>
         /// Only visible when it's your chest
         /// </remarks>
-        public AtkComponentButton* TryLuckButton => Addon->GetButtonNodeById(46);
+        public AtkComponentButton* TryLuckButton => Addon->GetComponentButtonById(46);
         /// <remarks>
         /// Only visible when it's your chest
         /// </remarks>
-        public AtkComponentButton* OpenChestButton => Addon->GetButtonNodeById(47);
+        public AtkComponentButton* OpenChestButton => Addon->GetComponentButtonById(47);
         /// <remarks>
         /// Only visible when it's not your chest
         /// </remarks>
-        public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(48);
+        public AtkComponentButton* CloseButton => Addon->GetComponentButtonById(48);
 
         /// <remarks>
         /// Only callable when it's your chest

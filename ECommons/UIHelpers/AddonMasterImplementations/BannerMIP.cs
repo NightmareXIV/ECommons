@@ -11,9 +11,9 @@ public partial class AddonMaster
         public BannerMIP(nint addon) : base(addon) { }
         public BannerMIP(void* addon) : base(addon) { }
 
-        public AtkComponentButton* OkButton => Addon->GetButtonNodeById(20);
-        public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(21);
-        public AtkComponentButton* SettingsButton => Addon->GetButtonNodeById(22);
+        public AtkComponentButton* OkButton => Addon->GetComponentButtonById(20);
+        public AtkComponentButton* CancelButton => Addon->GetComponentButtonById(21);
+        public AtkComponentButton* SettingsButton => Addon->GetComponentButtonById(22);
 
         public override string AddonDescription => "Player commendation voting (with portraits) window";
 

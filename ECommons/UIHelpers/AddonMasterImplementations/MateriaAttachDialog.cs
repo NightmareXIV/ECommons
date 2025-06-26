@@ -21,8 +21,8 @@ public partial class AddonMaster
                             ? float.Parse(string.Join("", SuccessRateText.Where(char.IsDigit).Append('.').Append('-')))
                             : 0.0f;
 
-        public AtkComponentButton* MeldButton => Base->GetButtonNodeById(35);
-        public AtkComponentButton* ReturnButton => Base->GetButtonNodeById(36);
+        public AtkComponentButton* MeldButton => Base->GetComponentButtonById(35);
+        public AtkComponentButton* ReturnButton => Base->GetComponentButtonById(36);
 
         public override string AddonDescription { get; } = "Materia melding window";
 

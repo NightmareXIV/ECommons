@@ -17,9 +17,9 @@ public partial class AddonMaster
         public WKSRecipeNotebook(nint addon) : base(addon) { }
         public WKSRecipeNotebook(void* addon) : base(addon) { }
 
-        public AtkComponentButton* NQItemsButton => Addon->GetButtonNodeById(39);
-        public AtkComponentButton* HQItemsButton => Addon->GetButtonNodeById(40);
-        public AtkComponentButton* SynthesizeButton => Addon->GetButtonNodeById(50);
+        public AtkComponentButton* NQItemsButton => Addon->GetComponentButtonById(39);
+        public AtkComponentButton* HQItemsButton => Addon->GetComponentButtonById(40);
+        public AtkComponentButton* SynthesizeButton => Addon->GetComponentButtonById(50);
 
         public string SelectedCraftingItem => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[46].String.Value).GetText();
 

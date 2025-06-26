@@ -8,8 +8,8 @@ public partial class AddonMaster
         public ShopExchangeItemDialog(nint addon) : base(addon) { }
         public ShopExchangeItemDialog(void* addon) : base(addon) { }
 
-        public AtkComponentButton* ExchangeButton => Addon->GetButtonNodeById(18);
-        public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(19);
+        public AtkComponentButton* ExchangeButton => Addon->GetComponentButtonById(18);
+        public AtkComponentButton* CancelButton => Addon->GetComponentButtonById(19);
 
         public override string AddonDescription { get; } = "Non-Gilshop Item Exchange Confirmation Dialog";
 

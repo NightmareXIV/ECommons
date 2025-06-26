@@ -9,8 +9,8 @@ public partial class AddonMaster
         public SynthesisSimpleDialog(void* addon) : base(addon) { }
 
         public AtkComponentCheckBox* UseHQMaterialsCheckbox => Addon->GetComponentNodeById(5)->GetAsAtkComponentCheckBox();
-        public AtkComponentButton* SynthesizeButton => Addon->GetButtonNodeById(7);
-        public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(8);
+        public AtkComponentButton* SynthesizeButton => Addon->GetComponentButtonById(7);
+        public AtkComponentButton* CancelButton => Addon->GetComponentButtonById(8);
 
         public override string AddonDescription => "Quick synthesis in progress window";
 

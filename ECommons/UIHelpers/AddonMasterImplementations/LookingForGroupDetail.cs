@@ -9,9 +9,9 @@ public unsafe partial class AddonMaster
         public LookingForGroupDetail(nint addon) : base(addon) { }
         public LookingForGroupDetail(void* addon) : base(addon) { }
 
-        public AtkComponentButton* JoinEditButton => Base->GetButtonNodeById(109);
-        public AtkComponentButton* TellEndButton => Base->GetButtonNodeById(110);
-        public AtkComponentButton* BackButton => Base->GetButtonNodeById(111);
+        public AtkComponentButton* JoinEditButton => Base->GetComponentButtonById(109);
+        public AtkComponentButton* TellEndButton => Base->GetComponentButtonById(110);
+        public AtkComponentButton* BackButton => Base->GetComponentButtonById(111);
 
         public bool JoinEdit() => ClickButtonIfEnabled(JoinEditButton);
         public bool TellEnd() => ClickButtonIfEnabled(TellEndButton);
