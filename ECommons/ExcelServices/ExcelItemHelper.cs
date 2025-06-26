@@ -180,4 +180,9 @@ public static class ExcelItemHelper
         if(cap > 0 && ret > cap) return cap;
         return ret;
     }
+
+    public static ItemRarity GetRarity(this Item item)
+    {
+        return (ItemRarity)item.Rarity;
+    }
 }
