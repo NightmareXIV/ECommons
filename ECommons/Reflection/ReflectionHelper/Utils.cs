@@ -200,4 +200,19 @@ public static partial class ReflectionHelper
         }
         return null;
     }
+
+    public static Type GetTypeFromRuntimeAssembly(string assemblyName, string type)
+    {
+        try
+        {
+            var fType = Assembly.Load(assemblyName);
+            var t = fType.GetType(type);
+            return t;
+        }
+        catch(Exception e)
+        {
+            e.Log();
+        }
+        return null;
+    }
 }

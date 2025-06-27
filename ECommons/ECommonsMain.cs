@@ -43,13 +43,9 @@ public static class ECommonsMain
         Instance = instance;
         GenericHelpers.Safe(() => Svc.Init(pluginInterface));
 #if DEBUG
-var type = "debug build without forms";
+var type = "debug build";
 #elif RELEASE
-        var type = "release build without forms";
-#elif DEBUGFORMS
-var type = "debug build with forms";
-#elif RELEASEFORMS
-        var type = "release build with forms";
+        var type = "release build";
 #else
 var type = "unknown build";
 #endif
