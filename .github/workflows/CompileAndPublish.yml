@@ -42,3 +42,4 @@ jobs:
           run: dotnet run --project NightmareXIVNugetUploader/NightmareXIVNugetUploader.csproj
           env: 
             READONLYKEY: ${{ secrets.READONLYKEY }}
+            NUGETKEY: ${{ secrets.NUGETKEY }}
