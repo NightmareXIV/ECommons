@@ -25,6 +25,10 @@ Don't forget to dispose it in your plugin's dispose method:
 ECommonsMain.Dispose();
 ```
 
+<section id="getting-started">
+<a href="#getting-started" alt="Getting Started"><h2>v3 changes</h2></a>
+To ensure consistent building experience, ECommons 3.0.0.0 and higher no longer reference Windows Forms in any way. Additionally, `RELEASEFORMS` and `DEBUGFORMS` versions were removed. If you have previously used `System.Windows.Forms.Keys` with ECommons, replace it with `ECommons.WindowsFormsReflector.Keys`. Internal copy/paste methods now use reflection to call Windows Forms.
+
 <section id="using-modules">
 <a href="#using-modules" alt="Using Modules"><h2>Using Modules</h3></a>
 ECommons comes with various modules which needs to be initalised at plugin runtime. To do so, modify your initalising code as follows:
