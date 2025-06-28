@@ -28,8 +28,8 @@ jobs:
             repository: 'NightmareXIV/NightmareXIVNugetUploader'
             submodules: true
             ref: 'main'
-        - name: XDTesting Print Directory Structure
-          uses: FiorelaCiroku/XDTesting-Print-Directory-Structure@v1.0.2
+        - name: print
+          run: dir
         - name: Set up .NET
           uses: actions/setup-dotnet@v3
           with:
