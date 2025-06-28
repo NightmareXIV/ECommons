@@ -6,7 +6,9 @@ name: CompileAndPublish
 # or API.
 on:
   workflow_dispatch:
-  repository_dispatch:
+  push:
+    paths:
+      - ECommons/ECommons.csproj
 
 concurrency:
   group: ${{ github.workflow }}
