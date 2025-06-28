@@ -9,6 +9,8 @@ on:
   push:
     paths:
       - ECommons/ECommons.csproj
+    branches:
+      - master
 
 concurrency:
   group: ${{ github.workflow }}
