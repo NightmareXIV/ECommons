@@ -33,7 +33,7 @@ jobs:
         - name: Set up .NET
           uses: actions/setup-dotnet@v3
           with:
-            dotnet-version: 10.0.x
+            dotnet-version: 9.0.x
         - name: Run the program
           run: dotnet run --project NightmareXIVNugetUploader/NightmareXIVNugetUploader.csproj
           env: 
