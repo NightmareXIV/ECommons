@@ -29,12 +29,12 @@ jobs:
             submodules: true
             ref: 'main'
         - name: print
-          run: dir
+          run: find -type d -printf '%d\t%P\n' | sort -r -nk1 | cut -f2-
         - name: Set up .NET
           uses: actions/setup-dotnet@v3
           with:
             dotnet-version: 10.0.x
         - name: Run the program
-          run: dotnet run --project NightmareXIVNugetUploader/NightmareXIVNugetUploader/NightmareXIVNugetUploader.csproj
+          run: dotnet run --project NightmareXIVNugetUploader/NightmareXIVNugetUploader.csproj
           env: 
             READONLYKEY: ${{ secrets.READONLYKEY }}
