@@ -8,7 +8,7 @@ public partial class AddonMaster
         public LetterHistory(nint addon) : base(addon) { }
         public LetterHistory(void* addon) : base(addon) { }
 
-        public AtkComponentButton* CloseButton => Base->GetButtonNodeById(5);
+        public AtkComponentButton* CloseButton => Base->GetComponentButtonById(5);
 
         public override string AddonDescription { get; } = "Mail history window";
 

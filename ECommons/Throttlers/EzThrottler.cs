@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ECommons.Throttlers;
 
@@ -7,6 +8,8 @@ public static class EzThrottler
     internal static EzThrottler<string> Throttler = new();
 
     public static IReadOnlyCollection<string> ThrottleNames => Throttler.ThrottleNames;
+
+    public static bool Throttle(string name, TimeSpan ts, bool reThrottle = false) => Throttler.Throttle(name, ts, reThrottle);
 
     public static bool Throttle(string name, int miliseconds = 500, bool rethrottle = false) => Throttler.Throttle(name, miliseconds, rethrottle);
 

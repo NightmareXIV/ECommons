@@ -14,7 +14,7 @@ public static unsafe partial class ImGuiEx
     {
         if(!entries.Any())
         {
-            ImGuiEx.Text(EzColor.RedBright, $"Table contains no elements!");
+            ImGuiEx.Text(EColor.RedBright, $"Table contains no elements!");
             return;
         }
         var entriesArray = entries.ToArray();

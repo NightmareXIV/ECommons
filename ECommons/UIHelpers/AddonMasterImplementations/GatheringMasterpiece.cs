@@ -31,8 +31,8 @@ public partial class AddonMaster
 
         public AtkComponentCheckBox* ScrutinyCheckBox => Addon->GetComponentNodeById(177)->GetAsAtkComponentCheckBox();
         public AtkComponentCheckBox* CollectorsIntuitionCheckBox => Addon->GetComponentNodeById(178)->GetAsAtkComponentCheckBox();
-        public AtkComponentButton* HelpButton => Addon->GetButtonNodeById(182);
-        public AtkComponentButton* ReturnButton => Addon->GetButtonNodeById(183);
+        public AtkComponentButton* HelpButton => Addon->GetComponentButtonById(182);
+        public AtkComponentButton* ReturnButton => Addon->GetComponentButtonById(183);
 
         public override string AddonDescription { get; } = "Collectables gathering window";
 

@@ -5,20 +5,14 @@
 
 <section id="getting-started">
 <a href="#getting-started" alt="Getting Started"><h2>Getting Started</h2></a>
-Add ECommons as a submodule to your project:
+Get ECommons from NuGet using a console command:
 
 ```
-git submodule add https://github.com/NightmareXIV/ECommons.git
+dotnet add package ECommons
 ```
-Add it to your plugin's CSProj file:
-
-```  
-<ItemGroup>
-    <ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
-</ItemGroup>
-```
-
-Then, in the entry point of your plugin:
+Or simply find it via NuGet package manager GUI.
+  
+Then, initialize in the constructor of your plugin:
 
 ```
 ECommonsMain.Init(pluginInterface, this);
@@ -31,19 +25,9 @@ Don't forget to dispose it in your plugin's dispose method:
 ECommonsMain.Dispose();
 ```
 
-Using certain functions like clipboard or keypresses will require you to enable Windows Forms module. Add the following section into your plugin's `.csproj` file:
-```
-<PropertyGroup>
-  <UseWindowsForms>true</UseWindowsForms>
-</PropertyGroup>
-```
-Additionally, to be able to build on Linux (if you're using Github Actions or want to send your plugin to official Dalamud repo), you will have to enable windows targeting. Add the following section into your plugin's `.csproj` file:
-```
-<PropertyGroup>
-  <EnableWindowsTargeting>true</EnableWindowsTargeting>
-</PropertyGroup>
-```
-</section>
+<section id="getting-started">
+<a href="#getting-started" alt="Getting Started"><h2>v3 changes</h2></a>
+To ensure consistent building experience, ECommons 3.0.0.0 and higher no longer reference Windows Forms in any way. Additionally, `RELEASEFORMS` and `DEBUGFORMS` versions were removed. If you have previously used `System.Windows.Forms.Keys` with ECommons, replace it with `ECommons.WindowsFormsReflector.Keys`. Internal copy/paste methods now use reflection to call Windows Forms.
 
 <section id="using-modules">
 <a href="#using-modules" alt="Using Modules"><h2>Using Modules</h3></a>

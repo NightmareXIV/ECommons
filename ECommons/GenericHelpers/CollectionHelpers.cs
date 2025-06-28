@@ -325,7 +325,7 @@ public static unsafe partial class GenericHelpers
         return x.Select(x => (x?.ToString() ?? "")).Join(separator);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete("Use SafeSelect")]
     public static V GetSafe<K, V>(this IDictionary<K, V> dic, K key, V Default = default)
     {
         if(dic?.TryGetValue(key, out var value) == true)
@@ -368,6 +368,26 @@ public static unsafe partial class GenericHelpers
         }
         dictionary.Add(key, newValue);
         return newValue;
+    }
+
+    public static V GetOrCreate<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue)
+    {
+        if(dictionary.TryGetValue(key, out var result))
+        {
+            return result;
+        }
+        dictionary.Add(key, defaultValue);
+        return defaultValue;
+    }
+
+    public static V GetOrCreate<K, V>(this IDictionary<K, V> dictionary, K key, Func<V> defaultValueGenerator)
+    {
+        if(dictionary.TryGetValue(key, out var result))
+        {
+            return result;
+        }
+        dictionary.Add(key, defaultValueGenerator());
+        return dictionary[key];
     }
 
     /// <summary>

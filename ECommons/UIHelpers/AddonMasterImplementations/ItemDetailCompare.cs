@@ -8,7 +8,7 @@ public partial class AddonMaster
         public ItemDetailCompare(nint addon) : base(addon) { }
         public ItemDetailCompare(void* addon) : base(addon) { }
 
-        public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(148);
+        public AtkComponentButton* CloseButton => Addon->GetComponentButtonById(148);
 
         public override string AddonDescription { get; } = "Item Comparison";
 

@@ -547,4 +547,44 @@ public static class DalamudReflector
         DalamudReflector.GetService("Dalamud.Plugin.Ipc.Internal.DataShare").GetFoP<System.Collections.IDictionary>("caches").Remove(name);
         EzSharedData.Cache.Remove(name);
     }
+
+    public static void SetImGuiAssertsState(bool? enableAsserts = false, bool? enableVerboseAssertLogging = false, bool? enableAssertsAtStartup = false)
+    {
+        try
+        {
+            var config = DalamudReflector.GetService("Dalamud.Configuration.Internal.DalamudConfiguration");
+            if(enableAssertsAtStartup != null)
+            {
+                var value = config.GetFoP<bool>("ImGuiAssertsEnabledAtStartup");
+                if(value != enableAssertsAtStartup.Value)
+                {
+                    config.SetFoP("ImGuiAssertsEnabledAtStartup", enableAssertsAtStartup.Value);
+                    PluginLog.Information($"Set ImGuiAssertsEnabledAtStartup={enableAssertsAtStartup}");
+                    config.Call("QueueSave", []);
+                }
+            }
+
+            var im = GetService("Dalamud.Interface.Internal.InterfaceManager");
+            if(enableAsserts != null)
+            {
+                if(im.GetFoP<bool>("ShowAsserts") != enableAsserts.Value)
+                {
+                    PluginLog.Information($"Set ShowAsserts={enableAsserts}");
+                    im.SetFoP("ShowAsserts", enableAsserts.Value);
+                }
+            }
+            if(enableVerboseAssertLogging != null)
+            {
+                if(im.GetFoP<bool>("EnableVerboseAssertLogging") != enableVerboseAssertLogging.Value)
+                {
+                    PluginLog.Information($"Set EnableVerboseAssertLogging={enableVerboseAssertLogging}");
+                    im.SetFoP("EnableVerboseAssertLogging", enableVerboseAssertLogging.Value);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            e.Log();
+        }
+    }
 }

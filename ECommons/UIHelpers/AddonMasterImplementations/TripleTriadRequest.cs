@@ -26,8 +26,8 @@ public partial class AddonMaster
         public int MatchFee => Addon->AtkValues[111].Int;
         public uint MGPReward => Addon->AtkValues[112].UInt;
 
-        public AtkComponentButton* ChallengeButton => Addon->GetButtonNodeById(41);
-        public AtkComponentButton* QuitButton => Addon->GetButtonNodeById(42);
+        public AtkComponentButton* ChallengeButton => Addon->GetComponentButtonById(41);
+        public AtkComponentButton* QuitButton => Addon->GetComponentButtonById(42);
 
         public override string AddonDescription { get; } = "Triple triad challenge window";
 

@@ -69,9 +69,9 @@ public static partial class ImGuiEx
                     mult *= 1000;
                     str = str[0..^1];
                 }
-                if(int.TryParse(str, NumberStyles.Float, null, out var result))
+                if(double.TryParse(str, NumberStyles.AllowThousands | NumberStyles.AllowDecimalPoint, null, out var dresult))
                 {
-                    number = result * mult;
+                    number = (int)(dresult * (double)mult);
                     if(negative) number *= -1;
                 }
             }
@@ -470,14 +470,15 @@ public static partial class ImGuiEx
     /// <param name="sameLine">Whether to draw radio buttons on the same line</param>
     /// <param name="prefix">Will be invoked before each radio button draw</param>
     /// <param name="suffix">Will be invoked after each radio button draw</param>
-    public static void RadioButtonBool(string labelTrue, string labelFalse, ref bool value, bool sameLine = false, Action prefix = null, Action suffix = null)
+    /// <param name="inverted">Whether to switch positions of <see langword="true"/> and <see langword="false"/> options</param>
+    public static void RadioButtonBool(string labelTrue, string labelFalse, ref bool value, bool sameLine = false, Action prefix = null, Action suffix = null, bool inverted = false)
     {
         prefix?.Invoke();
-        if(ImGui.RadioButton(labelTrue, value)) value = true;
+        if(ImGui.RadioButton(inverted ? labelFalse : labelTrue, value == !inverted)) value = !inverted;
         suffix?.Invoke();
         if(sameLine) ImGui.SameLine();
         prefix?.Invoke();
-        if(ImGui.RadioButton(labelFalse, !value)) value = false;
+        if(ImGui.RadioButton(inverted?labelTrue:labelFalse, value == inverted)) value = inverted;
         suffix?.Invoke();
     }
 }

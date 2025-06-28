@@ -13,9 +13,9 @@ public partial class AddonMaster
         public BannerList(nint addon) : base(addon) { }
         public BannerList(void* addon) : base(addon) { }
 
-        public AtkComponentButton* EditButton => Addon->GetButtonNodeById(2);
-        public AtkComponentButton* DisplayHelpButton => Addon->GetButtonNodeById(8);
-        public AtkComponentButton* UseAsInstantPortraitButton => Addon->GetButtonNodeById(34);
+        public AtkComponentButton* EditButton => Addon->GetComponentButtonById(2);
+        public AtkComponentButton* DisplayHelpButton => Addon->GetComponentButtonById(8);
+        public AtkComponentButton* UseAsInstantPortraitButton => Addon->GetComponentButtonById(34);
 
         public int NumPortraits => Addon->AtkValues[17].Int;
         public int SelectedPortrait => Addon->AtkValues[18].Int; // 0 indexed

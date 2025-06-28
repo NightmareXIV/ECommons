@@ -13,7 +13,7 @@ public partial class AddonMaster
         public uint CurrentLevelXp => Addon->AtkValues[10].UInt;
         public uint TotalLevelXp => Addon->AtkValues[11].UInt;
 
-        public AtkComponentButton* AcceptButton => Addon->GetButtonNodeById(36);
+        public AtkComponentButton* AcceptButton => Addon->GetComponentButtonById(36);
 
         public void Accept() => ClickButtonIfEnabled(AcceptButton);
     }

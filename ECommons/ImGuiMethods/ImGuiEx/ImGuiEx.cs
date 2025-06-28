@@ -409,6 +409,10 @@ public static unsafe partial class ImGuiEx
         /// Whether to clear filter when user opens job selection menu.
         /// </summary>
         ClearFilterOnOpen,
+        /// <summary>
+        /// Whether to add bulk job selectors
+        /// </summary>
+        BulkSelectors,
     }
 
     private static string JobSelectorFilter = "";
@@ -439,11 +443,34 @@ public static unsafe partial class ImGuiEx
         {
             preview = selectedJobs.Select(x => x.ToString().Replace("_", " ")).Print();
         }
-        if(ImGui.BeginCombo(id, preview))
+        if(ImGui.BeginCombo(id, preview, ImGuiComboFlags.HeightLarge))
         {
             if(ImGui.IsWindowAppearing() && options?.Contains(JobSelectorOption.ClearFilterOnOpen) == true)
                 ImGui.SetNextItemWidth(150f);
             ImGui.InputTextWithHint("##filter", "Filter...", ref JobSelectorFilter, 50);
+            if(options?.Contains(JobSelectorOption.BulkSelectors) == true)
+            {
+                ImGuiEx.CollectionCheckbox("DoW/DoM", Enum.GetValues<Job>().Where(x => x.IsCombat()), selectedJobs);
+                ImGui.SameLine();
+                ImGuiEx.CollectionCheckbox("DoL", Enum.GetValues<Job>().Where(x => x.IsDol()), selectedJobs);
+                ImGui.SameLine();
+                ImGuiEx.CollectionCheckbox("Tanks", Enum.GetValues<Job>().Where(x => x.IsTank()), selectedJobs);
+                ImGui.SameLine();
+                ImGuiEx.CollectionCheckbox("Healers", Enum.GetValues<Job>().Where(x => x.IsHealer()), selectedJobs);
+                ImGui.SameLine();
+                ImGuiEx.CollectionCheckbox("DPS", Enum.GetValues<Job>().Where(x => x.IsDps()), selectedJobs);
+                ImGui.SameLine();
+                ImGuiEx.CollectionCheckbox("Melee DPS", Enum.GetValues<Job>().Where(x => x.IsMeleeDps()), selectedJobs);
+                ImGui.SameLine();
+                ImGuiEx.CollectionCheckbox("Ranged DPS", Enum.GetValues<Job>().Where(x => x.IsRangedDps()), selectedJobs);
+                ImGuiEx.CollectionCheckbox("Magical ranged DPS", Enum.GetValues<Job>().Where(x => x.IsMagicalRangedDps()), selectedJobs);
+                ImGui.SameLine();
+                ImGuiEx.CollectionCheckbox("Physical ranged DPS", Enum.GetValues<Job>().Where(x => x.IsPhysicalRangedDps()), selectedJobs);
+                ImGui.SameLine();
+                ImGuiEx.CollectionCheckbox("Ranged jobs", Enum.GetValues<Job>().Where(x => x.IsHealer() || x.IsRangedDps()), selectedJobs);
+                ImGui.SameLine();
+                ImGuiEx.CollectionCheckbox("Melee jobs", Enum.GetValues<Job>().Where(x => x.IsMeleeDps() || x.IsTank()), selectedJobs);
+            }
             foreach(var cond in Enum.GetValues<Job>().Where(x => baseJobs || !x.IsUpgradeable()).OrderByDescending(x => Svc.Data.GetExcelSheet<ClassJob>().GetRow((uint)x).Role))
             {
                 if(cond == Job.ADV) continue;

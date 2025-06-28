@@ -34,9 +34,10 @@ public static class EzIPC
     /// <param name="instance">Instance of a class that has EzIPC methods and field/properties/properties.</param>
     /// <param name="prefix">Name prefix</param>
     /// <param name="safeWrapper">Type of a safe invocation wrapper to be used for IPC calls. Wrappers, when used, will silently drop exceptions and return default object if invocation has failed. You can subscribe to <see cref="EzIPC.OnSafeInvocationException"/> event to observe these exceptions.</param>
+    /// <param name="reducedLogging"></param>
     /// <exception cref="ArgumentNullException"></exception>
     /// <returns>Array of disposal tokens that can be used to dispose registered providers and event subscription. <b>Typical use of EzIPC never has any need to store and deal with these tokens</b>; you only ever need them when you want to unregister IPC before your plugin's Dispose method is called.</returns>
-    public static EzIPCDisposalToken[] Init(object instance, string? prefix = null, SafeWrapper safeWrapper = SafeWrapper.None) => Init(instance, instance.GetType(), prefix, safeWrapper);
+    public static EzIPCDisposalToken[] Init(object instance, string? prefix = null, SafeWrapper safeWrapper = SafeWrapper.None, bool reducedLogging = false) => Init(instance, instance.GetType(), prefix, safeWrapper, reducedLogging);
 
     /// <summary>
     /// Initializes IPC provider and subscriber for a static type.<br></br>
@@ -47,11 +48,12 @@ public static class EzIPC
     /// <param name="staticType">Type of a static class that has EzIPC methods and field/properties/properties.</param>
     /// <param name="prefix">Name prefix</param>
     /// <param name="safeWrapper">Type of a safe invocation wrapper to be used for IPC calls. Wrappers, when used, will silently drop exceptions and return default object if invocation has failed. You can subscribe to <see cref="EzIPC.OnSafeInvocationException"/> event to observe these exceptions.</param>
+    /// <param name="reducedLogging">If <see langword="true"/>, successful operation won't be logged. Recommended for stable production versions.</param>
     /// <exception cref="ArgumentNullException"></exception>
     /// <returns>Array of disposal tokens that can be used to dispose registered providers and event subscription. <b>Typical use of EzIPC never has any need to store and deal with these tokens</b>; you only ever need them when you want to unregister IPC before your plugin's Dispose method is called.</returns>
-    public static EzIPCDisposalToken[] Init(Type staticType, string? prefix = null, SafeWrapper safeWrapper = SafeWrapper.None) => Init(null, staticType, prefix, safeWrapper);
+    public static EzIPCDisposalToken[] Init(Type staticType, string? prefix = null, SafeWrapper safeWrapper = SafeWrapper.None, bool reducedLogging = false) => Init(null, staticType, prefix, safeWrapper, reducedLogging);
 
-    private static EzIPCDisposalToken[] Init(object? instance, Type instanceType, string? prefix, SafeWrapper safeWrapper)
+    private static EzIPCDisposalToken[] Init(object? instance, Type instanceType, string? prefix, SafeWrapper safeWrapper, bool reducedLogging)
     {
         if(safeWrapper == SafeWrapper.Inherit) throw new InvalidOperationException($"{nameof(SafeWrapper.Inherit)} is only valid option when used in EzIPC attribute. Please choose your desired SafeWrapper.");
         var ret = new List<EzIPCDisposalToken>();
@@ -65,7 +67,10 @@ public static class EzIPC
                 var attr = method.GetCustomAttributes(true).OfType<EzIPCAttribute>().FirstOrDefault();
                 if(attr != null)
                 {
-                    PluginLog.Debug($"[EzIPC Provider] Attempting to register {instanceType.Name}.{method.Name} as IPC method ({method.GetParameters().Length})");
+                    if(!reducedLogging)
+                    {
+                        PluginLog.Debug($"[EzIPC Provider] Attempting to register {instanceType.Name}.{method.Name} as IPC method ({method.GetParameters().Length})");
+                    }
                     var ipcName = attr.IPCName ?? method.Name;
                     ipcName = ipcName.Replace("%m", method.Name);
                     ipcName = ipcName.Replace("%p", Svc.PluginInterface.InternalName);
@@ -74,11 +79,17 @@ public static class EzIPC
                     var genericArray = (Type[])[.. method.GetParameters().Select(x => x.ParameterType), isAction ? attr.ActionLastGenericType : method.ReturnType];
                     var genericMethod = reg.MakeGenericMethod([.. genericArray]);
                     var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
-                    PluginLog.Debug($"[EzIPC Provider] Registering IPC method {name} with method {instanceType.FullName}.{method.Name}");
+                    if(!reducedLogging)
+                    {
+                        PluginLog.Debug($"[EzIPC Provider] Registering IPC method {name} with method {instanceType.FullName}.{method.Name}");
+                    }
                     genericMethod.Invoke(Svc.PluginInterface, [name]).Call(isAction ? "RegisterAction" : "RegisterFunc", [ReflectionHelper.CreateDelegate(method, instance)], true);
                     var token = new EzIPCDisposalToken(name, false, () =>
                     {
-                        PluginLog.Debug($"[EzIPC Provider] Unregistering IPC method {name}");
+                        if(!reducedLogging)
+                        {
+                            PluginLog.Debug($"[EzIPC Provider] Unregistering IPC method {name}");
+                        }
                         genericMethod.Invoke(Svc.PluginInterface, [name]).Call(isAction ? "UnregisterAction" : "UnregisterFunc", [], true);
                     });
                     ret.Add(token);
@@ -107,7 +118,10 @@ public static class EzIPC
                     if(isNonGenericAction || reference.UnionType.GetGenericTypeDefinition().EqualsAny([.. FuncTypes, .. ActionTypes]))
                     {
                         var wrapper = attr.Wrapper == SafeWrapper.Inherit ? safeWrapper : attr.Wrapper;
-                        PluginLog.Debug($"[EzIPC Subscriber] Attempting to assign IPC method to {instanceType.Name}.{reference.Name} with wrapper {wrapper}");
+                        if(!reducedLogging)
+                        {
+                            PluginLog.Debug($"[EzIPC Subscriber] Attempting to assign IPC method to {instanceType.Name}.{reference.Name} with wrapper {wrapper}");
+                        }
                         var isAction = isNonGenericAction || reference.UnionType.GetGenericTypeDefinition().EqualsAny(ActionTypes);
                         var genericArgsLen = reference.UnionType.GetGenericArguments().Length;
                         var reg = FindIpcSubscriber(genericArgsLen + (isAction ? 1 : 0)) ?? throw new NullReferenceException("Could not retrieve GetIpcSubscriber. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
@@ -147,7 +161,10 @@ public static class EzIPC
                 var attr = method.GetCustomAttributes(true).OfType<EzIPCEventAttribute>().FirstOrDefault();
                 if(attr != null)
                 {
-                    PluginLog.Debug($"[EzIPC Subscriber] Attempting to register {instanceType.Name}.{method.Name} as IPC event ({method.GetParameters().Length})");
+                    if(!reducedLogging)
+                    {
+                        PluginLog.Debug($"[EzIPC Subscriber] Attempting to register {instanceType.Name}.{method.Name} as IPC event ({method.GetParameters().Length})");
+                    }
                     var ipcName = attr.IPCName ?? method.Name;
                     ipcName = ipcName.Replace("%m", method.Name);
                     ipcName = ipcName.Replace("%p", Svc.PluginInterface.InternalName);
@@ -156,12 +173,18 @@ public static class EzIPC
                     var genericArray = (Type[])[.. method.GetParameters().Select(x => x.ParameterType), attr.ActionLastGenericType];
                     var genericMethod = reg.MakeGenericMethod([.. genericArray]);
                     var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
-                    PluginLog.Debug($"[EzIPC Subscriber] Registering IPC event {name} with method {instanceType.FullName}.{method.Name}");
+                    if(!reducedLogging)
+                    {
+                        PluginLog.Debug($"[EzIPC Subscriber] Registering IPC event {name} with method {instanceType.FullName}.{method.Name}");
+                    }
                     var d = ReflectionHelper.CreateDelegate(method, instance);
                     genericMethod.Invoke(Svc.PluginInterface, [name]).Call("Subscribe", [d], true);
                     var token = new EzIPCDisposalToken(name, true, () =>
                     {
-                        PluginLog.Debug($"[EzIPC Subscriber] Unregistering IPC event {name}");
+                        if(!reducedLogging)
+                        {
+                            PluginLog.Debug($"[EzIPC Subscriber] Unregistering IPC event {name}");
+                        }
                         genericMethod.Invoke(Svc.PluginInterface, [name]).Call("Unsubscribe", [d], true);
                     });
                     Unregister.Add(token);
@@ -189,7 +212,10 @@ public static class EzIPC
                     var isNonGenericAction = reference.UnionType == typeof(Action);
                     if(isNonGenericAction || reference.UnionType.GetGenericTypeDefinition().EqualsAny(ActionTypes))
                     {
-                        PluginLog.Debug($"[EzIPC Provider] Attempting to assign IPC event to {instanceType.Name}.{reference.Name}");
+                        if(!reducedLogging)
+                        {
+                            PluginLog.Debug($"[EzIPC Provider] Attempting to assign IPC event to {instanceType.Name}.{reference.Name}");
+                        }
                         var reg = FindIpcProvider(reference.UnionType.GetGenericArguments().Length + 1) ?? throw new NullReferenceException("Could not retrieve GetIpcProvider. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
                         var genericArgs = reference.UnionType.IsGenericType ? reference.UnionType.GetGenericArguments() : [];
                         var genericMethod = reg.MakeGenericMethod([.. genericArgs, attr.ActionLastGenericType]);

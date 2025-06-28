@@ -154,18 +154,34 @@ public static partial class ReflectionHelper
         return Delegate.CreateDelegate(getType(types.ToArray()), target, methodInfo.Name);
     }
 
-    public static IFieldPropertyUnion[] GetFieldPropertyUnions(this Type type, BindingFlags bindingFlags = BindingFlags.Default)
+    public static IFieldPropertyUnion[] GetFieldPropertyUnions(this Type type, BindingFlags bindingFlags = BindingFlags.Default, bool propertyFirst = false)
     {
         var ret = new List<IFieldPropertyUnion>();
-        foreach(var item in type.GetFields(bindingFlags))
+        void fields()
         {
-            //if (item.GetCustomAttribute<CompilerGeneratedAttribute>() != null) continue;
-            ret.Add(new UnionField(item));
+            foreach(var item in type.GetFields(bindingFlags))
+            {
+                //if (item.GetCustomAttribute<CompilerGeneratedAttribute>() != null) continue;
+                ret.Add(new UnionField(item));
+            }
         }
-        foreach(var item in type.GetProperties(bindingFlags))
+        void properties()
         {
-            //if (item.GetCustomAttribute<CompilerGeneratedAttribute>() != null) continue;
-            ret.Add(new UnionProperty(item));
+            foreach(var item in type.GetProperties(bindingFlags))
+            {
+                //if (item.GetCustomAttribute<CompilerGeneratedAttribute>() != null) continue;
+                ret.Add(new UnionProperty(item));
+            }
+        }
+        if(propertyFirst)
+        {
+            properties();
+            fields();
+        }
+        else
+        {
+            fields();
+            properties();
         }
         return [.. ret];
     }
@@ -181,6 +197,21 @@ public static partial class ReflectionHelper
         if(p != null)
         {
             return new UnionProperty(p);
+        }
+        return null;
+    }
+
+    public static Type GetTypeFromRuntimeAssembly(string assemblyName, string type)
+    {
+        try
+        {
+            var fType = Assembly.Load(assemblyName);
+            var t = fType.GetType(type);
+            return t;
+        }
+        catch(Exception e)
+        {
+            e.Log();
         }
         return null;
     }

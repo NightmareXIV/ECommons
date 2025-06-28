@@ -8,9 +8,9 @@ public partial class AddonMaster
         public ReturnerDialog(nint addon) : base(addon) { }
         public ReturnerDialog(void* addon) : base(addon) { }
 
-        public AtkComponentButton* AcceptButton => Addon->GetButtonNodeById(4);
-        public AtkComponentButton* DeclineButton => Addon->GetButtonNodeById(5);
-        public AtkComponentButton* DecideLaterButton => Addon->GetButtonNodeById(6);
+        public AtkComponentButton* AcceptButton => Addon->GetComponentButtonById(4);
+        public AtkComponentButton* DeclineButton => Addon->GetComponentButtonById(5);
+        public AtkComponentButton* DecideLaterButton => Addon->GetComponentButtonById(6);
 
         public override string AddonDescription { get; } = "Returner status confirmation window";
 

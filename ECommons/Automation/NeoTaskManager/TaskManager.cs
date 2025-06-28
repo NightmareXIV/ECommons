@@ -146,7 +146,7 @@ public partial class TaskManager : IDisposable
                 if(AbortAt == 0)
                 {
                     RemainingTimeMS = TimeLimitMS;
-                    Log($"→Starting to execute task [{CurrentTask.Name}], timeout={RemainingTimeMS}", ShowDebug);
+                    Log($"→Starting to execute task [{CurrentTask.Name}@{CurrentTask.Location}], timeout={RemainingTimeMS}", ShowDebug);
                 }
                 if(RemainingTimeMS < 0)
                 {
@@ -164,7 +164,7 @@ public partial class TaskManager : IDisposable
                 }
                 if(RemainingTimeMS < 0)
                 {
-                    Log($"→→Task timed out {CurrentTask.Name}", ShowDebug);
+                    Log($"→→Task timed out {CurrentTask.Name}@{CurrentTask.Location}", ShowDebug);
                     throw new TaskTimeoutException();
                 }
                 var result = CurrentTask.Function();
@@ -189,12 +189,12 @@ public partial class TaskManager : IDisposable
                 }
                 if(result == true)
                 {
-                    Log($"→→Task [{CurrentTask.Name}] completed successfully ", ShowDebug);
+                    Log($"→→Task [{CurrentTask.Name}@{CurrentTask.Location}] completed successfully ", ShowDebug);
                     CurrentTask = null;
                 }
                 else if(result == null)
                 {
-                    Log($"→→Received abort request from task [{CurrentTask.Name}]", ShowDebug);
+                    Log($"→→Received abort request from task [{CurrentTask.Name}@{CurrentTask.Location}]", ShowDebug);
                     Abort();
                 }
             }

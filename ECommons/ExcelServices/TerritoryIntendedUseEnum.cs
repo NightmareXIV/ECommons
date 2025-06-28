@@ -58,4 +58,5 @@ public enum TerritoryIntendedUseEnum : uint
     [CommonlyUsed] Criterion_Duty = 57,
     [CommonlyUsed] Criterion_Savage_Duty = 58,
     Blunderville = 59,
+    [CommonlyUsed] Occult_Crescent = 61,
 }
