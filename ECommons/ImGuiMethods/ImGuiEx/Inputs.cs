@@ -69,7 +69,7 @@ public static partial class ImGuiEx
                     mult *= 1000;
                     str = str[0..^1];
                 }
-                if(int.TryParse(str, NumberStyles.AllowThousands, null, out var result))
+                if(int.TryParse(str, NumberStyles.Float, null, out var result))
                 {
                     number = result * mult;
                     if(negative) number *= -1;
