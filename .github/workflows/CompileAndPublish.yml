@@ -39,6 +39,8 @@ jobs:
           uses: actions/setup-dotnet@v3
           with:
             dotnet-version: 10.0.x
+        - name: XDTesting Print Directory Structure
+          uses: FiorelaCiroku/XDTesting-Print-Directory-Structure@v1.0.2
         - name: Run the program
           run: dotnet run --project ECommons/ECommons/repo_updater/NightmareXIVNugetUploader.csproj
           env: 
