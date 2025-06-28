@@ -40,6 +40,10 @@
 
     <PropertyGroup>
         <LangVersion>preview</LangVersion>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <Title>ECommons</Title>
+        <PackageProjectUrl>https://github.com/NightmareXIV/ECommons</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/NightmareXIV/ECommons</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
