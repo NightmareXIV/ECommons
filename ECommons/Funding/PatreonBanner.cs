@@ -9,7 +9,7 @@ namespace ECommons.Funding;
 public static class PatreonBanner
 {
     public static Func<bool> IsOfficialPlugin = () => false;
-    public static string Text = "♥ Patreon";
+    public static string Text = "♥ Patreon/KoFi";
     public static string DonateLink => "https://www.patreon.com/NightmareXIV";
     public static void DrawRaw()
     {
@@ -86,14 +86,14 @@ public static class PatreonBanner
 				This will help me to update the plugin while granting you access to priority feature requests, priority support, early plugin builds, participation in votes for features and more.
 
 				Left click - to go to Patreon;
-				Right click - see all options
+				Right click - Ko-Fi and other options.
 				""";
 
     private static string SmallPatreonButtonTooltip => $"""
 				If you like {Svc.PluginInterface.Manifest.Name}, please consider supporting it's developer via Patreon.
 
 				Left click - to go to Patreon;
-				Right click - see other options
+				Right click - Ko-Fi and other options.
 				""";
 
     private static void Popup()
@@ -117,10 +117,10 @@ public static class PatreonBanner
             {
                 GenericHelpers.ShellStart("https://subscribe.nightmarexiv.com");
             }
-            /*if ("Donate one-time via Ko-Fi")
+            if(ImGui.Selectable("Donate one-time via Ko-Fi"))
             {
                 GenericHelpers.ShellStart("https://donate.nightmarexiv.com");
-            }*/
+            }
             if(ImGui.Selectable("Donate via Cryptocurrency"))
             {
                 GenericHelpers.ShellStart($"https://crypto.nightmarexiv.com/{(IsOfficialPlugin() ? "?" + Svc.PluginInterface.Manifest.Name : "")}");

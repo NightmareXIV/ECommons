@@ -1,0 +1,45 @@
+# This is a basic workflow that is manually triggered
+
+name: CompileAndPublish
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ECommons/ECommons.csproj
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "greet"
+  CompileAndPublish:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Runs a single command using the runners shell
+        - name: Checkout Repository
+          uses: actions/checkout@v4
+          with:
+            repository: 'NightmareXIV/NightmareXIVNugetUploader'
+            submodules: true
+            ref: 'main'
+        - name: print
+          run: find -type d -printf '%d\t%P\n' | sort -r -nk1 | cut -f2-
+        - name: Set up .NET
+          uses: actions/setup-dotnet@v3
+          with:
+            dotnet-version: 9.0.x
+        - name: Run the program
+          run: dotnet run --project NightmareXIVNugetUploader/NightmareXIVNugetUploader.csproj
+          env: 
+            READONLYKEY: ${{ secrets.READONLYKEY }}
+            NUGETKEY: ${{ secrets.NUGETKEY }}

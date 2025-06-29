@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using ECommons.Logging;
+using System.Linq;
 using System.Reflection;
 
 namespace ECommons.Reflection;
@@ -18,8 +19,22 @@ public static partial class ReflectionHelper
     /// <returns>Value of a field/property</returns>
     public static object GetFoP(this object obj, string name)
     {
-        return obj.GetType().GetField(name, AllFlags)?.GetValue(obj)
-            ?? obj.GetType().GetProperty(name, AllFlags)?.GetValue(obj);
+        var type = obj.GetType();
+        while(type != null)
+        {
+            var fieldInfo = type.GetField(name, AllFlags);
+            if(fieldInfo != null)
+            {
+                return fieldInfo.GetValue(obj);
+            }
+            var propertyInfo = type.GetProperty(name, AllFlags);
+            if(propertyInfo != null)
+            {
+                return propertyInfo.GetValue(obj);
+            }
+            type = type.BaseType;
+        }
+        return null;
     }
 
     /// <summary>
