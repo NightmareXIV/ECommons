@@ -1,11 +1,13 @@
 ﻿using ECommons.Reflection;
+using System;
+using System.Reflection;
 
 namespace ECommons.WindowsFormsReflector;
 public static partial class Winforms
 {
     public static class Clipboard
     {
-        public static object Instance
+        public static Type Instance
         {
             get
             {
@@ -15,17 +17,17 @@ public static partial class Winforms
 
         public static void Clear()
         {
-            Instance.Call("Clear", []);
+            Instance.GetMethod("Clear", BindingFlags.Public | BindingFlags.Static, []).Invoke(null, []);
         }
 
         public static void SetText(string text)
         {
-            Instance.Call("SetText", [text]);
+            Instance.GetMethod("SetText", BindingFlags.Public | BindingFlags.Static, [typeof(string)]).Invoke(null, [text]);
         }
 
         public static string GetText()
         {
-            return Instance.Call<string>("GetText", []);
+            return Instance.GetMethod("GetText", BindingFlags.Public | BindingFlags.Static, []).Invoke(null, []) as string;
         }
     }
 }

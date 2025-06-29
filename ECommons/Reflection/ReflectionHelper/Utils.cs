@@ -1,3 +1,4 @@
+using ECommons.Logging;
 using ECommons.Reflection.FieldPropertyUnion;
 using System;
 using System.Collections.Generic;
