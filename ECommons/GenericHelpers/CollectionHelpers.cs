@@ -10,6 +10,17 @@ using System.Threading.Tasks;
 namespace ECommons;
 public static unsafe partial class GenericHelpers
 {
+    public static IEnumerable<T> TakeEvery<T>(this IEnumerable<T> values, int num)
+    {
+        int i = 0;
+        var e = values.GetEnumerator();
+        while(e.MoveNext())
+        {
+            if(i % num == 0) yield return e.Current;
+            i++;
+        }
+    }
+
     public static T? FirstOrNull<T>(this IEnumerable<T> values, Func<T, bool> predicate) where T : struct
     {
         if(values.TryGetFirst(predicate, out var result))
