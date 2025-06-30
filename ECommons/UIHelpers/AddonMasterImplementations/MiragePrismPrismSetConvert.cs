@@ -16,8 +16,8 @@ public partial class AddonMaster
         public MiragePrismPrismSetConvert(void* addon) : base(addon) { }
         public override string AddonDescription { get; } = "Outfit glamour creation";
 
-        public AtkComponentButton* StoreAsGlamourButton => Addon->GetButtonNodeById(27);
-        public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(26);
+        public AtkComponentButton* StoreAsGlamourButton => Addon->GetComponentButtonById(27);
+        public AtkComponentButton* CloseButton => Addon->GetComponentButtonById(26);
 
         public void StoreAsGlamour() => ClickButtonIfEnabled(StoreAsGlamourButton);
         public void Close() => ClickButtonIfEnabled(CloseButton);

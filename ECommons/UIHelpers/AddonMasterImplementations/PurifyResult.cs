@@ -13,8 +13,8 @@ public partial class AddonMaster
 
         public SeString BannerSeString => GenericHelpers.ReadSeString(&Base->GetTextNodeById(2)->NodeText);
         public string BannerText => BannerSeString.GetText();
-        public AtkComponentButton* AutomaticButton => Addon->GetButtonNodeById(19);
-        public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(20);
+        public AtkComponentButton* AutomaticButton => Addon->GetComponentButtonById(19);
+        public AtkComponentButton* CloseButton => Addon->GetComponentButtonById(20);
 
         public override string AddonDescription { get; } = "Aetherial Reduction Result";
 

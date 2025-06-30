@@ -8,7 +8,7 @@ public partial class AddonMaster
         public ItemFinder(nint addon) : base(addon) { }
         public ItemFinder(void* addon) : base(addon) { }
 
-        public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(14);
+        public AtkComponentButton* CloseButton => Addon->GetComponentButtonById(14);
 
         public override string AddonDescription { get; } = "Item search window";
 

@@ -18,8 +18,8 @@ public partial class AddonMaster
 
         public MateriaRetrieveDialog(void* addon) : base(addon) { }
 
-        public AtkComponentButton* BeginButton => Base->GetButtonNodeById(17);
-        public AtkComponentButton* ReturnButton => Base->GetButtonNodeById(18);
+        public AtkComponentButton* BeginButton => Base->GetComponentButtonById(17);
+        public AtkComponentButton* ReturnButton => Base->GetComponentButtonById(18);
 
         public override string AddonDescription { get; } = "Materia extraction window";
 

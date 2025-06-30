@@ -332,6 +332,7 @@ public static class Content
 
             TerritoryIntendedUseEnum.Eureka or
                 TerritoryIntendedUseEnum.Bozja or
+                TerritoryIntendedUseEnum.Occult_Crescent or
                 TerritoryIntendedUseEnum.Diadem or
                 TerritoryIntendedUseEnum.Diadem_2 or
                 TerritoryIntendedUseEnum.Diadem_3 =>

@@ -21,8 +21,8 @@ public partial class AddonMaster
         public int MinQuantity => Addon->CardQuantityInput->Data.Min;
         public int MaxQuantity => Addon->CardQuantityInput->Data.Max;
 
-        public AtkComponentButton* SellButton => Base->GetButtonNodeById(16);
-        public AtkComponentButton* CancelButton => Base->GetButtonNodeById(17);
+        public AtkComponentButton* SellButton => Base->GetComponentButtonById(16);
+        public AtkComponentButton* CancelButton => Base->GetComponentButtonById(17);
 
         public override string AddonDescription { get; } = "Triple triad card exchange window";
 

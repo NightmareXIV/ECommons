@@ -18,7 +18,7 @@ public unsafe partial class AddonMaster
         {
         }
 
-        public AtkComponentButton* RecruitMembersButton => Base->GetButtonNodeById(46);
+        public AtkComponentButton* RecruitMembersButton => Base->GetComponentButtonById(46);
 
         public override string AddonDescription { get; } = "Party finder window";
 

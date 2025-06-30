@@ -9,8 +9,8 @@ public partial class AddonMaster
 
         public AirShipExplorationResult(void* addon) : base(addon) { }
 
-        public AtkComponentButton* RedeployButton => Addon->GetButtonNodeById(47);
-        public AtkComponentButton* FinalizeReportButton => Addon->GetButtonNodeById(48);
+        public AtkComponentButton* RedeployButton => Addon->GetComponentButtonById(47);
+        public AtkComponentButton* FinalizeReportButton => Addon->GetComponentButtonById(48);
 
         public override string AddonDescription { get; } = "Submersible/Airship exploration result window";
 

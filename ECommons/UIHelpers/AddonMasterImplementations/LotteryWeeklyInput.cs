@@ -13,8 +13,8 @@ public unsafe partial class AddonMaster
         public int Unk04 => Addon->AtkValues[4].Int;
         public int Unk05 => Addon->AtkValues[5].Int;
 
-        public AtkComponentButton* PurchaseButton => Base->GetButtonNodeById(31);
-        public AtkComponentButton* RandomButton => Base->GetButtonNodeById(32);
+        public AtkComponentButton* PurchaseButton => Base->GetComponentButtonById(31);
+        public AtkComponentButton* RandomButton => Base->GetComponentButtonById(32);
 
         public override string AddonDescription { get; } = "Jumbo Cactpot ticket purchase window";
 

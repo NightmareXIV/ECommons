@@ -19,8 +19,8 @@ public partial class AddonMaster
 
         public uint CollectableItemId => Addon->AtkValues[8].UInt;
 
-        public AtkComponentButton* DeliverButton => Addon->GetButtonNodeById(71);
-        public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(72);
+        public AtkComponentButton* DeliverButton => Addon->GetComponentButtonById(71);
+        public AtkComponentButton* CancelButton => Addon->GetComponentButtonById(72);
 
         public void Deliver() => ClickButtonIfEnabled(DeliverButton);
         public void Cancel() => ClickButtonIfEnabled(CancelButton);
