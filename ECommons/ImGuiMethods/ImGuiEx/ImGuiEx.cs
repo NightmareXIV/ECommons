@@ -904,35 +904,37 @@ public static unsafe partial class ImGuiEx
     public static void EzTabBar(string id, string KoFiTransparent, string openTabName, params (string name, Action function, Vector4? color, bool child)[] tabs) => EzTabBar(id, KoFiTransparent, openTabName, ImGuiTabBarFlags.None, tabs);
     public static void EzTabBar(string id, string KoFiTransparent, string openTabName, ImGuiTabBarFlags flags, params (string name, Action function, Vector4? color, bool child)[] tabs)
     {
-        ImGui.BeginTabBar(id, flags);
-        foreach(var x in tabs)
+        if(ImGui.BeginTabBar(id, flags))
         {
-            if(x.name == null) continue;
-            if(x.color != null)
+            foreach(var x in tabs)
             {
-                ImGui.PushStyleColor(ImGuiCol.Text, x.color.Value);
-            }
-            if(BeginTabItem(x.name, openTabName == x.name ? ImGuiTabItemFlags.SetSelected : ImGuiTabItemFlags.None))
-            {
+                if(x.name == null) continue;
                 if(x.color != null)
                 {
-                    ImGui.PopStyleColor();
+                    ImGui.PushStyleColor(ImGuiCol.Text, x.color.Value);
                 }
-                if(x.child) ImGui.BeginChild(x.name + "child");
-                x.function();
-                if(x.child) ImGui.EndChild();
-                ImGui.EndTabItem();
-            }
-            else
-            {
-                if(x.color != null)
+                if(BeginTabItem(x.name, openTabName == x.name ? ImGuiTabItemFlags.SetSelected : ImGuiTabItemFlags.None))
                 {
-                    ImGui.PopStyleColor();
+                    if(x.color != null)
+                    {
+                        ImGui.PopStyleColor();
+                    }
+                    if(x.child) ImGui.BeginChild(x.name + "child");
+                    x.function();
+                    if(x.child) ImGui.EndChild();
+                    ImGui.EndTabItem();
+                }
+                else
+                {
+                    if(x.color != null)
+                    {
+                        ImGui.PopStyleColor();
+                    }
                 }
             }
+            if(KoFiTransparent != null) PatreonBanner.RightTransparentTab();
+            ImGui.EndTabBar();
         }
-        if(KoFiTransparent != null) PatreonBanner.RightTransparentTab();
-        ImGui.EndTabBar();
     }
 
     public static bool Ctrl => ImGui.GetIO().KeyCtrl;
