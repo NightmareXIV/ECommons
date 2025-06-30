@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace ECommons.Configuration;
 
-public class EzCharaConfig<T> where T : IEzConfig, new()
+public class EzCharaConfig<T> where T : new()
 {
     private string DefaultCharaConfigFileName => $"{Prefix}{0:X16}.json";
     public string DefaultCharaConfigFile => Path.Combine(EzConfig.GetPluginConfigDirectory(), DefaultCharaConfigFileName);

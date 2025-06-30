@@ -56,7 +56,7 @@ public static class EzConfig
     /// <summary>
     /// Default configuration reference
     /// </summary>
-    public static IEzConfig? Config { get; private set; }
+    public static object? Config { get; private set; }
 
     private static bool WasCalled = false;
 
@@ -83,7 +83,7 @@ public static class EzConfig
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static T Init<T>() where T : IEzConfig, new()
+    public static T Init<T>() where T : new()
     {
         Config = LoadConfiguration<T>(DefaultSerializationFactory.DefaultConfigFileName);
         return (T)Config;
@@ -94,7 +94,7 @@ public static class EzConfig
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <exception cref="NullReferenceException"></exception>
-    public static void Migrate<T>() where T : IEzConfig, new()
+    public static void Migrate<T>() where T : new()
     {
         if(Config != null)
         {
@@ -141,7 +141,7 @@ public static class EzConfig
     /// <param name="appendConfigDirectory">If true, plugin configuration directory will be added to path</param>
     /// <param name="serializationFactory">If null, then default factory will be used.</param>
     /// <param name="writeFileAsync">Whether to perform writing operation in a separate thread. Serialization is performed in current thread.</param>
-    public static void SaveConfiguration(this IEzConfig Configuration, string path, bool prettyPrint = false, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null, bool writeFileAsync = false)
+    public static void SaveConfiguration(this object Configuration, string path, bool prettyPrint = false, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null, bool writeFileAsync = false)
     {
         WasCalled = true;
         serializationFactory ??= DefaultSerializationFactory;
@@ -219,7 +219,7 @@ public static class EzConfig
     /// <param name="appendConfigDirectory">If true, plugin configuration directory will be added to path</param>
     /// <param name="serializationFactory">If null, then default factory will be used.</param>
     /// <returns></returns>
-    public static T LoadConfiguration<T>(string path, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null) where T : IEzConfig, new()
+    public static T LoadConfiguration<T>(string path, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null) where T : new()
     {
         WasCalled = true;
         serializationFactory ??= DefaultSerializationFactory;
