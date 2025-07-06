@@ -5,6 +5,7 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
 using ECommons.ChatMethods;
+using ECommons.Configuration;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
 using ECommons.ImGuiMethods;
@@ -201,6 +202,11 @@ public static unsafe partial class GenericHelpers
     public static T JSONClone<T>(this T obj)
     {
         return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj));
+    }
+
+    public static T DSFClone<T>(this T obj)
+    {
+        return EzConfig.DefaultSerializationFactory.Deserialize<T>(EzConfig.DefaultSerializationFactory.Serialize(obj));
     }
 
     public static void DeleteFileToRecycleBin(string path)
