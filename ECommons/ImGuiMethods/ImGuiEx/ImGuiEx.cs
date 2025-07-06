@@ -62,7 +62,7 @@ public static unsafe partial class ImGuiEx
             try
             {
                 ImGuiDragDrop.SetDragDropPayload<T>(identifier, id);
-                ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeNESW);
+                ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeAll);
             }
             catch(Exception e)
             {
@@ -95,7 +95,7 @@ public static unsafe partial class ImGuiEx
             try
             {
                 ImGuiDragDrop.SetDragDropPayload<T>(identifier, id);
-                ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeNESW);
+                ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeAll);
             }
             catch(Exception e)
             {
