@@ -11,7 +11,7 @@ public static unsafe partial class GenericHelpers
         var inner = e.InnerException;
         for(var i = 1; inner != null; i++)
         {
-            str.Append($"\nAn inner exception ({i}) was thrown: {e.Message}\n{e.StackTrace}");
+            str.Append($"\nAn inner exception ({i}) was thrown: {inner.Message}\n{inner.StackTrace}");
             inner = inner.InnerException;
         }
         return str.ToString();

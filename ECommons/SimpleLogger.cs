@@ -38,25 +38,31 @@ public class SimpleLogger : IDisposable
             }
             catch(InvalidOperationException e)
             {
-                PluginLog.Information($"Not an error: {e.Message}\n{e.StackTrace ?? ""}");
+                PluginLog.Debug($"Not an error: {e.Message}\n{e.StackTrace ?? ""}");
             }
             catch(Exception e)
             {
-                PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
+                PluginLog.Debug($"{e.Message}\n{e.StackTrace ?? ""}");
             }
         }).Start();
     }
 
     public void Dispose()
     {
-        logQueue.CompleteAdding();
+        try
+        {
+            logQueue.CompleteAdding();
+        }catch(Exception e)
+        {
+            e.LogDebug();
+        }
     }
 
     public void Log(string s)
     {
         if(logQueue.IsAddingCompleted)
         {
-            PluginLog.Information($"Can not log, collection is marked as completed\n{s}");
+            PluginLog.Debug($"Can not log, collection is marked as completed\n{s}");
             return;
         }
         s = $"{DateTimeOffset.Now:s} {s}";
