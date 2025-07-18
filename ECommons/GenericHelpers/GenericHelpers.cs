@@ -5,6 +5,7 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
 using ECommons.ChatMethods;
+using ECommons.Configuration;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
 using ECommons.ImGuiMethods;
@@ -33,6 +34,11 @@ public static unsafe partial class GenericHelpers
     private static string UidPrefix = $"{Random.Shared.Next(0, 0xFFFF):X4}";
     private static ulong UidCnt = 0;
     public static string GetTemporaryId() => $"{UidPrefix}{UidCnt++:X}";
+
+    public static string RemoveWhitespaces(this string s)
+    {
+        return s.Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\t", "");
+    }
 
     public static bool TryGetValue<T>(this T? nullable, out T value) where T : struct
     {
@@ -201,6 +207,11 @@ public static unsafe partial class GenericHelpers
     public static T JSONClone<T>(this T obj)
     {
         return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj));
+    }
+
+    public static T DSFClone<T>(this T obj)
+    {
+        return EzConfig.DefaultSerializationFactory.Deserialize<T>(EzConfig.DefaultSerializationFactory.Serialize(obj));
     }
 
     public static void DeleteFileToRecycleBin(string path)

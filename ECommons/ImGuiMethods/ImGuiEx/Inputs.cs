@@ -408,6 +408,44 @@ public static partial class ImGuiEx
         return ret;
     }
 
+    public static bool EnumCombo<T>(string name, ref Nullable<T> refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null, string nullName = "Not selected") where T : struct, Enum, IConvertible
+    {
+        var ret = false;
+        if(ImGui.BeginCombo(name, refConfigField == null?nullName:((names != null && names.TryGetValue(refConfigField.Value, out var n)) ? n : refConfigField.Value.ToString().Replace("_", " ")), ImGuiComboFlags.HeightLarge))
+        {
+            var values = Enum.GetValues(typeof(T));
+            Box<string> fltr = null;
+            if(values.Length > 10)
+            {
+                if(!EnumComboSearch.ContainsKey(name)) EnumComboSearch.Add(name, new(""));
+                fltr = EnumComboSearch[name];
+                ImGuiEx.SetNextItemFullWidth();
+                ImGui.InputTextWithHint($"##{name.Replace("#", "_")}", "Filter...", ref fltr.Value, 50);
+            }
+            if(ImGui.Selectable(nullName, refConfigField == null))
+            {
+                ret = true;
+                refConfigField = null;
+            }
+            foreach(var x in values)
+            {
+                var equals = EqualityComparer<Nullable<T>>.Default.Equals((T)x, refConfigField);
+                var element = (names != null && names.TryGetValue((T)x, out n)) ? n : x.ToString().Replace("_", " ");
+                if((filter == null || filter((T)x))
+                    && (fltr == null || element.Contains(fltr.Value, StringComparison.OrdinalIgnoreCase))
+                    && ImGui.Selectable(element, equals)
+                    )
+                {
+                    ret = true;
+                    refConfigField = (T)x;
+                }
+                if(ImGui.IsWindowAppearing() && equals) ImGui.SetScrollHereY();
+            }
+            ImGui.EndCombo();
+        }
+        return ret;
+    }
+
     public static Dictionary<string, Box<string>> ComboSearch = [];
     public static bool Combo<T>(string name, ref T refConfigField, IEnumerable<T> values, Func<T, bool> filter = null, Dictionary<T, string> names = null)
     {

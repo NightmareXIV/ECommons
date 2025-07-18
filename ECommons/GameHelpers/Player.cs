@@ -4,6 +4,7 @@ using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Statuses;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
+using ECommons.GameFunctions;
 using ECommons.MathHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
@@ -21,6 +22,9 @@ using GrandCompany = ECommons.ExcelServices.GrandCompany;
 
 namespace ECommons.GameHelpers;
 
+/// <summary>
+/// In general, these properties and methods should be made in a way that does not throws <see cref="NullReferenceException"/>, where feasible.
+/// </summary>
 public static unsafe class Player
 {
     public static readonly Number MaxLevel = 100;
@@ -79,6 +83,7 @@ public static unsafe class Player
 
     public static float AnimationLock => *(float*)((nint)ActionManager.Instance() + 8);
     public static bool IsAnimationLocked => AnimationLock > 0;
+    public static bool IsCasting => Available && Object.IsCasting();
     public static bool IsDead => Svc.Condition[ConditionFlag.Unconscious];
     public static bool Revivable => IsDead && AgentRevive.Instance()->ReviveState != 0;
 

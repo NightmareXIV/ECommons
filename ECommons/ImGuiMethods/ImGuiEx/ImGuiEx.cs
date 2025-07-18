@@ -30,6 +30,96 @@ public static unsafe partial class ImGuiEx
     public static readonly ImGuiTableFlags DefaultTableFlags = ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg | ImGuiTableFlags.Borders | ImGuiTableFlags.SizingFixedFit;
     private static Dictionary<string, int> SelectedPages = [];
 
+    public static bool FilteringInputTextWithHint(string label, string hint, out string result, uint maxLength = 200)
+    {
+        var ret = false;
+        ref var value = ref Ref<string>.Get($"{ImGui.GetID(label)}_filter");
+        if(ImGui.InputTextWithHint(label, hint, ref value, maxLength))
+        {
+            ret = true;
+        }
+        result = value;
+        return ret;
+    }
+
+    public static bool FilteringCheckbox(string label, out bool result)
+    {
+        var ret = false;
+        ref var value = ref Ref<bool>.Get($"{ImGui.GetID(label)}_filter");
+        if(ImGui.Checkbox(label, ref value))
+        {
+            ret = true;
+        }
+        result = value;
+        return ret;
+    }
+
+    public static void DragDropRepopulate<T>(string identifier, T id, Action<T> callback) where T : unmanaged
+    {
+        ImGuiEx.Tooltip("Drag this selector to other selectors to set their values to the same");
+        if(ImGui.BeginDragDropSource(ImGuiDragDropFlags.SourceNoPreviewTooltip))
+        {
+            try
+            {
+                ImGuiDragDrop.SetDragDropPayload<T>(identifier, id);
+                ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeAll);
+            }
+            catch(Exception e)
+            {
+                e.Log();
+            }
+            ImGui.EndDragDropSource();
+        }
+        if(ImGui.BeginDragDropTarget())
+        {
+            try
+            {
+                if(ImGuiDragDrop.AcceptDragDropPayload<T>(identifier, out var outId, ImGuiDragDropFlags.AcceptBeforeDelivery | ImGuiDragDropFlags.AcceptNoPreviewTooltip))
+                {
+                    callback(outId);
+                }
+            }
+            catch(Exception e)
+            {
+                e.Log();
+            }
+            ImGui.EndDragDropTarget();
+        }
+    }
+
+    public static void DragDropRepopulate<T>(string identifier, T id, ref T field) where T : unmanaged
+    {
+        ImGuiEx.Tooltip("Drag this selector to other selectors to set their values to the same");
+        if(ImGui.BeginDragDropSource(ImGuiDragDropFlags.SourceNoPreviewTooltip))
+        {
+            try
+            {
+                ImGuiDragDrop.SetDragDropPayload<T>(identifier, id);
+                ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeAll);
+            }
+            catch(Exception e)
+            {
+                e.Log();
+            }
+            ImGui.EndDragDropSource();
+        }
+        if(ImGui.BeginDragDropTarget())
+        {
+            try
+            {
+                if(ImGuiDragDrop.AcceptDragDropPayload<T>(identifier, out var outId, ImGuiDragDropFlags.AcceptBeforeDelivery | ImGuiDragDropFlags.AcceptNoPreviewTooltip))
+                {
+                    field = outId;
+                }
+            }
+            catch(Exception e)
+            {
+                e.Log();
+            }
+            ImGui.EndDragDropTarget();
+        }
+    }
+
     /// <seealso cref="Scale(float)"/>
     public static Vector2? Scale(this Vector2? v)
     {
