@@ -1,6 +1,7 @@
 ﻿using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using ECommons.Logging;
+using ECommons.Schedulers;
 using System;
 using System.Collections.Generic;
 
@@ -48,12 +49,9 @@ public static class ProperOnLogin
                 Svc.ClientState.Login += OnLoginAvailable;
                 PluginLog.Debug("ProperOnLogin master available event registered");
             }
-            if(fireImmediately && PlayerPresent)
+            if(fireImmediately)
             {
-                Svc.Framework.RunOnFrameworkThread(() =>
-                {
-                    GenericHelpers.Safe(action);
-                });
+                new TickScheduler(() => { if(PlayerPresent) action(); });
             }
         }
     }
@@ -78,12 +76,9 @@ public static class ProperOnLogin
                 Svc.ClientState.Login += OnLoginInteractable;
                 PluginLog.Debug("ProperOnLogin interactable master event registered");
             }
-            if(fireImmediately && Player.Interactable)
+            if(fireImmediately)
             {
-                Svc.Framework.RunOnFrameworkThread(() =>
-                {
-                    GenericHelpers.Safe(action);
-                });
+                new TickScheduler(() => { if(Player.Interactable) action(); }) ;
             }
         }
     }
