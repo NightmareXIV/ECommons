@@ -66,6 +66,10 @@
             <HintPath>$(DalamudLibPath)Mono.Cecil.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="TerraFX.Interop.Windows">
+            <HintPath>$(DalamudLibPath)TerraFX.Interop.Windows.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
         <Reference Include="Newtonsoft.Json">
             <HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
             <Private>False</Private>
@@ -100,14 +104,6 @@
         </Reference>
         <Reference Include="InteropGenerator.Runtime">
             <HintPath>$(DalamudLibPath)InteropGenerator.Runtime.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="PInvoke.User32">
-            <HintPath>$(DalamudLibPath)PInvoke.User32.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="PInvoke.Windows.Core">
-            <HintPath>$(DalamudLibPath)PInvoke.Windows.Core.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="SharpDX.Mathematics">
