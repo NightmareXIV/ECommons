@@ -15,7 +15,7 @@ public static class WindowFunctions
     public static bool TryFindGameWindow(out HWND hwnd)
     {
         hwnd = HWND.NULL;
-        HWND prev = HWND.NULL;
+        var prev = HWND.NULL;
 
         while(true)
         {
@@ -23,7 +23,7 @@ public static class WindowFunctions
             if(prev == HWND.NULL)
                 break;
 
-            NativeFunctions.GetWindowThreadProcessId(prev, out uint pid);
+            NativeFunctions.GetWindowThreadProcessId(prev, out var pid);
             if(pid == Environment.ProcessId)
             {
                 hwnd = prev;
@@ -37,14 +37,14 @@ public static class WindowFunctions
     /// <summary>Returns true if the current application has focus, false otherwise</summary>
     public static bool ApplicationIsActivated()
     {
-        HWND activatedHandle = NativeFunctions.GetForegroundWindow();
+        var activatedHandle = NativeFunctions.GetForegroundWindow();
         if(activatedHandle == HWND.NULL)
         {
             return false;
         }
 
-        uint procId = (uint)Environment.ProcessId;
-        NativeFunctions.GetWindowThreadProcessId(activatedHandle, out uint activeProcId);
+        var procId = (uint)Environment.ProcessId;
+        NativeFunctions.GetWindowThreadProcessId(activatedHandle, out var activeProcId);
 
         return activeProcId == procId;
     }

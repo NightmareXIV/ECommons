@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TerraFX.Interop.Windows;
 
 namespace ECommons.Interop;
-public unsafe static partial class NativeFunctions
+public static unsafe partial class NativeFunctions
 {
     public static ushort LOWORD(uint value) => (ushort)(value & 0xFFFF);
     public static ushort HIWORD(uint value) => (ushort)(value >> 16);

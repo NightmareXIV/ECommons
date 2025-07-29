@@ -78,7 +78,7 @@ public static class ProperOnLogin
             }
             if(fireImmediately)
             {
-                new TickScheduler(() => { if(Player.Interactable) action(); }) ;
+                new TickScheduler(() => { if(Player.Interactable) action(); });
             }
         }
     }

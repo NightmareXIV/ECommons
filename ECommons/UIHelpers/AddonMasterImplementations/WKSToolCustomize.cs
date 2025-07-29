@@ -21,10 +21,10 @@ public partial class AddonMaster
             get
             {
                 var ret = new List<ClassSelector>();
-                for (var i = 0; i < 11; i++)
+                for(var i = 0; i < 11; i++)
                 {
                     var level = Addon->AtkValues[22 + i].UInt;
-                    if (level == 0)
+                    if(level == 0)
                         continue;
 
                     var ClassName = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[11 + i].String.Value).GetText();

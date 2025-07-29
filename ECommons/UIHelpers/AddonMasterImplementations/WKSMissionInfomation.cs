@@ -27,9 +27,9 @@ public partial class AddonMaster
         {
             get
             {
-                string rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[2].String.Value).GetText();
+                var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[2].String.Value).GetText();
                 rawValue = rawValue.Replace(",", ""); // remove thousand separators
-                if(uint.TryParse(rawValue, out uint result))
+                if(uint.TryParse(rawValue, out var result))
                     return result;
                 return 0; // fallback if parsing fails
             }
@@ -39,9 +39,9 @@ public partial class AddonMaster
         {
             get
             {
-                string rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[3].String.Value).GetText();
+                var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[3].String.Value).GetText();
                 rawValue = rawValue.Replace(",", ""); // remove thousand separators
-                if(uint.TryParse(rawValue, out uint result))
+                if(uint.TryParse(rawValue, out var result))
                     return result;
                 return 0; // fallback if parsing fails
             }
@@ -51,9 +51,9 @@ public partial class AddonMaster
         {
             get
             {
-                string rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[4].String.Value).GetText();
+                var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[4].String.Value).GetText();
                 rawValue = rawValue.Replace(",", ""); // remove thousand separators
-                if(uint.TryParse(rawValue, out uint result))
+                if(uint.TryParse(rawValue, out var result))
                     return result;
                 return 0; // fallback if parsing fails
             }

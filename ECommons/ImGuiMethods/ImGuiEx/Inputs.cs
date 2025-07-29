@@ -411,7 +411,7 @@ public static partial class ImGuiEx
     public static bool EnumCombo<T>(string name, ref Nullable<T> refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null, string nullName = "Not selected") where T : struct, Enum, IConvertible
     {
         var ret = false;
-        if(ImGui.BeginCombo(name, refConfigField == null?nullName:((names != null && names.TryGetValue(refConfigField.Value, out var n)) ? n : refConfigField.Value.ToString().Replace("_", " ")), ImGuiComboFlags.HeightLarge))
+        if(ImGui.BeginCombo(name, refConfigField == null ? nullName : ((names != null && names.TryGetValue(refConfigField.Value, out var n)) ? n : refConfigField.Value.ToString().Replace("_", " ")), ImGuiComboFlags.HeightLarge))
         {
             var values = Enum.GetValues(typeof(T));
             Box<string> fltr = null;
@@ -516,7 +516,7 @@ public static partial class ImGuiEx
         suffix?.Invoke();
         if(sameLine) ImGui.SameLine();
         prefix?.Invoke();
-        if(ImGui.RadioButton(inverted?labelTrue:labelFalse, value == inverted)) value = inverted;
+        if(ImGui.RadioButton(inverted ? labelTrue : labelFalse, value == inverted)) value = inverted;
         suffix?.Invoke();
     }
 }

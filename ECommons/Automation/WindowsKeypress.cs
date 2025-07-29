@@ -17,8 +17,8 @@ public static partial class WindowsKeypress
         if(WindowFunctions.TryFindGameWindow(out var h))
         {
             InternalLog.Verbose($"Sending key {key}");
-            WPARAM wParam = new WPARAM((uint)key);
-            LPARAM lParam = new LPARAM(0);
+            var wParam = new WPARAM((uint)key);
+            var lParam = new LPARAM(0);
             NativeFunctions.SendMessage(h, WM.WM_KEYDOWN, wParam, lParam);
             NativeFunctions.SendMessage(h, WM.WM_KEYUP, wParam, lParam);
             return true;
@@ -35,20 +35,20 @@ public static partial class WindowsKeypress
         {
             if(key == (1 | 4)) //xbutton1
             {
-                uint rawWParam = NativeFunctions.MAKEWPARAM(0, 0x0001);
-                HWND hwnd = h;
-                WPARAM wp = new WPARAM(rawWParam);
-                LPARAM lp = new LPARAM(0);
+                var rawWParam = NativeFunctions.MAKEWPARAM(0, 0x0001);
+                var hwnd = h;
+                var wp = new WPARAM(rawWParam);
+                var lp = new LPARAM(0);
 
                 NativeFunctions.SendMessage(hwnd, WM.WM_XBUTTONDOWN, wp, lp);
                 NativeFunctions.SendMessage(hwnd, WM.WM_XBUTTONUP, wp, lp);
             }
             else if(key == (2 | 4)) //xbutton2
             {
-                uint rawWParam = NativeFunctions.MAKEWPARAM(0, 0x0002);
-                HWND hwnd = h;
-                WPARAM wp = new WPARAM(rawWParam);
-                LPARAM lp = new LPARAM(0);
+                var rawWParam = NativeFunctions.MAKEWPARAM(0, 0x0002);
+                var hwnd = h;
+                var wp = new WPARAM(rawWParam);
+                var lp = new LPARAM(0);
 
                 NativeFunctions.SendMessage(hwnd, WM.WM_XBUTTONDOWN, wp, lp);
                 NativeFunctions.SendMessage(hwnd, WM.WM_XBUTTONUP, wp, lp);
