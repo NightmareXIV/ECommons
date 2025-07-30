@@ -1,7 +1,7 @@
 ﻿using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
 using ECommons.Logging;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System.Numerics;
 
 namespace ECommons.ImGuiMethods;

@@ -9,7 +9,7 @@ using ECommons.Logging;
 using ECommons.MathHelpers;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Lumina.Excel.Sheets;
 using System;
 using System.Collections.Generic;
@@ -570,7 +570,7 @@ public static unsafe partial class ImGuiEx
                 {
                     if(ThreadLoadImageHandler.TryGetIconTextureWrap((uint)cond.GetIcon(), false, out var texture))
                     {
-                        ImGui.Image(texture.ImGuiHandle, new Vector2(24f.Scale()));
+                        ImGui.Image(texture.Handle, new Vector2(24f.Scale()));
                         ImGui.SameLine();
                     }
                     if(CollectionCheckbox(name, cond, selectedJobs)) ret = true;
@@ -827,7 +827,7 @@ public static unsafe partial class ImGuiEx
     {
         if(ImGui.IsWindowCollapsed()) return false;
 
-        var currentID = ImGui.GetID(0);
+        var currentID = ImGui.GetID((byte*)0);
         if(currentID != headerLastWindowID || headerLastFrame != Svc.PluginInterface.UiBuilder.FrameCount)
         {
             headerLastWindowID = currentID;
@@ -889,8 +889,7 @@ public static unsafe partial class ImGuiEx
 
     public static bool IsKeyPressed(int key, bool repeat)
     {
-        var repeat2 = (byte)(repeat ? 1 : 0);
-        return ImGuiNative.igIsKeyPressed((ImGuiKey)key, repeat2) != 0;
+        return ImGui.IsKeyPressed((ImGuiKey)key, repeat);
     }
 
     public static float GetWindowContentRegionWidth()
@@ -1087,13 +1086,13 @@ public static unsafe partial class ImGuiEx
             ptr = null;
         }
 
-        byte* p_open2 = null;
-        var num2 = ImGuiNative.igBeginTabItem(ptr, p_open2, flags);
+        bool* p_open2 = null;
+        var num2 = ImGui.BeginTabItem(ptr, p_open2, flags);
         if(num > 2048)
         {
             Free(ptr);
         }
-        return num2 != 0;
+        return num2;
     }
 
     internal static unsafe byte* Allocate(int byteCount)

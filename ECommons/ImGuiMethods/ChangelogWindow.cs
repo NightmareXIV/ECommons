@@ -3,7 +3,7 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 
 namespace ECommons.ImGuiMethods;

@@ -1,6 +1,6 @@
 ﻿using Dalamud.Interface.Windowing;
 using ECommons.DalamudServices;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

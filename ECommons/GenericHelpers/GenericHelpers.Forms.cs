@@ -1,7 +1,7 @@
 ﻿using ECommons.ImGuiMethods;
 using ECommons.Logging;
 using ECommons.WindowsFormsReflector;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 

@@ -1,4 +1,4 @@
-﻿using ImGuiNET;
+﻿using Dalamud.Bindings.ImGui;
 using System;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -16,7 +16,7 @@ public static class ImGuiDragDrop
     where T : unmanaged
     {
         var ptr = Unsafe.AsPointer(ref data);
-        ImGui.SetDragDropPayload(type, new IntPtr(ptr), (uint)Unsafe.SizeOf<T>(), cond);
+        ImGui.SetDragDropPayload(type, ptr, (uint)Unsafe.SizeOf<T>(), cond);
     }
 
     public static unsafe bool AcceptDragDropPayload<T>(string type, out T payload, ImGuiDragDropFlags flags = ImGuiDragDropFlags.None)
@@ -35,7 +35,7 @@ public static class ImGuiDragDrop
             var bytes = stackalloc byte[byteCount];
             Encoding.Default.GetBytes(chars, data.Length, bytes, byteCount);
 
-            ImGui.SetDragDropPayload(type, new IntPtr(bytes), (uint)byteCount, cond);
+            ImGui.SetDragDropPayload(type, bytes, (uint)byteCount, cond);
         }
     }
 

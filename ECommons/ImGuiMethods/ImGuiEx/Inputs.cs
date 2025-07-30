@@ -1,10 +1,11 @@
 ﻿using Dalamud.Interface.Utility;
 using ECommons.Throttlers;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 
 namespace ECommons.ImGuiMethods;
 public static partial class ImGuiEx
@@ -215,7 +216,7 @@ public static partial class ImGuiEx
 
     public static bool InputTextMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
     {
-        return ImGui.InputTextMultiline(id, ref text, maxLength, new(width ?? ImGui.GetContentRegionAvail().X, ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)));
+        return ImGui.InputTextMultiline(id, ref text, maxLength, new Vector2(width ?? ImGui.GetContentRegionAvail().X, ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)));
     }
 
     private static Dictionary<string, Box<string>> InputListValuesString = [];

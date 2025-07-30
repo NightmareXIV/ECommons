@@ -5,7 +5,7 @@ using ECommons.DalamudServices;
 using ECommons.EzSharedDataManager;
 using ECommons.Logging;
 using ECommons.Schedulers;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
