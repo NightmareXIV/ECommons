@@ -135,7 +135,7 @@ public static class Raids
     public const ushort AAC_Cruiserweight_M3 = 1260;
     public const ushort AAC_Cruiserweight_M3_Savage = 1261;
     public const ushort AAC_Cruiserweight_M4 = 1262;
-    public const ushort AAC_Cruiserweight_M4_Savage =  1263;
+    public const ushort AAC_Cruiserweight_M4_Savage = 1263;
     private static ushort[] list = null;
     public static ushort[] List
     {

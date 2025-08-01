@@ -30,7 +30,7 @@ public partial class AddonMaster
             get
             {
                 var missionName = Addon->AtkValues[933];
-                if (missionName.Type.EqualsAny(ValueType.String, ValueType.ManagedString, ValueType.String8))
+                if(missionName.Type.EqualsAny(ValueType.String, ValueType.ManagedString, ValueType.String8))
                 {
                     return MemoryHelper.ReadSeStringNullTerminated((nint)missionName.String.Value).GetText();
                 }
@@ -46,10 +46,10 @@ public partial class AddonMaster
                 for(var i = 0; i < NumEntries; i++)
                 {
                     var missionName = Addon->AtkValues[670 + i * 2];
-                    uint missionId = Addon->AtkValues[32 + i * 5].UInt;
+                    var missionId = Addon->AtkValues[32 + i * 5].UInt;
 
                     // category header?
-                    if (missionId == 0)
+                    if(missionId == 0)
                         continue;
 
                     if(missionName.Type.EqualsAny(ValueType.String, ValueType.ManagedString, ValueType.String8))

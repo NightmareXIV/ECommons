@@ -18,6 +18,9 @@ public class ThreadPool : IDisposable
     private volatile uint ThreadNum = 0;
     private volatile uint BusyThreads = 0;
     private volatile bool Disposed = false;
+
+    public bool IsWorking => BusyThreads > 0;
+
     public (uint RunningThreads, uint BusyThreads, int TasksQueued) State => (ThreadNum, BusyThreads, TaskQueue.Count);
     public ThreadPool()
     {

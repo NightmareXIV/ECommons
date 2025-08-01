@@ -19,24 +19,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 using ECommons.DalamudServices;
+using ECommons.EzHookManager;
+using ECommons.Logging;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using Lumina.Excel.Sheets;
 using System;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using System.Text;
-using Framework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
 using static ECommons.Automation.Chat.Memory;
-using ECommons.EzHookManager;
-using ECommons.Logging;
-using System.Reflection.Metadata.Ecma335;
+using Framework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
 namespace ECommons.Automation;
 #nullable disable
 
 /// <summary>
 /// A class containing chat functionality
 /// </summary>
-public unsafe static class Chat
+public static unsafe class Chat
 {
     public static class Memory
     {

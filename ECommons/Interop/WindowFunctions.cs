@@ -1,7 +1,5 @@
-﻿using PInvoke;
-using System;
-//using System.Windows.Forms;
-using static PInvoke.User32;
+﻿using System;
+using TerraFX.Interop.Windows;
 
 namespace ECommons.Interop;
 
@@ -13,30 +11,40 @@ public static class WindowFunctions
     public const int SW_SHOW = 5;
     public const int SW_SHOWNA = 8;
 
-    public static bool TryFindGameWindow(out IntPtr hwnd)
+
+    public static bool TryFindGameWindow(out HWND hwnd)
     {
-        hwnd = IntPtr.Zero;
+        hwnd = HWND.NULL;
+        var prev = HWND.NULL;
+
         while(true)
         {
-            hwnd = FindWindowEx(IntPtr.Zero, hwnd, "FFXIVGAME", null);
-            if(hwnd == IntPtr.Zero) break;
-            GetWindowThreadProcessId(hwnd, out var pid);
-            if(pid == Environment.ProcessId) break;
+            prev = NativeFunctions.FindWindowEx(HWND.NULL, prev, "FFXIVGAME", null);
+            if(prev == HWND.NULL)
+                break;
+
+            NativeFunctions.GetWindowThreadProcessId(prev, out var pid);
+            if(pid == Environment.ProcessId)
+            {
+                hwnd = prev;
+                break;
+            }
         }
-        return hwnd != IntPtr.Zero;
+
+        return hwnd != HWND.NULL;
     }
 
     /// <summary>Returns true if the current application has focus, false otherwise</summary>
     public static bool ApplicationIsActivated()
     {
-        var activatedHandle = GetForegroundWindow();
-        if(activatedHandle == IntPtr.Zero)
+        var activatedHandle = NativeFunctions.GetForegroundWindow();
+        if(activatedHandle == HWND.NULL)
         {
-            return false;       // No window is currently activated
+            return false;
         }
 
-        var procId = Environment.ProcessId;
-        GetWindowThreadProcessId(activatedHandle, out var activeProcId);
+        var procId = (uint)Environment.ProcessId;
+        NativeFunctions.GetWindowThreadProcessId(activatedHandle, out var activeProcId);
 
         return activeProcId == procId;
     }
@@ -45,15 +53,10 @@ public static class WindowFunctions
     {
         if(TryFindGameWindow(out var hwnd))
         {
-            User32.SendMessage(hwnd, WindowMessage.WM_KEYDOWN, (IntPtr)keycode, (IntPtr)0);
-            User32.SendMessage(hwnd, WindowMessage.WM_KEYUP, (IntPtr)keycode, (IntPtr)0);
+            NativeFunctions.SendMessage(hwnd, WM.WM_KEYDOWN, (WPARAM)keycode, (LPARAM)0);
+            NativeFunctions.SendMessage(hwnd, WM.WM_KEYUP, (WPARAM)keycode, (LPARAM)0);
             return true;
         }
         return false;
     }
-
-    /*public static bool SendKeypress(Keys key)
-    {
-        return SendKeypress((int)key);
-    }*/
 }

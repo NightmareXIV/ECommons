@@ -52,7 +52,8 @@ public class SimpleLogger : IDisposable
         try
         {
             logQueue.CompleteAdding();
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             e.LogDebug();
         }

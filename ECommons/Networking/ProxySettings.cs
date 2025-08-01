@@ -54,7 +54,7 @@ public class ProxySettings
             ImGui.TableNextColumn();
             ImGuiEx.TextV($"Enable authentication:");
             ImGui.TableNextColumn();
-            ImGui.Checkbox("##enableProxyAuthentication", ref this.UseProxyAuthentication);
+            ImGui.Checkbox("##enableProxyAuthentication", ref UseProxyAuthentication);
 
             ImGui.TableNextRow();
             ImGui.TableNextColumn();

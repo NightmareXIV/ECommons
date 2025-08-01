@@ -32,7 +32,7 @@ public partial class AddonMaster
 
                     var itemAmount = Addon->AtkValues[92 + i * 7].UInt;
                     SeString itemName = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[91 + i * 7].String.Value).GetText();
-                    string itemNameText = itemName.ToString();
+                    var itemNameText = itemName.ToString();
 
                     var ItemList = new WheelItems()
                     {
@@ -59,7 +59,7 @@ public partial class AddonMaster
 
                     var itemAmount = Addon->AtkValues[141 + i * 7].UInt;
                     SeString itemName = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[140 + i * 7].String.Value).GetText();
-                    string itemNameText = itemName.ToString();
+                    var itemNameText = itemName.ToString();
 
                     var ItemList = new WheelItems()
                     {
