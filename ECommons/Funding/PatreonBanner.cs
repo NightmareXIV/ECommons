@@ -2,7 +2,7 @@
 using ECommons.DalamudServices;
 using ECommons.EzSharedDataManager;
 using ECommons.ImGuiMethods;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 
 namespace ECommons.Funding;

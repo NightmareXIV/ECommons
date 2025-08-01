@@ -4,7 +4,7 @@ using Dalamud.Plugin;
 using ECommons.ImGuiMethods;
 using ECommons.Logging;
 using ECommons.Reflection;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.IO;
 using System.Linq;

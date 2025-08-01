@@ -1,4 +1,4 @@
-﻿using ImGuiNET;
+﻿using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -74,7 +74,7 @@ public static class ImGuiBB
                         {
                             first = true;
                         }
-                        ImGui.Image(texture.ImGuiHandle, new(texture.Width, texture.Height));
+                        ImGui.Image(texture.Handle, new(texture.Width, texture.Height));
                     }
                 }
                 else
