@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,8 +17,8 @@ public static unsafe partial class NativeFunctions
     [LibraryImport("user32.dll", SetLastError = true)]
     public static partial LRESULT SendMessage(HWND hWnd, uint Msg, WPARAM wParam, LPARAM lParam);
 
-    [LibraryImport("user32.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
-    public static partial HWND FindWindowEx(HWND hwndParent, HWND hwndChildAfter, string lpszClass, string? lpszWindow);
+    [LibraryImport("user32.dll", EntryPoint = "FindWindowExW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+    public static partial HWND FindWindowEx(HWND hwndParent, HWND hwndChildAfter, string? lpszClass, string? lpszWindow);
 
     [LibraryImport("user32.dll", SetLastError = true)]
     public static partial uint GetWindowThreadProcessId(HWND hWnd, out uint lpdwProcessId);
