@@ -41,6 +41,15 @@ public static class EzConfig
         }
     } = false;
 
+    public static Action<string, string>? SaveFileActionOverride
+    {
+        get => field;
+        set
+        {
+            if(field != null) throw new InvalidOperationException("Can not change override once it has been set");
+        }
+    }
+
     public static string GetPluginConfigDirectory()
     {
         if(PluginConfigDirectoryOverride == null) return Svc.PluginInterface.GetPluginConfigDirectory();
@@ -103,7 +112,7 @@ public static class EzConfig
         WasCalled = true;
         var path = DefaultConfigurationFileName;
         var configFile = PluginConfigDirectoryOverride == null ? Svc.PluginInterface.ConfigFile : new FileInfo(Path.Combine(new DirectoryInfo(Svc.PluginInterface.GetPluginConfigDirectory()).Parent!.FullName, PluginConfigDirectoryOverride + ".json"));
-        if(!File.Exists(path) && configFile.Exists)
+        if(!DefaultSerializationFactory.FileExists(path) && configFile.Exists)
         {
             PluginLog.Warning($"Migrating {configFile} into EzConfig system");
             Config = LoadConfiguration<T>(configFile.FullName, false);
@@ -175,24 +184,15 @@ public static class EzConfig
                 {
                     lock(Configuration)
                     {
-                        var antiCorruptionPath = $"{path}.new";
-                        if(File.Exists(antiCorruptionPath))
-                        {
-                            var saveTo = $"{antiCorruptionPath}.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
-                            PluginLog.Warning($"Detected unsuccessfully saved file {antiCorruptionPath}: moving to {saveTo}");
-                            Notify.Warning("Detected unsuccessfully saved configuration file.");
-                            File.Move(antiCorruptionPath, saveTo);
-                            PluginLog.Warning($"Success. Please manually check {saveTo} file contents.");
-                        }
                         if(serializationFactory.IsBinary)
                         {
-                            File.WriteAllBytes(antiCorruptionPath, serializedBinary);
+                            serializationFactory.WriteFile(path, serializedBinary);
                         }
                         else
                         {
-                            File.WriteAllText(antiCorruptionPath, serializedString, Encoding.UTF8);
+                            serializationFactory.WriteFile(path, serializedString);
                         }
-                        File.Move(antiCorruptionPath, path, true);
+                        
                     }
                 }
                 catch(Exception e)
@@ -224,17 +224,17 @@ public static class EzConfig
         WasCalled = true;
         serializationFactory ??= DefaultSerializationFactory;
         if(appendConfigDirectory) path = Path.Combine(EzConfig.GetPluginConfigDirectory(), path);
-        if(!File.Exists(path))
+        if(!serializationFactory.FileExists(path))
         {
             return new T();
         }
         if(serializationFactory.IsBinary)
         {
-            return serializationFactory.Deserialize<T>(File.ReadAllBytes(path)) ?? new T();
+            return serializationFactory.Deserialize<T>(serializationFactory.ReadFileAsBin(path)) ?? new T();
         }
         else
         {
-            return serializationFactory.Deserialize<T>(File.ReadAllText(path, Encoding.UTF8)) ?? new T();
+            return serializationFactory.Deserialize<T>(serializationFactory.ReadFileAsText(path)) ?? new T();
         }
     }
 
