@@ -42,6 +42,19 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
+    public static bool FilteringInputInt(string label, out int result, int step = 1, int step_fast = 100, ImGuiInputTextFlags flags = ImGuiInputTextFlags.None)
+    {
+        var ret = false;
+        ref var value = ref Ref<int>.Get($"{ImGui.GetID(label)}_filter");
+        if(ImGui.InputInt(label, ref value, step, step_fast, flags))
+        {
+            ret = true;
+        }
+        result = value;
+        return ret;
+    }
+
+
     public static bool FilteringCheckbox(string label, out bool result)
     {
         var ret = false;
