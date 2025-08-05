@@ -968,7 +968,7 @@ public static unsafe partial class ImGuiEx
                 {
                     ImGui.PushStyleColor(ImGuiCol.Text, x.color.Value);
                 }
-                if(BeginTabItem(x.name, openTabName == x.name ? ImGuiTabItemFlags.SetSelected : ImGuiTabItemFlags.None))
+                if(ImGui.BeginTabItem(x.name, openTabName == x.name ? ImGuiTabItemFlags.SetSelected : ImGuiTabItemFlags.None))
                 {
                     if(x.color != null)
                     {
@@ -1036,7 +1036,7 @@ public static unsafe partial class ImGuiEx
     /// </summary>
     public static void PushCursorY(float y) => ImGui.SetCursorPosY(ImGui.GetCursorPosY() + y);
 
-    [Obsolete("Switch to using ImGui.BeginTabItem. It now has version without \"close\".")]
+    [Obsolete("Switch to using ImGui.BeginTabItem. It now has version without \"close\".", true)]
     public static unsafe bool BeginTabItem(string label, ImGuiTabItemFlags flags)
     {
         throw new NotImplementedException("Switch to using ImGui.BeginTabItem. It now has version without \"close\".");

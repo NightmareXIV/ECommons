@@ -157,7 +157,7 @@ public unsafe class TerritorySelector : Window
         {
             foreach(var x in Cache)
             {
-                if(ImGuiEx.BeginTabItem(x.Key.ToString(), SelectedCategory == x.Key ? ImGuiTabItemFlags.SetSelected : ImGuiTabItemFlags.None))
+                if(ImGui.BeginTabItem(x.Key.ToString(), SelectedCategory == x.Key ? ImGuiTabItemFlags.SetSelected : ImGuiTabItemFlags.None))
                 {
                     ImGui.SetNextItemWidth(200f);
                     ImGui.InputTextWithHint($"##search", "Filter...", ref Filter, 50);
