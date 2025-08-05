@@ -16,11 +16,9 @@ namespace ECommons.Automation;
 public unsafe class AutoCutsceneSkipper
 {
     private delegate byte CutsceneHandleInputDelegate(nint a1, float a2);
-    //[Signature("40 53 48 83 EC 20 80 79 29 00 48 8B D9 0F 85", DetourName = nameof(CutsceneHandleInputDetour))]
-    [Signature("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 40 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 44 24 ?? 80 79 27 00", DetourName = nameof(CutsceneHandleInputDetour))]
+    [Signature("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 40 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 44 24 ?? 80 79 28 00", DetourName = nameof(CutsceneHandleInputDetour))]
     private static Hook<CutsceneHandleInputDelegate> CutsceneHandleInputHook;
 
-    //static readonly string ConditionSig = "75 11 BA ?? ?? ?? ?? 48 8B CF E8 ?? ?? ?? ?? 84 C0 74 52";
     private static readonly string ConditionSig = "75 11 BA ?? ?? ?? ?? 48 8B CF E8 ?? ?? ?? ?? 84 C0 74 4C";
 
     private static int ConditionOriginalValuesLen => ConditionSig.Split(" ").Length;
