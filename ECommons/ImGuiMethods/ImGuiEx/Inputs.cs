@@ -207,7 +207,7 @@ public static partial class ImGuiEx
         var result = ImGui.InputTextMultiline(id, ref text, maxLength,
             new(width ?? ImGui.GetContentRegionAvail().X, ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)),
             ImGuiInputTextFlags.CallbackEdit, // flag stuff 
-            (ref data) =>
+            (ref ImGuiInputTextCallbackData data) =>
             {
                 return TextEditCallback(ref data, wrapWidth); // Callback Action
             });
