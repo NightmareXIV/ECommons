@@ -35,4 +35,9 @@ public static unsafe partial class NativeFunctions
     [LibraryImport("user32.dll", EntryPoint = "ShowWindow")]
     public static partial BOOL ShowWindow(HWND hWnd, int nCmdShow);
 
+    [LibraryImport("user32.dll", EntryPoint = "ClientToScreen", SetLastError = true)]
+    public static unsafe partial BOOL ClientToScreen(HWND hWnd, POINT* lpPoint);
+
+    [LibraryImport("user32.dll", EntryPoint = "SetCursorPos", SetLastError = true)]
+    public static partial BOOL SetCursorPos(int X, int Y);
 }
