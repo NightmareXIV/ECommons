@@ -14,7 +14,7 @@ public static unsafe partial class NativeFunctions
     public static ushort HIWORD(uint value) => (ushort)(value >> 16);
     public static uint MAKEWPARAM(ushort low, ushort high) => (uint)(low | (high << 16));
 
-    [LibraryImport("user32.dll", SetLastError = true)]
+    [LibraryImport("user32.dll", EntryPoint = "SendMessageW", SetLastError = true)]
     public static partial LRESULT SendMessage(HWND hWnd, uint Msg, WPARAM wParam, LPARAM lParam);
 
     [LibraryImport("user32.dll", EntryPoint = "FindWindowExW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
