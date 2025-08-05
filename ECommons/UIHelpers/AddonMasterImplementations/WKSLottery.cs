@@ -82,7 +82,7 @@ public partial class AddonMaster
 
         public void SelectWheelLeft()
         {
-            var contextMenu = (AtkUnitBase*)Svc.GameGui.GetAddonByName("WKSLottery", 1);
+            var contextMenu = (AtkUnitBase*)Svc.GameGui.GetAddonByName("WKSLottery", 1).Address;
 
             Callback.Fire(contextMenu, true, 0, 0);
             Callback.Fire(contextMenu, true, 1, 0);

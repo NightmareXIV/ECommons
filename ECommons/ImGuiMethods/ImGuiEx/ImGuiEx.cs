@@ -20,6 +20,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml.Linq;
 using Action = System.Action;
+using Dalamud.Interface.Windowing;
 
 namespace ECommons.ImGuiMethods;
 #nullable disable
@@ -30,7 +31,7 @@ public static unsafe partial class ImGuiEx
     public static readonly ImGuiTableFlags DefaultTableFlags = ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg | ImGuiTableFlags.Borders | ImGuiTableFlags.SizingFixedFit;
     private static Dictionary<string, int> SelectedPages = [];
 
-    public static bool FilteringInputTextWithHint(string label, string hint, out string result, uint maxLength = 200)
+    public static bool FilteringInputTextWithHint(string label, string hint, out string result, int maxLength = 200)
     {
         var ret = false;
         ref var value = ref Ref<string>.Get($"{ImGui.GetID(label)}_filter");
@@ -46,7 +47,7 @@ public static unsafe partial class ImGuiEx
     {
         var ret = false;
         ref var value = ref Ref<int>.Get($"{ImGui.GetID(label)}_filter");
-        if(ImGui.InputInt(label, ref value, step, step_fast, flags))
+        if(ImGui.InputInt(label, ref value, step, step_fast, flags:flags))
         {
             ret = true;
         }
@@ -656,48 +657,52 @@ public static unsafe partial class ImGuiEx
         return -1;
     }
 
-    private static unsafe int TextEditCallback(ImGuiInputTextCallbackData* data, float wrapWidth)
+    private static unsafe int TextEditCallback(ref ImGuiInputTextCallbackData dataRef, float wrapWidth)
     {
-        var text = Marshal.PtrToStringAnsi((IntPtr)data->Buf, data->BufTextLen);
-        var lines = text.Split('\n').ToList();
-        var textModified = false;
-        // Traverse each line to check if it exceeds the wrap width
-        for(var i = 0; i < lines.Count; i++)
+        fixed(ImGuiInputTextCallbackData* data = &dataRef)
         {
-            var lineWidth = ImGui.CalcTextSize(lines[i]).X;
-            while(lineWidth + 10f > wrapWidth)
+            var text = Marshal.PtrToStringAnsi((IntPtr)data->Buf, data->BufTextLen);
+            var lines = text.Split('\n').ToList();
+            var textModified = false;
+            // Traverse each line to check if it exceeds the wrap width
+            for(var i = 0; i < lines.Count; i++)
             {
-                // Find where to break the line
-                var wrapPos = FindWrapPosition(lines[i], wrapWidth);
-                if(wrapPos >= 0)
+                var lineWidth = ImGui.CalcTextSize(lines[i]).X;
+                while(lineWidth + 10f > wrapWidth)
                 {
-                    // Insert a newline at the wrap position
-                    var part1 = lines[i].Substring(0, wrapPos);
-                    var part2 = lines[i].Substring(wrapPos).TrimStart();
-                    lines[i] = part1;
-                    lines.Insert(i + 1, part2);
-                    textModified = true;
-                    lineWidth = ImGui.CalcTextSize(part2).X;
-                }
-                else
-                {
-                    break;
+                    // Find where to break the line
+                    var wrapPos = FindWrapPosition(lines[i], wrapWidth);
+                    if(wrapPos >= 0)
+                    {
+                        // Insert a newline at the wrap position
+                        var part1 = lines[i].Substring(0, wrapPos);
+                        var part2 = lines[i].Substring(wrapPos).TrimStart();
+                        lines[i] = part1;
+                        lines.Insert(i + 1, part2);
+                        textModified = true;
+                        lineWidth = ImGui.CalcTextSize(part2).X;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
+            // Merge all lines back to the buffer
+            if(textModified)
+            {
+                var newText = string.Join("\n", lines);
+                var newTextBytes = Encoding.UTF8.GetBytes(newText.PadRight(data->BufSize, '\0'));
+                Marshal.Copy(newTextBytes, 0, (IntPtr)data->Buf, newTextBytes.Length);
+                data->BufTextLen = newText.Length;
+                data->BufDirty = 1;
+                data->CursorPos = Math.Min(data->CursorPos, data->BufTextLen);
+            }
+            return 0;
         }
-        // Merge all lines back to the buffer
-        if(textModified)
-        {
-            var newText = string.Join("\n", lines);
-            var newTextBytes = Encoding.UTF8.GetBytes(newText.PadRight(data->BufSize, '\0'));
-            Marshal.Copy(newTextBytes, 0, (IntPtr)data->Buf, newTextBytes.Length);
-            data->BufTextLen = newText.Length;
-            data->BufDirty = 1;
-            data->CursorPos = Math.Min(data->CursorPos, data->BufTextLen);
-        }
-        return 0;
     }
 
+    [Obsolete($"Use RealtimeDragDrop. Better user experience anyway.")]
     public static bool EnumOrderer<T>(string id, List<T> order) where T : IConvertible
     {
         var ret = false;
@@ -715,13 +720,13 @@ public static unsafe partial class ImGuiEx
         {
             var e = order[i];
             ImGui.PushID($"ECommonsEnumOrderer{id}{e}");
-            if(ImGui.ArrowButton("up", ImGuiDir.Up) && i > 0)
+            if(ImGuiEx.IconButton(FontAwesomeIcon.ArrowUp) && i > 0)
             {
                 (order[i - 1], order[i]) = (order[i], order[i - 1]);
                 ret = true;
             }
             ImGui.SameLine();
-            if(ImGui.ArrowButton("down", ImGuiDir.Down) && i < order.Count - 1)
+            if(ImGuiEx.IconButton(FontAwesomeIcon.AngleDown) && i < order.Count - 1)
             {
                 (order[i + 1], order[i]) = (order[i], order[i + 1]);
                 ret = true;
@@ -836,62 +841,10 @@ public static unsafe partial class ImGuiEx
     private static float headerCurrentPos = 0;
     private static float headerImGuiButtonWidth = 0;
 
+    [Obsolete($"Use Dalamud.Interface.Windowing.Window.TitleBarButton instead", true)]
     public static bool AddHeaderIcon(string id, FontAwesomeIcon icon, HeaderIconOptions options = null)
     {
-        if(ImGui.IsWindowCollapsed()) return false;
-
-        var currentID = ImGui.GetID((byte*)0);
-        if(currentID != headerLastWindowID || headerLastFrame != Svc.PluginInterface.UiBuilder.FrameCount)
-        {
-            headerLastWindowID = currentID;
-            headerLastFrame = Svc.PluginInterface.UiBuilder.FrameCount;
-            headerCurrentPos = 0.25f * ImGui.GetStyle().FramePadding.Length();
-            if(!GetCurrentWindowFlags().HasFlag(ImGuiWindowFlags.NoTitleBar))
-                headerCurrentPos = 1;
-            headerImGuiButtonWidth = 0f;
-            if(CurrentWindowHasCloseButton())
-                headerImGuiButtonWidth += 17f.Scale();
-            if(!GetCurrentWindowFlags().HasFlag(ImGuiWindowFlags.NoCollapse))
-                headerImGuiButtonWidth += 17f.Scale();
-        }
-
-        options ??= new();
-        var prevCursorPos = ImGui.GetCursorPos();
-        var buttonSize = new Vector2(20f.Scale());
-        var buttonPos = new Vector2((ImGui.GetWindowWidth() - buttonSize.X - headerImGuiButtonWidth.Scale() * headerCurrentPos) - (ImGui.GetStyle().FramePadding.X.Scale()), ImGui.GetScrollY() + 1);
-        ImGui.SetCursorPos(buttonPos);
-        var drawList = ImGui.GetWindowDrawList();
-        drawList.PushClipRectFullScreen();
-
-        var pressed = false;
-        ImGui.InvisibleButton(id, buttonSize);
-        var itemMin = ImGui.GetItemRectMin();
-        var itemMax = ImGui.GetItemRectMax();
-        var halfSize = ImGui.GetItemRectSize() / 2;
-        var center = itemMin + halfSize;
-        if(ImGui.IsWindowHovered() && ImGui.IsMouseHoveringRect(itemMin, itemMax, false))
-        {
-            if(!string.IsNullOrEmpty(options.Tooltip))
-                ImGui.SetTooltip(options.Tooltip);
-            ImGui.GetWindowDrawList().AddCircleFilled(center, halfSize.X, ImGui.GetColorU32(ImGui.IsMouseDown(ImGuiMouseButton.Left) ? ImGuiCol.ButtonActive : ImGuiCol.ButtonHovered));
-            if(ImGui.IsMouseReleased(options.MouseButton))
-                pressed = true;
-#pragma warning disable
-            if(options.ToastTooltipOnClick && ImGui.IsMouseReleased(options.ToastTooltipOnClickButton))
-                Notify.Info(options.Tooltip!);
-#pragma warning restore
-        }
-
-        ImGui.SetCursorPos(buttonPos);
-        ImGui.PushFont(UiBuilder.IconFont);
-        var iconString = icon.ToIconString();
-        drawList.AddText(UiBuilder.IconFont, ImGui.GetFontSize(), itemMin + halfSize - ImGui.CalcTextSize(iconString) / 2 + options.Offset, options.Color, iconString);
-        ImGui.PopFont();
-
-        ImGui.PopClipRect();
-        ImGui.SetCursorPos(prevCursorPos);
-
-        return pressed;
+        throw new NotImplementedException("Use Dalamud.Interface.Windowing.Window.TitleBarButton instead");
     }
 
 
@@ -1083,41 +1036,25 @@ public static unsafe partial class ImGuiEx
     /// </summary>
     public static void PushCursorY(float y) => ImGui.SetCursorPosY(ImGui.GetCursorPosY() + y);
 
+    [Obsolete("Switch to using ImGui.BeginTabItem. It now has version without \"close\".")]
     public static unsafe bool BeginTabItem(string label, ImGuiTabItemFlags flags)
     {
-        var num = 0;
-        byte* ptr;
-        if(label != null)
-        {
-            num = Encoding.UTF8.GetByteCount(label);
-            ptr = Allocate(num + 1);
-            var utf = GetUtf8(label, ptr, num);
-            ptr[utf] = 0;
-        }
-        else
-        {
-            ptr = null;
-        }
-
-        bool* p_open2 = null;
-        var num2 = ImGui.BeginTabItem(ptr, p_open2, flags);
-        if(num > 2048)
-        {
-            Free(ptr);
-        }
-        return num2;
+        throw new NotImplementedException("Switch to using ImGui.BeginTabItem. It now has version without \"close\".");
     }
 
+    [Obsolete("Use Marshal.AllocHGlobal", true)]
     internal static unsafe byte* Allocate(int byteCount)
     {
         return (byte*)(void*)Marshal.AllocHGlobal(byteCount);
     }
 
+    [Obsolete("Use Marshal.FreeHGlobal", true)]
     internal static unsafe void Free(byte* ptr)
     {
         Marshal.FreeHGlobal((IntPtr)ptr);
     }
 
+    [Obsolete("Use Encoding.UTF8.GetBytes", true)]
     internal static unsafe int GetUtf8(string s, byte* utf8Bytes, int utf8ByteCount)
     {
         fixed(char* chars = s)
@@ -1125,27 +1062,5 @@ public static unsafe partial class ImGuiEx
             return Encoding.UTF8.GetBytes(chars, s.Length, utf8Bytes, utf8ByteCount);
         }
     }
-}
-
-[StructLayout(LayoutKind.Explicit)]
-public struct ImGuiWindow
-{
-    [FieldOffset(0xC)] public ImGuiWindowFlags Flags;
-
-    [FieldOffset(0xD5)] public byte HasCloseButton;
-
-    // 0x118 is the start of ImGuiWindowTempData
-    [FieldOffset(0x130)] public Vector2 CursorMaxPos;
-}
-
-public static partial class ImGuiEx
-{
-    [LibraryImport("cimgui")]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    private static partial nint igGetCurrentWindow();
-    public static unsafe ImGuiWindow* GetCurrentWindow() => (ImGuiWindow*)igGetCurrentWindow();
-    public static unsafe ImGuiWindowFlags GetCurrentWindowFlags() => GetCurrentWindow()->Flags;
-    public static unsafe bool CurrentWindowHasCloseButton() => GetCurrentWindow()->HasCloseButton != 0;
-
 }
 

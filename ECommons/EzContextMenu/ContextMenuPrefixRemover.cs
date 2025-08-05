@@ -78,7 +78,7 @@ public static unsafe class ContextMenuPrefixRemover
 
     private static void OnContextMenuUpdate(AddonEvent type, AddonArgs args)
     {
-        var addon = (AddonContextMenu*)args.Addon;
+        var addon = (AddonContextMenu*)args.Addon.Address;
         var numEntries = addon->AtkValues[0].UInt;
         for(var i = 0; i < numEntries; i++)
         {

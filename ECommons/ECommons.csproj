@@ -3,8 +3,8 @@
     <PropertyGroup>
         <Authors>NightmareXIV</Authors>
         <Version>$(BaseVersion)$(VersionSuffix)</Version>
-        <BaseVersion>3.0.0.8</BaseVersion>
-        <PackageKind></PackageKind>
+        <BaseVersion>3.0.0.9</BaseVersion>
+        <PackageKind>imgui-bindings</PackageKind>
         <VersionSuffix Condition="'$(PackageKind)' != ''">-$(PackageKind)</VersionSuffix>
         <Configurations>Debug;Release</Configurations>
     </PropertyGroup>
@@ -85,8 +85,6 @@
             <HintPath>$(DalamudLibPath)Dalamud.Common.dll</HintPath>
             <Private>False</Private>
         </Reference>
-        <Reference Remove="ImGui.NET" />
-        <Reference Remove="ImGuiScene" />
         <Reference Include="Dalamud.Bindings.ImGui">
             <HintPath>$(DalamudLibPath)Dalamud.Bindings.ImGui.dll</HintPath>
             <Private>False</Private>

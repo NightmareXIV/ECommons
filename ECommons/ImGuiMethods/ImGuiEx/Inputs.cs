@@ -109,7 +109,7 @@ public static partial class ImGuiEx
         if(!enabled) ImGui.BeginDisabled();
         ImGui.SameLine();
         ImGui.SetNextItemWidth(width);
-        var ret = ImGui.InputInt(label, ref value, step, step_fast, flags);
+        var ret = ImGui.InputInt(label, ref value, step, step_fast, flags:flags);
         if(ret) valueNullable = value;
         if(!enabled) ImGui.EndDisabled();
         return ret || chk;
@@ -201,20 +201,20 @@ public static partial class ImGuiEx
         return ret;
     }
 
-    public static unsafe bool InputTextWrapMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
+    public static unsafe bool InputTextWrapMultilineExpanding(string id, ref string text, int maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
     {
         var wrapWidth = width ?? ImGui.GetContentRegionAvail().X; // determine wrap width
         var result = ImGui.InputTextMultiline(id, ref text, maxLength,
             new(width ?? ImGui.GetContentRegionAvail().X, ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)),
             ImGuiInputTextFlags.CallbackEdit, // flag stuff 
-            (data) =>
+            (ref data) =>
             {
-                return TextEditCallback(data, wrapWidth); // Callback Action
+                return TextEditCallback(ref data, wrapWidth); // Callback Action
             });
         return result;
     }
 
-    public static bool InputTextMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
+    public static bool InputTextMultilineExpanding(string id, ref string text, int maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
     {
         return ImGui.InputTextMultiline(id, ref text, maxLength, new Vector2(width ?? ImGui.GetContentRegionAvail().X, ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)));
     }
@@ -266,7 +266,7 @@ public static partial class ImGuiEx
             {
                 var id = $"{name}ECommonsDeleItem{i}";
                 var x = list[i];
-                ImGui.Selectable($"{(overrideValues != null && overrideValues.ContainsKey(x) ? overrideValues[x] : x)}");
+                ImGui.Selectable($"{(overrideValues != null && overrideValues.ContainsKey(x) ? overrideValues[x] : x.ToString())}");
                 if(ImGui.IsItemClicked(ImGuiMouseButton.Right))
                 {
                     ImGui.OpenPopup(id);
