@@ -40,7 +40,7 @@ public static unsafe class Player
     public static string GetNameWithWorld(this IPlayerCharacter pc) => pc == null ? null : (pc.Name.ToString() + "@" + pc.HomeWorld.ValueNullable?.Name.ToString());
 
     public static int Level => Svc.ClientState.LocalPlayer?.Level ?? 0;
-    public static bool IsLevelSynced => PlayerState.Instance()->IsLevelSynced == 1;
+    public static bool IsLevelSynced => PlayerState.Instance()->IsLevelSynced;
     public static int SyncedLevel => PlayerState.Instance()->SyncedLevel;
     public static int UnsyncedLevel => GetUnsyncedLevel(GetJob(Object));
     public static int GetUnsyncedLevel(Job job) => PlayerState.Instance()->ClassJobLevels[Svc.Data.GetExcelSheet<ClassJob>().GetRowOrDefault((uint)job).Value.ExpArrayIndex];
@@ -60,7 +60,7 @@ public static unsafe class Player
     public static TerritoryIntendedUseEnum TerritoryIntendedUse => (TerritoryIntendedUseEnum)(Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(Territory)?.TerritoryIntendedUse.ValueNullable?.RowId ?? default);
     public static uint HomeAetheryteTerritory => Svc.Data.GetExcelSheet<Aetheryte>().GetRowOrDefault(PlayerState.Instance()->HomeAetheryteId).Value.Territory.RowId;
     public static bool IsInDuty => GameMain.Instance()->CurrentContentFinderConditionId != 0;
-    public static bool IsOnIsland => MJIManager.Instance()->IsPlayerInSanctuary == 1;
+    public static bool IsOnIsland => MJIManager.Instance()->IsPlayerInSanctuary;
     public static bool IsInPvP => GameMain.IsInPvPInstance();
 
     public static Job Job => GetJob(Svc.ClientState.LocalPlayer);
