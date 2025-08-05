@@ -32,4 +32,8 @@ public static unsafe partial class NativeFunctions
     [LibraryImport("user32.dll")]
     public static partial short GetAsyncKeyState(int vKey);
 
+    [LibraryImport("user32.dll", EntryPoint = "ShowWindow")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial BOOL ShowWindow(HWND hWnd, int nCmdShow);
+
 }
