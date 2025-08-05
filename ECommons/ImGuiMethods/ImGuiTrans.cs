@@ -1,4 +1,4 @@
-﻿using ImGuiNET;
+﻿using Dalamud.Bindings.ImGui;
 using System;
 using System.Numerics;
 
@@ -16,7 +16,7 @@ public class ImGuiTrans
     {
         foreach(var c in Enum.GetValues<ImGuiCol>())
         {
-            if(c == ImGuiCol.COUNT) continue;
+            if(c == ImGuiCol.Count) continue;
             var col = ImGui.GetStyle().Colors[(int)c];
             ImGui.PushStyleColor(c, col with { W = col.W * v });
         }
