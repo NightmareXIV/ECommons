@@ -1,5 +1,6 @@
 ﻿using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using Callback = ECommons.Automation.Callback;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster

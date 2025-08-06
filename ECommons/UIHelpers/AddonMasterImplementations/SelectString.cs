@@ -7,6 +7,7 @@ using FFXIVClientStructs.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Callback = ECommons.Automation.Callback;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -84,17 +85,5 @@ public partial class AddonMaster
         private void Entry10() => Entries[9].Select();
         private void Entry11() => Entries[10].Select();
         private void Entry12() => Entries[11].Select();
-    }
-}
-
-[Obsolete("Please use AddonMaster.SelectString")]
-public unsafe class SelectStringMaster : AddonMaster.SelectString
-{
-    public SelectStringMaster(nint addon) : base(addon)
-    {
-    }
-
-    public SelectStringMaster(void* addon) : base(addon)
-    {
     }
 }
