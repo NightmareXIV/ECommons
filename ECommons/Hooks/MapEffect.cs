@@ -59,14 +59,13 @@ public unsafe static class MapEffect
         {
             try
             {
-                var d = (nint)EventFramework.Instance()->GetContentDirector();
                 for(int i = 0; i < packetPtr[0]; i++)
                 {
                     var a2 = packetPtr[i + offset2];
                     var a3 = *(ushort*)&packetPtr[2 * i + 2];
                     var a4 = *(ushort*)&packetPtr[2 * i + offset1];
                     PluginLog.Debug($"Map Effect Ex Hook: {a2}/{a3}/{a4} at {offset1}, {offset2}, {i}");
-                    Callback(d, a2, a3, a4);
+                    Callback(0, a2, a3, a4);
                 }
             }
             catch(Exception e)
