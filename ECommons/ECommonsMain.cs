@@ -27,6 +27,7 @@ using Serilog.Events;
 using System;
 using System.Linq;
 using System.Reflection;
+using Callback = ECommons.Automation.Callback;
 
 
 #nullable disable
