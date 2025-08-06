@@ -31,6 +31,18 @@ public static unsafe partial class ImGuiEx
     public static readonly ImGuiTableFlags DefaultTableFlags = ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg | ImGuiTableFlags.Borders | ImGuiTableFlags.SizingFixedFit;
     private static Dictionary<string, int> SelectedPages = [];
 
+    public static void PushId(string id)
+    {
+        if(id == null || id.Length == 0)
+        {
+            ImGui.PushID($"ECommonsDefaultID");
+        }
+        else
+        {
+            ImGui.PushID(id);
+        }
+    }
+
     public static bool FilteringInputTextWithHint(string label, string hint, out string result, int maxLength = 200)
     {
         var ret = false;
