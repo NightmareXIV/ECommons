@@ -1,7 +1,9 @@
-﻿using Dalamud.Interface;
+﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
+using Dalamud.Interface.Windowing;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
 using ECommons.Funding;
@@ -9,7 +11,6 @@ using ECommons.Logging;
 using ECommons.MathHelpers;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using Dalamud.Bindings.ImGui;
 using Lumina.Excel.Sheets;
 using System;
 using System.Collections.Generic;
@@ -19,8 +20,8 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml.Linq;
+using TerraFX.Interop.Windows;
 using Action = System.Action;
-using Dalamud.Interface.Windowing;
 
 namespace ECommons.ImGuiMethods;
 #nullable disable
@@ -30,6 +31,17 @@ public static unsafe partial class ImGuiEx
     public static readonly ImGuiWindowFlags OverlayFlags = ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoMouseInputs | ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing;
     public static readonly ImGuiTableFlags DefaultTableFlags = ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg | ImGuiTableFlags.Borders | ImGuiTableFlags.SizingFixedFit;
     private static Dictionary<string, int> SelectedPages = [];
+
+    public static bool ArrowButton(string label, ImGuiDir direction)
+    {
+        if(label == "") label = "ECommonsDefaultID";
+        byte[] utf8Bytes = [..Encoding.UTF8.GetBytes(label), 0];
+
+        fixed(byte* pUtf8 = utf8Bytes)
+        {
+            return ImGuiNative.ArrowButton(pUtf8, direction) != 0;
+        }
+    }
 
     public static void PushID(string id)
     {
