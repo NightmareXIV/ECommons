@@ -87,7 +87,7 @@ internal sealed unsafe class GameNetwork : IGameNetwork
                     header = "failed";
                 }
 
-                Log.Error(ex, "Exception on ProcessZonePacketDown hook. Header: " + header);
+                Svc.Log.Error(ex, "Exception on ProcessZonePacketDown hook. Header: " + header);
             }
         }
 
@@ -119,7 +119,7 @@ internal sealed unsafe class GameNetwork : IGameNetwork
                 header = "failed";
             }
 
-            Log.Error(ex, "Exception on ProcessZonePacketUp hook. Header: " + header);
+            Svc.Log.Error(ex, "Exception on ProcessZonePacketUp hook. Header: " + header);
         }
 
         this.hitchDetectorUp.Stop();
