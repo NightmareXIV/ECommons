@@ -26,10 +26,6 @@
         <WarningsAsErrors>RS0030</WarningsAsErrors>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$([System.String]::Copy('$(LangVersion)').StartsWith('14.'))">
-        <DefineConstants>CSHARP_14;$(DefineConstants)</DefineConstants>
-    </PropertyGroup>
-
     <PropertyGroup Label="Documentation">
         <DocumentationFile></DocumentationFile>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
