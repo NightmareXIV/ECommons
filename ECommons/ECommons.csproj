@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Authors>NightmareXIV</Authors>
-        <BaseVersion>3.0.1.1</BaseVersion>
+        <BaseVersion>3.0.1.2</BaseVersion>
         <PackageKind>stg</PackageKind>
         <VersionSuffix Condition="'$(PackageKind)' != ''">-$(PackageKind)</VersionSuffix>
         <Version>$(BaseVersion)$(VersionSuffix)</Version>
@@ -12,7 +12,7 @@
     <PropertyGroup>
         <TargetFramework>net9.0-windows7.0</TargetFramework>
         <Platforms>x64</Platforms>
-        <LangVersion>preview</LangVersion>
+        <LangVersion>latest</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -24,6 +24,10 @@
         <IsTrimmable>false</IsTrimmable>
         <Nullable>enable</Nullable>
         <WarningsAsErrors>RS0030</WarningsAsErrors>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$([System.String]::Copy('$(LangVersion)').StartsWith('14.'))">
+        <DefineConstants>CSHARP_14;$(DefineConstants)</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Label="Documentation">
