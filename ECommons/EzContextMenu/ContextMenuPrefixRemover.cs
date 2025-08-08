@@ -41,7 +41,7 @@ public static unsafe class ContextMenuPrefixRemover
                     do
                     {
                         iterations++;
-                        DalamudPrefix = (SeIconChar)Random.Shared.Next(1, int.MaxValue);
+                        DalamudPrefix = (SeIconChar)Random.Shared.Next(1, ushort.MaxValue);
                     }
                     while(Enum.GetValues<SeIconChar>().Contains(DalamudPrefix) && iterations < 100000);
                     DalamudPrefixColor = (ushort)Random.Shared.Next(1, ushort.MaxValue);

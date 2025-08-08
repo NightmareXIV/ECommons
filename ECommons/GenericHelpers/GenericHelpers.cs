@@ -34,6 +34,16 @@ public static unsafe partial class GenericHelpers
     private static ulong UidCnt = 0;
     public static string GetTemporaryId() => $"{UidPrefix}{UidCnt++:X}";
 
+    public static string GetDisplayTag(this Guid guid)
+    {
+        return guid.ToString().Split("-")[0].ToUpper();
+    }
+
+    public static void Regenerate(this ref Guid guid)
+    {
+        guid = Guid.NewGuid();
+    }
+
     public static string RemoveWhitespaces(this string s)
     {
         return s.Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\t", "");
