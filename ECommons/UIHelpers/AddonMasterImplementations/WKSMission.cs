@@ -2,8 +2,8 @@
 using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Collections.Generic;
-using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 using Callback = ECommons.Automation.Callback;
+using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 
@@ -25,12 +25,18 @@ public partial class AddonMaster
         public AtkComponentButton* ProvisionalMissionsButton => Addon->GetComponentButtonById(14);
         public AtkComponentButton* CriticalMissionsButton => Addon->GetComponentButtonById(15);
 
-        public uint NumEntries => Addon->AtkValues[29].UInt;
-        public string SelectedMission
+        /// <summary>
+        /// Keeps the current number of missions that are displayed. <br></br>
+        /// This includes the tabs seperating the missions by type [A, B, C, D]
+        /// </summary>
+        public uint NumEntries => Addon->AtkValues[31].UInt;
+
+        public uint SelectedMissionId => Addon->AtkValues[1061].UInt;
+        public string SelectedMissionName
         {
             get
             {
-                var missionName = Addon->AtkValues[933];
+                var missionName = Addon->AtkValues[1062];
                 if(missionName.Type.EqualsAny(ValueType.String, ValueType.ManagedString, ValueType.String8))
                 {
                     return MemoryHelper.ReadSeStringNullTerminated((nint)missionName.String.Value).GetText();
@@ -46,8 +52,8 @@ public partial class AddonMaster
                 var ret = new List<StellarMissions>();
                 for(var i = 0; i < NumEntries; i++)
                 {
-                    var missionName = Addon->AtkValues[670 + i * 2];
-                    var missionId = Addon->AtkValues[32 + i * 5].UInt;
+                    var missionName = Addon->AtkValues[802 + i * 2];
+                    var missionId = Addon->AtkValues[40 + i * 6].UInt;
 
                     // category header?
                     if(missionId == 0)
