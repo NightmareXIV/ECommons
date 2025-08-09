@@ -11,8 +11,8 @@ public partial class AddonMaster
         public Bank(nint addon) : base(addon) { }
         public Bank(void* addon) : base(addon) { }
 
-        public AtkComponentButton* ProceedButton => Addon->GetButtonNodeById(35);
-        public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(36);
+        public AtkComponentButton* ProceedButton => Addon->GetComponentButtonById(35);
+        public AtkComponentButton* CancelButton => Addon->GetComponentButtonById(36);
 
         public override string AddonDescription { get; } = "Gil transfer window";
 

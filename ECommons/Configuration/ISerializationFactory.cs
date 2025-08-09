@@ -8,4 +8,10 @@ public interface ISerializationFactory
     T? Deserialize<T>(byte[] inputData);
     byte[]? SerializeAsBin(object config);
     bool IsBinary { get; }
+
+    void WriteFile(string fullPath, string data);
+    void WriteFile(string fullPath, byte[] data);
+    string ReadFileAsText(string fullPath);
+    byte[] ReadFileAsBin(string fullPath);
+    bool FileExists(string fullPath);
 }

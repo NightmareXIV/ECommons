@@ -9,14 +9,14 @@ public unsafe partial class AddonMaster
 
         public LookingForGroupCondition(void* addon) : base(addon) { }
 
-        public AtkComponentButton* RecruitButton => Base->GetButtonNodeById(111);
-        public AtkComponentButton* CancelButton => Base->GetButtonNodeById(112);
-        public AtkComponentButton* ResetButton => Base->GetButtonNodeById(110);
+        public AtkComponentButton* RecruitButton => Base->GetComponentButtonById(111);
+        public AtkComponentButton* CancelButton => Base->GetComponentButtonById(112);
+        public AtkComponentButton* ResetButton => Base->GetComponentButtonById(110);
 
         public override string AddonDescription { get; } = "Party finder creation window";
 
-        public bool Normal() => ClickButtonIfEnabled(Base->GetButtonNodeById(3));
-        public bool Alliance() => ClickButtonIfEnabled(Base->GetButtonNodeById(4));
+        public bool Normal() => ClickButtonIfEnabled(Base->GetComponentButtonById(3));
+        public bool Alliance() => ClickButtonIfEnabled(Base->GetComponentButtonById(4));
         public bool Recruit() => ClickButtonIfEnabled(RecruitButton);
         public bool Cancel() => ClickButtonIfEnabled(CancelButton);
         public bool Reset() => ClickButtonIfEnabled(ResetButton);

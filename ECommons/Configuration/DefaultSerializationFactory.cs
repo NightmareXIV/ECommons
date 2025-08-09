@@ -1,6 +1,9 @@
-﻿using ECommons.Logging;
+﻿using ECommons.ImGuiMethods;
+using ECommons.Logging;
 using ECommons.Reflection;
 using Newtonsoft.Json;
+using System;
+using System.IO;
 using System.Reflection;
 using System.Text;
 
@@ -43,6 +46,21 @@ public class DefaultSerializationFactory : ISerializationFactory
         return Deserialize<T>(Encoding.UTF8.GetString(inputData));
     }
 
+    public virtual byte[] ReadFileAsBin(string fullPath)
+    {
+        return File.ReadAllBytes(fullPath);
+    }
+
+    public virtual string ReadFileAsText(string fullPath)
+    {
+        return File.ReadAllText(fullPath, Encoding.UTF8);
+    }
+
+    public virtual bool FileExists(string fullPath)
+    {
+        return File.Exists(fullPath);
+    }
+
     /// <summary>
     /// Serialization method
     /// </summary>
@@ -77,5 +95,35 @@ public class DefaultSerializationFactory : ISerializationFactory
     public virtual byte[] SerializeAsBin(object config)
     {
         return Encoding.UTF8.GetBytes(Serialize(config));
+    }
+
+    public virtual void WriteFile(string fullPath, string data)
+    {
+        var antiCorruptionPath = $"{fullPath}.new";
+        if(File.Exists(antiCorruptionPath))
+        {
+            var saveTo = $"{antiCorruptionPath}.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
+            PluginLog.Warning($"Detected unsuccessfully saved file {antiCorruptionPath}: moving to {saveTo}");
+            Notify.Warning("Detected unsuccessfully saved configuration file.");
+            File.Move(antiCorruptionPath, saveTo);
+            PluginLog.Warning($"Success. Please manually check {saveTo} file contents.");
+        }
+        File.WriteAllText(antiCorruptionPath, data, Encoding.UTF8);
+        File.Move(antiCorruptionPath, fullPath, true);
+    }
+
+    public virtual void WriteFile(string fullPath, byte[] data)
+    {
+        var antiCorruptionPath = $"{fullPath}.new";
+        if(File.Exists(antiCorruptionPath))
+        {
+            var saveTo = $"{antiCorruptionPath}.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
+            PluginLog.Warning($"Detected unsuccessfully saved file {antiCorruptionPath}: moving to {saveTo}");
+            Notify.Warning("Detected unsuccessfully saved configuration file.");
+            File.Move(antiCorruptionPath, saveTo);
+            PluginLog.Warning($"Success. Please manually check {saveTo} file contents.");
+        }
+        File.WriteAllBytes(antiCorruptionPath, data);
+        File.Move(antiCorruptionPath, fullPath, true);
     }
 }

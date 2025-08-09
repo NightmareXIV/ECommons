@@ -29,7 +29,7 @@ public partial class TaskManager : IDisposable
     public int MaxTasks { get; private set; } = 0;
     public int NumQueuedTasks => Tasks.Count + (CurrentTask == null ? 0 : 1);
 
-    public float Progress => MaxTasks == 0 ? 0 : (float)(MaxTasks - NumQueuedTasks) / (float)MaxTasks;
+    public float Progress => MaxTasks == 0 ? 0 : (MaxTasks - NumQueuedTasks) / (float)MaxTasks;
 
     /// <summary>
     /// Indicates whether TaskManager is currently executing tasks
@@ -140,13 +140,15 @@ public partial class TaskManager : IDisposable
             var ShowError = CurrentTask.Configuration?.ShowError ?? DefaultConfiguration.ShowError!.Value;
             var ExecuteDefaultConfigurationEvents = CurrentTask.Configuration?.ExecuteDefaultConfigurationEvents ?? DefaultConfiguration.ExecuteDefaultConfigurationEvents!.Value;
 
+            var currentTaskReference = CurrentTask;
+
             if(NumQueuedTasks > MaxTasks) MaxTasks = NumQueuedTasks;
             try
             {
                 if(AbortAt == 0)
                 {
                     RemainingTimeMS = TimeLimitMS;
-                    Log($"→Starting to execute task [{CurrentTask.Name}], timeout={RemainingTimeMS}", ShowDebug);
+                    Log($"→Starting to execute task [{CurrentTask.Name}@{CurrentTask.Location}], timeout={RemainingTimeMS}", ShowDebug);
                 }
                 if(RemainingTimeMS < 0)
                 {
@@ -164,7 +166,7 @@ public partial class TaskManager : IDisposable
                 }
                 if(RemainingTimeMS < 0)
                 {
-                    Log($"→→Task timed out {CurrentTask.Name}", ShowDebug);
+                    Log($"→→Task timed out {CurrentTask.Name}@{CurrentTask.Location}", ShowDebug);
                     throw new TaskTimeoutException();
                 }
                 var result = CurrentTask.Function();
@@ -189,12 +191,12 @@ public partial class TaskManager : IDisposable
                 }
                 if(result == true)
                 {
-                    Log($"→→Task [{CurrentTask.Name}] completed successfully ", ShowDebug);
+                    Log($"→→Task [{CurrentTask.Name}@{CurrentTask.Location}] completed successfully ", ShowDebug);
                     CurrentTask = null;
                 }
                 else if(result == null)
                 {
-                    Log($"→→Received abort request from task [{CurrentTask.Name}]", ShowDebug);
+                    Log($"→→Received abort request from task [{CurrentTask.Name}@{CurrentTask.Location}]", ShowDebug);
                     Abort();
                 }
             }
@@ -252,6 +254,14 @@ public partial class TaskManager : IDisposable
                         CurrentTask = null;
                     }
                 }
+            }
+            if(currentTaskReference != null)
+            {
+                if(currentTaskReference.Configuration == null || ExecuteDefaultConfigurationEvents)
+                {
+                    DefaultConfiguration.FireCompanionAction(currentTaskReference);
+                }
+                currentTaskReference.Configuration?.FireCompanionAction(currentTaskReference);
             }
             return;
         }

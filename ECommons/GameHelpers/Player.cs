@@ -4,6 +4,7 @@ using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Statuses;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
+using ECommons.GameFunctions;
 using ECommons.MathHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
@@ -21,6 +22,9 @@ using GrandCompany = ECommons.ExcelServices.GrandCompany;
 
 namespace ECommons.GameHelpers;
 
+/// <summary>
+/// In general, these properties and methods should be made in a way that does not throws <see cref="NullReferenceException"/>, where feasible.
+/// </summary>
 public static unsafe class Player
 {
     public static readonly Number MaxLevel = 100;
@@ -36,7 +40,7 @@ public static unsafe class Player
     public static string GetNameWithWorld(this IPlayerCharacter pc) => pc == null ? null : (pc.Name.ToString() + "@" + pc.HomeWorld.ValueNullable?.Name.ToString());
 
     public static int Level => Svc.ClientState.LocalPlayer?.Level ?? 0;
-    public static bool IsLevelSynced => PlayerState.Instance()->IsLevelSynced == 1;
+    public static bool IsLevelSynced => PlayerState.Instance()->IsLevelSynced;
     public static int SyncedLevel => PlayerState.Instance()->SyncedLevel;
     public static int UnsyncedLevel => GetUnsyncedLevel(GetJob(Object));
     public static int GetUnsyncedLevel(Job job) => PlayerState.Instance()->ClassJobLevels[Svc.Data.GetExcelSheet<ClassJob>().GetRowOrDefault((uint)job).Value.ExpArrayIndex];
@@ -56,7 +60,7 @@ public static unsafe class Player
     public static TerritoryIntendedUseEnum TerritoryIntendedUse => (TerritoryIntendedUseEnum)(Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(Territory)?.TerritoryIntendedUse.ValueNullable?.RowId ?? default);
     public static uint HomeAetheryteTerritory => Svc.Data.GetExcelSheet<Aetheryte>().GetRowOrDefault(PlayerState.Instance()->HomeAetheryteId).Value.Territory.RowId;
     public static bool IsInDuty => GameMain.Instance()->CurrentContentFinderConditionId != 0;
-    public static bool IsOnIsland => MJIManager.Instance()->IsPlayerInSanctuary == 1;
+    public static bool IsOnIsland => MJIManager.Instance()->IsPlayerInSanctuary;
     public static bool IsInPvP => GameMain.IsInPvPInstance();
 
     public static Job Job => GetJob(Svc.ClientState.LocalPlayer);
@@ -79,6 +83,7 @@ public static unsafe class Player
 
     public static float AnimationLock => *(float*)((nint)ActionManager.Instance() + 8);
     public static bool IsAnimationLocked => AnimationLock > 0;
+    public static bool IsCasting => Available && Object.IsCasting();
     public static bool IsDead => Svc.Condition[ConditionFlag.Unconscious];
     public static bool Revivable => IsDead && AgentRevive.Instance()->ReviveState != 0;
 

@@ -2,7 +2,7 @@ using Dalamud.Interface.Colors;
 using ECommons.CircularBuffers;
 using ECommons.ImGuiMethods;
 using ECommons.Reflection;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Serilog.Events;
 using System;
 using System.Linq;

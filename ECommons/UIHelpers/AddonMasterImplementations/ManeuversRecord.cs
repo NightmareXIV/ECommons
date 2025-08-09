@@ -11,7 +11,7 @@ public partial class AddonMaster
         public ManeuversRecord(nint addon) : base(addon) { }
         public ManeuversRecord(void* addon) : base(addon) { }
 
-        public AtkComponentButton* LeaveButton => Addon->GetButtonNodeById(62);
+        public AtkComponentButton* LeaveButton => Addon->GetComponentButtonById(62);
 
         public override string AddonDescription { get; } = "Rival Wings post-game window";
 

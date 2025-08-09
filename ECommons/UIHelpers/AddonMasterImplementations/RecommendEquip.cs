@@ -8,8 +8,8 @@ public partial class AddonMaster
         public RecommendEquip(nint addon) : base(addon) { }
         public RecommendEquip(void* addon) : base(addon) { }
 
-        public AtkComponentButton* EquipButton => Addon->GetButtonNodeById(11);
-        public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(12);
+        public AtkComponentButton* EquipButton => Addon->GetComponentButtonById(11);
+        public AtkComponentButton* CancelButton => Addon->GetComponentButtonById(12);
 
         public override string AddonDescription { get; } = "Equip recommended gear window";
 

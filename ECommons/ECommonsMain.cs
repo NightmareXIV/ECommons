@@ -27,6 +27,7 @@ using Serilog.Events;
 using System;
 using System.Linq;
 using System.Reflection;
+using Callback = ECommons.Automation.Callback;
 
 
 #nullable disable
@@ -43,13 +44,9 @@ public static class ECommonsMain
         Instance = instance;
         GenericHelpers.Safe(() => Svc.Init(pluginInterface));
 #if DEBUG
-var type = "debug build without forms";
+var type = "debug build";
 #elif RELEASE
-        var type = "release build without forms";
-#elif DEBUGFORMS
-var type = "debug build with forms";
-#elif RELEASEFORMS
-        var type = "release build with forms";
+        var type = "release build";
 #else
 var type = "unknown build";
 #endif
@@ -102,9 +99,9 @@ var type = "unknown build";
         GenericHelpers.Safe(DalamudReflector.Dispose);
         if(EzConfigGui.WindowSystem != null)
         {
-            if (EzConfigGui.Type is EzConfigGui.WindowType.Main or EzConfigGui.WindowType.Both)
+            if(EzConfigGui.Type is EzConfigGui.WindowType.Main or EzConfigGui.WindowType.Both)
                 Svc.PluginInterface.UiBuilder.OpenMainUi -= EzConfigGui.Open;
-            if (EzConfigGui.Type is EzConfigGui.WindowType.Config or EzConfigGui.WindowType.Both)
+            if(EzConfigGui.Type is EzConfigGui.WindowType.Config or EzConfigGui.WindowType.Both)
                 Svc.PluginInterface.UiBuilder.OpenConfigUi -= EzConfigGui.Open;
             Svc.PluginInterface.UiBuilder.Draw -= EzConfigGui.Draw;
             if(EzConfigGui.Config != null)

@@ -27,9 +27,9 @@ public partial class AddonMaster
         {
             get
             {
-                string rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[2].String.Value).GetText();
+                var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[2].String.Value).GetText();
                 rawValue = rawValue.Replace(",", ""); // remove thousand separators
-                if(uint.TryParse(rawValue, out uint result))
+                if(uint.TryParse(rawValue, out var result))
                     return result;
                 return 0; // fallback if parsing fails
             }
@@ -39,9 +39,9 @@ public partial class AddonMaster
         {
             get
             {
-                string rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[3].String.Value).GetText();
+                var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[3].String.Value).GetText();
                 rawValue = rawValue.Replace(",", ""); // remove thousand separators
-                if(uint.TryParse(rawValue, out uint result))
+                if(uint.TryParse(rawValue, out var result))
                     return result;
                 return 0; // fallback if parsing fails
             }
@@ -51,19 +51,19 @@ public partial class AddonMaster
         {
             get
             {
-                string rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[4].String.Value).GetText();
+                var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[4].String.Value).GetText();
                 rawValue = rawValue.Replace(",", ""); // remove thousand separators
-                if(uint.TryParse(rawValue, out uint result))
+                if(uint.TryParse(rawValue, out var result))
                     return result;
                 return 0; // fallback if parsing fails
             }
         }
 
-        public AtkComponentButton* CosmoPouchButton => Addon->GetButtonNodeById(26);
-        public AtkComponentButton* CosmoCraftingLogButton => Addon->GetButtonNodeById(27);
-        public AtkComponentButton* StellerReductionButton => Addon->GetButtonNodeById(28);
-        public AtkComponentButton* ReportResultsButton => Addon->GetButtonNodeById(29);
-        public AtkComponentButton* AbandonMissionButton => Addon->GetButtonNodeById(30);
+        public AtkComponentButton* CosmoPouchButton => Addon->GetComponentButtonById(26);
+        public AtkComponentButton* CosmoCraftingLogButton => Addon->GetComponentButtonById(27);
+        public AtkComponentButton* StellerReductionButton => Addon->GetComponentButtonById(28);
+        public AtkComponentButton* ReportResultsButton => Addon->GetComponentButtonById(29);
+        public AtkComponentButton* AbandonMissionButton => Addon->GetComponentButtonById(30);
 
         public void CosmoPouch() => ClickButtonIfEnabled(CosmoPouchButton);
         public void CosmoCraftingLog() => ClickButtonIfEnabled(CosmoCraftingLogButton);

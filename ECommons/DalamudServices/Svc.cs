@@ -3,6 +3,7 @@ using Dalamud.Game.ClientState.Objects;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using ECommons.DalamudServices.Legacy;
 using ECommons.Logging;
 using System;
 
@@ -22,7 +23,14 @@ public class Svc
     [PluginService] public static IFlyTextGui FlyText { get; private set; }
     [PluginService] public static IFramework Framework { get; private set; }
     [PluginService] public static IGameGui GameGui { get; private set; }
-    [PluginService] public static IGameNetwork GameNetwork { get; private set; }
+    public static Legacy.IGameNetwork GameNetwork
+    {
+        get
+        {
+            field ??= new GameNetwork();
+            return field;
+        }
+    }
     [PluginService] public static IJobGauges Gauges { get; private set; }
     [PluginService] public static IKeyState KeyState { get; private set; }
     [PluginService] public static IObjectTable Objects { get; private set; }

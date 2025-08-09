@@ -1,6 +1,7 @@
 ﻿using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using Callback = ECommons.Automation.Callback;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -10,9 +11,9 @@ public partial class AddonMaster
         public RetainerSell(nint addon) : base(addon) { }
         public RetainerSell(void* addon) : base(addon) { }
 
-        public AtkComponentButton* ComparePricesButton => Addon->GetButtonNodeById(4);
-        public AtkComponentButton* ConfirmButton => Addon->GetButtonNodeById(21);
-        public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(22);
+        public AtkComponentButton* ComparePricesButton => Addon->GetComponentButtonById(4);
+        public AtkComponentButton* ConfirmButton => Addon->GetComponentButtonById(21);
+        public AtkComponentButton* CancelButton => Addon->GetComponentButtonById(22);
 
         public int AskingPrice
         {

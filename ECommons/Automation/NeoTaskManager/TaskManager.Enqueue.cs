@@ -48,12 +48,12 @@ public partial class TaskManager
             if(task == null) continue;
             if(IsStackActive)
             {
-                Log($"(stack) Enqueued task {task.Name}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
+                Log($"(stack) Enqueued task {task.Name}@{task.Location}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
                 Stack.Add(task);
             }
             else
             {
-                Log($"Enqueued task {task.Name}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
+                Log($"Enqueued task {task.Name}@{task.Location}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
                 Tasks.Add(task);
             }
         }

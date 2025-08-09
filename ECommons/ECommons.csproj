@@ -2,14 +2,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Authors>NightmareXIV</Authors>
-        <Version>2.2.0.2</Version>
-        <Configurations>Debug;Release;DebugForms;ReleaseForms</Configurations>
+        <BaseVersion>3.0.1.4</BaseVersion>
+        <PackageKind>stg</PackageKind>
+        <VersionSuffix Condition="'$(PackageKind)' != ''">-$(PackageKind)</VersionSuffix>
+        <Version>$(BaseVersion)$(VersionSuffix)</Version>
+        <Configurations>Debug;Release</Configurations>
     </PropertyGroup>
 
     <PropertyGroup>
         <TargetFramework>net9.0-windows7.0</TargetFramework>
         <Platforms>x64</Platforms>
-        <LangVersion>preview</LangVersion>
+        <LangVersion>latest</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -23,9 +26,8 @@
         <WarningsAsErrors>RS0030</WarningsAsErrors>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)' == 'DebugForms' or '$(Configuration)' == 'ReleaseForms'">
-        <UseWindowsForms>true</UseWindowsForms>
-        <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <PropertyGroup Condition="$([System.String]::Copy('$(LangVersion)').StartsWith('14.'))">
+        <DefineConstants>CSHARP_14;$(DefineConstants)</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Label="Documentation">
@@ -38,12 +40,17 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
+        <Dalamud_Home Condition="'$(DALAMUD_HOME)' == ''">$(HOME)/.xlcore/dalamud/Hooks/dev/</Dalamud_Home>
         <DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
     <PropertyGroup>
         <LangVersion>preview</LangVersion>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <Title>ECommons</Title>
+        <PackageProjectUrl>https://github.com/NightmareXIV/ECommons</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/NightmareXIV/ECommons</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
@@ -66,6 +73,10 @@
             <HintPath>$(DalamudLibPath)Mono.Cecil.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="TerraFX.Interop.Windows">
+            <HintPath>$(DalamudLibPath)TerraFX.Interop.Windows.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
         <Reference Include="Newtonsoft.Json">
             <HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
             <Private>False</Private>
@@ -78,12 +89,16 @@
             <HintPath>$(DalamudLibPath)Dalamud.Common.dll</HintPath>
             <Private>False</Private>
         </Reference>
-        <Reference Include="ImGui.NET">
-            <HintPath>$(DalamudLibPath)ImGui.NET.dll</HintPath>
+        <Reference Include="Dalamud.Bindings.ImGui">
+            <HintPath>$(DalamudLibPath)Dalamud.Bindings.ImGui.dll</HintPath>
             <Private>False</Private>
         </Reference>
-        <Reference Include="ImGuiScene">
-            <HintPath>$(DalamudLibPath)ImGuiScene.dll</HintPath>
+        <Reference Include="Dalamud.Bindings.ImPlot">
+            <HintPath>$(DalamudLibPath)Dalamud.Bindings.ImPlot.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Dalamud.Bindings.ImGuizmo">
+            <HintPath>$(DalamudLibPath)Dalamud.Bindings.ImGuizmo.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Lumina">
@@ -100,14 +115,6 @@
         </Reference>
         <Reference Include="InteropGenerator.Runtime">
             <HintPath>$(DalamudLibPath)InteropGenerator.Runtime.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="PInvoke.User32">
-            <HintPath>$(DalamudLibPath)PInvoke.User32.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="PInvoke.Windows.Core">
-            <HintPath>$(DalamudLibPath)PInvoke.Windows.Core.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="SharpDX.Mathematics">

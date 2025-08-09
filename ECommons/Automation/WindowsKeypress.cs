@@ -1,8 +1,8 @@
 ﻿using ECommons.Interop;
 using ECommons.Logging;
-using PInvoke;
 using System;
 using System.Collections.Generic;
+using TerraFX.Interop.Windows;
 using VirtualKey = Dalamud.Game.ClientState.Keys.VirtualKey;
 
 namespace ECommons.Automation;
@@ -17,8 +17,10 @@ public static partial class WindowsKeypress
         if(WindowFunctions.TryFindGameWindow(out var h))
         {
             InternalLog.Verbose($"Sending key {key}");
-            User32.SendMessage(h, User32.WindowMessage.WM_KEYDOWN, key, 0);
-            User32.SendMessage(h, User32.WindowMessage.WM_KEYUP, key, 0);
+            var wParam = new WPARAM((uint)key);
+            var lParam = new LPARAM(0);
+            NativeFunctions.SendMessage(h, WM.WM_KEYDOWN, wParam, lParam);
+            NativeFunctions.SendMessage(h, WM.WM_KEYUP, wParam, lParam);
             return true;
         }
         else
@@ -33,15 +35,23 @@ public static partial class WindowsKeypress
         {
             if(key == (1 | 4)) //xbutton1
             {
-                var wparam = MAKEWPARAM(0, 0x0001);
-                User32.SendMessage(h, User32.WindowMessage.WM_XBUTTONDOWN, wparam, 0);
-                User32.SendMessage(h, User32.WindowMessage.WM_XBUTTONUP, wparam, 0);
+                var rawWParam = NativeFunctions.MAKEWPARAM(0, 0x0001);
+                var hwnd = h;
+                var wp = new WPARAM(rawWParam);
+                var lp = new LPARAM(0);
+
+                NativeFunctions.SendMessage(hwnd, WM.WM_XBUTTONDOWN, wp, lp);
+                NativeFunctions.SendMessage(hwnd, WM.WM_XBUTTONUP, wp, lp);
             }
             else if(key == (2 | 4)) //xbutton2
             {
-                var wparam = MAKEWPARAM(0, 0x0002);
-                User32.SendMessage(h, User32.WindowMessage.WM_XBUTTONDOWN, wparam, 0);
-                User32.SendMessage(h, User32.WindowMessage.WM_XBUTTONUP, wparam, 0);
+                var rawWParam = NativeFunctions.MAKEWPARAM(0, 0x0002);
+                var hwnd = h;
+                var wp = new WPARAM(rawWParam);
+                var lp = new LPARAM(0);
+
+                NativeFunctions.SendMessage(hwnd, WM.WM_XBUTTONDOWN, wp, lp);
+                NativeFunctions.SendMessage(hwnd, WM.WM_XBUTTONUP, wp, lp);
             }
             else
             {
@@ -62,14 +72,14 @@ public static partial class WindowsKeypress
         {
             if(modifiers is { })
                 foreach(var mod in modifiers)
-                    User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYDOWN, mod, IntPtr.Zero);
+                    NativeFunctions.SendMessage(hwnd, WM.WM_KEYDOWN, (WPARAM)mod, IntPtr.Zero);
 
-            User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYDOWN, key, IntPtr.Zero);
-            User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYUP, key, IntPtr.Zero);
+            NativeFunctions.SendMessage(hwnd, WM.WM_KEYDOWN, (WPARAM)key, IntPtr.Zero);
+            NativeFunctions.SendMessage(hwnd, WM.WM_KEYUP, (WPARAM)key, IntPtr.Zero);
 
             if(modifiers is { })
                 foreach(var mod in modifiers)
-                    User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYUP, mod, IntPtr.Zero);
+                    NativeFunctions.SendMessage(hwnd, WM.WM_KEYUP, (WPARAM)mod, IntPtr.Zero);
             return true;
         }
         PluginLog.Error("Couldn't find game window!");
@@ -84,9 +94,9 @@ public static partial class WindowsKeypress
         {
             if(modifiers is { })
                 foreach(var mod in modifiers)
-                    User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYDOWN, mod, IntPtr.Zero);
+                    NativeFunctions.SendMessage(hwnd, WM.WM_KEYDOWN, (WPARAM)mod, IntPtr.Zero);
 
-            User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYDOWN, key, IntPtr.Zero);
+            NativeFunctions.SendMessage(hwnd, WM.WM_KEYDOWN, (WPARAM)key, IntPtr.Zero);
             return true;
         }
         PluginLog.Error("Couldn't find game window!");
@@ -101,17 +111,12 @@ public static partial class WindowsKeypress
         {
             if(modifiers is { })
                 foreach(var mod in modifiers)
-                    User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYUP, mod, IntPtr.Zero);
+                    NativeFunctions.SendMessage(hwnd, WM.WM_KEYUP, (WPARAM)mod, IntPtr.Zero);
 
-            User32.SendMessage(hwnd, User32.WindowMessage.WM_KEYUP, key, IntPtr.Zero);
+            NativeFunctions.SendMessage(hwnd, WM.WM_KEYUP, (WPARAM)key, IntPtr.Zero);
             return true;
         }
         PluginLog.Error("Couldn't find game window!");
         return false;
-    }
-
-    internal static int MAKEWPARAM(int l, int h)
-    {
-        return (l & 0xFFFF) | (h << 16);
     }
 }

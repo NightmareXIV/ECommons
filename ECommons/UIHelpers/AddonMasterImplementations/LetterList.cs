@@ -8,9 +8,9 @@ public partial class AddonMaster
         public LetterList(nint addon) : base(addon) { }
         public LetterList(void* addon) : base(addon) { }
 
-        public AtkComponentButton* NewButton => Base->GetButtonNodeById(2);
-        public AtkComponentButton* SentLetterHistoryButton => Base->GetButtonNodeById(3);
-        public AtkComponentButton* DeliveryRequestButton => Base->GetButtonNodeById(4);
+        public AtkComponentButton* NewButton => Base->GetComponentButtonById(2);
+        public AtkComponentButton* SentLetterHistoryButton => Base->GetComponentButtonById(3);
+        public AtkComponentButton* DeliveryRequestButton => Base->GetComponentButtonById(4);
 
         public override string AddonDescription { get; } = "Mail list window";
 

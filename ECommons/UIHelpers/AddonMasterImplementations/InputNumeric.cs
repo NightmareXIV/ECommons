@@ -1,5 +1,6 @@
 ﻿using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using Callback = ECommons.Automation.Callback;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -12,8 +13,8 @@ public partial class AddonMaster
         public uint Min => Addon->AtkValues[2].UInt;
         public uint Max => Addon->AtkValues[3].UInt;
 
-        public AtkComponentButton* OkButton => Addon->GetButtonNodeById(4);
-        public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(5);
+        public AtkComponentButton* OkButton => Addon->GetComponentButtonById(4);
+        public AtkComponentButton* CancelButton => Addon->GetComponentButtonById(5);
 
         public override string AddonDescription { get; } = "Number input dialogue";
 

@@ -21,8 +21,8 @@ public partial class AddonMaster
         public string ItemNameText => ItemName.GetText();
         public string DescriptionText => Description.GetText();
 
-        public AtkComponentButton* NextButton => Base->GetButtonNodeById(74);
-        public AtkComponentButton* CloseButton => Base->GetButtonNodeById(73);
+        public AtkComponentButton* NextButton => Base->GetComponentButtonById(74);
+        public AtkComponentButton* CloseButton => Base->GetComponentButtonById(73);
 
         public override string AddonDescription { get; } = "Eureka/Bozja lootbox results";
 

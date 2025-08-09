@@ -1,5 +1,6 @@
 using ECommons.Logging;
 using ECommons.Reflection;
+using ECommons.Reflection.FieldPropertyUnion;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -12,22 +13,24 @@ namespace ECommons.Singletons;
 /// </summary>
 public static class SingletonServiceManager
 {
-    internal static List<Type> Types = [];
+    internal static List<(Type Type, bool ReducedLogging)> Types = [];
 
     internal static void DisposeAll()
     {
         foreach(var x in Types)
         {
-            foreach(var t in Enumerable.Reverse(x.GetFieldPropertyUnions(ReflectionHelper.AllFlags)))
+            foreach(var t in Enumerable.Reverse(x.Type.GetFieldPropertyUnions(ReflectionHelper.AllFlags)))
             {
                 var value = t.GetValue(null);
-                var prio = t.GetCustomAttribute<PriorityAttribute>()?.Priority ?? 0;
 
                 if(value is IDisposable disposable)
                 {
                     try
                     {
-                        PluginLog.Debug($"Disposing singleton instance of {t.UnionType.FullName}, priority={prio}");
+                        if(!x.ReducedLogging)
+                        {
+                            PluginLog.Debug($"Disposing singleton instance of {t.UnionType.FullName}");
+                        }
                         disposable.Dispose();
                     }
                     catch(TargetInvocationException tie)
@@ -47,10 +50,21 @@ public static class SingletonServiceManager
         Types = null!;
     }
 
-    public static void Initialize(Type staticType)
+    public static void Initialize(Type staticTypeMaster, bool reducedLogging = false)
     {
-        Types.Add(staticType);
-        foreach(var x in staticType.GetFieldPropertyUnions(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
+        Dictionary<Type, int> classPriorities = [];
+        OrderedDictionary<IFieldPropertyUnion, int> fieldPriorities = [];
+        var types = (Type[])[staticTypeMaster, .. staticTypeMaster.GetNestedTypes()];
+        foreach(var staticType in types)
+        {
+            Types.Add((staticType, reducedLogging));
+            classPriorities[staticType] = staticType.GetCustomAttribute<PriorityAttribute>()?.Priority ?? 0;
+            foreach(var x in staticType.GetFieldPropertyUnions(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
+            {
+                fieldPriorities.Add(x, x.GetCustomAttribute<PriorityAttribute>()?.Priority ?? x.UnionType.GetCustomAttribute<PriorityAttribute>()?.Priority ?? 0);
+            }
+        }
+        foreach(var x in fieldPriorities.OrderBy(t => classPriorities.SafeSelect(t.Key.DeclaringType, 0)).ThenBy(t => fieldPriorities.SafeSelect(t.Value).Key).Select(t => t.Key))
         {
             var value = x.GetValue(null);
             if(value == null)
@@ -66,7 +80,10 @@ public static class SingletonServiceManager
                         {
                             args[i] = parameters[i].ParameterType.IsValueType ? Activator.CreateInstance(parameters[i].ParameterType) : null;
                         }
-                        PluginLog.Debug($"Creating singleton instance of {x.UnionType.FullName}");
+                        if(!reducedLogging)
+                        {
+                            PluginLog.Debug($"Creating singleton instance of {x.UnionType.FullName}");
+                        }
                         x.SetValue(null, Activator.CreateInstance(x.UnionType, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, args, null, null));
                     }
                     else
@@ -82,6 +99,20 @@ public static class SingletonServiceManager
                     e.Log();
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// Lower number = loaded earlier
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Class, AllowMultiple = false)]
+    public sealed class PriorityAttribute : Attribute
+    {
+        public int Priority;
+
+        public PriorityAttribute(int priority)
+        {
+            Priority = priority;
         }
     }
 }

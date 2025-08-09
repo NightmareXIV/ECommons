@@ -12,7 +12,7 @@ public unsafe partial class AddonMaster
         public string Week => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[1].String.Value).GetText();
         public int WinningNumber => Addon->AtkValues[5].Int;
 
-        public AtkComponentButton* CloseButton => Base->GetButtonNodeById(49);
+        public AtkComponentButton* CloseButton => Base->GetComponentButtonById(49);
 
         public void Close() => ClickButtonIfEnabled(CloseButton);
 

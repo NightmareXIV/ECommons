@@ -1,5 +1,6 @@
 ﻿using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using Callback = ECommons.Automation.Callback;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public unsafe partial class AddonMaster
@@ -9,8 +10,8 @@ public unsafe partial class AddonMaster
         public LookingForGroupPrivate(nint addon) : base(addon) { }
         public LookingForGroupPrivate(void* addon) : base(addon) { }
 
-        public AtkComponentButton* JoinButton => Base->GetButtonNodeById(6);
-        public AtkComponentButton* CancelButton => Base->GetButtonNodeById(7);
+        public AtkComponentButton* JoinButton => Base->GetComponentButtonById(6);
+        public AtkComponentButton* CancelButton => Base->GetComponentButtonById(7);
 
         public override string AddonDescription { get; } = "Private party finder password prompt";
 

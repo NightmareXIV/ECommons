@@ -41,6 +41,15 @@ public static class EzConfig
         }
     } = false;
 
+    public static Action<string, string>? SaveFileActionOverride
+    {
+        get => field;
+        set
+        {
+            if(field != null) throw new InvalidOperationException("Can not change override once it has been set");
+        }
+    }
+
     public static string GetPluginConfigDirectory()
     {
         if(PluginConfigDirectoryOverride == null) return Svc.PluginInterface.GetPluginConfigDirectory();
@@ -56,7 +65,7 @@ public static class EzConfig
     /// <summary>
     /// Default configuration reference
     /// </summary>
-    public static IEzConfig? Config { get; private set; }
+    public static object? Config { get; private set; }
 
     private static bool WasCalled = false;
 
@@ -83,7 +92,7 @@ public static class EzConfig
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static T Init<T>() where T : IEzConfig, new()
+    public static T Init<T>() where T : new()
     {
         Config = LoadConfiguration<T>(DefaultSerializationFactory.DefaultConfigFileName);
         return (T)Config;
@@ -94,7 +103,7 @@ public static class EzConfig
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <exception cref="NullReferenceException"></exception>
-    public static void Migrate<T>() where T : IEzConfig, new()
+    public static void Migrate<T>() where T : new()
     {
         if(Config != null)
         {
@@ -103,7 +112,7 @@ public static class EzConfig
         WasCalled = true;
         var path = DefaultConfigurationFileName;
         var configFile = PluginConfigDirectoryOverride == null ? Svc.PluginInterface.ConfigFile : new FileInfo(Path.Combine(new DirectoryInfo(Svc.PluginInterface.GetPluginConfigDirectory()).Parent!.FullName, PluginConfigDirectoryOverride + ".json"));
-        if(!File.Exists(path) && configFile.Exists)
+        if(!DefaultSerializationFactory.FileExists(path) && configFile.Exists)
         {
             PluginLog.Warning($"Migrating {configFile} into EzConfig system");
             Config = LoadConfiguration<T>(configFile.FullName, false);
@@ -141,7 +150,7 @@ public static class EzConfig
     /// <param name="appendConfigDirectory">If true, plugin configuration directory will be added to path</param>
     /// <param name="serializationFactory">If null, then default factory will be used.</param>
     /// <param name="writeFileAsync">Whether to perform writing operation in a separate thread. Serialization is performed in current thread.</param>
-    public static void SaveConfiguration(this IEzConfig Configuration, string path, bool prettyPrint = false, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null, bool writeFileAsync = false)
+    public static void SaveConfiguration(this object Configuration, string path, bool prettyPrint = false, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null, bool writeFileAsync = false)
     {
         WasCalled = true;
         serializationFactory ??= DefaultSerializationFactory;
@@ -175,24 +184,15 @@ public static class EzConfig
                 {
                     lock(Configuration)
                     {
-                        var antiCorruptionPath = $"{path}.new";
-                        if(File.Exists(antiCorruptionPath))
-                        {
-                            var saveTo = $"{antiCorruptionPath}.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
-                            PluginLog.Warning($"Detected unsuccessfully saved file {antiCorruptionPath}: moving to {saveTo}");
-                            Notify.Warning("Detected unsuccessfully saved configuration file.");
-                            File.Move(antiCorruptionPath, saveTo);
-                            PluginLog.Warning($"Success. Please manually check {saveTo} file contents.");
-                        }
                         if(serializationFactory.IsBinary)
                         {
-                            File.WriteAllBytes(antiCorruptionPath, serializedBinary);
+                            serializationFactory.WriteFile(path, serializedBinary);
                         }
                         else
                         {
-                            File.WriteAllText(antiCorruptionPath, serializedString, Encoding.UTF8);
+                            serializationFactory.WriteFile(path, serializedString);
                         }
-                        File.Move(antiCorruptionPath, path, true);
+                        
                     }
                 }
                 catch(Exception e)
@@ -219,22 +219,22 @@ public static class EzConfig
     /// <param name="appendConfigDirectory">If true, plugin configuration directory will be added to path</param>
     /// <param name="serializationFactory">If null, then default factory will be used.</param>
     /// <returns></returns>
-    public static T LoadConfiguration<T>(string path, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null) where T : IEzConfig, new()
+    public static T LoadConfiguration<T>(string path, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null) where T : new()
     {
         WasCalled = true;
         serializationFactory ??= DefaultSerializationFactory;
         if(appendConfigDirectory) path = Path.Combine(EzConfig.GetPluginConfigDirectory(), path);
-        if(!File.Exists(path))
+        if(!serializationFactory.FileExists(path))
         {
             return new T();
         }
         if(serializationFactory.IsBinary)
         {
-            return serializationFactory.Deserialize<T>(File.ReadAllBytes(path)) ?? new T();
+            return serializationFactory.Deserialize<T>(serializationFactory.ReadFileAsBin(path)) ?? new T();
         }
         else
         {
-            return serializationFactory.Deserialize<T>(File.ReadAllText(path, Encoding.UTF8)) ?? new T();
+            return serializationFactory.Deserialize<T>(serializationFactory.ReadFileAsText(path)) ?? new T();
         }
     }
 

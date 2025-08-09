@@ -9,7 +9,7 @@ public partial class AddonMaster
 
         public SalvageResult(void* addon) : base(addon) { }
 
-        public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(15);
+        public AtkComponentButton* CloseButton => Addon->GetComponentButtonById(15);
 
         public override string AddonDescription { get; } = "Desynthesis result window";
 

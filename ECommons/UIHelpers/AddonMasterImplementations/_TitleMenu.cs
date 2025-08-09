@@ -27,12 +27,12 @@ public partial class AddonMaster
             }
         }
 
-        public AtkComponentButton* StartButton => Base->GetButtonNodeById(4);
-        public AtkComponentButton* DataCenterButton => Base->GetButtonNodeById(5);
-        public AtkComponentButton* MoviesAndTitlesButton => Base->GetButtonNodeById(6);
-        public AtkComponentButton* OptionsButton => Base->GetButtonNodeById(7);
-        public AtkComponentButton* LicenseButton => Base->GetButtonNodeById(8);
-        public AtkComponentButton* ExitButton => Base->GetButtonNodeById(9);
+        public AtkComponentButton* StartButton => Base->GetComponentButtonById(4);
+        public AtkComponentButton* DataCenterButton => Base->GetComponentButtonById(5);
+        public AtkComponentButton* MoviesAndTitlesButton => Base->GetComponentButtonById(6);
+        public AtkComponentButton* OptionsButton => Base->GetComponentButtonById(7);
+        public AtkComponentButton* LicenseButton => Base->GetComponentButtonById(8);
+        public AtkComponentButton* ExitButton => Base->GetComponentButtonById(9);
 
         public override string AddonDescription { get; } = "Title menu";
 

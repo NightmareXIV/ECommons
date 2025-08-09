@@ -14,7 +14,7 @@ namespace ECommons.PartyFunctions;
 public static unsafe class UniversalParty
 {
     public static bool IsCrossWorldParty => Svc.Condition[ConditionFlag.ParticipatingInCrossWorldPartyOrAlliance];
-    public static bool IsAlliance => IsCrossWorldParty && InfoProxyCrossRealm.Instance()->IsInAllianceRaid != 0;
+    public static bool IsAlliance => IsCrossWorldParty && InfoProxyCrossRealm.Instance()->IsInAllianceRaid;
 
     public static int Length => Members.Count;
     public static int LengthPlayback => MembersPlayback.Count;

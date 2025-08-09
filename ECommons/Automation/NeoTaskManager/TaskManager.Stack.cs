@@ -23,6 +23,10 @@ public partial class TaskManager
     /// </summary>
     public void BeginStack()
     {
+        if(IsStackActive)
+        {
+            PluginLog.Warning($"Warning: stack already exists");
+        }
         if(DefaultConfiguration.ShowDebug == true) PluginLog.Debug($"Stack mode begins");
         Stack.Clear();
         IsStackActive = true;
@@ -58,5 +62,45 @@ public partial class TaskManager
         if(DefaultConfiguration.ShowDebug == true) PluginLog.Debug($"Discarding stack with {Stack.Count} tasks");
         IsStackActive = false;
         Stack.Clear();
+    }
+
+    /// <summary>
+    /// Immediately executes <paramref name="executeAction"/> in between <see cref="BeginStack"/> and <see cref="EnqueueStack"/>. Handles exceptions. If an exception is thrown, will reset discard instead. 
+    /// </summary>
+    /// <param name="executeAction"></param>
+    public void EnqueueStack(Action executeAction)
+    {
+        BeginStack();
+        try
+        {
+            executeAction();
+        }
+        catch(Exception e)
+        {
+            e.Log();
+            DiscardStack();
+            return;
+        }
+        EnqueueStack();
+    }
+
+    /// <summary>
+    /// Immediately executes <paramref name="executeAction"/> in between <see cref="BeginStack"/> and <see cref="InsertStack"/>. Handles exceptions. If an exception is thrown, will reset discard instead. 
+    /// </summary>
+    /// <param name="executeAction"></param>
+    public void InsertStack(Action executeAction)
+    {
+        BeginStack();
+        try
+        {
+            executeAction();
+        }
+        catch(Exception e)
+        {
+            e.Log();
+            DiscardStack();
+            return;
+        }
+        InsertStack();
     }
 }

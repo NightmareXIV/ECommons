@@ -1,10 +1,11 @@
 ﻿using Dalamud.Interface.Utility;
 using ECommons.Throttlers;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 
 namespace ECommons.ImGuiMethods;
 public static partial class ImGuiEx
@@ -108,7 +109,7 @@ public static partial class ImGuiEx
         if(!enabled) ImGui.BeginDisabled();
         ImGui.SameLine();
         ImGui.SetNextItemWidth(width);
-        var ret = ImGui.InputInt(label, ref value, step, step_fast, flags);
+        var ret = ImGui.InputInt(label, ref value, step, step_fast, flags:flags);
         if(ret) valueNullable = value;
         if(!enabled) ImGui.EndDisabled();
         return ret || chk;
@@ -200,22 +201,22 @@ public static partial class ImGuiEx
         return ret;
     }
 
-    public static unsafe bool InputTextWrapMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
+    public static unsafe bool InputTextWrapMultilineExpanding(string id, ref string text, int maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
     {
         var wrapWidth = width ?? ImGui.GetContentRegionAvail().X; // determine wrap width
         var result = ImGui.InputTextMultiline(id, ref text, maxLength,
             new(width ?? ImGui.GetContentRegionAvail().X, ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)),
             ImGuiInputTextFlags.CallbackEdit, // flag stuff 
-            (data) =>
+            (ref ImGuiInputTextCallbackData data) =>
             {
-                return TextEditCallback(data, wrapWidth); // Callback Action
+                return TextEditCallback(ref data, wrapWidth); // Callback Action
             });
         return result;
     }
 
-    public static bool InputTextMultilineExpanding(string id, ref string text, uint maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
+    public static bool InputTextMultilineExpanding(string id, ref string text, int maxLength = 500, int minLines = 2, int maxLines = 10, int? width = null)
     {
-        return ImGui.InputTextMultiline(id, ref text, maxLength, new(width ?? ImGui.GetContentRegionAvail().X, ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)));
+        return ImGui.InputTextMultiline(id, ref text, maxLength, new Vector2(width ?? ImGui.GetContentRegionAvail().X, ImGui.CalcTextSize("A").Y * Math.Clamp(text.Split("\n").Length + 1, minLines, maxLines)));
     }
 
     private static Dictionary<string, Box<string>> InputListValuesString = [];
@@ -265,7 +266,7 @@ public static partial class ImGuiEx
             {
                 var id = $"{name}ECommonsDeleItem{i}";
                 var x = list[i];
-                ImGui.Selectable($"{(overrideValues != null && overrideValues.ContainsKey(x) ? overrideValues[x] : x)}");
+                ImGui.Selectable($"{(overrideValues != null && overrideValues.ContainsKey(x) ? overrideValues[x] : x.ToString())}");
                 if(ImGui.IsItemClicked(ImGuiMouseButton.Right))
                 {
                     ImGui.OpenPopup(id);
@@ -408,6 +409,44 @@ public static partial class ImGuiEx
         return ret;
     }
 
+    public static bool EnumCombo<T>(string name, ref Nullable<T> refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null, string nullName = "Not selected") where T : struct, Enum, IConvertible
+    {
+        var ret = false;
+        if(ImGui.BeginCombo(name, refConfigField == null ? nullName : ((names != null && names.TryGetValue(refConfigField.Value, out var n)) ? n : refConfigField.Value.ToString().Replace("_", " ")), ImGuiComboFlags.HeightLarge))
+        {
+            var values = Enum.GetValues(typeof(T));
+            Box<string> fltr = null;
+            if(values.Length > 10)
+            {
+                if(!EnumComboSearch.ContainsKey(name)) EnumComboSearch.Add(name, new(""));
+                fltr = EnumComboSearch[name];
+                ImGuiEx.SetNextItemFullWidth();
+                ImGui.InputTextWithHint($"##{name.Replace("#", "_")}", "Filter...", ref fltr.Value, 50);
+            }
+            if(ImGui.Selectable(nullName, refConfigField == null))
+            {
+                ret = true;
+                refConfigField = null;
+            }
+            foreach(var x in values)
+            {
+                var equals = EqualityComparer<Nullable<T>>.Default.Equals((T)x, refConfigField);
+                var element = (names != null && names.TryGetValue((T)x, out n)) ? n : x.ToString().Replace("_", " ");
+                if((filter == null || filter((T)x))
+                    && (fltr == null || element.Contains(fltr.Value, StringComparison.OrdinalIgnoreCase))
+                    && ImGui.Selectable(element, equals)
+                    )
+                {
+                    ret = true;
+                    refConfigField = (T)x;
+                }
+                if(ImGui.IsWindowAppearing() && equals) ImGui.SetScrollHereY();
+            }
+            ImGui.EndCombo();
+        }
+        return ret;
+    }
+
     public static Dictionary<string, Box<string>> ComboSearch = [];
     public static bool Combo<T>(string name, ref T refConfigField, IEnumerable<T> values, Func<T, bool> filter = null, Dictionary<T, string> names = null)
     {
@@ -478,7 +517,7 @@ public static partial class ImGuiEx
         suffix?.Invoke();
         if(sameLine) ImGui.SameLine();
         prefix?.Invoke();
-        if(ImGui.RadioButton(inverted?labelTrue:labelFalse, value == inverted)) value = inverted;
+        if(ImGui.RadioButton(inverted ? labelTrue : labelFalse, value == inverted)) value = inverted;
         suffix?.Invoke();
     }
 }

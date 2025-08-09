@@ -45,8 +45,15 @@ public static class ExternalWriter
     internal static void Dispose()
     {
         Disposed = true;
-        FileSaveRequests?.CompleteAdding();
-        FileSaveRequests?.Dispose();
+        try
+        {
+            FileSaveRequests?.CompleteAdding();
+            FileSaveRequests?.Dispose();
+        }
+        catch(Exception e)
+        {
+            e.LogDebug();
+        }
     }
 
     private static readonly string[] FileNames = ["ECommons.FileWriter.dll", "ECommons.FileWriter.deps.json", "ECommons.FileWriter.runtimeconfig.json"];
@@ -118,7 +125,7 @@ public static class ExternalWriter
                 }
                 catch(Exception e)
                 {
-                    e.Log();
+                    e.LogDebug();
                 }
             }
         }).Start();

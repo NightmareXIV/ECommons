@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Callback = ECommons.Automation.Callback;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public unsafe partial class AddonMaster
@@ -31,7 +32,7 @@ public unsafe partial class AddonMaster
                 for(var i = 0; i < 16; i++)
                 {
                     var str = stringArray->StringArray[i];
-                    var worldName = MemoryHelper.ReadStringNullTerminated((nint)str).Trim();
+                    var worldName = MemoryHelper.ReadStringNullTerminated((nint)str.Value).Trim();
                     if(worldName.IsNullOrEmpty()) break;
                     ret.Add(new(this, i, worldName));
                 }

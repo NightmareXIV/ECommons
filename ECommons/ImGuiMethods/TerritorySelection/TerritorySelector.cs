@@ -1,10 +1,11 @@
 ﻿using Dalamud.Interface.Colors;
 using Dalamud.Interface.Windowing;
+using Dalamud.Utility;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
 using ECommons.GameHelpers;
 using ECommons.Schedulers;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Lumina.Excel.Sheets;
 using System;
 using System.Collections.Generic;
@@ -48,6 +49,7 @@ public unsafe class TerritorySelector : Window
     private static bool? VisibleAction = null;
     public Column[] ExtraColumns = [Column.ID, Column.Zone, Column.Region, Column.IntendedUse];
     public DisplayMode Mode = DisplayMode.PlaceNameAndDuty;
+    public bool ShowUnnamed = false;
 
     public Action<TerritoryType, Vector4?, string> ActionDrawPlaceName = (TerritoryType t, Vector4? col, string name) =>
     {
@@ -155,12 +157,14 @@ public unsafe class TerritorySelector : Window
         {
             foreach(var x in Cache)
             {
-                if(ImGuiEx.BeginTabItem(x.Key.ToString(), SelectedCategory == x.Key ? ImGuiTabItemFlags.SetSelected : ImGuiTabItemFlags.None))
+                if(ImGui.BeginTabItem(x.Key.ToString(), SelectedCategory == x.Key ? ImGuiTabItemFlags.SetSelected : ImGuiTabItemFlags.None))
                 {
                     ImGui.SetNextItemWidth(200f);
                     ImGui.InputTextWithHint($"##search", "Filter...", ref Filter, 50);
                     ImGui.SameLine();
                     ImGui.Checkbox("Only selected", ref OnlySelected);
+                    ImGui.SameLine();
+                    ImGui.Checkbox("Show unnamed", ref ShowUnnamed);
                     if(Player.Available)
                     {
                         ImGui.SameLine();
@@ -258,6 +262,8 @@ public unsafe class TerritorySelector : Window
                                     continue;
                                 }
 
+                                if(!ShowUnnamed && name.IsNullOrEmpty() && cfc.IsNullOrEmpty() && questBattle.IsNullOrEmpty()) continue;
+
                                 ImGui.TableNextRow();
                                 ImGui.TableNextColumn();//checkbox
                                 if(!IsSingleSelection)
@@ -308,7 +314,7 @@ public unsafe class TerritorySelector : Window
                                 if(Mode == DisplayMode.PlaceNameDutyUnion)
                                 {
                                     ImGui.TableNextColumn();
-                                    ImGuiEx.Text(cfc ?? questBattle ?? zone);
+                                    ImGuiEx.Text(cfc.NullWhenEmpty() ?? questBattle.NullWhenEmpty() ?? zone);
                                 }
                                 else if(Mode == DisplayMode.PlaceNameOnly)
                                 {

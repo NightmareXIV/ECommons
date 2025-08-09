@@ -146,7 +146,7 @@ public static unsafe partial class GenericHelpers
         }
         else
         {
-            AddonPtr = (T*)a;
+            AddonPtr = (T*)a.Address;
             return true;
         }
     }

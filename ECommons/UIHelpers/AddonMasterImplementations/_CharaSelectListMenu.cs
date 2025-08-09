@@ -3,6 +3,7 @@ using ECommons.ExcelServices;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Collections.Generic;
+using Callback = ECommons.Automation.Callback;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public unsafe partial class AddonMaster
@@ -12,9 +13,9 @@ public unsafe partial class AddonMaster
         public _CharaSelectListMenu(nint addon) : base(addon) { }
         public _CharaSelectListMenu(void* addon) : base(addon) { }
 
-        public AtkComponentButton* WorldButton => Addon->GetButtonNodeById(4);
-        public AtkComponentButton* NewCharacterButton => Addon->GetButtonNodeById(5);
-        public AtkComponentButton* BackUpClientSettingsButton => Addon->GetButtonNodeById(6);
+        public AtkComponentButton* WorldButton => Addon->GetComponentButtonById(4);
+        public AtkComponentButton* NewCharacterButton => Addon->GetComponentButtonById(5);
+        public AtkComponentButton* BackUpClientSettingsButton => Addon->GetComponentButtonById(6);
 
         public void World() => ClickButtonIfEnabled(WorldButton);
         public void NewCharacter() => ClickButtonIfEnabled(NewCharacterButton);

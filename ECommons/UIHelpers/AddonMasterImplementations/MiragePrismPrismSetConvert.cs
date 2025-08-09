@@ -6,6 +6,7 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Collections.Generic;
 using System.Linq;
+using Callback = ECommons.Automation.Callback;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -16,8 +17,8 @@ public partial class AddonMaster
         public MiragePrismPrismSetConvert(void* addon) : base(addon) { }
         public override string AddonDescription { get; } = "Outfit glamour creation";
 
-        public AtkComponentButton* StoreAsGlamourButton => Addon->GetButtonNodeById(27);
-        public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(26);
+        public AtkComponentButton* StoreAsGlamourButton => Addon->GetComponentButtonById(27);
+        public AtkComponentButton* CloseButton => Addon->GetComponentButtonById(26);
 
         public void StoreAsGlamour() => ClickButtonIfEnabled(StoreAsGlamourButton);
         public void Close() => ClickButtonIfEnabled(CloseButton);
@@ -44,7 +45,7 @@ public partial class AddonMaster
         {
             if(SlotsFilled.Contains(slot)) return true;
 
-            var contextMenu = (AtkUnitBase*)Svc.GameGui.GetAddonByName("ContextIconMenu", 1);
+            var contextMenu = (AtkUnitBase*)Svc.GameGui.GetAddonByName("ContextIconMenu", 1).Address;
 
             if(contextMenu is null || !contextMenu->IsVisible)
             {

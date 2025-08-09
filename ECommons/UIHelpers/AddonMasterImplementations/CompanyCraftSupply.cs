@@ -9,7 +9,7 @@ public partial class AddonMaster
 
         public CompanyCraftSupply(void* addon) : base(addon) { }
 
-        public AtkComponentButton* CloseButton => Addon->GetButtonNodeById(41);
+        public AtkComponentButton* CloseButton => Addon->GetComponentButtonById(41);
 
         public override string AddonDescription { get; } = "Free Company workshop delivery";
 

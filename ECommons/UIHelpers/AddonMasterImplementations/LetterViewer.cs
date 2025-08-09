@@ -9,9 +9,9 @@ public partial class AddonMaster
         public LetterViewer(nint addon) : base(addon) { }
         public LetterViewer(void* addon) : base(addon) { }
 
-        public AtkComponentButton* TakeAllButton => Base->GetButtonNodeById(30);
-        public AtkComponentButton* ReplyButton => Base->GetButtonNodeById(31);
-        public AtkComponentButton* DeleteButton => Base->GetButtonNodeById(32);
+        public AtkComponentButton* TakeAllButton => Base->GetComponentButtonById(30);
+        public AtkComponentButton* ReplyButton => Base->GetComponentButtonById(31);
+        public AtkComponentButton* DeleteButton => Base->GetComponentButtonById(32);
 
         public void TakeAll() => ClickButtonIfEnabled(TakeAllButton);
         public void Reply() => ClickButtonIfEnabled(ReplyButton);

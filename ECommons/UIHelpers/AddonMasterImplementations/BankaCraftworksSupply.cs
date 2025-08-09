@@ -5,6 +5,7 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Collections.Generic;
 using System.Linq;
+using Callback = ECommons.Automation.Callback;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -19,8 +20,8 @@ public partial class AddonMaster
 
         public uint CollectableItemId => Addon->AtkValues[8].UInt;
 
-        public AtkComponentButton* DeliverButton => Addon->GetButtonNodeById(71);
-        public AtkComponentButton* CancelButton => Addon->GetButtonNodeById(72);
+        public AtkComponentButton* DeliverButton => Addon->GetComponentButtonById(71);
+        public AtkComponentButton* CancelButton => Addon->GetComponentButtonById(72);
 
         public void Deliver() => ClickButtonIfEnabled(DeliverButton);
         public void Cancel() => ClickButtonIfEnabled(CancelButton);
@@ -35,7 +36,7 @@ public partial class AddonMaster
         {
             if(SlotsFilled.Contains(slot)) return true;
 
-            var contextMenu = (AtkUnitBase*)Svc.GameGui.GetAddonByName("ContextIconMenu", 1);
+            var contextMenu = (AtkUnitBase*)Svc.GameGui.GetAddonByName("ContextIconMenu", 1).Address;
 
             if(contextMenu is null || !contextMenu->IsVisible)
             {

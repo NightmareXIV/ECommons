@@ -58,7 +58,7 @@ public class TaskManagerConfiguration
     /// <summary>
     /// Event that is fired when execution of a task results in an exception.
     /// </summary>
-    public event OnTaskExceptionDelegate? OnTaskException;
+    public OnTaskExceptionDelegate? OnTaskException;
 
     /// <summary>
     /// Event that is fired when task times out.
@@ -69,7 +69,7 @@ public class TaskManagerConfiguration
     /// <summary>
     /// Event that is fired when task times out.
     /// </summary>
-    public event OnTaskTimeoutDelegate? OnTaskTimeout;
+    public OnTaskTimeoutDelegate? OnTaskTimeout;
 
     /// <summary>
     /// Event that is fired when task is completed. Fired when task returns either true (a signal to proceed to execute next task) or null (a signal to cancel current task queue).
@@ -80,7 +80,13 @@ public class TaskManagerConfiguration
     /// <summary>
     /// Event that is fired when task is completed. Fired when task returns either true (a signal to proceed to execute next task) or null (a signal to cancel current task queue).
     /// </summary>
-    public event OnTaskCompletionDelegate? OnTaskCompletion;
+    public OnTaskCompletionDelegate? OnTaskCompletion;
+
+    public delegate void CompanionActionDelegate(TaskManagerTask task);
+    /// <summary>
+    /// Action that will execute every framework update executing main function.
+    /// </summary>
+    public CompanionActionDelegate? CompanionAction;
 
     internal void FireOnTaskException(TaskManagerTask task, Exception ex, ref bool @continue, ref bool? abort)
     {
@@ -121,6 +127,19 @@ public class TaskManagerConfiguration
         }
     }
 
+    internal void FireCompanionAction(TaskManagerTask task)
+    {
+        try
+        {
+            CompanionAction?.Invoke(task);
+        }
+        catch(Exception e)
+        {
+            PluginLog.Error($"During processing {nameof(CompanionAction)} event, an exception was raised:");
+            e.Log();
+        }
+    }
+
     internal void AssertNotNull()
     {
         if(TimeLimitMS == null) throw new NullReferenceException();
@@ -135,24 +154,35 @@ public class TaskManagerConfiguration
     /// <summary>
     /// Produces copy of other configuration and fills it's null properties from current configuration.
     /// </summary>
-    /// <param name="other"></param>
+    /// <param name="dominantConfiguration">Dominant configuration</param>
     /// <param name="copyEvents">Whether to copy events. If true, events from other current configuration will be used, if false - from other.</param>
     /// <returns></returns>
-    public TaskManagerConfiguration With(TaskManagerConfiguration? other, bool copyEvents = true)
+    public TaskManagerConfiguration With(TaskManagerConfiguration? dominantConfiguration, bool copyEvents = true)
     {
-        return new()
+        var ret = new TaskManagerConfiguration()
         {
-            TimeLimitMS = other?.TimeLimitMS ?? TimeLimitMS,
-            AbortOnError = other?.AbortOnError ?? AbortOnError,
-            AbortOnTimeout = other?.AbortOnTimeout ?? AbortOnTimeout,
-            ShowDebug = other?.ShowDebug ?? ShowDebug,
-            ShowError = other?.ShowError ?? ShowError,
-            TimeoutSilently = other?.TimeoutSilently ?? TimeoutSilently,
-            ExecuteDefaultConfigurationEvents = other?.ExecuteDefaultConfigurationEvents ?? ExecuteDefaultConfigurationEvents,
-
-            OnTaskCompletion = copyEvents ? (other?.OnTaskCompletion) : OnTaskCompletion,
-            OnTaskTimeout = copyEvents ? (other?.OnTaskTimeout) : OnTaskTimeout,
-            OnTaskException = copyEvents ? (other?.OnTaskException) : OnTaskException,
+            TimeLimitMS = dominantConfiguration?.TimeLimitMS ?? TimeLimitMS,
+            AbortOnError = dominantConfiguration?.AbortOnError ?? AbortOnError,
+            AbortOnTimeout = dominantConfiguration?.AbortOnTimeout ?? AbortOnTimeout,
+            ShowDebug = dominantConfiguration?.ShowDebug ?? ShowDebug,
+            ShowError = dominantConfiguration?.ShowError ?? ShowError,
+            TimeoutSilently = dominantConfiguration?.TimeoutSilently ?? TimeoutSilently,
+            ExecuteDefaultConfigurationEvents = dominantConfiguration?.ExecuteDefaultConfigurationEvents ?? ExecuteDefaultConfigurationEvents,
         };
+        if(copyEvents)
+        {
+            ret.OnTaskCompletion = dominantConfiguration?.OnTaskCompletion;
+            ret.OnTaskTimeout = (dominantConfiguration?.OnTaskTimeout);
+            ret.OnTaskException = (dominantConfiguration?.OnTaskException);
+            ret.CompanionAction = (dominantConfiguration?.CompanionAction);
+        }
+        else
+        {
+            ret.OnTaskCompletion = (OnTaskCompletion);
+            ret.OnTaskTimeout = (OnTaskTimeout);
+            ret.OnTaskException = (OnTaskException);
+            ret.CompanionAction = (CompanionAction);
+        }
+        return ret;
     }
 }

@@ -5,6 +5,7 @@ using ECommons.DalamudServices;
 using ECommons.Logging;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Collections.Generic;
+using Callback = ECommons.Automation.Callback;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 
@@ -15,9 +16,9 @@ public partial class AddonMaster
         public WKSLottery(nint addon) : base(addon) { }
         public WKSLottery(void* addon) : base(addon) { }
 
-        public AtkComponentButton* WheelLeftButton => Addon->GetButtonNodeById(29);
-        public AtkComponentButton* WheelRightButton => Addon->GetButtonNodeById(39);
-        public AtkComponentButton* SpinWheelButton => Addon->GetButtonNodeById(64);
+        public AtkComponentButton* WheelLeftButton => Addon->GetComponentButtonById(29);
+        public AtkComponentButton* WheelRightButton => Addon->GetComponentButtonById(39);
+        public AtkComponentButton* SpinWheelButton => Addon->GetComponentButtonById(64);
 
         public WheelItems[] LeftWheelItems
         {
@@ -32,7 +33,7 @@ public partial class AddonMaster
 
                     var itemAmount = Addon->AtkValues[92 + i * 7].UInt;
                     SeString itemName = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[91 + i * 7].String.Value).GetText();
-                    string itemNameText = itemName.ToString();
+                    var itemNameText = itemName.ToString();
 
                     var ItemList = new WheelItems()
                     {
@@ -59,7 +60,7 @@ public partial class AddonMaster
 
                     var itemAmount = Addon->AtkValues[141 + i * 7].UInt;
                     SeString itemName = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[140 + i * 7].String.Value).GetText();
-                    string itemNameText = itemName.ToString();
+                    var itemNameText = itemName.ToString();
 
                     var ItemList = new WheelItems()
                     {
@@ -82,7 +83,7 @@ public partial class AddonMaster
 
         public void SelectWheelLeft()
         {
-            var contextMenu = (AtkUnitBase*)Svc.GameGui.GetAddonByName("WKSLottery", 1);
+            var contextMenu = (AtkUnitBase*)Svc.GameGui.GetAddonByName("WKSLottery", 1).Address;
 
             Callback.Fire(contextMenu, true, 0, 0);
             Callback.Fire(contextMenu, true, 1, 0);

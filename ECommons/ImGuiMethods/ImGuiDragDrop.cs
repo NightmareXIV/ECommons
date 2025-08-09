@@ -1,6 +1,7 @@
-﻿using ImGuiNET;
+﻿using Dalamud.Bindings.ImGui;
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace ECommons.ImGuiMethods;
@@ -15,8 +16,8 @@ public static class ImGuiDragDrop
     public static unsafe void SetDragDropPayload<T>(string type, T data, ImGuiCond cond = 0)
     where T : unmanaged
     {
-        var ptr = Unsafe.AsPointer(ref data);
-        ImGui.SetDragDropPayload(type, new IntPtr(ptr), (uint)Unsafe.SizeOf<T>(), cond);
+        var span = MemoryMarshal.AsBytes(MemoryMarshal.CreateReadOnlySpan(ref data, 1));
+        ImGui.SetDragDropPayload(type, span, cond);
     }
 
     public static unsafe bool AcceptDragDropPayload<T>(string type, out T payload, ImGuiDragDropFlags flags = ImGuiDragDropFlags.None)
@@ -29,14 +30,10 @@ public static class ImGuiDragDrop
 
     public static unsafe void SetDragDropPayload(string type, string data, ImGuiCond cond = 0)
     {
-        fixed(char* chars = data)
-        {
-            var byteCount = Encoding.Default.GetByteCount(data);
-            var bytes = stackalloc byte[byteCount];
-            Encoding.Default.GetBytes(chars, data.Length, bytes, byteCount);
-
-            ImGui.SetDragDropPayload(type, new IntPtr(bytes), (uint)byteCount, cond);
-        }
+        Span<byte> utf8Bytes = stackalloc byte[Encoding.UTF8.GetByteCount(data)];
+        Encoding.UTF8.GetBytes(data, utf8Bytes);
+        ReadOnlySpan<byte> span = utf8Bytes;
+        ImGui.SetDragDropPayload(type, span, cond);
     }
 
     public static unsafe bool AcceptDragDropPayload(string type, out string payload, ImGuiDragDropFlags flags = ImGuiDragDropFlags.None)
