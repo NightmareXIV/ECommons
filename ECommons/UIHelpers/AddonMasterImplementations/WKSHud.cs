@@ -12,12 +12,12 @@ public partial class AddonMaster
         public WKSHud(nint addon) : base(addon) { }
         public WKSHud(void* addon) : base(addon) { }
 
-        public AtkComponentButton* StellerMissionsButton => Addon->GetComponentButtonById(6);
-        public AtkComponentButton* MechOpsButton => Addon->GetComponentButtonById(7);
-        public AtkComponentButton* StellerSuccessButton => Addon->GetComponentButtonById(8);
-        public AtkComponentButton* InfrastructorIndexButton => Addon->GetComponentButtonById(9);
-        public AtkComponentButton* CosmicResearchButton => Addon->GetComponentButtonById(10);
-        public AtkComponentButton* CosmicClassTrackerButton => Addon->GetComponentButtonById(11);
+        public AtkComponentButton* StellerMissionsButton => Addon->GetComponentButtonById(7);
+        public AtkComponentButton* MechOpsButton => Addon->GetComponentButtonById(8);
+        public AtkComponentButton* StellerSuccessButton => Addon->GetComponentButtonById(9);
+        public AtkComponentButton* InfrastructorIndexButton => Addon->GetComponentButtonById(10);
+        public AtkComponentButton* CosmicResearchButton => Addon->GetComponentButtonById(11);
+        public AtkComponentButton* CosmicClassTrackerButton => Addon->GetComponentButtonById(12);
 
         public int CosmoCredit => Addon->AtkValues[2].Int;
         public int LunarCredit => Addon->AtkValues[6].Int;
