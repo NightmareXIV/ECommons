@@ -40,4 +40,8 @@ public static unsafe partial class NativeFunctions
 
     [LibraryImport("user32.dll", EntryPoint = "SetCursorPos", SetLastError = true)]
     public static partial BOOL SetCursorPos(int X, int Y);
+    [LibraryImport("user32.dll", EntryPoint = "SetWindowTextW", StringMarshalling = StringMarshalling.Utf16)]
+    public static partial BOOL SetWindowText(HWND hWnd, string lpString);
+    [LibraryImport("user32.dll", EntryPoint = "SendInput")]
+    public static unsafe partial uint SendInput(uint nInputs, INPUT* pInputs, int cbSize);
 }

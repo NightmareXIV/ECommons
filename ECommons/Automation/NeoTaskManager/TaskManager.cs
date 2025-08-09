@@ -2,6 +2,7 @@
 using ECommons.Logging;
 using System;
 using System.Collections.Generic;
+using TerraFX.Interop.Windows;
 
 namespace ECommons.Automation.NeoTaskManager;
 /// <summary>
@@ -252,6 +253,14 @@ public partial class TaskManager : IDisposable
                         CurrentTask = null;
                     }
                 }
+            }
+            try
+            {
+                if(CurrentTask.Configuration == null || ExecuteDefaultConfigurationEvents)
+                {
+                    DefaultConfiguration.FireCompanionAction(CurrentTask);
+                }
+                CurrentTask.Configuration?.FireCompanionAction(CurrentTask);
             }
             return;
         }
