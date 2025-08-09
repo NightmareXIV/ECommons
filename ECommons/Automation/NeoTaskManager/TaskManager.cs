@@ -140,6 +140,8 @@ public partial class TaskManager : IDisposable
             var ShowError = CurrentTask.Configuration?.ShowError ?? DefaultConfiguration.ShowError!.Value;
             var ExecuteDefaultConfigurationEvents = CurrentTask.Configuration?.ExecuteDefaultConfigurationEvents ?? DefaultConfiguration.ExecuteDefaultConfigurationEvents!.Value;
 
+            var currentTaskReference = CurrentTask;
+
             if(NumQueuedTasks > MaxTasks) MaxTasks = NumQueuedTasks;
             try
             {
@@ -253,13 +255,13 @@ public partial class TaskManager : IDisposable
                     }
                 }
             }
-            try
+            if(currentTaskReference != null)
             {
-                if(CurrentTask.Configuration == null || ExecuteDefaultConfigurationEvents)
+                if(currentTaskReference.Configuration == null || ExecuteDefaultConfigurationEvents)
                 {
-                    DefaultConfiguration.FireCompanionAction(CurrentTask);
+                    DefaultConfiguration.FireCompanionAction(currentTaskReference);
                 }
-                CurrentTask.Configuration?.FireCompanionAction(CurrentTask);
+                currentTaskReference.Configuration?.FireCompanionAction(currentTaskReference);
             }
             catch
             {
