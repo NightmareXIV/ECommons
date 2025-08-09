@@ -26,6 +26,11 @@ public class ThreadLoadImageHandler
     internal static HttpClient httpClient = null;
 
     /// <summary>
+    /// Override error action if you wish. Will be executed on non-game main thread.
+    /// </summary>
+    public static Action<Exception?, string?>? ErrorAction = null;
+
+    /// <summary>
     /// Clears and disposes all cached resources. You can use it to free up memory once you think textures that you have previously loaded won't be needed for a while or to trigger a complete reload.
     /// </summary>
     public static void ClearAll()
@@ -130,8 +135,16 @@ public class ThreadLoadImageHandler
                                             exceptions.Add(ex);
                                         }
                                     }
-                                    PluginLog.Error($"While loading {keyValuePair.Key} an exception occurred:");
-                                    exceptions.Each(x => x.Log());
+                                    if(ErrorAction != null)
+                                    {
+                                        ErrorAction(null, $"While loading {keyValuePair.Key} an exception occurred:");
+                                        exceptions.Each(x => ErrorAction(x, null));
+                                    }
+                                    else
+                                    {
+                                        PluginLog.Error($"While loading {keyValuePair.Key} an exception occurred:");
+                                        exceptions.Each(x => x.Log());
+                                    }
                                 Success:
                                     keyValuePair.Value.TextureWrap = texture;
                                 }
