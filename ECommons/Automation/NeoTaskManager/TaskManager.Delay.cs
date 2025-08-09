@@ -8,15 +8,16 @@ public partial class TaskManager
     /// </summary>
     /// <param name="ms">Amount of delay</param>
     /// <param name="isFrame">If true, delay is measured in seconds and not </param>
-    public void EnqueueDelay(int ms, bool isFrame = false)
+    /// <param name="configuration"></param>
+    public void EnqueueDelay(int ms, bool isFrame = false, TaskManagerConfiguration configuration = null)
     {
         if(isFrame)
         {
-            EnqueueTask(new FrameDelayTask(ms));
+            EnqueueTask(new FrameDelayTask(ms, configuration));
         }
         else
         {
-            EnqueueTask(new DelayTask(ms));
+            EnqueueTask(new DelayTask(ms, configuration));
         }
     }
 
@@ -25,15 +26,15 @@ public partial class TaskManager
     /// </summary>
     /// <param name="ms">Amount of delay</param>
     /// <param name="isFrame">If true, delay is measured in seconds and not </param>
-    public void InsertDelay(int ms, bool isFrame = false)
+    public void InsertDelay(int ms, bool isFrame = false, TaskManagerConfiguration configuration = null)
     {
         if(isFrame)
         {
-            InsertTask(new FrameDelayTask(ms));
+            InsertTask(new FrameDelayTask(ms, configuration));
         }
         else
         {
-            InsertTask(new DelayTask(ms));
+            InsertTask(new DelayTask(ms, configuration));
         }
     }
 }
