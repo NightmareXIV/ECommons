@@ -82,6 +82,12 @@ public class TaskManagerConfiguration
     /// </summary>
     public event OnTaskCompletionDelegate? OnTaskCompletion;
 
+    public delegate void CompanionActionDelegate(TaskManagerTask task);
+    /// <summary>
+    /// Action that will execute every framework update executing main function.
+    /// </summary>
+    public event CompanionActionDelegate? CompanionAction;
+
     internal void FireOnTaskException(TaskManagerTask task, Exception ex, ref bool @continue, ref bool? abort)
     {
         try
@@ -121,6 +127,19 @@ public class TaskManagerConfiguration
         }
     }
 
+    internal void FireCompanionAction(TaskManagerTask task)
+    {
+        try
+        {
+            CompanionAction?.Invoke(task);
+        }
+        catch(Exception e)
+        {
+            PluginLog.Error($"During processing {nameof(CompanionAction)} event, an exception was raised:");
+            e.Log();
+        }
+    }
+
     internal void AssertNotNull()
     {
         if(TimeLimitMS == null) throw new NullReferenceException();
@@ -153,6 +172,7 @@ public class TaskManagerConfiguration
             OnTaskCompletion = copyEvents ? (other?.OnTaskCompletion) : OnTaskCompletion,
             OnTaskTimeout = copyEvents ? (other?.OnTaskTimeout) : OnTaskTimeout,
             OnTaskException = copyEvents ? (other?.OnTaskException) : OnTaskException,
+            CompanionAction = copyEvents ? (other?.CompanionAction) : CompanionAction,
         };
     }
 }
