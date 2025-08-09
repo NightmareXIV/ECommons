@@ -263,10 +263,6 @@ public partial class TaskManager : IDisposable
                 }
                 currentTaskReference.Configuration?.FireCompanionAction(currentTaskReference);
             }
-            catch
-            {
-
-            }
             return;
         }
         if(MaxTasks != 0 && CurrentTask == null) MaxTasks = 0;
