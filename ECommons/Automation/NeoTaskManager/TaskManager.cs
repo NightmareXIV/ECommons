@@ -2,7 +2,6 @@
 using ECommons.Logging;
 using System;
 using System.Collections.Generic;
-using TerraFX.Interop.Windows;
 
 namespace ECommons.Automation.NeoTaskManager;
 /// <summary>
@@ -30,7 +29,7 @@ public partial class TaskManager : IDisposable
     public int MaxTasks { get; private set; } = 0;
     public int NumQueuedTasks => Tasks.Count + (CurrentTask == null ? 0 : 1);
 
-    public float Progress => MaxTasks == 0 ? 0 : (float)(MaxTasks - NumQueuedTasks) / (float)MaxTasks;
+    public float Progress => MaxTasks == 0 ? 0 : (MaxTasks - NumQueuedTasks) / (float)MaxTasks;
 
     /// <summary>
     /// Indicates whether TaskManager is currently executing tasks
@@ -261,6 +260,10 @@ public partial class TaskManager : IDisposable
                     DefaultConfiguration.FireCompanionAction(CurrentTask);
                 }
                 CurrentTask.Configuration?.FireCompanionAction(CurrentTask);
+            }
+            catch
+            {
+
             }
             return;
         }
