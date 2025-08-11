@@ -7,7 +7,7 @@ using VirtualKey = Dalamud.Game.ClientState.Keys.VirtualKey;
 
 namespace ECommons.Automation;
 
-public static partial class WindowsKeypress
+public static unsafe partial class WindowsKeypress
 {
     public static bool SendKeypress(LimitedKeys key) => SendKeypress((int)key);
     public static bool SendMousepress(LimitedKeys key) => SendKeypress((int)key);
@@ -19,8 +19,8 @@ public static partial class WindowsKeypress
             InternalLog.Verbose($"Sending key {key}");
             var wParam = new WPARAM((uint)key);
             var lParam = new LPARAM(0);
-            NativeFunctions.SendMessage(h, WM.WM_KEYDOWN, wParam, lParam);
-            NativeFunctions.SendMessage(h, WM.WM_KEYUP, wParam, lParam);
+            TerraFX.Interop.Windows.Windows.SendMessage(h, WM.WM_KEYDOWN, wParam, lParam);
+            TerraFX.Interop.Windows.Windows.SendMessage(h, WM.WM_KEYUP, wParam, lParam);
             return true;
         }
         else
@@ -35,23 +35,23 @@ public static partial class WindowsKeypress
         {
             if(key == (1 | 4)) //xbutton1
             {
-                var rawWParam = NativeFunctions.MAKEWPARAM(0, 0x0001);
+                var rawWParam = TerraFX.Interop.Windows.Windows.MAKEWPARAM(0, 0x0001);
                 var hwnd = h;
                 var wp = new WPARAM(rawWParam);
                 var lp = new LPARAM(0);
 
-                NativeFunctions.SendMessage(hwnd, WM.WM_XBUTTONDOWN, wp, lp);
-                NativeFunctions.SendMessage(hwnd, WM.WM_XBUTTONUP, wp, lp);
+                TerraFX.Interop.Windows.Windows.SendMessage(hwnd, WM.WM_XBUTTONDOWN, wp, lp);
+                TerraFX.Interop.Windows.Windows.SendMessage(hwnd, WM.WM_XBUTTONUP, wp, lp);
             }
             else if(key == (2 | 4)) //xbutton2
             {
-                var rawWParam = NativeFunctions.MAKEWPARAM(0, 0x0002);
+                var rawWParam = TerraFX.Interop.Windows.Windows.MAKEWPARAM(0, 0x0002);
                 var hwnd = h;
                 var wp = new WPARAM(rawWParam);
                 var lp = new LPARAM(0);
 
-                NativeFunctions.SendMessage(hwnd, WM.WM_XBUTTONDOWN, wp, lp);
-                NativeFunctions.SendMessage(hwnd, WM.WM_XBUTTONUP, wp, lp);
+                TerraFX.Interop.Windows.Windows.SendMessage(hwnd, WM.WM_XBUTTONDOWN, wp, lp);
+                TerraFX.Interop.Windows.Windows.SendMessage(hwnd, WM.WM_XBUTTONUP, wp, lp);
             }
             else
             {
@@ -72,14 +72,14 @@ public static partial class WindowsKeypress
         {
             if(modifiers is { })
                 foreach(var mod in modifiers)
-                    NativeFunctions.SendMessage(hwnd, WM.WM_KEYDOWN, (WPARAM)mod, IntPtr.Zero);
+                    TerraFX.Interop.Windows.Windows.SendMessage(hwnd, WM.WM_KEYDOWN, (WPARAM)mod, IntPtr.Zero);
 
-            NativeFunctions.SendMessage(hwnd, WM.WM_KEYDOWN, (WPARAM)key, IntPtr.Zero);
-            NativeFunctions.SendMessage(hwnd, WM.WM_KEYUP, (WPARAM)key, IntPtr.Zero);
+            TerraFX.Interop.Windows.Windows.SendMessage(hwnd, WM.WM_KEYDOWN, (WPARAM)key, IntPtr.Zero);
+            TerraFX.Interop.Windows.Windows.SendMessage(hwnd, WM.WM_KEYUP, (WPARAM)key, IntPtr.Zero);
 
             if(modifiers is { })
                 foreach(var mod in modifiers)
-                    NativeFunctions.SendMessage(hwnd, WM.WM_KEYUP, (WPARAM)mod, IntPtr.Zero);
+                    TerraFX.Interop.Windows.Windows.SendMessage(hwnd, WM.WM_KEYUP, (WPARAM)mod, IntPtr.Zero);
             return true;
         }
         PluginLog.Error("Couldn't find game window!");
@@ -94,9 +94,9 @@ public static partial class WindowsKeypress
         {
             if(modifiers is { })
                 foreach(var mod in modifiers)
-                    NativeFunctions.SendMessage(hwnd, WM.WM_KEYDOWN, (WPARAM)mod, IntPtr.Zero);
+                    TerraFX.Interop.Windows.Windows.SendMessage(hwnd, WM.WM_KEYDOWN, (WPARAM)mod, IntPtr.Zero);
 
-            NativeFunctions.SendMessage(hwnd, WM.WM_KEYDOWN, (WPARAM)key, IntPtr.Zero);
+            TerraFX.Interop.Windows.Windows.SendMessage(hwnd, WM.WM_KEYDOWN, (WPARAM)key, IntPtr.Zero);
             return true;
         }
         PluginLog.Error("Couldn't find game window!");
@@ -111,9 +111,9 @@ public static partial class WindowsKeypress
         {
             if(modifiers is { })
                 foreach(var mod in modifiers)
-                    NativeFunctions.SendMessage(hwnd, WM.WM_KEYUP, (WPARAM)mod, IntPtr.Zero);
+                    TerraFX.Interop.Windows.Windows.SendMessage(hwnd, WM.WM_KEYUP, (WPARAM)mod, IntPtr.Zero);
 
-            NativeFunctions.SendMessage(hwnd, WM.WM_KEYUP, (WPARAM)key, IntPtr.Zero);
+            TerraFX.Interop.Windows.Windows.SendMessage(hwnd, WM.WM_KEYUP, (WPARAM)key, IntPtr.Zero);
             return true;
         }
         PluginLog.Error("Couldn't find game window!");
