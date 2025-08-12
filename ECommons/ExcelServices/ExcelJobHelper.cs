@@ -91,6 +91,13 @@ public static class ExcelJobHelper
         return Svc.Data.GetExcelSheet<ClassJob>().GetRowOrDefault(id);
     }
 
+    public static bool TryGetJobById(uint id, out ClassJob result)
+    {
+        var r = GetJobById(id);
+        result = r ?? default;
+        return r != null;
+    }
+
     public static string GetJobNameById(uint id)
     {
         return GetJobById(id)?.Name.ToString();
