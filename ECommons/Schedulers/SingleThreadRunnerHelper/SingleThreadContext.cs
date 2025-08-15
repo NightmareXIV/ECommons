@@ -1,4 +1,6 @@
 ﻿namespace ECommons.Schedulers.SingleThreadRunnerHelper;
+
+using ECommons.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
