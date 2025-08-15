@@ -86,6 +86,22 @@ public static class ExcelJobHelper
         return r != null;
     }
 
+    public static ClassJob? GetJobByAbbreviation(string name)
+    {
+        if(Svc.Data.GetExcelSheet<ClassJob>().TryGetFirst(x => x.Abbreviation.ToString().EqualsIgnoreCase(name), out var result))
+        {
+            return result;
+        }
+        return null;
+    }
+
+    public static bool TryGetJobByAbbreviation(string name, out ClassJob result)
+    {
+        var r = GetJobByAbbreviation(name);
+        result = r ?? default;
+        return r != null;
+    }
+
     public static ClassJob? GetJobById(uint id)
     {
         return Svc.Data.GetExcelSheet<ClassJob>().GetRowOrDefault(id);
