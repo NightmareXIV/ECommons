@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ECommons.Automation.NeoTaskManager;
 /// <summary>
-/// NeoTaskManager provides various benefits over previous task manager: increased speed, no need for immediate tasks, easier task creation and scheduling. Work in progress! Breaking changes may occur.
+/// NeoTaskManager provides various benefits over previous task manager: increased speed, no need for immediate tasks, easier task creation and scheduling. 
 /// </summary>
 public partial class TaskManager : IDisposable
 {
