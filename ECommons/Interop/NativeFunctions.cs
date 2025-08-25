@@ -8,36 +8,42 @@ using System.Threading.Tasks;
 using TerraFX.Interop.Windows;
 
 namespace ECommons.Interop;
-public static unsafe partial class NativeFunctions
+public static unsafe  class NativeFunctions
 {
     public static ushort LOWORD(uint value) => (ushort)(value & 0xFFFF);
     public static ushort HIWORD(uint value) => (ushort)(value >> 16);
     public static uint MAKEWPARAM(ushort low, ushort high) => (uint)(low | (high << 16));
 
-    [LibraryImport("user32.dll", EntryPoint = "SendMessageW", SetLastError = true)]
-    public static partial LRESULT SendMessage(HWND hWnd, uint Msg, WPARAM wParam, LPARAM lParam);
+    [Obsolete("Use TerraFX.Interop.Windows.Windows.SendMessage instead", true)]
+    public static  LRESULT SendMessage(HWND hWnd, uint Msg, WPARAM wParam, LPARAM lParam) => default;
 
-    [LibraryImport("user32.dll", EntryPoint = "FindWindowExW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
-    public static partial HWND FindWindowEx(HWND hwndParent, HWND hwndChildAfter, string? lpszClass, string? lpszWindow);
+    [Obsolete("Use TerraFX.Interop.Windows.Windows.FindWindowEx instead", true)]
+    public static  HWND FindWindowEx(HWND hwndParent, HWND hwndChildAfter, string? lpszClass, string? lpszWindow) => default;
 
-    [LibraryImport("user32.dll", SetLastError = true)]
-    public static partial uint GetWindowThreadProcessId(HWND hWnd, out uint lpdwProcessId);
+    [Obsolete("Use TerraFX.Interop.Windows.Windows.GetWindowThreadProcessId instead", true)]
+    public static uint GetWindowThreadProcessId(HWND hWnd, out uint lpdwProcessId) { lpdwProcessId = 0; return default; }
 
-    [LibraryImport("user32.dll")]
-    public static partial HWND GetForegroundWindow();
+    [Obsolete("Use TerraFX.Interop.Windows.Windows.GetForegroundWindow instead", true)]
+    public static  nint GetForegroundWindow() => default;
 
-    [LibraryImport("user32.dll")]
-    public static partial short GetKeyState(int nVirtKey);
+    [Obsolete("Use TerraFX.Interop.Windows.Windows.GetKeyState instead", true)]
+    public static  short GetKeyState(int nVirtKey) => default;
 
-    [LibraryImport("user32.dll")]
-    public static partial short GetAsyncKeyState(int vKey);
+    [Obsolete("Use TerraFX.Interop.Windows.Windows.GetAsyncKeyState instead", true)]
+    public static  short GetAsyncKeyState(int vKey) => default;
 
-    [LibraryImport("user32.dll", EntryPoint = "ShowWindow")]
-    public static partial BOOL ShowWindow(HWND hWnd, int nCmdShow);
+    [Obsolete("Use TerraFX.Interop.Windows.Windows.ShowWindow instead", true)]
+    public static  BOOL ShowWindow(HWND hWnd, int nCmdShow) => default;
 
-    [LibraryImport("user32.dll", EntryPoint = "ClientToScreen", SetLastError = true)]
-    public static unsafe partial BOOL ClientToScreen(HWND hWnd, POINT* lpPoint);
+    [Obsolete("Use TerraFX.Interop.Windows.Windows.ClientToScreen instead", true)]
+    public static unsafe  BOOL ClientToScreen(HWND hWnd, POINT* lpPoint) => default;
 
-    [LibraryImport("user32.dll", EntryPoint = "SetCursorPos", SetLastError = true)]
-    public static partial BOOL SetCursorPos(int X, int Y);
+    [Obsolete("Use TerraFX.Interop.Windows.Windows.SetCursorPos instead", true)]
+    public static  BOOL SetCursorPos(int X, int Y) => default;
+
+    [Obsolete("Use TerraFX.Interop.Windows.Windows.SetWindowText instead", true)]
+    public static  BOOL SetWindowText(HWND hWnd, string lpString) => default;
+
+    [Obsolete("Use TerraFX.Interop.Windows.Windows.SendInput instead", true)]
+    public static unsafe  uint SendInput(uint nInputs, INPUT* pInputs, int cbSize) => default;
 }

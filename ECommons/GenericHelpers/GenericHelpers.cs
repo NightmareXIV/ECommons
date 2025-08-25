@@ -144,11 +144,11 @@ public static unsafe partial class GenericHelpers
         if(key == 0) return false;
         if(UseAsyncKeyCheck)
         {
-            return Bitmask.IsBitSet((uint)NativeFunctions.GetKeyState(key), 15);
+            return Bitmask.IsBitSet((uint)TerraFX.Interop.Windows.Windows.GetKeyState(key), 15);
         }
         else
         {
-            return Bitmask.IsBitSet((uint)NativeFunctions.GetAsyncKeyState(key), 15);
+            return Bitmask.IsBitSet((uint)TerraFX.Interop.Windows.Windows.GetAsyncKeyState(key), 15);
         }
     }
 

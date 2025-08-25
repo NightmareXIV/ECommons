@@ -13,13 +13,13 @@ namespace ECommons.Singletons;
 /// </summary>
 public static class SingletonServiceManager
 {
-    internal static List<(Type Type, bool ReducedLogging)> Types = [];
+    internal static List<Type> Types = [];
 
     internal static void DisposeAll()
     {
         foreach(var x in Types)
         {
-            foreach(var t in Enumerable.Reverse(x.Type.GetFieldPropertyUnions(ReflectionHelper.AllFlags)))
+            foreach(var t in Enumerable.Reverse(x.GetFieldPropertyUnions(ReflectionHelper.AllFlags)))
             {
                 var value = t.GetValue(null);
 
@@ -27,7 +27,7 @@ public static class SingletonServiceManager
                 {
                     try
                     {
-                        if(!x.ReducedLogging)
+                        if(!ECommonsMain.ReducedLogging)
                         {
                             PluginLog.Debug($"Disposing singleton instance of {t.UnionType.FullName}");
                         }
@@ -50,14 +50,14 @@ public static class SingletonServiceManager
         Types = null!;
     }
 
-    public static void Initialize(Type staticTypeMaster, bool reducedLogging = false)
+    public static void Initialize(Type staticTypeMaster)
     {
         Dictionary<Type, int> classPriorities = [];
         OrderedDictionary<IFieldPropertyUnion, int> fieldPriorities = [];
         var types = (Type[])[staticTypeMaster, .. staticTypeMaster.GetNestedTypes()];
         foreach(var staticType in types)
         {
-            Types.Add((staticType, reducedLogging));
+            Types.Add(staticType);
             classPriorities[staticType] = staticType.GetCustomAttribute<PriorityAttribute>()?.Priority ?? 0;
             foreach(var x in staticType.GetFieldPropertyUnions(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
             {
@@ -80,7 +80,7 @@ public static class SingletonServiceManager
                         {
                             args[i] = parameters[i].ParameterType.IsValueType ? Activator.CreateInstance(parameters[i].ParameterType) : null;
                         }
-                        if(!reducedLogging)
+                        if(!ECommonsMain.ReducedLogging)
                         {
                             PluginLog.Debug($"Creating singleton instance of {x.UnionType.FullName}");
                         }

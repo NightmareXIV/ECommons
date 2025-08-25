@@ -38,7 +38,12 @@ public static class ECommonsMain
 {
     public static IDalamudPlugin Instance = null;
     public static bool Disposed { get; private set; } = false;
-    //test
+
+    /// <summary>
+    /// Set this to true to significantly reduce amount of logging ECommons will do. You can change it any time. 
+    /// </summary>
+    public static bool ReducedLogging = false;
+
     public static void Init(IDalamudPluginInterface pluginInterface, IDalamudPlugin instance, params Module[] modules)
     {
         Instance = instance;
@@ -50,27 +55,27 @@ var type = "debug build";
 #else
 var type = "unknown build";
 #endif
-        PluginLog.Information($"This is ECommons v{typeof(ECommonsMain).Assembly.GetName().Version} ({type}) and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}. Hello!");
+        if(!ReducedLogging) PluginLog.Information($"This is ECommons v{typeof(ECommonsMain).Assembly.GetName().Version} ({type}) and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}. Hello!");
         Svc.Log.MinimumLogLevel = LogEventLevel.Verbose;
         GenericHelpers.Safe(CmdManager.Init);
         if(modules.ContainsAny(Module.All, Module.ObjectFunctions))
         {
-            PluginLog.Information("Object functions module has been requested");
+            if(!ReducedLogging) PluginLog.Information("Object functions module has been requested");
             GenericHelpers.Safe(ObjectFunctions.Init);
         }
         if(modules.ContainsAny(Module.All, Module.DalamudReflector, Module.SplatoonAPI))
         {
-            PluginLog.Information("Advanced Dalamud reflection module has been requested");
+            if(!ReducedLogging) PluginLog.Information("Advanced Dalamud reflection module has been requested");
             GenericHelpers.Safe(() => DalamudReflector.Init());
         }
         if(modules.ContainsAny(Module.All, Module.ObjectLife))
         {
-            PluginLog.Information("Object life module has been requested");
+            if(!ReducedLogging) PluginLog.Information("Object life module has been requested");
             GenericHelpers.Safe(ObjectLife.Init);
         }
         if(modules.ContainsAny(Module.All, Module.SplatoonAPI))
         {
-            PluginLog.Information("Splatoon API module has been requested");
+            if(!ReducedLogging) PluginLog.Information("Splatoon API module has been requested");
             GenericHelpers.Safe(Splatoon.Init);
         }
     }
