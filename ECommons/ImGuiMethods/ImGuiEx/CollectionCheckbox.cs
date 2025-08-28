@@ -1,4 +1,5 @@
 ﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -130,7 +131,16 @@ public static unsafe partial class ImGuiEx
         return false;
     }
 
+    public static bool CollectionButtonCheckbox<T>(FontAwesomeIcon icon, T value, ICollection<T> collection, bool smallButton = false, bool inverted = false)
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        var ret = CollectionButtonCheckbox(icon.ToIconString(), value, collection, EColor.Red, smallButton, inverted);
+        ImGui.PopFont();
+        return ret;
+    }
+
     public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, bool smallButton = false, bool inverted = false) => CollectionButtonCheckbox(name, value, collection, EColor.Red, smallButton, inverted);
+
     public static bool CollectionButtonCheckbox<T>(string name, T value, ICollection<T> collection, Vector4 color, bool smallButton = false, bool inverted = false)
     {
         var col = collection.Contains(value);
