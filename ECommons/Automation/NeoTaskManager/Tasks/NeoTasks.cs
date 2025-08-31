@@ -94,11 +94,11 @@ public static unsafe class NeoTasks
 
     public static TaskManagerTask WaitForScreenAndPlayer(TaskManagerConfiguration? configuration = null)
     {
-        return new(() => Player.Interactable && GenericHelpers.IsScreenReady(), "Wait for screen fadeout complete", configuration);
+        return new(() => Player.Interactable && !Player.IsAnimationLocked && GenericHelpers.IsScreenReady(), "Wait for screen fadeout complete", configuration);
     }
 
     public static TaskManagerTask WaitForNotOccupied(TaskManagerConfiguration? configuration = null)
     {
-        return new(() => !GenericHelpers.IsOccupied() && Player.Interactable && GenericHelpers.IsScreenReady(), "Wait for screen fadeout complete", configuration);
+        return new(() => !GenericHelpers.IsOccupied() && Player.Interactable && !Player.IsAnimationLocked && GenericHelpers.IsScreenReady(), "Wait for screen fadeout complete", configuration);
     }
 }
