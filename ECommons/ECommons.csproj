@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Authors>NightmareXIV</Authors>
-        <BaseVersion>3.0.1.9</BaseVersion>
+        <BaseVersion>3.0.1.10</BaseVersion>
         <PackageKind></PackageKind>
         <VersionSuffix Condition="'$(PackageKind)' != ''">-$(PackageKind)</VersionSuffix>
         <Version>$(BaseVersion)$(VersionSuffix)</Version>
@@ -24,10 +24,6 @@
         <IsTrimmable>false</IsTrimmable>
         <Nullable>enable</Nullable>
         <WarningsAsErrors>RS0030</WarningsAsErrors>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="$([System.String]::Copy('$(LangVersion)').StartsWith('14.'))">
-        <DefineConstants>CSHARP_14;$(DefineConstants)</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Label="Documentation">
