@@ -2,6 +2,7 @@
 using ECommons.DalamudServices;
 using ECommons.EzHookManager;
 using ECommons.Logging;
+using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
 using System;
 
 namespace ECommons.Hooks;
@@ -10,7 +11,7 @@ namespace ECommons.Hooks;
 public static unsafe class MapEffect
 {
     public const string Sig = "48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 8B FA 41 0F B7 E8";
-    public const string ExSig = "E8 ?? ?? ?? ?? B0 01 48 8B 5C 24 ?? 48 8B 74 24 ?? 48 83 C4 50 5F C3 48 8B CB E8 ?? ?? ?? ?? B0 01 48 8B 5C 24 ?? 48 8B 74 24 ?? 48 83 C4 50 5F C3 0F B6 43 1E";
+    public const string ExsMultisig = "40 55 41 57 48 83 EC ?? 48 83 B9";
 
     public delegate long ProcessMapEffect(long a1, uint a2, ushort a3, ushort a4);
     internal static Hook<ProcessMapEffect> ProcessMapEffectHook = null;
@@ -19,33 +20,40 @@ public static unsafe class MapEffect
 
     private static class Ex
     {
-        private delegate void ProcessMapEffectEx(byte* packetPtr);
-        [EzHook(ExSig)]
+        private delegate void ProcessMapEffectEx(ContentDirector* director, byte* packetPtr);
         private static EzHook<ProcessMapEffectEx> ProcessMapEffectEx0Hook = null;
-        [EzHook(ExSig, 0x40)]
         private static EzHook<ProcessMapEffectEx> ProcessMapEffectEx1Hook = null;
-        [EzHook(ExSig, 0x80)]
         private static EzHook<ProcessMapEffectEx> ProcessMapEffectEx2Hook = null;
 
         internal static void Initialize()
         {
-            EzSignatureHelper.Initialize(typeof(Ex));
+            var result = Svc.SigScanner.ScanAllText(ExsMultisig);
+            if(result.Length != 3)
+            {
+                PluginLog.Warning($"Failed to initialize ProcessMapEffectEx. Expected 3 results, found {result.Length}.");
+            }
+            else
+            {
+                ProcessMapEffectEx0Hook = new(result[0], ProcessMapEffectEx0Detour);
+                ProcessMapEffectEx1Hook = new(result[1], ProcessMapEffectEx1Detour);
+                ProcessMapEffectEx2Hook = new(result[2], ProcessMapEffectEx2Detour);
+            }
         }
 
-        private static void ProcessMapEffectEx0Detour(byte* packetPtr)
+        private static void ProcessMapEffectEx0Detour(ContentDirector* director, byte* packetPtr)
         {
             ProcessMapEffectExCommon(packetPtr, 10, 18);
-            ProcessMapEffectEx0Hook.Original(packetPtr);
+            ProcessMapEffectEx0Hook.Original(director, packetPtr);
         }
-        private static void ProcessMapEffectEx1Detour(byte* packetPtr)
+        private static void ProcessMapEffectEx1Detour(ContentDirector* director, byte* packetPtr)
         {
             ProcessMapEffectExCommon(packetPtr, 18, 34);
-            ProcessMapEffectEx1Hook.Original(packetPtr);
+            ProcessMapEffectEx1Hook.Original(director, packetPtr);
         }
-        private static void ProcessMapEffectEx2Detour(byte* packetPtr)
+        private static void ProcessMapEffectEx2Detour(ContentDirector* director, byte* packetPtr)
         {
             ProcessMapEffectExCommon(packetPtr, 26, 50);
-            ProcessMapEffectEx2Hook.Original(packetPtr);
+            ProcessMapEffectEx2Hook.Original(director, packetPtr);
         }
 
         /// <summary>
