@@ -109,7 +109,37 @@ public static partial class ImGuiEx
         if(!enabled) ImGui.BeginDisabled();
         ImGui.SameLine();
         ImGui.SetNextItemWidth(width);
-        var ret = ImGui.InputInt(label, ref value, step, step_fast, flags:flags);
+        var ret = ImGui.InputInt(label, ref value, step, step_fast, flags: flags);
+        if(ret) valueNullable = value;
+        if(!enabled) ImGui.EndDisabled();
+        return ret || chk;
+    }
+
+    /// <summary>
+    /// An <see cref="ImGui.InputFloat(ImU8String, ref float, float, float, ImU8String, ImGuiInputTextFlags)"/> for nullable int. Consists of checkbox and input component that is enabled/disabled based on checkbox state.
+    /// </summary>
+    /// <param name="width"></param>
+    /// <param name="label"></param>
+    /// <param name="valueNullable"></param>
+    /// <param name="step"></param>
+    /// <param name="step_fast"></param>
+    /// <param name="flags"></param>
+    /// <returns></returns>
+    public static bool InputFloat(float width, string label, ref float? valueNullable, int step = 1, int step_fast = 100, ImGuiInputTextFlags flags = ImGuiInputTextFlags.None)
+    {
+        ImGui.PushID($"NullableInputFloat{label}");
+        var enabled = valueNullable != null;
+        var chk = ImGui.Checkbox($"##checkbox", ref enabled);
+        if(chk)
+        {
+            valueNullable = enabled ? 0 : null;
+        }
+        ImGui.PopID();
+        var value = valueNullable ?? 0;
+        if(!enabled) ImGui.BeginDisabled();
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(width);
+        var ret = ImGui.InputFloat(label, ref value, step, step_fast, flags: flags);
         if(ret) valueNullable = value;
         if(!enabled) ImGui.EndDisabled();
         return ret || chk;
