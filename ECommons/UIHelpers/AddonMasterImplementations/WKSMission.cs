@@ -86,6 +86,10 @@ public partial class AddonMaster
             {
                 Callback.Fire(master.Base, true, 12, (int)MissionId, index);
             }
+            public void Initiate()
+            {
+                Callback.Fire(master.Base, true, 13, (int)MissionId, index);
+            }
         }
 
         public override string AddonDescription => "Steller Missions Ui";
