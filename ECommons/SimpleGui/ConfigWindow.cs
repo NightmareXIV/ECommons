@@ -3,19 +3,29 @@ using ECommons.Configuration;
 using ECommons.DalamudServices;
 using ECommons.Logging;
 using ECommons.Reflection;
+using System.Xml.Linq;
 
 namespace ECommons.SimpleGui;
 #nullable disable
 
 public class ConfigWindow : Window
 {
-    public ConfigWindow(string? name = null) : base($"{name ?? $"{DalamudReflector.GetPluginName()} v{ECommonsMain.Instance.GetType().Assembly.GetName().Version}"}###{DalamudReflector.GetPluginName()}")
+    public string? ConfigWindowName;
+    public ConfigWindow(string? name = null) : base($"{name ?? DefaultPluginName}###{DalamudReflector.GetPluginName()}")
     {
+        ConfigWindowName = name;
         SizeConstraints = new()
         {
             MinimumSize = new(200, 200),
             MaximumSize = new(float.MaxValue, float.MaxValue)
         };
+    }
+
+    public static string DefaultPluginName => $"{DalamudReflector.GetPluginName()} v{ECommonsMain.Instance.GetType().Assembly.GetName().Version}";
+
+    public void SetSuffix(string suffix)
+    {
+        this.WindowName = $"{ConfigWindowName ?? DefaultPluginName}{(suffix == null?"":$" {suffix}")}###{DalamudReflector.GetPluginName()}";
     }
 
     public override void Draw()
