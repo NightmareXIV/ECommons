@@ -620,7 +620,7 @@ public static unsafe partial class ImGuiEx
     }
 
     ///<inheritdoc cref="InfoMarker(string, Vector4?, string, bool)"/>
-    public static void HelpMarker(string helpText, Vector4? color = null, string symbolOverride = null, bool sameLine = true) => InfoMarker(helpText, color, symbolOverride, sameLine);
+    public static void HelpMarker(string helpText, Vector4? color = null, string symbolOverride = null, bool sameLine = true, bool preserveCursor = false) => InfoMarker(helpText, color, symbolOverride, sameLine, preserveCursor);
 
     /// <summary>
     /// <see cref="ImGuiComponents.HelpMarker(string)"/> but with more options
@@ -629,12 +629,22 @@ public static unsafe partial class ImGuiEx
     /// <param name="color"></param>
     /// <param name="symbolOverride"></param>
     /// <param name="sameLine">Whether to call SameLine before drawing marker</param>
-    public static void InfoMarker(string helpText, Vector4? color = null, string symbolOverride = null, bool sameLine = true)
+    public static void InfoMarker(string helpText, Vector4? color = null, string symbolOverride = null, bool sameLine = true, bool preserveCursor = false)
     {
-        if(sameLine) ImGui.SameLine();
+        if(preserveCursor && sameLine) ImGui.SameLine(0, 0);
+        else if(sameLine) ImGui.SameLine();
+        var cursor = ImGui.GetCursorPos();
         ImGui.PushFont(UiBuilder.IconFont);
+        if(preserveCursor)
+        {
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() - ImGui.CalcTextSize(symbolOverride ?? FontAwesomeIcon.InfoCircle.ToIconString()).X);
+        }
         Text(color ?? ImGuiColors.DalamudGrey3, symbolOverride ?? FontAwesomeIcon.InfoCircle.ToIconString());
         ImGui.PopFont();
+        if(preserveCursor)
+        {
+            ImGui.SetCursorPos(cursor);
+        }
         if(ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();

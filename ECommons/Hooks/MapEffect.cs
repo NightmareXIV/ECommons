@@ -3,6 +3,7 @@ using ECommons.DalamudServices;
 using ECommons.EzHookManager;
 using ECommons.Logging;
 using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using System;
 
 namespace ECommons.Hooks;
