@@ -55,11 +55,11 @@ public static unsafe partial class ImGuiEx
         }
     }
 
-    public static bool FilteringInputTextWithHint(string label, string hint, out string result, int maxLength = 200)
+    public static bool FilteringInputTextWithHint(string label, string hint, out string result, int maxLength = 200, ImGuiInputTextFlags flags = ImGuiInputTextFlags.None)
     {
         var ret = false;
         ref var value = ref Ref<string>.Get($"{ImGui.GetID(label)}_filter");
-        if(ImGui.InputTextWithHint(label, hint, ref value, maxLength))
+        if(ImGui.InputTextWithHint(label, hint, ref value, maxLength, flags))
         {
             ret = true;
         }
