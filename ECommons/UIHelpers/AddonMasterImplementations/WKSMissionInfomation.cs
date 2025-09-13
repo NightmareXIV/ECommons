@@ -1,5 +1,6 @@
 ﻿using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using System.Globalization;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -28,9 +29,16 @@ public partial class AddonMaster
             get
             {
                 var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[2].String.Value).GetText();
-                rawValue = rawValue.Replace(",", ""); // remove thousand separators
-                if(uint.TryParse(rawValue, out var result))
+
+                // Number coversion test #1.
+                if(uint.TryParse(rawValue, NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
                     return result;
+
+                // Fallback: if the first test fails
+                var cleanedValue = System.Text.RegularExpressions.Regex.Replace(rawValue, @"[^\d]", "");
+                if(uint.TryParse(cleanedValue, out result))
+                    return result;
+
                 return 0; // fallback if parsing fails
             }
         }
@@ -40,9 +48,16 @@ public partial class AddonMaster
             get
             {
                 var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[3].String.Value).GetText();
-                rawValue = rawValue.Replace(",", ""); // remove thousand separators
-                if(uint.TryParse(rawValue, out var result))
+
+                // Number coversion test #1.
+                if(uint.TryParse(rawValue, NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
                     return result;
+
+                // Fallback: if the first test fails
+                var cleanedValue = System.Text.RegularExpressions.Regex.Replace(rawValue, @"[^\d]", "");
+                if(uint.TryParse(cleanedValue, out result))
+                    return result;
+
                 return 0; // fallback if parsing fails
             }
         }
@@ -52,9 +67,38 @@ public partial class AddonMaster
             get
             {
                 var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[4].String.Value).GetText();
-                rawValue = rawValue.Replace(",", ""); // remove thousand separators
-                if(uint.TryParse(rawValue, out var result))
+
+                // Number coversion test #1.
+                if(uint.TryParse(rawValue, NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
                     return result;
+
+                // Fallback: if the first test fails
+                var cleanedValue = System.Text.RegularExpressions.Regex.Replace(rawValue, @"[^\d]", "");
+                if(uint.TryParse(cleanedValue, out result))
+                    return result;
+
+                return 0; // fallback if parsing fails
+            }
+        }
+
+        public uint CriticalScore
+        {
+            get
+            {
+                var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[5].String.Value).GetText();
+
+                // Extract the left side of the slash
+                var leftSide = rawValue.Split('/')[0].Trim();
+
+                // Number conversion test #1.
+                if(uint.TryParse(leftSide, NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
+                    return result;
+
+                // Fallback: if the first test fails
+                var cleanedValue = System.Text.RegularExpressions.Regex.Replace(leftSide, @"[^\d]", "");
+                if(uint.TryParse(cleanedValue, out result))
+                    return result;
+
                 return 0; // fallback if parsing fails
             }
         }
