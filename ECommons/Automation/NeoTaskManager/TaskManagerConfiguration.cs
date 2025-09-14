@@ -7,6 +7,16 @@ namespace ECommons.Automation.NeoTaskManager;
 /// </summary>
 public class TaskManagerConfiguration
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="timeLimitMS">Default: 30000</param>
+    /// <param name="abortOnTimeout">Default: true</param>
+    /// <param name="abortOnError">Default: true</param>
+    /// <param name="timeoutSilently">Default: false</param>
+    /// <param name="showDebug">Default: false</param>
+    /// <param name="showError">Default: true</param>
+    /// <param name="executeDefaultConfigurationEvents">Default: true</param>
     public TaskManagerConfiguration(int? timeLimitMS = null, bool? abortOnTimeout = null, bool? abortOnError = null, bool? timeoutSilently = null, bool? showDebug = null, bool? showError = null, bool? executeDefaultConfigurationEvents = null)
     {
         TimeLimitMS = timeLimitMS;
