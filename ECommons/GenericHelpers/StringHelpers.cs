@@ -14,6 +14,22 @@ using System.Text;
 namespace ECommons;
 public static unsafe partial class GenericHelpers
 {
+    public static bool ContainsPartOf(this string haystack, SeString needle)
+    {
+        var text = haystack;
+        foreach(var x in needle.Payloads.OfType<TextPayload>().Where(p => p.Text != null && p.Text.Trim().Length > 0).OrderByDescending(p => p.Text.Length))
+        {
+            if(text.Contains(x.Text)) return true;
+        }
+        return false;
+    }
+
+    public static bool ContainsPartOf(this SeString haystack, SeString needle) => ContainsPartOf(haystack.GetText(), needle);
+
+    public static bool ContainsPartOf(this string haystack, ReadOnlySeString needle) => ContainsPartOf(haystack, needle.ToDalamudString());
+
+    public static bool ContainsPartOf(this SeString haystack, ReadOnlySeString needle) => ContainsPartOf(haystack, needle.ToDalamudString());
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string RemoveOtherChars(this string s, string charsToKeep)
         => new(s.ToArray().Where(charsToKeep.Contains).ToArray());

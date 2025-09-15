@@ -11,6 +11,7 @@ using ECommons.EzHookManager;
 using ECommons.EzIpcManager;
 using ECommons.EzSharedDataManager;
 using ECommons.GameFunctions;
+using ECommons.GameHelpers;
 using ECommons.Hooks;
 using ECommons.ImGuiMethods;
 using ECommons.LazyDataHelpers;
@@ -149,6 +150,7 @@ var type = "unknown build";
         GenericHelpers.Safe(Purgatory.Purge);
         GenericHelpers.Safe(ExternalWriter.Dispose);
         GenericHelpers.Safe(EzDtr.DisposeAll);
+        GenericHelpers.Safe(TradeDetectionManager.Dispose);
         //SingletonManager.Dispose();
         Instance = null;
     }
