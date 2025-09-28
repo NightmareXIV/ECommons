@@ -1,4 +1,5 @@
-﻿using ECommons.DalamudServices;
+﻿using Dalamud.Game;
+using ECommons.DalamudServices;
 using ECommons.ExcelServices.TerritoryEnumeration;
 using ECommons.Logging;
 using Lumina.Excel.Sheets;
@@ -75,13 +76,13 @@ public static class ExcelTerritoryHelper
     /// <param name="TerritoryType">Zone ID</param>
     /// <param name="includeID">Whether to include an ID into name</param>
     /// <returns>Content finder condition if exists; otherwise - zone name if exists; otherwise - zone ID as a string</returns>
-    public static string GetName(uint TerritoryType, bool includeID = false)
+    public static string GetName(uint TerritoryType, bool includeID = false, ClientLanguage? language = null)
     {
-        var data = Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(TerritoryType);
+        var data = Svc.Data.GetExcelSheet<TerritoryType>(language: language).GetRowOrDefault(TerritoryType);
         var id = includeID ? $"#{TerritoryType} | " : "";
         if(data == null) return $"#{TerritoryType}";
-        var tname = data?.PlaceName.ValueNullable?.Name.ToString();
-        var cfc = data?.ContentFinderCondition.ValueNullable?.Name.ToString();
+        var tname = data?.PlaceName.WithLanguage(language).ValueNullable?.Name.ToString();
+        var cfc = data?.ContentFinderCondition.WithLanguage(language).ValueNullable?.Name.ToString();
         if(cfc.IsNullOrEmpty())
         {
             if(tname.IsNullOrEmpty())
