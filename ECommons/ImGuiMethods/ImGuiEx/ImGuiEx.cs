@@ -92,14 +92,14 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
-    public static void DragDropRepopulate<T>(string identifier, T id, Action<T> callback) where T : unmanaged
+    public static void DragDropRepopulate<T>(string dragDropIdentifier, T data, Action<T> callback) where T : struct
     {
         ImGuiEx.Tooltip("Drag this selector to other selectors to set their values to the same");
         if(ImGui.BeginDragDropSource(ImGuiDragDropFlags.SourceNoPreviewTooltip))
         {
             try
             {
-                ImGuiDragDrop.SetDragDropPayload<T>(identifier, id);
+                ImGuiDragDrop.SetDragDropPayload<T>(dragDropIdentifier, data);
                 ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeAll);
             }
             catch(Exception e)
@@ -112,7 +112,7 @@ public static unsafe partial class ImGuiEx
         {
             try
             {
-                if(ImGuiDragDrop.AcceptDragDropPayload<T>(identifier, out var outId, ImGuiDragDropFlags.AcceptBeforeDelivery | ImGuiDragDropFlags.AcceptNoPreviewTooltip))
+                if(ImGuiDragDrop.AcceptDragDropPayload<T>(dragDropIdentifier, out var outId, ImGuiDragDropFlags.AcceptBeforeDelivery | ImGuiDragDropFlags.AcceptNoPreviewTooltip))
                 {
                     callback(outId);
                 }

@@ -14,14 +14,14 @@ public static class ImGuiDragDrop
     // can now pass refs with Unsafe.AsRef
 
     public static unsafe void SetDragDropPayload<T>(string type, T data, ImGuiCond cond = 0)
-    where T : unmanaged
+    where T : struct
     {
         var span = MemoryMarshal.AsBytes(MemoryMarshal.CreateReadOnlySpan(ref data, 1));
         ImGui.SetDragDropPayload(type, span, cond);
     }
 
     public static unsafe bool AcceptDragDropPayload<T>(string type, out T payload, ImGuiDragDropFlags flags = ImGuiDragDropFlags.None)
-    where T : unmanaged
+    where T : struct
     {
         ImGuiPayload* pload = ImGui.AcceptDragDropPayload(type, flags);
         payload = (pload != null) ? Unsafe.Read<T>(pload->Data) : default;
