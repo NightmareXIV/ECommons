@@ -230,11 +230,11 @@ public static partial class ImGuiEx
         return ret;
     }
 
-    public static bool ButtonCheckbox(string name, ref bool value, Vector4? color = null, bool inverted = false, Vector2? size = null)
+    public static bool ButtonCheckbox(string name, ref bool value, Vector4? color = null, bool inverted = false, Vector2? size = null, bool noColor = false)
     {
         var ret = false;
         color ??= EColor.Green;
-        var col = !inverted ? value : !value;
+        var col = !noColor && (!inverted ? value : !value);
         if(col)
         {
             ImGui.PushStyleColor(ImGuiCol.Button, color.Value);

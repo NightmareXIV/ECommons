@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices.Sheets;
+using Lumina.Data;
 using Lumina.Excel;
 using Lumina.Extensions;
 using System;
@@ -11,6 +12,18 @@ using System.Linq;
 namespace ECommons;
 public static unsafe partial class GenericHelpers
 {
+    public static RowRef<T> WithLanguage<T>(this RowRef<T> rowRef, ClientLanguage? language) where T : struct, IExcelRow<T>
+    {
+        return new RowRef<T>(Svc.Data.Excel, rowRef.RowId, language switch
+        {
+            ClientLanguage.Japanese => Lumina.Data.Language.Japanese,
+            ClientLanguage.German => Lumina.Data.Language.German,
+            ClientLanguage.French => Lumina.Data.Language.French,
+            ClientLanguage.English => Lumina.Data.Language.English,
+            _ => null
+        });
+    }
+
     public static ExcelSheet<T> GetSheet<T>(ClientLanguage? language = null) where T : struct, IExcelRow<T>
         => Svc.Data.GetExcelSheet<T>(language ?? Svc.ClientState.ClientLanguage)!;
 
