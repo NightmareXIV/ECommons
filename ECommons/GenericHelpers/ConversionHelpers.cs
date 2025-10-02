@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -72,6 +73,12 @@ public static unsafe partial class GenericHelpers
             }
         }
         return true;
+    }
+
+    public static byte[]? ParseByteArray(string input, char separator = ' ')
+    {
+        if(TryParseByteArray(input, out var ret, separator)) return ret;
+        return null;
     }
 
     /// <summary>

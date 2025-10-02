@@ -10,11 +10,12 @@ using System.Numerics;
 namespace ECommons.ImGuiMethods;
 public static partial class ImGuiEx
 {
-    public static bool InputFancyNumeric(string label, ref int number, int step)
+    public static bool InputFancyNumeric(string label, ref int number, int step, Action? afterInput = null)
     {
         var str = $"{number:N0}";
         var lbl = label.StartsWith("##") ? label : $"##{label}";
         var ret = ImGui.InputText(lbl, ref str, 50, ImGuiInputTextFlags.AutoSelectAll);
+        afterInput?.Invoke();
         var btn = false;
         if(step > 0)
         {
@@ -146,34 +147,13 @@ public static partial class ImGuiEx
     }
 
     /// <summary>
-    /// <see cref="ImGui.SliderInt"/> but with double-click to edit support.
+    /// Supports activation by double-click
     /// </summary>
-    /// <param name="label"></param>
-    /// <param name="v"></param>
-    /// <param name="v_min"></param>
-    /// <param name="v_max"></param>
-    /// <param name="format"></param>
-    /// <param name="flags"></param>
-    /// <returns></returns>
-    public static bool SliderInt(string label, ref int v, int v_min, int v_max, string format, ImGuiSliderFlags flags)
+    /// <inheritdoc cref="ImGui.SliderInt"/>
+    public static bool SliderInt(ImU8String label, scoped ref int v, int vMin = 0, int vMax = 0, ImU8String format = default,
+        ImGuiSliderFlags flags = ImGuiSliderFlags.None)
     {
-        var ret = ImGui.SliderInt(label, ref v, v_min, v_max, format, flags);
-        ActivateIfDoubleClicked();
-        return ret;
-    }
-
-    ///<inheritdoc cref="SliderInt(string, ref int, int, int, string, ImGuiSliderFlags)"/>
-    public static bool SliderInt(string label, ref int v, int v_min, int v_max, string format)
-    {
-        var ret = ImGui.SliderInt(label, ref v, v_min, v_max, format);
-        ActivateIfDoubleClicked();
-        return ret;
-    }
-
-    ///<inheritdoc cref="SliderInt(string, ref int, int, int, string, ImGuiSliderFlags)"/>
-    public static bool SliderInt(string label, ref int v, int v_min, int v_max)
-    {
-        var ret = ImGui.SliderInt(label, ref v, v_min, v_max);
+        var ret = ImGui.SliderInt(label, ref v, vMin, vMax, format, flags);
         ActivateIfDoubleClicked();
         return ret;
     }
