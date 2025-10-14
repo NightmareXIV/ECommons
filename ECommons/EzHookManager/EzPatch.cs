@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommons.EzHookManager;
-public sealed class EzPatch : IDisposable
+public class EzPatch : IDisposable
 {
     internal static List<EzPatch> References
     {
@@ -24,7 +24,7 @@ public sealed class EzPatch : IDisposable
         }
     }
     private bool Disposed = false;
-    private bool Enabled = false;
+    public bool Enabled { get; private set; } = false;
     private Data PatchData;
     private bool Silent = false;
     public nint Address { get; private set; }
@@ -48,11 +48,11 @@ public sealed class EzPatch : IDisposable
             Silent = silent;
             if(patchData.OriginalData.Count == 0)
             {
-                if(!silent) PluginLog.Debug($"Reading {patchData.PatchData.Count} bytes from {addr:X} and using it as original data for patsh {patchData.PatchData}");
+                if(!silent) PluginLog.Debug($"Reading {patchData.PatchData.Count} bytes from {addr:X} and using it as original data for patch {patchData.PatchData}");
                 if(SafeMemory.ReadBytes(addr, patchData.PatchData.Count, out var result))
                 {
                     if(!silent) PluginLog.Debug($"Successfully read {result.ToHexString()}");
-                    patchData = new(result, patchData.OriginalData);
+                    patchData = new(result, patchData.PatchData);
                 }
             }
             if(patchData.OriginalData.Count > 0)
@@ -130,7 +130,7 @@ public sealed class EzPatch : IDisposable
         }
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         if(!Silent) PluginLog.Debug($"Disposing patch at {Address:X}");
         Disable();
