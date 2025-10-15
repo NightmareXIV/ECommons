@@ -23,10 +23,10 @@ public class EzPatch : IDisposable
             return field;
         }
     }
-    private bool Disposed = false;
+    public bool Disposed { get; private set; } = false;
     public bool Enabled { get; private set; } = false;
-    private Data PatchData;
-    private bool Silent = false;
+    public Data PatchData { get; private set; }
+    public bool Silent { get; set; }
     public nint Address { get; private set; }
     public EzPatch(nint addr, Data patchData, bool autoEnable = true, bool silent = false)
     {
