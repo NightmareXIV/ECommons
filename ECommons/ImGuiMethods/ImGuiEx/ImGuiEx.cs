@@ -80,7 +80,7 @@ public static unsafe partial class ImGuiEx
     public static bool FilteringInputTextWithHint(string label, string hint, out string result, int maxLength = 200, ImGuiInputTextFlags flags = ImGuiInputTextFlags.None)
     {
         var ret = false;
-        ref var value = ref Ref<string>.Get($"{ImGui.GetID(label)}_filter");
+        ref var value = ref GetFilteringInputTextString(label);
         if(ImGui.InputTextWithHint(label, hint, ref value, maxLength, flags))
         {
             ret = true;
@@ -88,6 +88,8 @@ public static unsafe partial class ImGuiEx
         result = value;
         return ret;
     }
+
+    public static ref string GetFilteringInputTextString(string label) => ref Ref<string>.Get($"{ImGui.GetID(label)}_filter");
 
     public static bool FilteringInputInt(string label, out int result, int step = 1, int step_fast = 100, ImGuiInputTextFlags flags = ImGuiInputTextFlags.None)
     {
