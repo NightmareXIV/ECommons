@@ -14,5 +14,6 @@ public enum ErrorCode
 {
     [Obfuscation] Success,
     [Obfuscation] Player_is_not_logged_in,
-    [Obfuscation] Invalid_world_specified
+    [Obfuscation] Invalid_world_specified,
+    [Obfuscation] Plugin_is_busy,
 }
