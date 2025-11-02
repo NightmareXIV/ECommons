@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml.Linq;
@@ -147,6 +148,81 @@ public static unsafe partial class ImGuiEx
             }
             ImGui.EndDragDropTarget();
         }
+    }
+
+    public static void DragDropRepopulateClass<T>(string dragDropIdentifier, T data, Action<T> callback) where T : class
+    {
+        var table = Ref<ConditionalWeakTable<T, Box<Guid>>>.Get("__ECommons.DragDropRepopulateClass.ConditionalWeakTable", () => new ConditionalWeakTable<T, Box<Guid>>());
+        table.TryAdd(data, new(Guid.NewGuid()));
+        if(table.TryGetValue(data, out var box))
+        {
+            ImGuiEx.Tooltip("Drag this selector to other selectors to set their values to the same");
+            if(ImGui.BeginDragDropSource(ImGuiDragDropFlags.SourceNoPreviewTooltip))
+            {
+                try
+                {
+                    ImGuiDragDrop.SetDragDropPayload<Guid>(dragDropIdentifier, box.Value);
+                    ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeAll);
+                }
+                catch(Exception e)
+                {
+                    e.Log();
+                }
+                ImGui.EndDragDropSource();
+            }
+            if(ImGui.BeginDragDropTarget())
+            {
+                try
+                {
+                    if(ImGuiDragDrop.AcceptDragDropPayload<Guid>(dragDropIdentifier, out var outId, ImGuiDragDropFlags.AcceptBeforeDelivery | ImGuiDragDropFlags.AcceptNoPreviewTooltip))
+                    {
+                        foreach(var x in table)
+                        {
+                            if(x.Value.Value == outId)
+                            {
+                                callback(x.Key);
+                                break;
+                            }
+                        }
+                    }
+                }
+                catch(Exception e)
+                {
+                    e.Log();
+                }
+                ImGui.EndDragDropTarget();
+            }
+        }
+    }
+
+    public static void DragDropRepopulate<T>(string identifier, T data, ICollection<T> dataCollection) where T : struct
+    {
+        ImGuiEx.DragDropRepopulate(identifier, data, c =>
+        {
+            if(!dataCollection.Contains(c))
+            {
+                dataCollection.Remove(data);
+            }
+            else
+            {
+                dataCollection.Add(data);
+            }
+        });
+    }
+
+    public static void DragDropRepopulateClass<T>(string identifier, T data, ICollection<T> dataCollection) where T : class
+    {
+        ImGuiEx.DragDropRepopulateClass(identifier, data, c =>
+        {
+            if(!dataCollection.Contains(c))
+            {
+                dataCollection.Remove(data);
+            }
+            else
+            {
+                dataCollection.Add(data);
+            }
+        });
     }
 
     public static void DragDropRepopulate<T>(string identifier, T id, ref T field) where T : unmanaged
