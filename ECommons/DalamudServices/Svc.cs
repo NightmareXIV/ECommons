@@ -9,7 +9,7 @@ using System;
 
 namespace ECommons.DalamudServices;
 #nullable disable
-
+#pragma warning disable Dalamud001
 public class Svc
 {
     [PluginService] public static IAddonEventManager AddonEventManager { get; private set; }
