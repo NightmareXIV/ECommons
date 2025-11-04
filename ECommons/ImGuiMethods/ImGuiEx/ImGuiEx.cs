@@ -255,6 +255,7 @@ public static unsafe partial class ImGuiEx
         ImGuiEx.DragDropRepopulate(dragDropIdentifier, data, c =>
         {
             if(!dataCollection.Contains(c))
+            if(cond)
             {
                 dataCollection.Remove(data);
             }
