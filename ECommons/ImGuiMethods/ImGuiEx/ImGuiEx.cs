@@ -14,6 +14,7 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using Lumina.Excel.Sheets;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -30,7 +31,10 @@ namespace ECommons.ImGuiMethods;
 public static unsafe partial class ImGuiEx
 {
     public static readonly ImGuiWindowFlags OverlayFlags = ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoMouseInputs | ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing;
-    public static readonly ImGuiTableFlags DefaultTableFlags = ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg | ImGuiTableFlags.Borders | ImGuiTableFlags.SizingFixedFit;
+    /// <summary>
+    /// Flags that are used for <see cref="BeginDefaultTable"/>. You can change them, if you want.
+    /// </summary>
+    public static ImGuiTableFlags DefaultTableFlags = ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg | ImGuiTableFlags.Borders | ImGuiTableFlags.SizingFixedFit;
     private static Dictionary<string, int> SelectedPages = [];
 
     /// <summary>
@@ -55,9 +59,15 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
+    /// <summary>
+    /// ArrowButton that was removed in new bindings.
+    /// </summary>
+    /// <param name="label"></param>
+    /// <param name="direction"></param>
+    /// <returns></returns>
     public static bool ArrowButton(string label, ImGuiDir direction)
     {
-        if(label == "") label = "ECommonsDefaultID";
+        if(label.IsNullOrEmpty()) label = "ECommonsDefaultID";
         byte[] utf8Bytes = [..Encoding.UTF8.GetBytes(label), 0];
 
         fixed(byte* pUtf8 = utf8Bytes)
@@ -66,6 +76,7 @@ public static unsafe partial class ImGuiEx
         }
     }
 
+    [Obsolete("Switch to ImGui.PushId", true)]
     public static void PushID(string id)
     {
         if(id == null || id.Length == 0)
@@ -78,6 +89,15 @@ public static unsafe partial class ImGuiEx
         }
     }
 
+    /// <summary>
+    /// <see cref="ImGui.InputTextWithHint"/> but you do not need to have a field. 
+    /// </summary>
+    /// <param name="label"></param>
+    /// <param name="hint"></param>
+    /// <param name="result"></param>
+    /// <param name="maxLength"></param>
+    /// <param name="flags"></param>
+    /// <returns></returns>
     public static bool FilteringInputTextWithHint(string label, string hint, out string result, int maxLength = 200, ImGuiInputTextFlags flags = ImGuiInputTextFlags.None)
     {
         var ret = false;
@@ -92,6 +112,15 @@ public static unsafe partial class ImGuiEx
 
     public static ref string GetFilteringInputTextString(string label) => ref Ref<string>.Get($"{ImGui.GetID(label)}_filter");
 
+    /// <summary>
+    /// <see cref="ImGui.InputInt"/> but you do not need to have a field. 
+    /// </summary>
+    /// <param name="label"></param>
+    /// <param name="result"></param>
+    /// <param name="step"></param>
+    /// <param name="step_fast"></param>
+    /// <param name="flags"></param>
+    /// <returns></returns>
     public static bool FilteringInputInt(string label, out int result, int step = 1, int step_fast = 100, ImGuiInputTextFlags flags = ImGuiInputTextFlags.None)
     {
         var ret = false;
@@ -104,7 +133,12 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
-
+    /// <summary>
+    /// <see cref="ImGui.Checkbox"/> but you do not need to have a field. 
+    /// </summary>
+    /// <param name="label"></param>
+    /// <param name="result"></param>
+    /// <returns></returns>
     public static bool FilteringCheckbox(string label, out bool result)
     {
         var ret = false;
@@ -117,6 +151,13 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
+    /// <summary>
+    /// Allows you to create simple "drag this item to quickly copy it" to allow user to quickly mass change it. Use it in for/foreach loops when drawing ImGui elements.
+    /// </summary>
+    /// <typeparam name="T">Must be a struct. For classes, there is <see cref="ImGuiEx.DragDropRepopulateClass{T}(string, T, Action{T})"/>.</typeparam>
+    /// <param name="dragDropIdentifier">Plugin-unique identifier, internal and invisible to used. Must be relatively short. </param>
+    /// <param name="data">Element's current data</param>
+    /// <param name="callback">A callback that will be executed when one item is dragged onto another. It's parameter is a value of an item that is dragged. Assign it to the current item. </param>
     public static void DragDropRepopulate<T>(string dragDropIdentifier, T data, Action<T> callback) where T : struct
     {
         ImGuiEx.Tooltip("Drag this selector to other selectors to set their values to the same");
@@ -150,6 +191,13 @@ public static unsafe partial class ImGuiEx
         }
     }
 
+    /// <summary>
+    /// Allows you to create simple "drag this item to quickly copy it" to allow user to quickly mass change it. Use it in for/foreach loops when drawing ImGui elements.
+    /// </summary>
+    /// <typeparam name="T">Must be a class. For structs, there is <see cref="ImGuiEx.DragDropRepopulate{T}(string, T, Action{T})"/> and <see cref="ImGuiEx.DragDropRepopulate{T}(string, T, ref T)"/>.</typeparam>
+    /// <param name="dragDropIdentifier">Plugin-unique identifier, internal and invisible to used. Must be relatively short. </param>
+    /// <param name="data">Element's current data</param>
+    /// <param name="callback">A callback that will be executed when one item is dragged onto another. It's parameter is a value of an item that is dragged. Assign it to the current item. </param>
     public static void DragDropRepopulateClass<T>(string dragDropIdentifier, T data, Action<T> callback) where T : class
     {
         var table = Ref<ConditionalWeakTable<T, Box<Guid>>>.Get("__ECommons.DragDropRepopulateClass.ConditionalWeakTable", () => new ConditionalWeakTable<T, Box<Guid>>());
@@ -195,9 +243,16 @@ public static unsafe partial class ImGuiEx
         }
     }
 
-    public static void DragDropRepopulate<T>(string identifier, T data, ICollection<T> dataCollection) where T : struct
+    /// <summary>
+    /// Allows you to create simple "drag this item to quickly copy it" to allow user to quickly mass change it. Use it in for/foreach loops when drawing ImGui elements. This overload is to be used with <see cref="CollectionCheckbox"/> and similar elements that are supposed to perform either addition or removal of element to/from collection.
+    /// </summary>
+    /// <typeparam name="T">Must be a struct. For classes, there is <see cref="ImGuiEx.DragDropRepopulateClass{T}(string, T, ICollection{T})"/>.</typeparam>
+    /// <param name="dragDropIdentifier">Plugin-unique identifier, internal and invisible to used. Must be relatively short. </param>
+    /// <param name="data">Element's current data</param>
+    /// <param name="dataCollection">A collection where data will be added or removed from</param>
+    public static void DragDropRepopulate<T>(string dragDropIdentifier, T data, ICollection<T> dataCollection) where T : struct
     {
-        ImGuiEx.DragDropRepopulate(identifier, data, c =>
+        ImGuiEx.DragDropRepopulate(dragDropIdentifier, data, c =>
         {
             if(!dataCollection.Contains(c))
             {
@@ -210,9 +265,16 @@ public static unsafe partial class ImGuiEx
         });
     }
 
-    public static void DragDropRepopulateClass<T>(string identifier, T data, ICollection<T> dataCollection) where T : class
+    /// <summary>
+    /// Allows you to create simple "drag this item to quickly copy it" to allow user to quickly mass change it. Use it in for/foreach loops when drawing ImGui elements. This overload is to be used with <see cref="CollectionCheckbox"/> and similar elements that are supposed to perform either addition or removal of element to/from collection.
+    /// </summary>
+    /// <typeparam name="T">Must be a class. For structs, there is <see cref="ImGuiEx.DragDropRepopulate{T}(string, T, ICollection{T})"/>.</typeparam>
+    /// <param name="dragDropIdentifier">Plugin-unique identifier, internal and invisible to used. Must be relatively short. </param>
+    /// <param name="data">Element's current data</param>
+    /// <param name="dataCollection">A collection where data will be added or removed from</param>
+    public static void DragDropRepopulateClass<T>(string dragDropIdentifier, T data, ICollection<T> dataCollection) where T : class
     {
-        ImGuiEx.DragDropRepopulateClass(identifier, data, c =>
+        ImGuiEx.DragDropRepopulateClass(dragDropIdentifier, data, c =>
         {
             if(!dataCollection.Contains(c))
             {
@@ -225,14 +287,21 @@ public static unsafe partial class ImGuiEx
         });
     }
 
-    public static void DragDropRepopulate<T>(string identifier, T id, ref T field) where T : unmanaged
+    /// <summary>
+    /// Allows you to create simple "drag this item to quickly copy it" to allow user to quickly mass change it. Use it in for/foreach loops when drawing ImGui elements.
+    /// </summary>
+    /// <typeparam name="T">Must be a struct. For classes, there is <see cref="ImGuiEx.DragDropRepopulateClass{T}(string, T, Action{T})"/>.</typeparam>
+    /// <param name="dragDropIdentifier">Plugin-unique identifier, internal and invisible to used. Must be relatively short. </param>
+    /// <param name="data">Element's current data</param>
+    /// <param name="field">A field which will be assigned data value when dragged onto.</param>
+    public static void DragDropRepopulate<T>(string dragDropIdentifier, T data, ref T field) where T : struct
     {
         ImGuiEx.Tooltip("Drag this selector to other selectors to set their values to the same");
         if(ImGui.BeginDragDropSource(ImGuiDragDropFlags.SourceNoPreviewTooltip))
         {
             try
             {
-                ImGuiDragDrop.SetDragDropPayload<T>(identifier, id);
+                ImGuiDragDrop.SetDragDropPayload<T>(dragDropIdentifier, data);
                 ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeAll);
             }
             catch(Exception e)
@@ -245,7 +314,7 @@ public static unsafe partial class ImGuiEx
         {
             try
             {
-                if(ImGuiDragDrop.AcceptDragDropPayload<T>(identifier, out var outId, ImGuiDragDropFlags.AcceptBeforeDelivery | ImGuiDragDropFlags.AcceptNoPreviewTooltip))
+                if(ImGuiDragDrop.AcceptDragDropPayload<T>(dragDropIdentifier, out var outId, ImGuiDragDropFlags.AcceptBeforeDelivery | ImGuiDragDropFlags.AcceptNoPreviewTooltip))
                 {
                     field = outId;
                 }
@@ -258,14 +327,14 @@ public static unsafe partial class ImGuiEx
         }
     }
 
-    /// <seealso cref="Scale(float)"/>
+    /// <inheritdoc cref="Scale(float)"/>
     public static Vector2? Scale(this Vector2? v)
     {
         if(v == null) return null;
         return new Vector2(v.Value.X.Scale(), v.Value.Y.Scale());
     }
 
-    /// <seealso cref="Scale(float)"/>
+    /// <inheritdoc cref="Scale(float)"/>
     public static Vector2 Scale(this Vector2 v)
     {
         return new Vector2(v.X.Scale(), v.Y.Scale());
@@ -281,17 +350,27 @@ public static unsafe partial class ImGuiEx
         return f * ImGuiHelpers.GlobalScale * (Svc.PluginInterface.UiBuilder.DefaultFontSpec.SizePt / 12f);
     }
 
-    /// <seealso cref="Scale(float)"/>
+    /// <inheritdoc cref="Scale(float)"/>
     public static float? Scale(this float? f)
     {
         return f?.Scale();
     }
 
+    /// <inheritdoc cref="ImGuiEx.BeginDefaultTable(string, string[], bool, ImGuiTableFlags, bool)"/>
     public static bool BeginDefaultTable(string[] headers, bool drawHeader = true, ImGuiTableFlags extraFlags = ImGuiTableFlags.None)
     {
         return BeginDefaultTable("##ECommonsDefaultTable", headers, drawHeader, extraFlags);
     }
 
+    /// <summary>
+    /// Begins a typical most desired table avoiding unnecessary boilerplate with borders, changing row background and . You must still end it with <see cref="ImGui.EndTable"/>.
+    /// </summary>
+    /// <param name="id">ImGui ID</param>
+    /// <param name="headers">An array of columns. Prefix column name with "~" to make it stretching column.</param>
+    /// <param name="drawHeader">Whether to draw a header</param>
+    /// <param name="extraFlags">Add extra flags to the table</param>
+    /// <param name="flagsOverride">If <see langword="true"/>, <paramref name="extraFlags"/> will override <see cref="ImGuiEx.DefaultTableFlags"></see> completely</param>
+    /// <returns>Same as <see cref="ImGui.BeginTable(ImU8String, int, ImGuiTableFlags, Vector2, float)"/></returns>
     public static bool BeginDefaultTable(string id, string[] headers, bool drawHeader = true, ImGuiTableFlags extraFlags = ImGuiTableFlags.None, bool flagsOverride = false)
     {
         if(ImGui.BeginTable(id, headers.Length, flagsOverride ? extraFlags : DefaultTableFlags | extraFlags))
@@ -302,6 +381,11 @@ public static unsafe partial class ImGuiEx
         return false;
     }
 
+    /// <summary>
+    /// Setups table columns.
+    /// </summary>
+    /// <param name="headers">An array of columns. Prefix column name with "~" to make it stretching column.</param>
+    /// <param name="drawHeader">Whether to draw a header row</param>
     public static void DefaultTableColumns(IEnumerable<string> headers, bool drawHeader = true)
     {
         foreach(var x in headers)
@@ -312,9 +396,15 @@ public static unsafe partial class ImGuiEx
         if(drawHeader) ImGui.TableHeadersRow();
     }
 
-    public static string ImGuiTrim(this string str)
+    /// <summary>
+    /// Trims string to fit it into <see cref="ImGui.GetContentRegionAvail"/> and applies "..." if trimmed.
+    /// </summary>
+    /// <param name="str">String to trim</param>
+    /// <param name="minTrimLength">Minimum length for string to be considered trimmable. Strings of less length will be returned as is.</param>
+    /// <returns></returns>
+    public static string ImGuiTrim(this string str, int minTrimLength = 5)
     {
-        if(str.Length < 5) return str;
+        if(str.Length < minTrimLength) return str;
         var size = ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize("...").X;
         for(var i = 1; i < str.Length; i++)
         {
@@ -326,10 +416,16 @@ public static unsafe partial class ImGuiEx
         return str;
     }
 
-    public static string Trim(this string text, int len)
+    /// <summary>
+    /// Trims string and applies "..." if trimmed.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="trimToLength">To how many symbols to trim the string</param>
+    /// <returns></returns>
+    public static string Trim(this string str, int trimToLength)
     {
-        if(text.Length > len) return text[..len] + "...";
-        return text;
+        if(str.Length > trimToLength) return str[..trimToLength] + "...";
+        return str;
     }
 
     /// <inheritdoc cref="Pagination(string, System.Action[], out System.Action?, int, int)"/>
@@ -418,6 +514,7 @@ public static unsafe partial class ImGuiEx
         return actions[rangeMin..rangeMax];
     }
 
+    ///<inheritdoc cref="ImGuiEx.TreeNodeCollapsingHeader(string, bool, System.Action, ImGuiTreeNodeFlags)"/>
     public static void TreeNodeCollapsingHeader(string name, Action action, ImGuiTreeNodeFlags extraFlags = ImGuiTreeNodeFlags.None) => TreeNodeCollapsingHeader(name, true, action, extraFlags);
 
     /// <summary>
@@ -557,23 +654,39 @@ public static unsafe partial class ImGuiEx
 
     }
 
-    public static bool Selectable(Vector4? color, string id, bool enabled = true)
+    /// <summary>
+    /// Same as ImGui.Selectable, but allows it to be "disabled"
+    /// </summary>
+    /// <param name="color">Text color</param>
+    /// <param name="id"></param>
+    /// <param name="enabled"></param>
+    /// <param name="selected"></param>
+    /// <param name="flags"></param>
+    /// <param name="size"></param>
+    /// <returns></returns>
+    public static bool Selectable(Vector4? color, string id, bool enabled = true, bool selected = false, ImGuiSelectableFlags flags = ImGuiSelectableFlags.None, Vector2 size = default)
     {
         if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
         if(color != null) ImGui.PushStyleColor(ImGuiCol.Text, color.Value);
-        var ret = ImGui.Selectable(id) && enabled;
+        var ret = ImGui.Selectable(id, selected, flags, size) && enabled;
         if(color != null) ImGui.PopStyleColor();
         if(!enabled) ImGui.PopStyleVar();
         return ret;
     }
 
-    public static bool Selectable(string id, bool enabled = true)
+    ///<inheritdoc cref="ImGuiEx.Selectable(string, bool, bool, ImGuiSelectableFlags, Vector2)"/>
+    public static bool Selectable(string id, bool enabled = true, bool selected = false, ImGuiSelectableFlags flags = ImGuiSelectableFlags.None, Vector2 size = default)
     {
-        return Selectable(null, id, enabled);
+        return Selectable(null, id, enabled, selected, flags, size);
     }
 
-    /// <summary>Selectable item made from TreeNode with bullet mark in front</summary>
-    /// <inheritdoc cref="SelectableNode(Vector4?, string, ref bool, ImGuiTreeNodeFlags, bool)"/>
+    /// <summary>
+    /// Selectable item made from TreeNode with bullet mark in front
+    /// </summary>
+    /// <param name="color">Text color</param>
+    /// <param name="id">ImGui ID</param>
+    /// <param name="enabled">Whether node is enabled</param>
+    /// <returns><see langword="true"/> when clicked</returns>
     public static bool SelectableNode(Vector4? color, string id, bool enabled = true)
     {
         if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
@@ -719,7 +832,7 @@ public static unsafe partial class ImGuiEx
         return ret;
     }
 
-    ///<inheritdoc cref="InfoMarker(string, Vector4?, string, bool)"/>
+    ///<inheritdoc cref="ImGuiEx.InfoMarker(string, Vector4?, string, bool, bool)"/>
     public static void HelpMarker(string helpText, Vector4? color = null, string symbolOverride = null, bool sameLine = true, bool preserveCursor = false) => InfoMarker(helpText, color, symbolOverride, sameLine, preserveCursor);
 
     /// <summary>
@@ -893,7 +1006,28 @@ public static unsafe partial class ImGuiEx
         return false;
     }
 
-    public static bool CollapsingHeader(string text, Vector4? col = null)
+    /// <summary>
+    /// Just an ImGui.CollapsingHeader with convenient color selection
+    /// </summary>
+    /// <param name="col"></param>
+    /// <param name="text"></param>
+    /// <returns></returns>
+    public static bool CollapsingHeader(Vector4? col, string text)
+    {
+        if(col != null) ImGui.PushStyleColor(ImGuiCol.Text, col.Value);
+        var ret = ImGui.CollapsingHeader(text);
+        if(col != null) ImGui.PopStyleColor();
+        return ret;
+    }
+
+    ///<inheritdoc cref="ImGuiEx.CollapsingHeader(Vector4?, string)"/>
+    public static bool CollapsingHeader(string text)
+    {
+        return CollapsingHeader(null, text);
+    }
+
+    [Obsolete("Move color parameter to be the first one")]
+    public static bool CollapsingHeader(string text, Vector4? col)
     {
         if(col != null) ImGui.PushStyleColor(ImGuiCol.Text, col.Value);
         var ret = ImGui.CollapsingHeader(text);
@@ -960,28 +1094,6 @@ public static unsafe partial class ImGuiEx
         return ImGui.BeginPopup(popupId);
     }
 
-    public record HeaderIconOptions
-    {
-        public Vector2 Offset { get; init; } = Vector2.Zero;
-        public ImGuiMouseButton MouseButton { get; init; } = ImGuiMouseButton.Left;
-        public string Tooltip { get; init; } = string.Empty;
-        public uint Color { get; init; } = 0xFFFFFFFF;
-        public bool ToastTooltipOnClick { get; init; } = false;
-        public ImGuiMouseButton ToastTooltipOnClickButton { get; init; } = ImGuiMouseButton.Left;
-    }
-
-    private static uint headerLastWindowID = 0;
-    private static ulong headerLastFrame = 0;
-    private static float headerCurrentPos = 0;
-    private static float headerImGuiButtonWidth = 0;
-
-    [Obsolete($"Use Dalamud.Interface.Windowing.Window.TitleBarButton instead", true)]
-    public static bool AddHeaderIcon(string id, FontAwesomeIcon icon, HeaderIconOptions options = null)
-    {
-        throw new NotImplementedException("Use Dalamud.Interface.Windowing.Window.TitleBarButton instead");
-    }
-
-
     public static Vector4 MutateColor(ImGuiCol col, byte r, byte g, byte b)
     {
         return ImGui.GetStyle().Colors[(int)col] with { X = (float)r / 255f, Y = (float)g / 255f, Z = (float)b / 255f };
@@ -1025,16 +1137,26 @@ public static unsafe partial class ImGuiEx
         ImGui.EndTooltip();
     }
 
+    /// <summary>
+    /// Sets next item width to <see cref="ImGui.GetContentRegionAvail"/>
+    /// </summary>
+    /// <param name="mod">Extra pixels to add</param>
     public static void SetNextItemFullWidth(int mod = 0)
     {
         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X + mod);
     }
 
+    /// <summary>
+    /// Sets next item width to a certain percentage of <see cref="ImGui.GetContentRegionAvail"/> 
+    /// </summary>
+    /// <param name="percent">How much in % to set width to</param>
+    /// <param name="mod">Extra pixels to add</param>
     public static void SetNextItemWidth(float percent, int mod = 0)
     {
         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X * percent + mod);
     }
 
+    [Obsolete("Just push style col")]
     public static void WithTextColor(Vector4 col, Action func)
     {
         ImGui.PushStyleColor(ImGuiCol.Text, col);
@@ -1042,6 +1164,10 @@ public static unsafe partial class ImGuiEx
         ImGui.PopStyleColor();
     }
 
+    /// <summary>
+    /// Displays tooltip if the item is hovered
+    /// </summary>
+    /// <param name="s"></param>
     public static void Tooltip(string s)
     {
         if(ImGui.IsItemHovered())
@@ -1052,6 +1178,7 @@ public static unsafe partial class ImGuiEx
         }
     }
 
+    [Obsolete("Probably isn't used by anyone")]
     public static Vector4 GetParsedColor(int percent)
     {
         if(percent < 25)
@@ -1143,13 +1270,19 @@ public static unsafe partial class ImGuiEx
         return CalcIconSize(icon.ToIconString(), isButton);
     }
 
+    /// <summary>
+    /// Records initial cursor positions and measures width difference after executing a function.
+    /// </summary>
+    /// <param name="func"></param>
+    /// <param name="includeSpacing">Whether to include <see cref="ImGui.GetStyle"/>.ItemSpacing</param>
+    /// <returns></returns>
     public static float Measure(Action func, bool includeSpacing = true)
     {
         var pos = ImGui.GetCursorPosX();
         func();
         ImGui.SameLine(0, 0);
         var diff = ImGui.GetCursorPosX() - pos;
-        ImGui.Dummy(Vector2.Zero);
+        ImGui.NewLine();
         return diff + (includeSpacing ? ImGui.GetStyle().ItemSpacing.X : 0);
     }
 
