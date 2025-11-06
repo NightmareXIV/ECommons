@@ -58,9 +58,10 @@ public abstract unsafe class AddonMasterBase<T> : IAddonMasterBase where T : unm
     public bool IsAddonFocused => IsAddonInFocusList;
     public bool IsAddonOnlyFocusListEntry => RaptureAtkUnitManager.Instance()->FocusedUnitsList.Count == 1 && RaptureAtkUnitManager.Instance()->FocusedUnitsList.Entries[0].Value == Base;
 
-    protected bool ClickButtonIfEnabled(AtkComponentButton* button)
+    protected bool ClickButtonIfEnabled(AtkComponentButton* button, bool respectHoldButtons = false)
     {
-        if(button->IsEnabled && button->AtkResNode->IsVisible())
+        if(button->IsEnabled && button->AtkResNode->IsVisible()
+            && (!respectHoldButtons || button->GetComponentType() != ComponentType.HoldButton))
         {
             button->ClickAddonButton(Base);
             return true;
