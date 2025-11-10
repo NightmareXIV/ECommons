@@ -1,13 +1,17 @@
 ﻿using ECommons.DalamudServices;
 using ECommons.ExcelServices.Sheets;
+using FFXIVClientStructs;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Lumina.Excel.Sheets;
+using System;
 using System.Collections.Generic;
 
 namespace ECommons.ExcelServices;
 
 public static class ExcelItemHelper
 {
+    private static Dictionary<uint, string> ItemNameCache = [];
+    private static Dictionary<uint, string> ItemNameWithIdCache = [];
     /// <summary>
     /// Gets <see cref="Item"/> by id or null if not found.
     /// </summary>
@@ -30,13 +34,12 @@ public static class ExcelItemHelper
     /// <returns></returns>
     public static string GetName(uint id, bool includeID = false)
     {
-        if(ItemNameCache.TryGetValue(id, out var ret)) return ret;
+        var cache = includeID ? ItemNameWithIdCache : ItemNameCache;
+        if(cache.TryGetValue(id, out var ret)) return ret;
         var data = Svc.Data.GetExcelSheet<Item>()!.GetRowOrDefault(id);
         if(data == null) return $"#{id}";
-        return GetName(data);
+        return GetName(data, includeID);
     }
-
-    private static Dictionary<uint, string> ItemNameCache = [];
     /// <summary>
     /// Gets item name. If name is missing, prints item's ID. Item names are stripped off non-text payloads. Results are cached.
     /// </summary>
@@ -46,10 +49,11 @@ public static class ExcelItemHelper
     public static string GetName(this Item? item, bool includeID = false)
     {
         if(item == null) return "? Unknown ?";
-        if(!ItemNameCache.TryGetValue(item.Value.RowId, out var name))
+        var cache = includeID ? ItemNameWithIdCache : ItemNameCache;
+        if(!cache.TryGetValue(item.Value.RowId, out var name))
         {
             name = item.Value.Name.GetText();
-            ItemNameCache[item.Value.RowId] = name;
+            cache[item.Value.RowId] = includeID?$"{name} #{item.Value.RowId}":name;
         }
         if(name == "")
         {
@@ -59,6 +63,13 @@ public static class ExcelItemHelper
     }
     public static string GetName(this Item item, bool includeID = false) => GetName((Item?)item, includeID);
 
+    /// <summary>
+    /// Gets a specified stat of a specified item and quality
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="param"></param>
+    /// <param name="isHq"></param>
+    /// <returns></returns>
     public static int GetStat(this Item item, BaseParamEnum param, bool isHq = false)
     {
         var ret = 0;
@@ -81,6 +92,8 @@ public static class ExcelItemHelper
         }
         return ret;
     }
+
+    /// <inheritdoc cref="ExcelItemHelper.GetStatCap(Item, BaseParamEnum)"/>
     public static int GetStatCap(this InventoryItem item, BaseParamEnum baseParam)
     {
         if(ExcelItemHelper.Get(item.GetItemId() % 1000000).TryGetValue(out var data))
@@ -90,6 +103,12 @@ public static class ExcelItemHelper
         return -1;
     }
 
+    /// <summary>
+    /// Returns maximum stat amount that this item can have
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="baseParam"></param>
+    /// <returns></returns>
     public static int GetStatCap(this Item item, BaseParamEnum baseParam)
     {
         var level = item.LevelItem.Value;
@@ -157,6 +176,12 @@ public static class ExcelItemHelper
         return -1;
     }
 
+    /// <summary>
+    /// Returns stats of an <see cref="InventoryItem"/>, accounting for materia and quality
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="param"></param>
+    /// <returns></returns>
     public static int GetStat(this InventoryItem item, BaseParamEnum param)
     {
         var ret = 0;
@@ -181,8 +206,25 @@ public static class ExcelItemHelper
         return ret;
     }
 
+    /// <summary>
+    /// Returns item rarity
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
     public static ItemRarity GetRarity(this Item item)
     {
         return (ItemRarity)item.Rarity;
+    }
+
+    /// <summary>
+    /// Returns how many seals will you get for turning this item into Grand Company Expert Delivery
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public static uint GetGCSeals(this Item item)
+    {
+        if(item.Desynth == 0) return 0;
+        if(!item.GetRarity().EqualsAny(ItemRarity.Green, ItemRarity.Pink, ItemRarity.Blue)) return 0;
+        return Svc.Data.GetExcelSheet<GCSupplyDutyReward>().GetRowOrDefault(item.LevelItem.RowId)?.SealsExpertDelivery ?? 0;
     }
 }

@@ -50,7 +50,7 @@ public static unsafe partial class ImGuiEx
         {
             var pos1 = ImGui.GetCursorPosX();
             drawAction();
-            ImGui.SameLine();
+            ImGui.SameLine(0,0);
             var pos2 = ImGui.GetCursorPosX();
             RightFloatWidthCache[id] = pos2 - pos1;
         }
