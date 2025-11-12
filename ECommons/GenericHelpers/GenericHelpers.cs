@@ -1,9 +1,11 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
+using Dalamud.Plugin;
 using ECommons.ChatMethods;
 using ECommons.Configuration;
 using ECommons.DalamudServices;

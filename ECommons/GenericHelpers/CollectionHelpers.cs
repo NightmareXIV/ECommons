@@ -484,6 +484,26 @@ public static unsafe partial class GenericHelpers
             }
     }
 
+    /// <summary>
+    /// Projects each element of a nested sequence to an IEnumerable and flattens the resulting sequences into one sequence.
+    /// </summary>
+    public static IEnumerable<TResult> SelectNested<TSource, TResult>(this IEnumerable<IEnumerable<TSource>> source, Func<TSource, TResult> selector)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(selector);
+
+        foreach(var innerSequence in source)
+        {
+            if(innerSequence != null)
+            {
+                foreach(var item in innerSequence)
+                {
+                    yield return selector(item);
+                }
+            }
+        }
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ContainsAll<T>(this IEnumerable<T> source, IEnumerable<T> values)
     {
