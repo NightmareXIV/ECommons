@@ -35,9 +35,10 @@ public class EzPatch : IDisposable
 
     public EzPatch(string signature, nint offset, Data patchData, bool autoEnable = true, bool silent = false)
     {
-        if(Svc.SigScanner.TryScanText(signature, out var addr))
+        var addr = Svc.SigScanner.ScanAllText(signature);
+        if(addr.Length > 0)
         {
-             Initialize(addr + offset, patchData, autoEnable, silent);
+            Initialize(addr[0] + offset, patchData, autoEnable, silent);
         }
     }
 
