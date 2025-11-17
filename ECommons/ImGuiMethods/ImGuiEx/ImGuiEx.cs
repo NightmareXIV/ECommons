@@ -632,7 +632,7 @@ public static unsafe partial class ImGuiEx
                 {
                     if(info.MinVersion == null || plugin.Version >= info.MinVersion)
                     {
-                        Text(ImGuiColors.ParsedGreen, $"- {info.VanityName ?? info.InternalName}" + (info.MinVersion == null ? "" : $" {info.MinVersion}+"));
+                        Text(ImGuiColors.ParsedGreen, $"- {info.VanityName ?? info.InternalName} {(info.MinVersion == null ? "" : $" {info.MinVersion}+")}");
                     }
                     else
                     {
