@@ -1,10 +1,10 @@
 ﻿using Dalamud.Hooking;
-using Dalamud.Memory;
 using ECommons.DalamudServices;
 using ECommons.Logging;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -15,24 +15,17 @@ namespace ECommons.Automation;
 
 public static unsafe class Callback
 {
-    public const string Sig = "48 89 5C 24 ?? 48 89 6C 24 ?? 56 57 41 54 41 56 41 57 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 44 24 ?? BF"; //keep as const
-    public delegate byte AtkUnitBase_FireCallbackDelegate(AtkUnitBase* Base, int valueCount, AtkValue* values, byte updateState);
-    internal static AtkUnitBase_FireCallbackDelegate FireCallback = null;
-    private static Hook<AtkUnitBase_FireCallbackDelegate> AtkUnitBase_FireCallbackHook;
+    private static Hook<AtkUnitBase.Delegates.FireCallback> AtkUnitBase_FireCallbackHook;
 
     public static readonly AtkValue ZeroAtkValue = new() { Type = 0, Int = 0 };
 
-    internal static void Initialize()
-    {
-        var ptr = Svc.SigScanner.ScanText(Sig);
-        FireCallback = Marshal.GetDelegateForFunctionPointer<AtkUnitBase_FireCallbackDelegate>(ptr);
-        PluginLog.Information($"Initialized Callback module, FireCallback = 0x{ptr:X16}");
-    }
-
     public static void InstallHook()
     {
-        if(FireCallback == null) Initialize();
-        AtkUnitBase_FireCallbackHook ??= Svc.Hook.HookFromSignature<AtkUnitBase_FireCallbackDelegate>(Sig, AtkUnitBase_FireCallbackDetour);
+        AtkUnitBase_FireCallbackHook ??= Svc.Hook.HookFromAddress<AtkUnitBase.Delegates.FireCallback>(
+            AtkUnitBase.MemberFunctionPointers.FireCallback,
+            AtkUnitBase_FireCallbackDetour
+        );
+
         if(AtkUnitBase_FireCallbackHook.IsEnabled)
         {
             PluginLog.Error("AtkUnitBase_FireCallbackHook is already enabled");
@@ -46,10 +39,6 @@ public static unsafe class Callback
 
     public static void UninstallHook()
     {
-        if(FireCallback == null)
-        {
-            PluginLog.Error("AtkUnitBase_FireCallbackHook not initialized yet");
-        }
         if(!AtkUnitBase_FireCallbackHook.IsEnabled)
         {
             PluginLog.Error("AtkUnitBase_FireCallbackHook is already disabled");
@@ -61,24 +50,26 @@ public static unsafe class Callback
         }
     }
 
-    private static byte AtkUnitBase_FireCallbackDetour(AtkUnitBase* Base, int valueCount, AtkValue* values, byte updateState)
+    private static bool AtkUnitBase_FireCallbackDetour(AtkUnitBase* Base, uint valueCount, AtkValue* values, bool updateState)
     {
         var ret = AtkUnitBase_FireCallbackHook?.Original(Base, valueCount, values, updateState);
         try
         {
-            PluginLog.Debug($"Callback on {Base->Name.Read()}, valueCount={valueCount}, updateState={updateState}\n{DecodeValues(valueCount, values).Select(x => $"    {x}").Join("\n")}");
+            int valueCountInt = Convert.ToInt32(valueCount); // Could throw OverflowException since DecodeValues takes an int
+            PluginLog.Debug($"Callback on {Base->Name.Read()}, valueCount={valueCount}, updateState={updateState}\n{DecodeValues(valueCountInt, values).Select(x => $"    {x}").Join("\n")}");
         }
         catch(Exception e)
         {
             e.Log();
         }
-        return ret ?? 0;
+        return ret ?? false;
     }
 
+    // Modified and kept for compatibility, but obsolete since you can just call FireCallback on the addon directly
+    // could add obsolete attribute
     public static void FireRaw(AtkUnitBase* Base, int valueCount, AtkValue* values, byte updateState = 0)
     {
-        if(FireCallback == null) Initialize();
-        FireCallback(Base, valueCount, values, updateState);
+        Base->FireCallback((uint)valueCount, values, updateState != 0);
     }
 
     public static void Fire(AtkUnitBase* Base, bool updateState, params object[] values)
@@ -134,7 +125,7 @@ public static unsafe class Callback
                 CallbackValues.Add($"    Value {i}: [input: {values[i]}/{values[i]?.GetType().Name}] -> {DecodeValue(atkValues[i])})");
             }
             PluginLog.Verbose($"Firing callback: {Base->Name.Read()}, valueCount = {values.Length}, updateStatte = {updateState}, values:\n");
-            FireRaw(Base, values.Length, atkValues, (byte)(updateState ? 1 : 0));
+            Base->FireCallback((uint)values.Length, atkValues, updateState);
         }
         finally
         {
@@ -149,6 +140,8 @@ public static unsafe class Callback
         }
     }
 
+    // Would need to convert cnt to uint but for compatibility kept as int
+    // Only an issue in detour which will just throw OverflowException and get logged
     public static List<string> DecodeValues(int cnt, AtkValue* values)
     {
         var atkValueList = new List<string>();
@@ -207,6 +200,5 @@ public static unsafe class Callback
     {
         AtkUnitBase_FireCallbackHook?.Dispose();
         AtkUnitBase_FireCallbackHook = null;
-        FireCallback = null;
     }
 }
