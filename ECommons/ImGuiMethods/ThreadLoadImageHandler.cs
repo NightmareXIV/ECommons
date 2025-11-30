@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
+using TerraFX.Interop.WinRT;
 using static Dalamud.Plugin.Services.ITextureProvider;
 using static ECommons.GenericHelpers;
 
@@ -101,11 +102,11 @@ public class ThreadLoadImageHandler
         new Thread(() =>
         {
             var idleTicks = 0;
-            Safe(delegate
+            try
             {
                 while(idleTicks < 100)
                 {
-                    Safe(delegate
+                    try
                     {
                         {
                             if(CachedTextures.TryGetFirst(x => x.Value.IsCompleted == false, out var keyValuePair))
@@ -170,11 +171,33 @@ public class ThreadLoadImageHandler
                                 keyValuePair.Value.ImmediateTexture = Svc.Texture.GetFromGameIcon(new(keyValuePair.Key.ID, hiRes: keyValuePair.Key.HQ));
                             }
                         }
-                    });
+                    }
+                    catch(Exception e)
+                    {
+                        if(ErrorAction != null)
+                        {
+                            ErrorAction(e, $"An error occurred while loading icon");
+                        }
+                        else
+                        {
+                            e.Log();
+                        }
+                    }
                     idleTicks++;
                     if(!CachedTextures.Any(x => x.Value.IsCompleted) && !CachedIcons.Any(x => x.Value.IsCompleted)) Thread.Sleep(100);
                 }
-            });
+            }
+            catch(Exception e)
+            {
+                if(ErrorAction != null)
+                {
+                    ErrorAction(e, $"An error occurred while running ThreadLoadImageHandler");
+                }
+                else
+                {
+                    e.Log();
+                }
+            }
             PluginLog.Verbose($"Stopping ThreadLoadImageHandler, ticks={idleTicks}");
             ThreadRunning = false;
         }).Start();
