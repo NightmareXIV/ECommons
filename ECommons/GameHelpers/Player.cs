@@ -31,7 +31,7 @@ public static unsafe class Player
 {
     public static readonly Number MaxLevel = 100;
     public static IPlayerCharacter Object => Svc.Objects.LocalPlayer;
-    public static bool Available => Svc.PlayerState.IsLoaded;
+    public static bool Available => Svc.Objects.LocalPlayer != null;
     public static bool AvailableThreadSafe => GameObjectManager.Instance()->Objects.IndexSorted[0].Value != null;
     public static bool Interactable => Available && Object.IsTargetable;
     public static bool IsBusy => GenericHelpers.IsOccupied() || Object.IsCasting || IsMoving || IsAnimationLocked || Svc.Condition[ConditionFlag.InCombat];
