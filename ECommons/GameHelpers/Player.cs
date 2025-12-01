@@ -2,6 +2,7 @@
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Statuses;
+using Dalamud.Game.Player;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
 using ECommons.GameFunctions;
@@ -13,6 +14,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using Lumina.Excel;
 using Lumina.Excel.Sheets;
 using System;
 using System.Numerics;
@@ -35,22 +37,26 @@ public static unsafe class Player
     public static bool IsBusy => GenericHelpers.IsOccupied() || Object.IsCasting || IsMoving || IsAnimationLocked || Svc.Condition[ConditionFlag.InCombat];
     public static ulong CID => Svc.PlayerState.ContentId;
     public static StatusList Status => Svc.Objects.LocalPlayer?.StatusList;
+
     public static string Name => Svc.PlayerState.CharacterName;
     public static string NameWithWorld => GetNameWithWorld(Object);
     public static string GetNameWithWorld(this IPlayerCharacter pc) => pc == null ? null : (pc.Name.ToString() + "@" + pc.HomeWorld.ValueNullable?.Name.ToString());
+    public static RowRef<Race> Race => Svc.PlayerState.Race;
+    public static Sex Sex => Svc.PlayerState.Sex;
 
+    /// <remarks>Adjusts to sync, same as <see cref="SyncedLevel"/></remarks>
     public static int Level => Svc.PlayerState.Level;
     public static bool IsLevelSynced => PlayerState.Instance()->IsLevelSynced;
     public static int SyncedLevel => PlayerState.Instance()->SyncedLevel;
     public static int UnsyncedLevel => GetUnsyncedLevel(GetJob(Object));
-    public static int GetUnsyncedLevel(Job job) => PlayerState.Instance()->ClassJobLevels[Svc.Data.GetExcelSheet<ClassJob>().GetRowOrDefault((uint)job).Value.ExpArrayIndex];
+    public static int GetUnsyncedLevel(Job job) => Svc.PlayerState.GetClassJobLevel(job.GetGameData().Value);
 
     public static bool IsInHomeWorld => Available && Svc.PlayerState.CurrentWorld.RowId == Svc.PlayerState.HomeWorld.RowId;
     public static bool IsInHomeDC => Available && Svc.PlayerState.CurrentWorld.Value.DataCenter.RowId == Svc.PlayerState.HomeWorld.Value.DataCenter.RowId;
     public static string HomeWorld => Svc.PlayerState.HomeWorld.Value.Name.ToString();
     public static string CurrentWorld => Svc.PlayerState.CurrentWorld.Value.Name.ToString();
-    public static string HomeDataCenter => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(HomeWorldId)?.DataCenter.ValueNullable?.Name.ToString();
-    public static string CurrentDataCenter => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(CurrentWorldId)?.DataCenter.ValueNullable?.Name.ToString();
+    public static string HomeDataCenter => Svc.PlayerState.HomeWorld.Value.DataCenter.Value.Name.ToString();
+    public static string CurrentDataCenter => Svc.PlayerState.CurrentWorld.Value.DataCenter.Value.Name.ToString();
 
     public static Character* Character => (Character*)Object.Address;
     public static BattleChara* BattleChara => (BattleChara*)Object.Address;
@@ -63,6 +69,7 @@ public static unsafe class Player
     public static bool IsOnIsland => MJIManager.Instance()->IsPlayerInSanctuary;
     public static bool IsInPvP => GameMain.IsInPvPInstance();
 
+    public static RowRef<ClassJob> ClassJob => Svc.PlayerState.ClassJob;
     public static Job Job => (Job)Svc.PlayerState.ClassJob.RowId;
     public static GrandCompany GrandCompany => (GrandCompany)PlayerState.Instance()->GrandCompany;
     public static Job GetJob(this IPlayerCharacter pc) => (Job)(pc?.ClassJob.RowId ?? 0);
