@@ -39,7 +39,7 @@ public readonly unsafe record struct ActionEffectSet
     {
         switch(effectHeader->ActionType)
         {
-            case ActionType.KeyItem:
+            case ActionType.EventItem:
                 EventItem = Svc.Data.GetExcelSheet<EventItem>()!.GetRowOrDefault(effectHeader->ActionID);
                 Name = EventItem?.Singular.ToString() ?? string.Empty;
                 IconId = EventItem?.Icon ?? 0;

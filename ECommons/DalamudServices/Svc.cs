@@ -43,6 +43,7 @@ public class Svc
     [PluginService] public static IObjectTable Objects { get; private set; }
     [PluginService] public static IPartyFinderGui PfGui { get; private set; }
     [PluginService] public static IPartyList Party { get; private set; }
+    [PluginService] public static IPlayerState PlayerState { get; private set; }
     [PluginService] public static IPluginLog Log { get; private set; }
     [PluginService] public static ISeStringEvaluator SeStringEvaluator { get; private set; }
     [PluginService] public static ISigScanner SigScanner { get; private set; }

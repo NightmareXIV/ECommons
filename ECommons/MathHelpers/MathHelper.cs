@@ -297,7 +297,7 @@ public static class MathHelper
 
     public static Vector3 ToVector3(this Vector2 vector2)
     {
-        return vector2.ToVector3(Svc.ClientState.LocalPlayer?.Position.Y ?? 0);
+        return vector2.ToVector3(Svc.Objects.LocalPlayer?.Position.Y ?? 0);
     }
 
     public static Vector3 ToVector3(this Vector2 vector2, float Y)
