@@ -70,7 +70,7 @@ public static class ExcelWorldHelper
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="dataCenter">0 - all data centers<param>
+    /// <param name="dataCenter">0 - all data centers</param>
     /// <returns></returns>
     public static World[] GetPublicWorlds(uint dataCenter)
     {

@@ -468,7 +468,7 @@ public static unsafe partial class GenericHelpers
                || Svc.Condition[ConditionFlag.Fishing]
                || Svc.Condition[ConditionFlag.Transformed]
                || Svc.Condition[ConditionFlag.UsingHousingFunctions]
-               || Svc.ClientState.LocalPlayer?.IsTargetable != true;
+               || Svc.Objects.LocalPlayer?.IsTargetable != true;
     }
 
     /// <summary>

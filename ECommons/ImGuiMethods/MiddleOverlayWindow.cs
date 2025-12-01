@@ -33,7 +33,7 @@ public class MiddleOverlayWindow : Window, IDisposable
 
     public override bool DrawConditions()
     {
-        return Svc.ClientState.LocalPlayer != null;
+        return Svc.Objects.LocalPlayer != null;
     }
 
     public override void Draw()
