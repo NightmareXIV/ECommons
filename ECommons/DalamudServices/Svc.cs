@@ -70,14 +70,7 @@ public class Svc
         {
             PluginLog.Debug("Services already initialized, skipping");
         }
+        pi.Create<Svc>();
         IsInitialized = true;
-        try
-        {
-            pi.Create<Svc>();
-        }
-        catch(Exception ex)
-        {
-            ex.Log();
-        }
     }
 }
