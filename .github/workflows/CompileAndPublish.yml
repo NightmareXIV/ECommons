@@ -32,6 +32,10 @@ jobs:
             repository: 'NightmareXIV/NightmareXIVNugetUploader'
             submodules: true
             ref: 'main'
+        - name: Checkout current repository into 'repo'
+          uses: actions/checkout@v4
+          with:
+            path: repo
         - name: print
           run: find -type d -printf '%d\t%P\n' | sort -r -nk1 | cut -f2-
         - name: Set up .NET
