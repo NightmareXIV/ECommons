@@ -30,4 +30,5 @@ public interface IFieldPropertyUnion
 
     IEnumerable<CustomAttributeData> CustomAttributes { get; }
     bool IsCollectible { get; }
+    bool IsStatic { get; }
 }
