@@ -428,6 +428,7 @@ public static unsafe partial class GenericHelpers
     /// Checks if client has commonly occuring occupied flags that block some interactions and functions.
     /// </summary>
     /// <returns></returns>
+
     public static bool IsOccupied()
     {
         return Svc.Condition[ConditionFlag.Occupied]

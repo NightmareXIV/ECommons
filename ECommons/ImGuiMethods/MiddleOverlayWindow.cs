@@ -7,6 +7,7 @@ using System.Numerics;
 
 namespace ECommons.ImGuiMethods;
 
+
 public class MiddleOverlayWindow : Window, IDisposable
 {
     private int? TopOffset = null;

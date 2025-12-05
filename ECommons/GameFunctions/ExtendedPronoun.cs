@@ -10,6 +10,7 @@ using System.Security.Principal;
 
 namespace ECommons.GameFunctions;
 
+
 [Obsolete("Use ExtendedPronoun instead of FakePronoun")]
 public static unsafe class FakePronoun
 {

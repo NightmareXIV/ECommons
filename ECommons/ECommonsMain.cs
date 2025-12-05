@@ -134,7 +134,7 @@ var type = "unknown build";
         GenericHelpers.Safe(SendAction.Dispose);
         GenericHelpers.Safe(Automation.LegacyTaskManager.TaskManager.DisposeAll);
         GenericHelpers.Safe(Automation.NeoTaskManager.TaskManager.DisposeAll);
-#pragma warning disable CS0618 // Type or member is obsolete
+ // Type or member is obsolete
         GenericHelpers.Safe(EqualStrings.Dispose);
 #pragma warning restore CS0618 // Type or member is obsolete
         GenericHelpers.Safe(AutoCutsceneSkipper.Dispose);

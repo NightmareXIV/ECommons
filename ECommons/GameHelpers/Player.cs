@@ -25,6 +25,7 @@ namespace ECommons.GameHelpers;
 /// <summary>
 /// In general, these properties and methods should be made in a way that does not throws <see cref="NullReferenceException"/>, where feasible.
 /// </summary>
+
 public static unsafe class Player
 {
     public static readonly Number MaxLevel = 100;

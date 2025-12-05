@@ -8,6 +8,7 @@ using System.Collections.Generic;
 namespace ECommons.Events;
 #nullable disable
 
+
 public static class ProperOnLogin
 {
     private static HashSet<Action> RegisteredActions = [];
