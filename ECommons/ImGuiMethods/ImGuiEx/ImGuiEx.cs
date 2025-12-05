@@ -1173,9 +1173,7 @@ public static unsafe partial class ImGuiEx
     {
         if(ImGui.IsItemHovered())
         {
-            ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
             SetTooltip(s);
-            ImGui.PopTextWrapPos();
         }
     }
 

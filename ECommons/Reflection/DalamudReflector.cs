@@ -249,16 +249,16 @@ public static class DalamudReflector
     {
         if(!ignoreCache)
         {
+            if(pluginCache == null)
+            {
+                throw new Exception("PluginCache is null. Have you initialised the DalamudReflector module on ECommons initialisation?");
+            }
             if(!IsMonitoring)
             {
                 IsMonitoring = true;
                 PluginLog.Information($"[ECommons] [DalamudReflector] Plugin cache was requested for the first time. Starting to monitor plugins for changes...");
                 Svc.Framework.Update += MonitorPlugins;
             }
-        }
-        if(pluginCache == null)
-        {
-            throw new Exception("PluginCache is null. Have you initialised the DalamudReflector module on ECommons initialisation?");
         }
 
         if(!ignoreCache && pluginCache.TryGetValue(internalName, out var entry) && entry.Plugin != null)
