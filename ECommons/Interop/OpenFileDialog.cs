@@ -21,9 +21,12 @@ public class OpenFileDialog
     [DllImport("Comdlg32.dll", CharSet = CharSet.Auto)]
     private static extern bool GetOpenFileName([In, Out] OpenFileName ofn);
 
-    public static void SelectFile(Action<OpenFileName> successCallback, Action cancelCallback = null, string initialDir = null, string title = "Select a file...", IEnumerable<(string Description, IEnumerable<string> Extensions)> fileTypes = null) => SelectFile(new(), successCallback, cancelCallback, initialDir, title, fileTypes);
+    [DllImport("Comdlg32.dll", CharSet = CharSet.Auto)]
+    private static extern bool GetSaveFileName([In, Out] OpenFileName ofn);
 
-    public static void SelectFile(OpenFileName ofn, Action<OpenFileName> successCallback, Action cancelCallback = null, string initialDir = null, string title = "Select a file...", IEnumerable<(string Description, IEnumerable<string> Extensions)> fileTypes = null)
+    public static void SelectFile(Action<OpenFileName> successCallback, Action cancelCallback = null, string initialDir = null, string title = "Select a file...", IEnumerable<(string Description, IEnumerable<string> Extensions)> fileTypes = null, bool save = false) => SelectFile(new(), successCallback, cancelCallback, initialDir, title, fileTypes, save);
+
+    public static void SelectFile(OpenFileName ofn, Action<OpenFileName> successCallback, Action cancelCallback = null, string initialDir = null, string title = "Select a file...", IEnumerable<(string Description, IEnumerable<string> Extensions)> fileTypes = null, bool save = false)
     {
         if(SelectorSemaphore.Wait(0))
         {
@@ -63,7 +66,7 @@ public class OpenFileDialog
                     ofn.title = title;
 
                     PluginLog.Debug("Preparing to call winapi");
-                    if(GetOpenFileName(ofn))
+                    if(save ? GetSaveFileName(ofn) : GetOpenFileName(ofn))
                     {
                         successCallback?.Invoke(ofn);
                     }

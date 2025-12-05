@@ -216,4 +216,83 @@ public static partial class ReflectionHelper
         }
         return null;
     }
+
+    /// <summary>
+    /// Information about a delegate field
+    /// </summary>
+    public class DelegateInfo
+    {
+        public bool IsDelegate { get; set; }
+        public Type[] ParameterTypes { get; set; }
+        public Type ReturnType { get; set; } // null if void
+        public Type DelegateType { get; set; }
+    }
+
+    /// <summary>
+    /// Analyzes a field to determine if it's a delegate and extracts its signature
+    /// </summary>
+    public static DelegateInfo AnalyzeDelegateField(IFieldPropertyUnion field)
+    {
+        ArgumentNullException.ThrowIfNull(field);
+
+        var info = new DelegateInfo();
+        var fieldType = field.UnionType;
+
+        // Check if the field type is a delegate
+        if(!typeof(Delegate).IsAssignableFrom(fieldType))
+        {
+            info.IsDelegate = false;
+            return info;
+        }
+
+        info.IsDelegate = true;
+        info.DelegateType = fieldType;
+
+        // Get the Invoke method which contains the delegate signature
+        var invokeMethod = fieldType.GetMethod("Invoke");
+        if(invokeMethod == null)
+        {
+            info.IsDelegate = false;
+            return info;
+        }
+
+        // Extract parameter types
+        info.ParameterTypes = [.. invokeMethod.GetParameters().Select(p => p.ParameterType)];
+
+        // Extract return type (null if void)
+        info.ReturnType = invokeMethod.ReturnType == typeof(void)
+            ? null
+            : invokeMethod.ReturnType;
+
+        return info;
+    }
+
+    /// <summary>
+    /// Assigns a delegate to a field on a target object
+    /// </summary>
+    public static void AssignDelegateToField(IFieldPropertyUnion field, object target, Delegate delegateInstance)
+    {
+        ArgumentNullException.ThrowIfNull(field);
+
+        if(target == null && !field.IsStatic)
+            throw new ArgumentNullException(nameof(target), "Target cannot be null for instance fields");
+
+        ArgumentNullException.ThrowIfNull(delegateInstance);
+
+        // Verify the field is a delegate type
+        if(!typeof(Delegate).IsAssignableFrom(field.UnionType))
+            throw new ArgumentException("Field is not a delegate type", nameof(field));
+
+        // Check if the delegate can be assigned to the field
+        if(!field.UnionType.IsAssignableFrom(delegateInstance.GetType()))
+        {
+            // Try to create a delegate of the correct type
+            var converted = Delegate.CreateDelegate(field.UnionType, delegateInstance.Target, delegateInstance.Method);
+            field.SetValue(target, converted);
+        }
+        else
+        {
+            field.SetValue(target, delegateInstance);
+        }
+    }
 }

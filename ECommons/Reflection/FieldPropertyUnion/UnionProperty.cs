@@ -30,6 +30,8 @@ public class UnionProperty : IFieldPropertyUnion
 
     public bool IsCollectible => PropertyInfo.IsCollectible;
 
+    public bool IsStatic => PropertyInfo.GetMethod?.IsStatic ?? PropertyInfo.SetMethod?.IsStatic ?? throw new InvalidOperationException("No GetMethod or SetMethod is available for property");
+
     public object[] GetCustomAttributes(bool inherit) => PropertyInfo.GetCustomAttributes(inherit);
 
     public object[] GetCustomAttributes(Type attributeType, bool inherit) => PropertyInfo.GetCustomAttributes(attributeType, inherit);

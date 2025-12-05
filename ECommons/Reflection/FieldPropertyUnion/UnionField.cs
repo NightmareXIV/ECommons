@@ -30,6 +30,8 @@ public class UnionField : IFieldPropertyUnion
 
     public bool IsCollectible => FieldInfo.IsCollectible;
 
+    public bool IsStatic => FieldInfo.IsStatic;
+
     public object[] GetCustomAttributes(bool inherit) => FieldInfo.GetCustomAttributes(inherit);
 
     public object[] GetCustomAttributes(Type attributeType, bool inherit) => FieldInfo.GetCustomAttributes(attributeType, inherit);
