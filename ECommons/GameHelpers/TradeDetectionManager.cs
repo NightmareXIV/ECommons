@@ -107,6 +107,9 @@ public static unsafe class TradeDetectionManager
         }
     }
 
+    public static bool SelfReadyForTrade => *(int*)(((nint)InventoryManager.Instance()) + 8572) == 4;
+    public static bool PartnerReadyForTrade => *(int*)(((nint)InventoryManager.Instance()) + 8576) == 4;
+
     internal static void Dispose()
     {
         Svc.Condition.ConditionChange -= Condition_ConditionChange;
