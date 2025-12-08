@@ -45,10 +45,11 @@ public static unsafe class Player
     public static RowRef<Race> Race => Svc.PlayerState.Race;
     public static Sex Sex => Svc.PlayerState.Sex;
 
-    /// <remarks>Adjusts to sync, same as <see cref="SyncedLevel"/></remarks>
+    /// <remarks>Is unaffected by Level Sync</remarks>
     public static int Level => Svc.PlayerState.Level;
     public static bool IsLevelSynced => PlayerState.Instance()->IsLevelSynced;
-    public static int SyncedLevel => PlayerState.Instance()->SyncedLevel;
+    public static int SyncedLevel => Svc.PlayerState.EffectiveLevel;
+    [Obsolete("Use Level instead")]
     public static int UnsyncedLevel => GetUnsyncedLevel(GetJob(Object));
     public static int GetUnsyncedLevel(Job job) => Svc.PlayerState.GetClassJobLevel(job.GetGameData().Value);
 
