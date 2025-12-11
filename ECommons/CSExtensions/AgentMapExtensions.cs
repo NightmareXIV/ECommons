@@ -8,13 +8,9 @@ using System.Threading.Tasks;
 namespace ECommons.CSExtensions;
 public unsafe static class AgentMapExtensions
 {
-    public static bool IsFlagMarkerSet(this AgentMap agent)
+    extension(ref AgentMap agent)
     {
-        return agent.FlagMarkerCount > 0;
-    }
-
-    public static FlagMapMarker FlagMapMarker(this AgentMap agent)
-    {
-        return agent.FlagMapMarkers[0];
+        public bool IsFlagMarkerSet => agent.FlagMarkerCount > 0;
+        public FlagMapMarker FlagMapMarker => agent.FlagMapMarkers[0];
     }
 }
