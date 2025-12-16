@@ -1,25 +1,22 @@
 ﻿using System.Reflection;
 
 namespace ECommons.EzIpcManager;
-[Obfuscation(Exclude = true)]
 public enum SafeWrapper
 {
     /// <summary>
     /// Directly call IPC, don't use any wrapper
     /// </summary>
-    None,
+    [Obfuscation] None,
     /// <summary>
     /// Only catch and discard IPCException
     /// </summary>
-    IPCException,
+    [Obfuscation] IPCException,
     /// <summary>
     /// Catch and discard all exceptions
     /// </summary>
-    AnyException,
-#pragma warning disable
+    [Obfuscation] AnyException,
     /// <summary>
     /// Inherit default setting from <see cref="EzIPC.Init"/> call
     /// </summary>
-#pragma warning restore
-    Inherit = 255
+    [Obfuscation] Inherit = 255
 }
