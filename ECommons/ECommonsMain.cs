@@ -67,7 +67,7 @@ public static class ECommonsMain
                     var windowd = WindowFunctions.TryFindGameWindow(out var handle);
                     fixed(char* titlePtr = title)
                     fixed(char* messagePtr = message)
-                        TerraFX.Interop.Windows.Windows.MessageBox(windowd ? handle : default, (ushort*)messagePtr, (ushort*)titlePtr, 0);
+                        TerraFX.Interop.Windows.Windows.MessageBox(windowd ? handle : default, messagePtr, titlePtr, 0);
                 }
                 catch(Exception e)
                 {
