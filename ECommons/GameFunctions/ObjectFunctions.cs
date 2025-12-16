@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 namespace ECommons.GameFunctions;
 #nullable disable
 
+
 public static unsafe class ObjectFunctions
 {
     private delegate byte GetNameplateColorDelegate(nint ptr);
@@ -83,9 +84,9 @@ public static unsafe class ObjectFunctions
 
     public static bool TryGetPartyMemberObjectByObjectId(uint objectId, out IGameObject partyMemberObject)
     {
-        if(objectId == Svc.ClientState.LocalPlayer?.GameObjectId)
+        if(objectId == Svc.Objects.LocalPlayer?.GameObjectId)
         {
-            partyMemberObject = Svc.ClientState.LocalPlayer;
+            partyMemberObject = Svc.Objects.LocalPlayer;
             return true;
         }
         foreach(var p in Svc.Party)
@@ -102,9 +103,9 @@ public static unsafe class ObjectFunctions
 
     public static bool TryGetPartyMemberObjectByAddress(IntPtr address, out IGameObject partyMemberObject)
     {
-        if(address == Svc.ClientState.LocalPlayer?.Address)
+        if(address == Svc.Objects.LocalPlayer?.Address)
         {
-            partyMemberObject = Svc.ClientState.LocalPlayer;
+            partyMemberObject = Svc.Objects.LocalPlayer;
             return true;
         }
         foreach(var p in Svc.Party)

@@ -158,7 +158,7 @@ public static unsafe class Chat
         {
             throw new ArgumentException("message can't contain carriage return", nameof(message));
         }
-#pragma warning disable CS0618 // Type or member is obsolete
+ // Type or member is obsolete
         SendMessageUnsafe(bytes);
 #pragma warning restore CS0618 // Type or member is obsolete
     }

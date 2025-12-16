@@ -10,6 +10,7 @@ using System.Security.Principal;
 
 namespace ECommons.GameFunctions;
 
+
 [Obsolete("Use ExtendedPronoun instead of FakePronoun")]
 public static unsafe class FakePronoun
 {
@@ -191,8 +192,8 @@ public static unsafe class ExtendedPronoun
     {
         if(modifier == "target")
         {
-            return (GameObject*)Svc.ClientState.LocalPlayer?.TargetObject?.Address;
+            return (GameObject*)Svc.Objects.LocalPlayer?.TargetObject?.Address;
         }
-        return (GameObject*)Svc.ClientState.LocalPlayer?.Address;
+        return (GameObject*)Svc.Objects.LocalPlayer?.Address;
     }
 }

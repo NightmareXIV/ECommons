@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
+[Obsolete("Not used, rework pending")]
 public static class SyncHelper
 {
     [ThreadStatic] private static SingleThreadContext current;

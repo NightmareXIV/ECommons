@@ -22,7 +22,7 @@ public static class ObjectLife
         new TickScheduler(() =>
         {
             IGameObjectLifeTime = [];
-#pragma warning disable CS0618 // Type or member is obsolete
+ // Type or member is obsolete
             IGameObject_ctor_hook = Svc.Hook.HookFromAddress<IGameObject_ctor>(Svc.SigScanner.ScanText("48 8D 05 ?? ?? ?? ?? C7 81 ?? ?? ?? ?? ?? ?? ?? ?? 48 89 01 48 8B C1 C3"), IGameObject_ctor_detour);
 #pragma warning restore CS0618 // Type or member is obsolete
             IGameObject_ctor_hook.Enable();

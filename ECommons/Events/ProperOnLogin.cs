@@ -8,6 +8,7 @@ using System.Collections.Generic;
 namespace ECommons.Events;
 #nullable disable
 
+
 public static class ProperOnLogin
 {
     private static HashSet<Action> RegisteredActions = [];
@@ -15,7 +16,7 @@ public static class ProperOnLogin
     private static bool EventRegisteredAvailable = false;
     private static bool EventRegisteredInteractable = false;
 
-    public static bool PlayerPresent => Svc.ClientState.LocalPlayer != null && Svc.ClientState.LocalContentId != 0;
+    public static bool PlayerPresent => Svc.Objects.LocalPlayer != null && Svc.PlayerState.ContentId != 0;
 
     public static void FireArtificially()
     {

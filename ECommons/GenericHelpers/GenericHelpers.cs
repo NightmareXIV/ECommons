@@ -1,9 +1,11 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
+using Dalamud.Plugin;
 using ECommons.ChatMethods;
 using ECommons.Configuration;
 using ECommons.DalamudServices;
@@ -34,21 +36,146 @@ public static unsafe partial class GenericHelpers
     private static ulong UidCnt = 0;
     public static string GetTemporaryId() => $"{UidPrefix}{UidCnt++:X}";
 
+    /// <summary>
+    /// Returns sum of all elements in the <paramref name="sequence"/>.
+    /// </summary>
+    /// <param name="sequence"></param>
+    /// <returns></returns>
+    public static uint Sum(this IEnumerable<uint> sequence)
+    {
+        uint ret = 0u;
+        foreach(var x in sequence)
+        {
+            ret += x;
+        }
+        return ret;
+    }
+
+    /// <summary>
+    /// Removes all entries from <paramref name="dictionary"/> matching <paramref name="predicate"/>
+    /// </summary>
+    /// <typeparam name="K"></typeparam>
+    /// <typeparam name="V"></typeparam>
+    /// <param name="dictionary"></param>
+    /// <param name="predicate"></param>
+    public static void RemoveAll<K, V>(this IDictionary<K, V> dictionary, Predicate<KeyValuePair<K, V>> predicate)
+    {
+        var lst = new List<K>();
+        foreach(var x in dictionary)
+        {
+            if(predicate(x)) lst.Add(x.Key);
+        }
+        foreach(var x in lst)
+        {
+            dictionary.Remove(x);
+        }
+    }
+
+    /// <summary>
+    /// Safely finds maximum in a collection; does not throws.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <returns></returns>
+    public static T MaxSafe<T>(this IEnumerable<T> collection) where T : IComparable<T>
+    {
+        if(collection == null) return default;
+        T value = default;
+        foreach(var x in collection)
+        {
+            if(x.CompareTo(value) > 0) value = x;
+        }
+        return value;
+    }
+
+    /// <summary>
+    /// Safely finds minimum in a collection. Does not throws.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <returns></returns>
+    public static T MinSafe<T>(this IEnumerable<T> collection) where T : IComparable<T>
+    {
+        if(collection == null) return default;
+        T value = default;
+        foreach(var x in collection)
+        {
+            if(x.CompareTo(value) < 0) value = x;
+        }
+        return value;
+    }
+
+    /// <summary>
+    /// Safely finds maximum in a collection; does not throws.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="K"></typeparam>
+    /// <param name="collection"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static K MaxSafe<T, K>(this IEnumerable<T> collection, Func<T, K> selector) where K : IComparable<K>
+    {
+        if(collection == null) return default;
+        K value = default;
+        foreach(var x in collection)
+        {
+            var candidate = selector(x);
+            if(candidate.CompareTo(value) > 0) value = candidate;
+        }
+        return value;
+    }
+
+    /// <summary>
+    /// Safely finds minimum in a collection; does not throws.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="K"></typeparam>
+    /// <param name="collection"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static K MinSafe<T, K>(this IEnumerable<T> collection, Func<T, K> selector) where K : IComparable<K>
+    {
+        if(collection == null) return default;
+        K value = default;
+        foreach(var x in collection)
+        {
+            var candidate = selector(x);
+            if(candidate.CompareTo(value) < 0) value = candidate;
+        }
+        return value;
+    }
+
     public static string GetDisplayTag(this Guid guid)
     {
         return guid.ToString().Split("-")[0].ToUpper();
     }
 
+    /// <summary>
+    /// Regenerates a specified GUID
+    /// </summary>
+    /// <param name="guid"></param>
     public static void Regenerate(this ref Guid guid)
     {
         guid = Guid.NewGuid();
     }
 
+    /// <summary>
+    /// Removes whitespace, tab, carriage return and new line symbols from the string.
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
     public static string RemoveWhitespaces(this string s)
     {
         return s.Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\t", "");
     }
 
+    /// <summary>
+    /// Tries to get a value out of nullable struct, if value exists.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="nullable"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public static bool TryGetValue<T>(this T? nullable, out T value) where T : struct
     {
         if(nullable.HasValue)
@@ -92,6 +219,12 @@ public static unsafe partial class GenericHelpers
         return ret;
     }
 
+    /// <summary>
+    /// Checks if an address of a GameObject is the same as address of another GameObject.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="other"></param>
+    /// <returns><see langword="true"/> when addresses are the same or both objects are <see langword="null"/>; <see langword="false"/> otherwise.</returns>
     public static bool AddressEquals(this IGameObject obj, IGameObject other)
     {
         return obj?.Address == other?.Address;
@@ -159,8 +292,14 @@ public static unsafe partial class GenericHelpers
     /// <returns>Whether the key is currently pressed</returns>
     public static bool IsKeyPressed(LimitedKeys key) => IsKeyPressed((int)key);
 
+    [Obsolete("Use IsKeyPressed overload")]
     public static bool IsAnyKeyPressed(IEnumerable<LimitedKeys> keys) => keys.Any(IsKeyPressed);
 
+    /// <summary>
+    /// Checks if any of specified keys are pressed
+    /// </summary>
+    /// <param name="keys"></param>
+    /// <returns></returns>
     public static bool IsKeyPressed(IEnumerable<LimitedKeys> keys)
     {
         foreach(var x in keys)
@@ -170,6 +309,11 @@ public static unsafe partial class GenericHelpers
         return false;
     }
 
+    /// <summary>
+    /// Checks if any of specified keys are pressed, uses keycode
+    /// </summary>
+    /// <param name="keys"></param>
+    /// <returns></returns>
     public static bool IsKeyPressed(IEnumerable<int> keys)
     {
         foreach(var x in keys)
@@ -189,19 +333,33 @@ public static unsafe partial class GenericHelpers
         return Svc.Targets.Target != null && obj != null && Svc.Targets.Target.Address == obj.Address;
     }
 
+    /// <summary>
+    /// Tests whether an object is null or matches predicate. 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="testFunction"></param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNullOr<T>(this T source, Predicate<T> testFunction)
     {
         return source == null || testFunction(source);
     }
 
+    /// <summary>
+    /// Creates an array and fills it with copies of the same value. 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="element">Array will be filled with this value. </param>
+    /// <param name="num"></param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T[] CreateArray<T>(this T o, uint num)
+    public static T[] CreateArray<T>(this T element, uint num)
     {
         var arr = new T[num];
         for(var i = 0; i < arr.Length; i++)
         {
-            arr[i] = o;
+            arr[i] = element;
         }
         return arr;
     }
@@ -218,11 +376,21 @@ public static unsafe partial class GenericHelpers
         return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj));
     }
 
+    /// <summary>
+    /// Serializes and then deserializes object, returning result of deserialization using <see cref="DefaultSerializationFactory"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj"></param>
+    /// <returns>Deserialized copy of <paramref name="obj"/></returns>
     public static T DSFClone<T>(this T obj)
     {
         return EzConfig.DefaultSerializationFactory.Deserialize<T>(EzConfig.DefaultSerializationFactory.Serialize(obj));
     }
 
+    /// <summary>
+    /// Deletes file to recycle bin.
+    /// </summary>
+    /// <param name="path"></param>
     public static void DeleteFileToRecycleBin(string path)
     {
         try
@@ -235,18 +403,31 @@ public static unsafe partial class GenericHelpers
         }
     }
 
+    [Obsolete("Does not really provides functions. Will be removed in future, if you're using it - please open an issue on Github.")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool If<T>(this T obj, Func<T, bool> func)
     {
         return func(obj);
     }
 
+    /// <summary>
+    /// Checks whether passed value is null and returns guaranteed to be not null object if succeeds. 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj"></param>
+    /// <param name="outobj"></param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool NotNull<T>(this T obj, [NotNullWhen(true)] out T outobj)
     {
         outobj = obj;
         return obj != null;
     }
+
+    /// <summary>
+    /// Checks if client has commonly occuring occupied flags that block some interactions and functions.
+    /// </summary>
+    /// <returns></returns>
 
     public static bool IsOccupied()
     {
@@ -288,7 +469,7 @@ public static unsafe partial class GenericHelpers
                || Svc.Condition[ConditionFlag.Fishing]
                || Svc.Condition[ConditionFlag.Transformed]
                || Svc.Condition[ConditionFlag.UsingHousingFunctions]
-               || Svc.ClientState.LocalPlayer?.IsTargetable != true;
+               || Svc.Objects.LocalPlayer?.IsTargetable != true;
     }
 
     /// <summary>
@@ -316,15 +497,22 @@ public static unsafe partial class GenericHelpers
         return false;
     }
 
-    public static SeStringBuilder Add(this SeStringBuilder b, IEnumerable<Payload> payloads)
+    /// <summary>
+    /// Appends multiple payloads to <paramref name="seStringBuilder"/>
+    /// </summary>
+    /// <param name="seStringBuilder"></param>
+    /// <param name="payloads"></param>
+    /// <returns></returns>
+    public static SeStringBuilder Add(this SeStringBuilder seStringBuilder, IEnumerable<Payload> payloads)
     {
         foreach(var x in payloads)
         {
-            b = b.Add(x);
+            seStringBuilder = seStringBuilder.Add(x);
         }
-        return b;
+        return seStringBuilder;
     }
 
+    [Obsolete("Use ExcelTerritoryHelper.GetName")]
     public static string GetTerritoryName(this Number terr)
     {
         var t = Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(terr);
@@ -334,11 +522,23 @@ public static unsafe partial class GenericHelpers
     [Obsolete($"Please use ExcelWorldHelper.TryGetWorldByName")]
     public static bool TryGetWorldByName(string world, out Lumina.Excel.Sheets.World worldId) => ExcelWorldHelper.TryGetWorldByName(world, out worldId);
 
+    /// <summary>
+    /// Inverts a color represented by Vector4 for use with ImGui
+    /// </summary>
+    /// <param name="v"></param>
+    /// <returns></returns>
     public static Vector4 Invert(this Vector4 v)
     {
         return v with { X = 1f - v.X, Y = 1f - v.Y, Z = 1f - v.Z };
     }
 
+    /// <summary>
+    /// Clamps original value and returns the result
+    /// </summary>
+    /// <param name="i"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
     public static ref int ValidateRange(this ref int i, int min, int max)
     {
         if(i > max) i = max;
@@ -346,6 +546,7 @@ public static unsafe partial class GenericHelpers
         return ref i;
     }
 
+    /// <inheritdoc cref="GenericHelpers.ValidateRange(ref int, int, int)"/>
     public static ref float ValidateRange(this ref float i, float min, float max)
     {
         if(i > max) i = max;
@@ -370,6 +571,10 @@ public static unsafe partial class GenericHelpers
         return invert ? !b : b;
     }
 
+    /// <summary>
+    /// Starts a process with UseShellExecute set to true.
+    /// </summary>
+    /// <param name="s"></param>
     public static void ShellStart(string s)
     {
         Safe(delegate
@@ -385,6 +590,7 @@ public static unsafe partial class GenericHelpers
         });
     }
 
+    [Obsolete("Presumably unused, to be removed. Open an issue on Github if you're using it.")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ushort GetParsedSeSetingColor(int percent)
     {
@@ -422,12 +628,17 @@ public static unsafe partial class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Executes an action wrapped in try..catch
+    /// </summary>
+    /// <param name="action"></param>
+    /// <param name="suppressErrors"></param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Safe(System.Action a, bool suppressErrors = false)
+    public static void Safe(System.Action action, bool suppressErrors = false)
     {
         try
         {
-            a();
+            action();
         }
         catch(Exception e)
         {
@@ -435,6 +646,7 @@ public static unsafe partial class GenericHelpers
         }
     }
 
+    ///<inheritdoc cref="GenericHelpers.Safe(System.Action, bool)"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Safe(System.Action a, Action<string, object[]> logAction)
     {
@@ -448,6 +660,7 @@ public static unsafe partial class GenericHelpers
         }
     }
 
+    ///<inheritdoc cref="GenericHelpers.Safe(System.Action, bool)"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Safe(System.Action a, Action<string> fail, bool suppressErrors = false)
     {
@@ -471,11 +684,16 @@ public static unsafe partial class GenericHelpers
         }
     }
 
-    public static bool TryExecute(System.Action a)
+    /// <summary>
+    /// Attempts to execute an action wrapped in try..catch
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns>Whether successfully executed</returns>
+    public static bool TryExecute(System.Action action)
     {
         try
         {
-            a();
+            action();
             return true;
         }
         catch(Exception e)
@@ -485,11 +703,17 @@ public static unsafe partial class GenericHelpers
         }
     }
 
-    public static bool TryExecute<T>(Func<T> a, out T result)
+
+    /// <summary>
+    /// Attempts to execute a function wrapped in try..catch
+    /// </summary>
+    /// <param name="function"></param>
+    /// <returns>Whether successfully executed</returns>
+    public static bool TryExecute<T>(Func<T> function, out T result)
     {
         try
         {
-            result = a();
+            result = function();
             return true;
         }
         catch(Exception e)
@@ -500,12 +724,26 @@ public static unsafe partial class GenericHelpers
         }
     }
 
+    /// <summary>
+    /// Checks whether an object equals any of the specified objects
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsAny<T>(this T obj, params T[] values)
     {
         return values.Any(x => x.Equals(obj));
     }
 
+    /// <summary>
+    /// Checks whether an object equals any of the specified objects
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsAny<T>(this T obj, IEnumerable<T> values)
     {

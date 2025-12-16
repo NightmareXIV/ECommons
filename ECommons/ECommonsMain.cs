@@ -14,6 +14,7 @@ using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.Hooks;
 using ECommons.ImGuiMethods;
+using ECommons.Interop;
 using ECommons.LazyDataHelpers;
 using ECommons.Loader;
 using ECommons.Logging;
@@ -28,6 +29,8 @@ using Serilog.Events;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using TerraFX.Interop.Windows;
 using Callback = ECommons.Automation.Callback;
 
 
@@ -45,10 +48,34 @@ public static class ECommonsMain
     /// </summary>
     public static bool ReducedLogging = false;
 
-    public static void Init(IDalamudPluginInterface pluginInterface, IDalamudPlugin instance, params Module[] modules)
+    public unsafe static void Init(IDalamudPluginInterface pluginInterface, IDalamudPlugin instance, params Module[] modules)
     {
         Instance = instance;
-        GenericHelpers.Safe(() => Svc.Init(pluginInterface));
+        try
+        {
+            Svc.Init(pluginInterface);
+        }
+        catch(Exception ex)
+        {
+            new Thread(() =>
+            {
+                try
+                {
+                    var title = "Error initializing ECommons";
+                    var message = $"Error initializing ECommons services: {ex.Message}\nPlugin {pluginInterface?.Manifest?.InternalName} can not be loaded.\nPlease contact the developer.\nSee dalamud.boot.log for stack trace.";
+                    Console.WriteLine($"Error initializing ECommons services\n{ex.ToStringFull()}");
+                    var windowd = WindowFunctions.TryFindGameWindow(out var handle);
+                    fixed(char* titlePtr = title)
+                    fixed(char* messagePtr = message)
+                        TerraFX.Interop.Windows.Windows.MessageBox(windowd ? handle : default, messagePtr, titlePtr, 0);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine($"Error showing MessageBox: {e.ToStringFull()}\nError initializing ECommons services\n{ex.ToStringFull()}");
+                }
+            }).Start();
+            throw;
+        }
 #if DEBUG
 var type = "debug build";
 #elif RELEASE
@@ -134,7 +161,7 @@ var type = "unknown build";
         GenericHelpers.Safe(SendAction.Dispose);
         GenericHelpers.Safe(Automation.LegacyTaskManager.TaskManager.DisposeAll);
         GenericHelpers.Safe(Automation.NeoTaskManager.TaskManager.DisposeAll);
-#pragma warning disable CS0618 // Type or member is obsolete
+ // Type or member is obsolete
         GenericHelpers.Safe(EqualStrings.Dispose);
 #pragma warning restore CS0618 // Type or member is obsolete
         GenericHelpers.Safe(AutoCutsceneSkipper.Dispose);

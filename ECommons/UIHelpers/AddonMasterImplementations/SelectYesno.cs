@@ -16,6 +16,15 @@ public partial class AddonMaster
         public SelectYesno(nint addon) : base(addon) { }
         public SelectYesno(void* addon) : base(addon) { }
 
+        /// <summary>
+        /// Whether to not click the button if it's hold button
+        /// </summary>
+        public bool RespectHoldButtons { get; set; } = false;
+        /// <summary>
+        /// Whether to not click the button if it's disabled
+        /// </summary>
+        public bool RespectDisabledButtons { get; set; } = false;
+
         public SeString SeString => GenericHelpers.ReadSeString(&Addon->PromptText->NodeText);
         public SeString SeStringNullTerminated => MemoryHelper.ReadSeStringNullTerminated(new nint(Addon->AtkValues[0].String));
         public string Text => SeString.GetText();
@@ -28,11 +37,14 @@ public partial class AddonMaster
 
         public void Yes()
         {
-            if(Addon->YesButton != null && !Addon->YesButton->IsEnabled)
+            if(!RespectDisabledButtons)
             {
-                Svc.Log.Debug($"{nameof(AddonSelectYesno)}: Force enabling yes button");
-                var flagsPtr = (ushort*)&Addon->YesButton->AtkComponentBase.OwnerNode->AtkResNode.NodeFlags;
-                *flagsPtr ^= 1 << 5;
+                if(Addon->YesButton != null && !Addon->YesButton->IsEnabled)
+                {
+                    Svc.Log.Debug($"{nameof(AddonSelectYesno)}: Force enabling yes button");
+                    var flagsPtr = (ushort*)&Addon->YesButton->AtkComponentBase.OwnerNode->AtkResNode.NodeFlags;
+                    *flagsPtr ^= 1 << 5;
+                }
             }
             ClickButtonIfEnabled(Addon->YesButton);
         }

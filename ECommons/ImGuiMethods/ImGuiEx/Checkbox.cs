@@ -1,5 +1,12 @@
 ﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Interface;
+using Dalamud.Interface.Colors;
+using Dalamud.Interface.Windowing;
 using System;
+using System.Numerics;
+using System.Reflection.Emit;
+using TerraFX.Interop.Windows;
+using static FFXIVClientStructs.FFXIV.Component.GUI.AtkResNode.Delegates;
 
 namespace ECommons.ImGuiMethods;
 public static unsafe partial class ImGuiEx
@@ -64,6 +71,79 @@ public static unsafe partial class ImGuiEx
             return true;
         }
         return false;
+    }
+
+    /// <summary>
+    /// <see cref="ImGui.Checkbox"/> that supports Enabled property
+    /// </summary>
+    /// <param name="label"></param>
+    /// <param name="value"></param>
+    /// <param name="enabled"></param>
+    /// <returns></returns>
+    public static bool Checkbox(string label, ref bool value, bool enabled = true)
+    {
+        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
+        var ret = ImGui.Checkbox(label, ref value);
+        if(!enabled) ImGui.PopStyleVar();
+        if(ret && !enabled)
+        {
+            value = !value;
+        }
+        return enabled && ret;
+    }
+
+    /// <inheritdoc cref="ImGuiEx.Checkbox(FontAwesomeIcon, Vector4?, Vector4?, Vector4?, Vector4?, string, ref bool, bool)"/>
+    public static bool Checkbox(FontAwesomeIcon icon, string label, ref bool value, bool enabled = true)
+    {
+        return Checkbox(icon, null, null, null, null, label, ref value, enabled);
+    }
+
+    /// <inheritdoc cref="ImGuiEx.Checkbox(FontAwesomeIcon, Vector4?, Vector4?, Vector4?, Vector4?, string, ref bool, bool)"/>
+    public static bool Checkbox(FontAwesomeIcon icon, Vector4? selectedColor, string label,  ref bool value, bool enabled = true)
+    {
+        return Checkbox(icon, selectedColor, null, selectedColor, null, label, ref value, enabled);
+    }
+
+    /// <summary>
+    /// Draws a checkbox with an icon inside it instead of check mark
+    /// </summary>
+    /// <param name="icon"></param>
+    /// <param name="selectedCheckboxIconColor"></param>
+    /// <param name="unselectedCheckboxIconColor"></param>
+    /// <param name="label"></param>
+    /// <param name="value"></param>
+    /// <param name="enabled"></param>
+    /// <returns></returns>
+    public static bool Checkbox(FontAwesomeIcon icon, Vector4? selectedCheckboxIconColor, Vector4? unselectedCheckboxIconColor, Vector4? selectedText, Vector4? unselectedText, string label, ref bool value, bool enabled = true)
+    {
+        selectedCheckboxIconColor ??= ImGuiColors.ParsedGreen;
+        unselectedCheckboxIconColor ??= ImGuiColors.DalamudGrey3;
+        unselectedText ??= ImGui.GetStyle().Colors[(int)ImGuiCol.Text];
+        selectedText ??= ImGuiColors.ParsedGreen;
+        var cursor = ImGui.GetCursorScreenPos();
+        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
+        var dummy = false;
+        var ret = false;
+        ImGui.PushStyleColor(ImGuiCol.Text, (value ? selectedText : unselectedText).Value);
+        if(ImGui.Checkbox(label, ref dummy))
+        {
+            if(enabled)
+            {
+                value = !value;
+                ret = true;
+            }
+        }
+        ImGui.PopStyleColor();
+        if(!enabled) ImGui.PopStyleVar();
+        ImGui.SameLine(0, 0);
+        ImGui.PushFont(UiBuilder.IconFont);
+        var textSize = ImGui.CalcTextSize(icon.ToIconString());
+        var fsize = new Vector2(ImGui.GetFrameHeight());
+        var padding = (fsize - textSize) / 2f;
+        var col = (value ? selectedCheckboxIconColor : unselectedCheckboxIconColor) ?? ImGui.GetStyle().Colors[(int)ImGuiCol.Text];
+        ImGui.GetWindowDrawList().AddText(cursor + padding, col.ToUint(), icon.ToIconString());
+        ImGui.PopFont();
+        return enabled && ret;
     }
 
     /// <summary>

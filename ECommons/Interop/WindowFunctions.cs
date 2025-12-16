@@ -16,7 +16,7 @@ public static unsafe class WindowFunctions
     public const int SW_SHOWNA = 8;
 
     private static readonly Lock FFXIVClassNamePtrLock = new();
-    public static ushort* FFXIVClassNamePtr
+    public static char* FFXIVClassNamePtr
     {
         get
         {
@@ -33,7 +33,7 @@ public static unsafe class WindowFunctions
                         {
                             Buffer.MemoryCopy(strPtr, (void*)ptr, size, size);
                         }
-                        field = (ushort*)ptr;
+                        field = (char*)ptr;
                         Purgatory.Add(() => Marshal.FreeHGlobal(ptr));
                     }
                 }

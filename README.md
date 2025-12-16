@@ -1,3 +1,10 @@
+# Important
+Having errors regarding `Player` class?
+Add this `using` directive to bypass it if you don't feel like updating everything just yet:
+```
+global using Player = ECommons.GameHelpers.LegacyPlayer.Player;
+```
+
 <section id="about">
 <a href="#about" alt="About"><h1>About ECommons</h1></a>
   <p>ECommons is a multi-functional library designed to work within Dalamud Plugins. It features a variety of different systems and shortcuts which cuts out a lot of boiler plate code normally used to do standard plugin tasks.</p>
