@@ -9,11 +9,11 @@ namespace ECommons.Hooks;
 
 public static class DirectorUpdate
 {
-    private static readonly string Sig = "48 89 5C 24 ?? 57 48 83 EC 30 41 8B D9 41 8B F8 E8 ?? ?? ?? ?? 48 85 C0";
+    private static readonly string Sig = "40 53 57 48 83 EC 58 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 44 24 ?? 41 8B F9";
 
-    public delegate long ProcessDirectorUpdate(long a1, long a2, DirectorUpdateCategory a3, uint a4, uint a5, int a6, int a7);
+    public delegate long ProcessDirectorUpdate(long a1, long a2, DirectorUpdateCategory a3, uint a4, uint a5, int a6, int a7, int a8, int a9);
     internal static Hook<ProcessDirectorUpdate> ProcessDirectorUpdateHook = null;
-    private static Action<long, long, DirectorUpdateCategory, uint, uint, int, int> FullParamsCallback = null;
+    private static Action<long, long, DirectorUpdateCategory, uint, uint, int, int, int, int> FullParamsCallback = null;
     private static Action<DirectorUpdateCategory> CategoryOnlyCallback = null;
     private static ProcessDirectorUpdate OriginalDelegate;
     public static ProcessDirectorUpdate Delegate
@@ -32,20 +32,20 @@ public static class DirectorUpdate
         }
     }
 
-    internal static long ProcessDirectorUpdateDetour_Full(long a1, long a2, DirectorUpdateCategory a3, uint a4, uint a5, int a6, int a7)
+    internal static long ProcessDirectorUpdateDetour_Full(long a1, long a2, DirectorUpdateCategory a3, uint a4, uint a5, int a6, int a7, int a8, int a9)
     {
         try
         {
-            FullParamsCallback(a1, a2, a3, a4, a5, a6, a7);
+            FullParamsCallback(a1, a2, a3, a4, a5, a6, a7, a8, a9);
         }
         catch(Exception e)
         {
             e.Log();
         }
-        return ProcessDirectorUpdateHook.Original(a1, a2, a3, a4, a5, a6, a7);
+        return ProcessDirectorUpdateHook.Original(a1, a2, a3, a4, a5, a6, a7, a8, a9);
     }
 
-    internal static long ProcessDirectorUpdateDetour_Category(long a1, long a2, DirectorUpdateCategory a3, uint a4, uint a5, int a6, int a7)
+    internal static long ProcessDirectorUpdateDetour_Category(long a1, long a2, DirectorUpdateCategory a3, uint a4, uint a5, int a6, int a7, int a8, int a9)
     {
         try
         {
@@ -55,10 +55,10 @@ public static class DirectorUpdate
         {
             e.Log();
         }
-        return ProcessDirectorUpdateHook.Original(a1, a2, a3, a4, a5, a6, a7);
+        return ProcessDirectorUpdateHook.Original(a1, a2, a3, a4, a5, a6, a7, a8, a9);
     }
 
-    public static void Init(Action<long, long, DirectorUpdateCategory, uint, uint, int, int> fullParamsCallback)
+    public static void Init(Action<long, long, DirectorUpdateCategory, uint, uint, int, int, int, int> fullParamsCallback)
     {
         if(ProcessDirectorUpdateHook != null)
         {
