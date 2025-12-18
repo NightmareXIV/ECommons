@@ -182,7 +182,7 @@ public static unsafe partial class GenericHelpers
     public static string? NullWhenEmpty(this string s) => s == string.Empty ? null : s;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsNullOrEmpty(this string s) => string.IsNullOrEmpty(s);
+    public static bool IsNullOrEmpty(this string? s) => string.IsNullOrEmpty(s);
 
     /// <summary>
     /// Returns <paramref name="s"/> when <paramref name="b"/> is <see langword="true"/>, <see langword="null"/> otherwise
