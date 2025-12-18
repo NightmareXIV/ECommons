@@ -2,8 +2,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Authors>NightmareXIV</Authors>
-        <BaseVersion>3.1.0.1</BaseVersion>
-        <PackageKind></PackageKind>
+        <BaseVersion>3.1.0.2</BaseVersion>
+        <PackageKind>stg</PackageKind>
         <VersionSuffix Condition="'$(PackageKind)' != ''">-$(PackageKind)</VersionSuffix>
         <Version>$(BaseVersion)$(VersionSuffix)</Version>
         <Configurations>Debug;Release</Configurations>

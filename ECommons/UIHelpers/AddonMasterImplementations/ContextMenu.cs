@@ -36,7 +36,7 @@ public partial class AddonMaster
             }
         }
 
-        private const int offset = 7;
+        private const int offset = 8;
         public Entry[] Entries
         {
             get
