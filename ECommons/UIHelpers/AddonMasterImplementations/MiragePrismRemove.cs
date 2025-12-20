@@ -8,8 +8,8 @@ public partial class AddonMaster
         public MiragePrismRemove(nint addon) : base(addon) { }
         public MiragePrismRemove(void* addon) : base(addon) { }
 
-        public AtkComponentButton* DispelButton => Addon->GetComponentButtonById(15);
-        public AtkComponentButton* ReturnButton => Addon->GetComponentButtonById(16);
+        public AtkComponentButton* DispelButton => Addon->GetComponentButtonById(14);
+        public AtkComponentButton* ReturnButton => Addon->GetComponentButtonById(15);
 
         public override string AddonDescription { get; } = "Remove glamour window";
 
