@@ -20,5 +20,11 @@ public partial class AddonMaster
 
         public void Desynthesize() => ClickButtonIfEnabled(DesynthesizeButton);
         public void Cancel() => ClickButtonIfEnabled(CancelButton);
+
+        [Obsolete("Do not use")]
+        public void Checkbox()
+        {
+            // do nothing for now
+        }
     }
 }
