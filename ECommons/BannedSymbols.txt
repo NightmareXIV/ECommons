@@ -1,2 +1,3 @@
 T:Dalamud.Interface.Utility.Raii.ImRaii
 M:Lumina.Text.ReadOnly.ReadOnlySeString.ExtractText
+P:Lumina.Excel.Sheets.World.Region

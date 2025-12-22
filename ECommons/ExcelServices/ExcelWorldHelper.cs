@@ -27,7 +27,7 @@ public static class ExcelWorldHelper
     {
         if(name == null) return null;
         if(NameCache.TryGetValue(name, out var world)) return world;
-        if(Svc.Data.GetExcelSheet<World>().TryGetFirst(x => x.Name.ToString().EqualsIgnoreCase(name) && (!onlyPublic || x.Region.EqualsAny(Enum.GetValues<Region>().Select(z => (byte)z).ToArray())), out var result))
+        if(Svc.Data.GetExcelSheet<World>().TryGetFirst(x => x.Name.ToString().EqualsIgnoreCase(name) && (!onlyPublic || x.GetRegion().EqualsAny(Enum.GetValues<Region>())), out var result))
         {
             NameCache[name] = result;
             return result;
@@ -38,7 +38,7 @@ public static class ExcelWorldHelper
     public static World? Get(uint id, bool onlyPublic = false)
     {
         var result = Svc.Data.GetExcelSheet<World>().GetRowOrDefault(id);
-        if(result != null && (!onlyPublic || result.Value.Region.EqualsAny(Enum.GetValues<Region>().Select(z => (byte)z).ToArray())))
+        if(result != null && (!onlyPublic || result.Value.GetRegion().EqualsAny(Enum.GetValues<Region>().Select(z => z))))
         {
             return result;
         }
