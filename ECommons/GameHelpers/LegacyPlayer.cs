@@ -33,66 +33,52 @@ public static unsafe class Player
 {
     public static readonly Number MaxLevel = 100;
     public static IPlayerCharacter Object => Svc.Objects.LocalPlayer;
-    public static bool Available => Svc.Objects.LocalPlayer != null;
-    [Obsolete("Use GameHelpers.Player.Available")]
+    public static bool Available => Object != null;
     public static bool AvailableThreadSafe => GameObjectManager.Instance()->Objects.IndexSorted[0].Value != null;
     public static bool Interactable => Available && Object.IsTargetable;
     public static bool IsBusy => GenericHelpers.IsOccupied() || Object.IsCasting || IsMoving || IsAnimationLocked || Svc.Condition[ConditionFlag.InCombat];
     public static ulong CID => Svc.PlayerState.ContentId;
-    public static StatusList Status => Svc.Objects.LocalPlayer?.StatusList;
-
-    public static string Name => Svc.PlayerState.CharacterName;
-    public static string NameWithWorld => GetNameWithWorld(Object);
-    public static string GetNameWithWorld(this IPlayerCharacter pc) => pc == null ? null : (pc.Name.ToString() + "@" + pc.HomeWorld.ValueNullable?.Name.ToString());
+    public static StatusList Status => Object?.StatusList;
+    public static string? Name => Object?.Name.ToString();
+    public static string? NameWithWorld => GetNameWithWorld(Object);
+    public static string? GetNameWithWorld(this IPlayerCharacter pc) => pc == null ? null : (pc.Name.ToString() + "@" + pc.HomeWorld.ValueNullable?.Name.ToString());
     public static RowRef<Race> Race => Svc.PlayerState.Race;
     public static Sex Sex => Svc.PlayerState.Sex;
 
     /// <remarks>Is unaffected by Level Sync</remarks>
-    public static int Level => Svc.PlayerState.Level;
+    public static int Level => Object?.Level ?? 0;
     public static bool IsLevelSynced => PlayerState.Instance()->IsLevelSynced;
-    public static int SyncedLevel => Svc.PlayerState.EffectiveLevel;
+    public static int SyncedLevel => ECommons.GameHelpers.Player.SyncedLevel;
     [Obsolete("Use Level instead")]
     public static int UnsyncedLevel => GetUnsyncedLevel(GetJob(Object));
     public static int GetUnsyncedLevel(Job job) => Svc.PlayerState.GetClassJobLevel(job.GetGameData().Value);
 
-    public static bool IsInHomeWorld => Available && Svc.PlayerState.CurrentWorld.RowId == Svc.PlayerState.HomeWorld.RowId;
-    public static bool IsInHomeDC => Available && Svc.PlayerState.CurrentWorld.Value.DataCenter.RowId == Svc.PlayerState.HomeWorld.Value.DataCenter.RowId;
-    [Obsolete("Use GameHelpers.Player.HomeWorldName")]
-    public static string HomeWorld => Svc.PlayerState.HomeWorld.Value.Name.ToString();
-    [Obsolete("Use GameHelpers.Player.CurrentWorldName")]
-    public static string CurrentWorld => Svc.PlayerState.CurrentWorld.Value.Name.ToString();
-    [Obsolete("Use GameHelpers.Player.HomeDataCenterName")]
-    public static string HomeDataCenter => Svc.PlayerState.HomeWorld.Value.DataCenter.Value.Name.ToString();
-    [Obsolete("Use GameHelpers.Player.CurrentDataCenterName")]
-    public static string CurrentDataCenter => Svc.PlayerState.CurrentWorld.Value.DataCenter.Value.Name.ToString();
+    public static bool IsInHomeWorld => Available && Object.CurrentWorld.RowId == Object.HomeWorld.RowId;
+    public static bool IsInHomeDC => Available && Object.CurrentWorld.Value.DataCenter.RowId == Object.HomeWorld.Value.DataCenter.RowId;
+    public static string HomeWorld => Object.HomeWorld.Value.Name.ToString();
+    public static string CurrentWorld => Object.CurrentWorld.Value.Name.ToString();
+    public static string HomeDataCenter => Object.HomeWorld.Value.DataCenter.Value.Name.ToString();
+    public static string CurrentDataCenter => Object.CurrentWorld.Value.DataCenter.Value.Name.ToString();
 
     public static Character* Character => (Character*)Object.Address;
     public static BattleChara* BattleChara => (BattleChara*)Object.Address;
     public static GameObject* GameObject => (GameObject*)Object.Address;
 
-    [Obsolete("Use GameHelpers.Player.Territory.RowId")]
     public static uint Territory => Svc.ClientState.TerritoryType;
-    [Obsolete("Use GameHelpers.Player.TerritoryIntendedUseEnum")]
     public static TerritoryIntendedUseEnum TerritoryIntendedUse => (TerritoryIntendedUseEnum)(Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(Territory)?.TerritoryIntendedUse.ValueNullable?.RowId ?? default);
-    [Obsolete("Use GameHelpers.Player.HomeAetheryteTerritory.RowId")]
     public static uint HomeAetheryteTerritory => Svc.Data.GetExcelSheet<Aetheryte>().GetRowOrDefault(PlayerState.Instance()->HomeAetheryteId).Value.Territory.RowId;
     public static bool IsInDuty => GameMain.Instance()->CurrentContentFinderConditionId != 0;
     public static bool IsOnIsland => MJIManager.Instance()->IsPlayerInSanctuary;
     public static bool IsInPvP => GameMain.IsInPvPInstance();
 
-    public static RowRef<ClassJob> ClassJob => Svc.PlayerState.ClassJob;
-    public static Job Job => (Job)Svc.PlayerState.ClassJob.RowId;
+    public static RowRef<ClassJob> ClassJob => Object?.ClassJob ?? default;
+    public static Job Job => Object?.GetJob() ?? 0;
     public static GrandCompany GrandCompany => (GrandCompany)PlayerState.Instance()->GrandCompany;
-    [Obsolete("Use GameHelpers.Player.Job")]
     public static Job GetJob(this IPlayerCharacter pc) => (Job)(pc?.ClassJob.RowId ?? 0);
 
-    [Obsolete("Use GameHelpers.Player.HomeWorld.RowId")]
-    public static uint HomeWorldId => Svc.PlayerState.HomeWorld.RowId;
-    [Obsolete("Use GameHelpers.Player.CurrentWorld.RowId")]
-    public static uint CurrentWorldId => Svc.PlayerState.CurrentWorld.RowId;
-    [Obsolete("Use GameHelpers.Player.ClassJob.RowId")]
-    public static uint JobId => Svc.PlayerState.ClassJob.RowId;
-    [Obsolete("Use GameHelpers.Player.OnlineStatus.RowId")]
+    public static uint HomeWorldId => Object.HomeWorld.RowId;
+    public static uint CurrentWorldId => Object.CurrentWorld.RowId;
+    public static uint JobId => Object.ClassJob.RowId;
     public static uint OnlineStatus => Player.Object?.OnlineStatus.RowId ?? 0;
 
     public static Vector3 Position => Available ? Object.Position : Vector3.Zero;
