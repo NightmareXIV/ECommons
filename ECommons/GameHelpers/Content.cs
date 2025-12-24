@@ -1,3 +1,4 @@
+using Dalamud.Game;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
 using Lumina.Data;
@@ -83,7 +84,7 @@ public static class Content
     /// </summary>
     /// <seealso cref="TerritoryHelper.GetTerritoryName" />
     private static string TerritoryNameResult =>
-        TerritoryHelper.GetTerritoryName(TerritoryID);
+        TerritoryHelper.GetTerritoryName(TerritoryID, ClientLanguage.English);
 
     /// <summary>
     ///     Whether the TerritoryName came out successfully from the builder.
