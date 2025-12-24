@@ -144,6 +144,12 @@ public static class Content
         TerritoryTypeRow?.ContentFinderCondition.ValueNullable;
 
     /// <summary>
+    ///     The Row ID of the current <see cref="ContentFinderCondition" />.
+    /// </summary>
+    private static uint? ContentFinderConditionRowId =>
+        ContentFinderConditionRow?.RowId;
+
+    /// <summary>
     ///     The content name of the current territory the player is in.
     /// </summary>
     /// <value>
