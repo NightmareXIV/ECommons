@@ -1,5 +1,5 @@
-﻿using Dalamud.Game;
-using ECommons.DalamudServices;
+﻿using ECommons.DalamudServices;
+using Lumina.Data;
 using Lumina.Excel.Sheets;
 using System;
 using System.Collections.Generic;
@@ -10,13 +10,13 @@ public static class TerritoryName
 {
     private static Dictionary<uint, string> Cache = [];
 
-    public static string GetTerritoryName(uint id, ClientLanguage? lang = null)
+    public static string GetTerritoryName(uint id, Language? lang = null)
     {
         if(Cache.TryGetValue(id, out var val))
         {
             return val;
         }
-        var data = Svc.Data.GetExcelSheet<TerritoryType>(lang)!.GetRowOrDefault(id);
+        var data = Svc.Data.Excel.GetSheet<TerritoryType>(lang)!.GetRowOrDefault(id);
         if(data != null)
         {
             var zoneName = data.Value.PlaceName.ValueNullable?.Name.ToString() ?? "";
