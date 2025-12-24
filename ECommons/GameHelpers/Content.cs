@@ -327,6 +327,7 @@ public static class Content
                 (ContentName?.Contains("Delubrum") ?? false) ||
                 (ContentName?.Contains("Lacus") ?? false) ||
                 (ContentName?.Contains("Dalriada") ?? false) ||
+                (ContentName?.Contains("Forked Tower") ?? false) ||
                 MapID is >= 520 and <= 527 =>
                 GameHelpers.ContentType.FieldRaid,
 
