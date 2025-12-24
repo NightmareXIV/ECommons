@@ -146,7 +146,7 @@ public static class Content
     /// <summary>
     ///     The Row ID of the current <see cref="ContentFinderCondition" />.
     /// </summary>
-    private static uint? ContentFinderConditionRowId =>
+    public static uint? ContentFinderConditionRowId =>
         ContentFinderConditionRow?.RowId;
 
     /// <summary>
@@ -258,7 +258,7 @@ public static class Content
     /// <summary>
     ///     The Row ID of the current <see cref="SheetContentType" />.
     /// </summary>
-    private static uint? ContentTypeRowId =>
+    public static uint? ContentTypeRowId =>
         ContentTypeRow?.RowId;
 
     /// <summary>
