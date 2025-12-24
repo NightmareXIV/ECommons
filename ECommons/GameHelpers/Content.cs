@@ -373,6 +373,7 @@ public static class Content
                     "Hard" => GameHelpers.ContentDifficulty.Hard,
                     "Extreme" => GameHelpers.ContentDifficulty.Extreme,
                     "Savage" => GameHelpers.ContentDifficulty.Savage,
+                    "Chaotic" => GameHelpers.ContentDifficulty.Chaotic,
                     _ => @default,
                 },
 
