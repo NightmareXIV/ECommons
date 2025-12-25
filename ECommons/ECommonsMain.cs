@@ -159,6 +159,7 @@ var type = "unknown build";
         GenericHelpers.Safe(ActionEffect.Dispose);
         GenericHelpers.Safe(MapEffect.Dispose);
         GenericHelpers.Safe(SendAction.Dispose);
+        GenericHelpers.Safe(ActorVfx.Dispose);
         GenericHelpers.Safe(Automation.LegacyTaskManager.TaskManager.DisposeAll);
         GenericHelpers.Safe(Automation.NeoTaskManager.TaskManager.DisposeAll);
  // Type or member is obsolete
