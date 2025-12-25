@@ -83,7 +83,7 @@ public static class Content
     /// </summary>
     /// <seealso cref="TerritoryHelper.GetTerritoryName" />
     private static string TerritoryNameResult =>
-        TerritoryHelper.GetTerritoryName(TerritoryID);
+        TerritoryHelper.GetTerritoryName(TerritoryID, Language.English);
 
     /// <summary>
     ///     Whether the TerritoryName came out successfully from the builder.
@@ -142,6 +142,12 @@ public static class Content
     /// </summary>
     public static ContentFinderCondition? ContentFinderConditionRow =>
         TerritoryTypeRow?.ContentFinderCondition.ValueNullable;
+
+    /// <summary>
+    ///     The Row ID of the current <see cref="ContentFinderCondition" />.
+    /// </summary>
+    public static uint? ContentFinderConditionRowId =>
+        ContentFinderConditionRow?.RowId;
 
     /// <summary>
     ///     The content name of the current territory the player is in.
@@ -252,7 +258,7 @@ public static class Content
     /// <summary>
     ///     The Row ID of the current <see cref="SheetContentType" />.
     /// </summary>
-    private static uint? ContentTypeRowId =>
+    public static uint? ContentTypeRowId =>
         ContentTypeRow?.RowId;
 
     /// <summary>
@@ -327,6 +333,7 @@ public static class Content
                 (ContentName?.Contains("Delubrum") ?? false) ||
                 (ContentName?.Contains("Lacus") ?? false) ||
                 (ContentName?.Contains("Dalriada") ?? false) ||
+                (ContentName?.Contains("Forked Tower") ?? false) ||
                 MapID is >= 520 and <= 527 =>
                 GameHelpers.ContentType.FieldRaid,
 
@@ -372,6 +379,7 @@ public static class Content
                     "Hard" => GameHelpers.ContentDifficulty.Hard,
                     "Extreme" => GameHelpers.ContentDifficulty.Extreme,
                     "Savage" => GameHelpers.ContentDifficulty.Savage,
+                    "Chaotic" => GameHelpers.ContentDifficulty.Chaotic,
                     _ => @default,
                 },
 
