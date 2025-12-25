@@ -12,7 +12,10 @@ public static unsafe class ActorVfx
     public const string Sig = "40 53 55 56 57 48 81 EC ?? ?? ?? ?? 0F 29 B4 24 ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 0F B6 AC 24 ?? ?? ?? ?? 0F 28 F3 49 8B F8";
 
     private delegate nint ActorVfxCreateDelegate(char* a1, nint a2, nint a3, float a4, char a5, ushort a6, char a7);
-    public delegate nint ActorVfxCreateCallbackDelegate(char* a1, nint a2, nint a3, float a4, char a5, ushort a6, char a7);
+
+    public delegate void ActorVfxCreateCallbackDelegate(
+        char* vfxPtr, nint actorAddress,
+        nint a3, float a4, char a5, ushort a6, char a7);
 
     private static Hook<ActorVfxCreateDelegate> ActorVfxCreateHook = null;
 
@@ -70,11 +73,11 @@ public static unsafe class ActorVfx
         {
             ActorVfxCreateHook = Svc.Hook.HookFromAddress<ActorVfxCreateDelegate>(ptr, ActorVfxCreateDetour);
             Enable();
-            PluginLog.Information($"Requested Action Effect hook and successfully initialized");
+            PluginLog.Information($"Requested Actor Vfx Create hook and successfully initialized");
         }
         else
         {
-            PluginLog.Error($"Could not find ActionEffect signature");
+            PluginLog.Error($"Could not find Actor Vfx Create signature");
         }
     }
 
@@ -95,7 +98,7 @@ public static unsafe class ActorVfx
         if(ActorVfxCreateHook == null)
             return;
 
-        PluginLog.Information($"Disposing ActorVfx Hook");
+        PluginLog.Information($"Disposing ActorVfx Create Hook");
         Disable();
         if (!ActorVfxCreateHook.IsDisposed)
             ActorVfxCreateHook?.Dispose();
