@@ -19,7 +19,7 @@ namespace ECommons.GameHelpers;
 public class VfxManager
 {
     public static readonly TimeSpan VfxExpiryDuration = TimeSpan.FromSeconds(30);
-    
+
     public static readonly Dictionary<ulong, List<VfxInfo>> TrackedEffects = [];
 
     // https://github.com/PunishXIV/Splatoon/blob/main/Splatoon/Utility/Utils.cs#L482
@@ -53,7 +53,7 @@ public class VfxManager
 
     internal static unsafe void Dispose()
     {
-        lock (TrackedEffects)
+        lock(TrackedEffects)
             TrackedEffects.Clear();
         ActorVfx.ActorVfxCreateEvent              -= TrackOnVfxCreate;
         ActorVfx.ActorVfxDtorEvent                -= RemoveSpecificVfx;
@@ -66,9 +66,9 @@ public class VfxManager
     (nint vfxPtr, char* vfxPathPtr, nint casterAddress, nint targetAddress,
         float a4, char a5, ushort a6, char a7)
     {
-        var spawnTick = Environment.TickCount64;
-        ulong casterID;
-        ulong targetID;
+        var    spawnTick = Environment.TickCount64;
+        ulong  casterID;
+        ulong  targetID;
         string path;
         try
         {
@@ -82,7 +82,7 @@ public class VfxManager
             targetID = targetObject.GameObjectId;
             path = MemoryHelper
                 .ReadString(new nint(vfxPathPtr), Encoding.ASCII, 256);
-        
+
             PluginLog.Verbose(
                 $"[EC.VfxManager] VFX Caught." +
                 $"Path: `{path}`, " +
@@ -94,10 +94,10 @@ public class VfxManager
             return;
         }
 
-        if (BlacklistedVfx.Contains(path))
+        if(BlacklistedVfx.Contains(path))
             return;
 
-        lock (TrackedEffects)
+        lock(TrackedEffects)
         {
             if(!TrackedEffects.ContainsKey(targetID))
                 TrackedEffects[targetID] = [];
@@ -111,13 +111,14 @@ public class VfxManager
             Path      = path,
             SpawnTick = spawnTick,
         };
-        
-        lock (TrackedEffects)
+
+        lock(TrackedEffects)
             TrackedEffects[targetID].Add(info);
     }
 
-    private static void EmptyVfxList(ushort _) {
-        lock (TrackedEffects)
+    private static void EmptyVfxList(ushort _)
+    {
+        lock(TrackedEffects)
             TrackedEffects.Clear();
     }
 
@@ -130,18 +131,18 @@ public class VfxManager
         var actorObject = Svc.Objects
             .FirstOrDefault(x => x.Address == objectAddress);
 
-        if (actorObject == null)
+        if(actorObject == null)
             return;
 
-        var actorID     = actorObject.GameObjectId;
+        var actorID = actorObject.GameObjectId;
 
-        lock (TrackedEffects)
+        lock(TrackedEffects)
             TrackedEffects.Remove(actorID);
     }
 
     private static void RemoveSpecificVfx(nint vfxAddress)
     {
-        lock (TrackedEffects)
+        lock(TrackedEffects)
         {
             var keys = TrackedEffects.Keys.ToList();
             foreach(var actorId in keys)
@@ -161,21 +162,21 @@ public class VfxManager
             }
         }
     }
-    
+
     private static void EmptyVfxListPeriodically(IFramework _)
     {
         if(!Svc.Condition[ConditionFlag.InCombat])
         {
-            lock (TrackedEffects)
+            lock(TrackedEffects)
             {
                 TrackedEffects.Clear();
                 return;
             }
         }
 
-        if (EzThrottler.Throttle("VfxManager_PeriodicEmpty", 140))
+        if(EzThrottler.Throttle("VfxManager_PeriodicEmpty", 140))
         {
-            lock (TrackedEffects)
+            lock(TrackedEffects)
             {
                 var keys = TrackedEffects.Keys.ToList();
                 foreach(var actorId in keys)
@@ -200,15 +201,14 @@ public class VfxManager
 
 public record struct VfxInfo
 {
-    public long VfxID;
-
     public ulong CasterID;
-
-    public ulong TargetID;
 
     public string Path;
 
     public long SpawnTick;
+
+    public ulong TargetID;
+    public long  VfxID;
 
     public long Age => Environment.TickCount64 - SpawnTick;
 
