@@ -9,17 +9,27 @@ namespace ECommons.Hooks;
 
 public static unsafe class ActorVfx
 {
-    public const string Sig = "40 53 55 56 57 48 81 EC ?? ?? ?? ?? 0F 29 B4 24 ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 0F B6 AC 24 ?? ?? ?? ?? 0F 28 F3 49 8B F8";
+    public const string CreateSig = "40 53 55 56 57 48 81 EC ?? ?? ?? ?? 0F 29 B4 24 ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 0F B6 AC 24 ?? ?? ?? ?? 0F 28 F3 49 8B F8";
+    public const string DtorSig = "48 89 5C 24 ?? 57 48 83 EC ?? 48 8D 05 ?? ?? ?? ?? 48 8B D9 48 89 01 8B FA 48 8D 05 ?? ?? ?? ?? 48 89 81 ?? ?? ?? ?? 48 8B 89 ?? ?? ?? ?? 48 85 C9 74 ?? 48 8B 01 48 8B D3";
 
     private delegate nint ActorVfxCreateDelegate(char* a1, nint a2, nint a3, float a4, char a5, ushort a6, char a7);
+
+    private delegate void ActorVfxDtorDelegate(nint a1);
 
     public delegate void ActorVfxCreateCallbackDelegate(
         char* vfxPtr, nint actorAddress,
         nint a3, float a4, char a5, ushort a6, char a7);
+    
+    public delegate void ActorVfxDtorCallbackDelegate(nint actorVfxAddress);
 
     private static Hook<ActorVfxCreateDelegate> ActorVfxCreateHook = null;
+    
+    private static Hook<ActorVfxDtorDelegate> ActorVfxDtorHook = null;
 
     private static event ActorVfxCreateCallbackDelegate _actorVfxCreateEvent;
+    
+    private static event ActorVfxDtorCallbackDelegate _actorVfxDtorEvent;
+    
     /// <summary>
     ///     Add a <see cref="ActorVfxCreateCallbackDelegate"/> subscriber
     ///     to this event be called when an actor VFX is created.
@@ -28,14 +38,30 @@ public static unsafe class ActorVfx
     {
         add
         {
-            Hook();
+            HookCreate();
             _actorVfxCreateEvent += value;
         }
         remove => _actorVfxCreateEvent -= value;
     }
     
+    /// <summary>
+    ///     Add a <see cref="ActorVfxDtorCallbackDelegate"/> subscriber
+    ///     to this event be called when an actor VFX is destructed.
+    /// </summary>
+    public static event ActorVfxDtorCallbackDelegate ActorVfxDtorEvent
+    {
+        add
+        {
+            HookDtor();
+            _actorVfxDtorEvent += value;
+        }
+        remove => _actorVfxDtorEvent -= value;
+    }
+    
     internal static nint ActorVfxCreateDetour(char* a1, nint a2, nint a3, float a4, char a5, ushort a6, char a7)
     {
+        var output = ActorVfxCreateHook!.Original(a1, a2, a3, a4, a5, a6, a7);
+
         try
         {
             var @event = _actorVfxCreateEvent;
@@ -61,30 +87,84 @@ public static unsafe class ActorVfx
         {
             e.Log();
         }
-        return ActorVfxCreateHook!.Original(a1, a2, a3, a4, a5, a6, a7);
+
+        return output;
+    }
+    
+    internal static void ActorVfxDtorDetour(nint a1)
+    {
+        try
+        {
+            var @event = _actorVfxDtorEvent;
+            if (@event != null)
+            {
+                // Iterate individual subscribers so a failing subscriber doesn't stop the rest.
+                foreach (var subscriber in @event.GetInvocationList())
+                {
+                    try
+                    {
+                        var subscriberMethod =
+                            (ActorVfxDtorCallbackDelegate)subscriber;
+                        subscriberMethod(a1);
+                    }
+                    catch (Exception e)
+                    {
+                        e.Log();
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.Log();
+        }
+        ActorVfxDtorHook!.Original(a1);
     }
 
-    private static void Hook()
+    private static void HookCreate()
     {
         if(ActorVfxCreateHook != null)
             return;
 
-        if(Svc.SigScanner.TryScanText(Sig, out var ptr))
+        if(Svc.SigScanner.TryScanText(CreateSig, out var ptr))
         {
             ActorVfxCreateHook = Svc.Hook.HookFromAddress<ActorVfxCreateDelegate>(ptr, ActorVfxCreateDetour);
-            Enable();
-            PluginLog.Information($"Requested Actor Vfx Create hook and successfully initialized");
+            EnableCreate();
+            PluginLog.Information("Requested Actor Vfx Create hook and successfully initialized");
         }
         else
         {
-            PluginLog.Error($"Could not find Actor Vfx Create signature");
+            PluginLog.Error("Could not find Actor Vfx Create signature");
+        }
+    }
+    
+    private static void HookDtor()
+    {
+        if(ActorVfxDtorHook != null)
+            return;
+
+        if(Svc.SigScanner.TryScanText(DtorSig, out var ptr))
+        {
+            ActorVfxDtorHook = Svc.Hook.HookFromAddress<ActorVfxDtorDelegate>(ptr, ActorVfxDtorDetour);
+            EnableDtor();
+            PluginLog.Information("Requested Actor Vfx Dtor hook and successfully initialized");
+        }
+        else
+        {
+            PluginLog.Error("Could not find Actor Vfx Dtor signature");
         }
     }
 
-    public static void Enable()
+    public static void EnableCreate()
     {
         if(ActorVfxCreateHook?.IsEnabled == false)
             ActorVfxCreateHook?.Enable();
+    }
+    
+    public static void EnableDtor()
+    {
+        if(ActorVfxDtorHook?.IsEnabled == false)
+            ActorVfxDtorHook?.Enable();
     }
 
     public static void Disable()
@@ -92,16 +172,30 @@ public static unsafe class ActorVfx
         if(ActorVfxCreateHook?.IsEnabled == true)
             ActorVfxCreateHook?.Disable();
     }
+    
+    public static void DisableDtor()
+    {
+        if(ActorVfxDtorHook?.IsEnabled == true)
+            ActorVfxDtorHook?.Disable();
+    }
 
     public static void Dispose()
     {
-        if(ActorVfxCreateHook == null)
-            return;
-
-        PluginLog.Information($"Disposing ActorVfx Create Hook");
-        Disable();
-        if (!ActorVfxCreateHook.IsDisposed)
-            ActorVfxCreateHook?.Dispose();
-        ActorVfxCreateHook = null;
+        if(ActorVfxCreateHook != null)
+        {
+            PluginLog.Information("Disposing ActorVfx Create Hook");
+            Disable();
+            if(!ActorVfxCreateHook.IsDisposed)
+                ActorVfxCreateHook?.Dispose();
+            ActorVfxCreateHook = null;
+        }
+        if(ActorVfxDtorHook != null)
+        {
+            PluginLog.Information("Disposing ActorVfx Dtor Hook");
+            DisableDtor();
+            if(!ActorVfxDtorHook.IsDisposed)
+                ActorVfxDtorHook?.Dispose();
+            ActorVfxDtorHook = null;
+        }
     }
 }
