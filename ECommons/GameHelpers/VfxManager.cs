@@ -142,6 +142,9 @@ public class VfxManager
 
     private static void RemoveSpecificVfx(nint vfxAddress)
     {
+        // todo: only remove the VFX when the caster/target match too
+        //       (avoid removing VFX from all actors just because one actor lost it)
+        //       (requires VfxStruct to be updated and added here)
         lock(TrackedEffects)
         {
             var keys = TrackedEffects.Keys.ToList();
@@ -165,6 +168,7 @@ public class VfxManager
 
     private static void EmptyVfxListPeriodically(IFramework _)
     {
+        // todo: only do this when it doesn't match the last flag (e.g. "on combat end")
         if(!Svc.Condition[ConditionFlag.InCombat])
         {
             lock(TrackedEffects)
