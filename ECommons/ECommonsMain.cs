@@ -86,6 +86,7 @@ var type = "unknown build";
         if(!ReducedLogging) PluginLog.Information($"This is ECommons v{typeof(ECommonsMain).Assembly.GetName().Version} ({type}) and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}. Hello!");
         Svc.Log.MinimumLogLevel = LogEventLevel.Verbose;
         GenericHelpers.Safe(CmdManager.Init);
+        GenericHelpers.Safe(VfxManager.Init);
         if(modules.ContainsAny(Module.All, Module.ObjectFunctions))
         {
             if(!ReducedLogging) PluginLog.Information("Object functions module has been requested");
@@ -160,6 +161,8 @@ var type = "unknown build";
         GenericHelpers.Safe(MapEffect.Dispose);
         GenericHelpers.Safe(SendAction.Dispose);
         GenericHelpers.Safe(ActorVfx.Dispose);
+        GenericHelpers.Safe(GameObjectCtor.Dispose);
+        GenericHelpers.Safe(VfxManager.Dispose);
         GenericHelpers.Safe(Automation.LegacyTaskManager.TaskManager.DisposeAll);
         GenericHelpers.Safe(Automation.NeoTaskManager.TaskManager.DisposeAll);
  // Type or member is obsolete
