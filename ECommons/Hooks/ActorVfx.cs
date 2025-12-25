@@ -17,8 +17,9 @@ public static unsafe class ActorVfx
     private delegate void ActorVfxDtorDelegate(nint a1);
 
     public delegate void ActorVfxCreateCallbackDelegate(
-        char* vfxPtr, nint actorAddress,
-        nint a3, float a4, char a5, ushort a6, char a7);
+        nint vfxPtr,
+        char* vfxPathPtr, nint casterAddress, nint targetAddress,
+        float a4, char a5, ushort a6, char a7);
     
     public delegate void ActorVfxDtorCallbackDelegate(nint actorVfxAddress);
 
@@ -74,7 +75,7 @@ public static unsafe class ActorVfx
                     {
                         var subscriberMethod =
                             (ActorVfxCreateCallbackDelegate)subscriber;
-                        subscriberMethod(a1, a2, a3, a4, a5, a6, a7);
+                        subscriberMethod(output, a1, a2, a3, a4, a5, a6, a7);
                     }
                     catch (Exception e)
                     {
