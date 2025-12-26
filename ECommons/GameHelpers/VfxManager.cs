@@ -1,6 +1,7 @@
 #region
 
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Memory;
 using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
@@ -18,9 +19,12 @@ namespace ECommons.GameHelpers;
 
 public class VfxManager
 {
-    public static readonly TimeSpan VfxExpiryDuration = TimeSpan.FromSeconds(30);
+    /// <summary>
+    /// Flat list of all tracked VFX instances, regardless of target grouping.
+    /// </summary>
+    public static readonly List<VfxInfo> TrackedEffects = [];
 
-    public static readonly Dictionary<ulong, List<VfxInfo>> TrackedEffects = [];
+    public static readonly TimeSpan VfxExpiryDuration = TimeSpan.FromSeconds(30);
 
     // https://github.com/PunishXIV/Splatoon/blob/main/Splatoon/Utility/Utils.cs#L482
     private static readonly string[] BlacklistedVfx =
@@ -97,12 +101,6 @@ public class VfxManager
         if(BlacklistedVfx.Contains(path))
             return;
 
-        lock(TrackedEffects)
-        {
-            if(!TrackedEffects.ContainsKey(targetID))
-                TrackedEffects[targetID] = [];
-        }
-
         var info = new VfxInfo
         {
             VfxID     = vfxPtr.ToInt64(),
@@ -113,7 +111,7 @@ public class VfxManager
         };
 
         lock(TrackedEffects)
-            TrackedEffects[targetID].Add(info);
+            TrackedEffects.Add(info);
     }
 
     private static void EmptyVfxList(ushort _)
@@ -137,7 +135,7 @@ public class VfxManager
         var actorID = actorObject.GameObjectId;
 
         lock(TrackedEffects)
-            TrackedEffects.Remove(actorID);
+            TrackedEffects.RemoveAll(x => x.TargetID == actorID);
     }
 
     private static void RemoveSpecificVfx(nint vfxAddress)
@@ -147,22 +145,7 @@ public class VfxManager
         //       (requires VfxStruct to be updated and added here)
         lock(TrackedEffects)
         {
-            var keys = TrackedEffects.Keys.ToList();
-            foreach(var actorId in keys)
-            {
-                if(!TrackedEffects.TryGetValue(actorId, out var list) ||
-                   list.Count == 0)
-                    continue;
-
-                var newList = new List<VfxInfo>(list.Count);
-                newList.AddRange(list
-                    .Where(info => info.VfxID != vfxAddress.ToInt64()));
-
-                if(newList.Count == 0)
-                    TrackedEffects.Remove(actorId);
-                else
-                    TrackedEffects[actorId] = newList;
-            }
+            TrackedEffects.RemoveAll(info => info.VfxID == vfxAddress.ToInt64());
         }
     }
 
@@ -182,22 +165,7 @@ public class VfxManager
         {
             lock(TrackedEffects)
             {
-                var keys = TrackedEffects.Keys.ToList();
-                foreach(var actorId in keys)
-                {
-                    if(!TrackedEffects.TryGetValue(actorId, out var list) ||
-                       list.Count == 0)
-                        continue;
-
-                    var newList = new List<VfxInfo>(list.Count);
-                    newList.AddRange(list
-                        .Where(info => info.AgeDuration < VfxExpiryDuration));
-
-                    if(newList.Count == 0)
-                        TrackedEffects.Remove(actorId);
-                    else
-                        TrackedEffects[actorId] = newList;
-                }
+                TrackedEffects.RemoveAll(info => info.AgeDuration >= VfxExpiryDuration);
             }
         }
     }
@@ -205,14 +173,20 @@ public class VfxManager
 
 public record struct VfxInfo
 {
+    /// <summary>Identifier of the actor that spawned the VFX.</summary>
     public ulong CasterID;
 
+    /// <summary>Source path of the spawned VFX asset.</summary>
     public string Path;
 
+    /// <summary>Tick count at which the VFX was spawned.</summary>
     public long SpawnTick;
 
+    /// <summary>Identifier of the target the VFX is attached to.</summary>
     public ulong TargetID;
-    public long  VfxID;
+
+    /// <summary>Unique identifier of the VFX instance.</summary>
+    public long VfxID;
 
     public long Age => Environment.TickCount64 - SpawnTick;
 
