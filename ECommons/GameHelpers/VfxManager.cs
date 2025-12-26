@@ -52,15 +52,6 @@ public class VfxManager
         return vfxList.Count > 0;
     }
 
-    internal static unsafe void Init()
-    {
-        ActorVfx.ActorVfxCreateEvent              += TrackOnVfxCreate;
-        ActorVfx.ActorVfxDtorEvent                += RemoveSpecificVfx;
-        GameObjectCtor.GameObjectConstructorEvent += EmptyVfxList;
-        Svc.ClientState.TerritoryChanged          += EmptyVfxList;
-        Svc.Framework.Update                      += EmptyVfxListPeriodically;
-    }
-
     private static unsafe void TrackOnVfxCreate
     (nint vfxPtr, char* vfxPathPtr, nint casterAddress, nint targetAddress,
         float a4, char a5, ushort a6, char a7)
@@ -128,6 +119,15 @@ public class VfxManager
     /// For filtering logging to only specific vfx paths or specific object IDs.
     /// Can be the full path or a substring.
     public static string? LoggingFilter = null;
+
+    internal static unsafe void Init()
+    {
+        ActorVfx.ActorVfxCreateEvent              += TrackOnVfxCreate;
+        ActorVfx.ActorVfxDtorEvent                += RemoveSpecificVfx;
+        GameObjectCtor.GameObjectConstructorEvent += EmptyVfxList;
+        Svc.ClientState.TerritoryChanged          += EmptyVfxList;
+        Svc.Framework.Update                      += EmptyVfxListPeriodically;
+    }
 
     internal static unsafe void Dispose()
     {
