@@ -164,7 +164,15 @@ public class VfxManager
         if(actorObject == null)
             return;
 
-        var actorID = actorObject.GameObjectId;
+        ulong actorID;
+        try
+        {
+            actorID = actorObject.GameObjectId;
+        }
+        catch
+        {
+            return;
+        }
 
         lock(TrackedEffects)
             TrackedEffects.RemoveAll(x => x.TargetID == actorID);
