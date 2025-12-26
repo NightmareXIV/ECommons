@@ -10,6 +10,8 @@ using ECommons.Throttlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 #endregion
@@ -82,7 +84,7 @@ public class VfxManager
                 .ReadString(new nint(vfxPathPtr), Encoding.ASCII, 256);
 
             PluginLog.Verbose(
-                $"[EC.VfxManager] VFX Caught." +
+                $"[EC.VfxManager] VFX #{vfxPtr.ToInt64()} Caught." +
                 $"Path: `{path}`, " +
                 $"caster: {casterObject.Name}({casterObject.GameObjectId}), " +
                 $"target: {targetObject.Name}({targetObject.GameObjectId})");
@@ -169,14 +171,28 @@ public class VfxManager
             TrackedEffects.RemoveAll(x => x.TargetID == actorID);
     }
 
-    private static void RemoveSpecificVfx(nint vfxAddress)
+    private static unsafe void RemoveSpecificVfx(nint vfxAddress)
     {
-        // todo: only remove the VFX when the caster/target match too
-        //       (avoid removing VFX from all actors just because one actor lost it)
-        //       (requires VfxStruct to be updated and added here)
+        ulong actorCaster;
+        ulong actorTarget;
+
+        try
+        {
+            var realVfx = (VfxStruct*)vfxAddress;
+            actorCaster = (uint)realVfx->ActorCaster;
+            actorTarget = (uint)realVfx->ActorTarget;
+        }
+        catch
+        {
+            return;
+        }
+
         lock(TrackedEffects)
         {
-            TrackedEffects.RemoveAll(info => info.VfxID == vfxAddress.ToInt64());
+            TrackedEffects.RemoveAll(info =>
+                info.VfxID == vfxAddress.ToInt64() &&
+                info.CasterID == actorCaster &&
+                info.TargetID == actorTarget);
         }
     }
 
@@ -193,6 +209,7 @@ public class VfxManager
                 TrackedEffects.Clear();
             }
         }
+
         _lastTickInCombatFlag = inCombat;
 
         // Early exit
@@ -235,4 +252,16 @@ public record struct VfxInfo
     public float AgeSeconds => Age / 1000f;
 
     public TimeSpan AgeDuration => TimeSpan.FromSeconds(AgeSeconds);
+}
+
+// https://github.com/0ceal0t/Dalamud-VFXEditor/blob/c320f08c981f3bf7353157c3d2faebcb00cba511/VFXEditor/Interop/Structs/Vfx/BaseVfx.cs#L29-L41
+[StructLayout(LayoutKind.Explicit)]
+public struct VfxStruct
+{
+    [FieldOffset(0x38)] public byte    Flags;
+    [FieldOffset(0x50)] public Vector3 Position;
+    [FieldOffset(0x70)] public Vector3 Scale;
+
+    [FieldOffset(0x128)] public int ActorCaster;
+    [FieldOffset(0x130)] public int ActorTarget;
 }
