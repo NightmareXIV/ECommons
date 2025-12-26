@@ -71,22 +71,15 @@ public class VfxManager
         string path;
         try
         {
-            var casterObject = Svc.Objects.CreateObjectReference(casterAddress);
-            var targetObject = Svc.Objects.CreateObjectReference(targetAddress);
+            var casterObject = Svc.Objects
+                .FirstOrDefault(x => x.Address == casterAddress);
+            var targetObject = Svc.Objects
+                .FirstOrDefault(x => x.Address == targetAddress);
 
-            if(casterObject == null || targetObject == null)
-                return;
-
-            casterID = casterObject.GameObjectId;
-            targetID = targetObject.GameObjectId;
+            casterID = casterObject?.GameObjectId ?? ulong.MaxValue;
+            targetID = targetObject?.GameObjectId ?? ulong.MaxValue;
             path = MemoryHelper
                 .ReadString(new nint(vfxPathPtr), Encoding.ASCII, 256);
-
-            PluginLog.Verbose(
-                $"[EC.VfxManager] VFX #{vfxPtr.ToInt64()} Caught." +
-                $"Path: `{path}`, " +
-                $"caster: {casterObject.Name}({casterObject.GameObjectId}), " +
-                $"target: {targetObject.Name}({targetObject.GameObjectId})");
         }
         catch
         {
@@ -107,6 +100,12 @@ public class VfxManager
 
         lock(TrackedEffects)
             TrackedEffects.Add(info);
+
+        PluginLog.Verbose(
+            $"[EC.VfxManager] VFX #{vfxPtr.ToInt64()} Caught. " +
+            $"Path: `{path}`, " +
+            $"caster: {casterID}, " +
+            $"target: {targetID}");
     }
 
     #region Boilerplate
@@ -186,8 +185,8 @@ public class VfxManager
         try
         {
             var realVfx = (VfxStruct*)vfxAddress;
-            casterID = (uint)realVfx->CasterID;
-            targetID = (uint)realVfx->TargetID;
+            casterID = realVfx->CasterID;
+            targetID = realVfx->TargetID;
         }
         catch
         {
@@ -196,10 +195,18 @@ public class VfxManager
 
         lock(TrackedEffects)
         {
-            TrackedEffects.RemoveAll(info =>
+            var removed = TrackedEffects.RemoveAll(info =>
                 info.VfxID == vfxAddress.ToInt64() &&
-                info.CasterID == casterID &&
-                info.TargetID == targetID);
+                (info.CasterID == casterID ||
+                 casterID is ulong.MaxValue) &&
+                (info.TargetID == targetID ||
+                 targetID is ulong.MaxValue));
+
+            PluginLog.Verbose(
+                $"[EC.VfxManager] VFX #{vfxAddress.ToInt64()} Destroyed. " +
+                $"caster: {casterID}, " +
+                $"target: {targetID} - " +
+                $"Removed {removed} tracked entries.");
         }
     }
 
@@ -269,8 +276,8 @@ public record struct VfxInfo
 public struct VfxStruct
 {
     /// Identifier of the actor that spawned the VFX.
-    [FieldOffset(0x128)] public int CasterID;
+    [FieldOffset(0x128)] public ulong CasterID;
 
     /// Identifier of the target the VFX is attached to.
-    [FieldOffset(0x130)] public int TargetID;
+    [FieldOffset(0x130)] public ulong TargetID;
 }
