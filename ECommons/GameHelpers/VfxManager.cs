@@ -25,6 +25,12 @@ public static class VfxManager
 
     public static readonly TimeSpan VfxExpiryDuration = TimeSpan.FromSeconds(30);
 
+    public static bool Logging = false;
+
+    /// For filtering logging to only specific vfx paths or specific object IDs.
+    /// Can be the full path or a substring.
+    public static string? LoggingFilter = null;
+
     public static bool TryGetVfxFor
     (ulong objectId, out List<VfxInfo> vfxList,
         bool searchCasterAsWell = false) =>
@@ -132,19 +138,19 @@ public static class VfxManager
 
         public List<VfxInfo> FilterToCaster(ulong casterID) =>
             vfxList.Where(x => x.CasterID == casterID).ToList();
-        
+
         public List<VfxInfo> FilterToNoTarget() =>
             vfxList.Where(x => x.TargetID == ulong.MaxValue).ToList();
-        
+
         public List<VfxInfo> FilterToNoCaster() =>
             vfxList.Where(x => x.CasterID == ulong.MaxValue).ToList();
-        
+
         public List<VfxInfo> FilterToPath(string pathSearch) =>
             vfxList.Where(x => x.Path.Contains(pathSearch, Lower)).ToList();
-        
+
         public List<VfxInfo> FilterToExactPath(string path) =>
             vfxList.Where(x => x.Path.Equals(path, Lower)).ToList();
-        
+
         public List<VfxInfo> FilterYoungerThan(TimeSpan duration) =>
             vfxList.Where(x => x.AgeDuration < duration).ToList();
 
@@ -164,12 +170,6 @@ public static class VfxManager
 
     private const StringComparison Lower =
         StringComparison.OrdinalIgnoreCase;
-
-    public static bool Logging = false;
-
-    /// For filtering logging to only specific vfx paths or specific object IDs.
-    /// Can be the full path or a substring.
-    public static string? LoggingFilter = null;
 
     internal static unsafe void Init()
     {
