@@ -19,7 +19,7 @@ using System.Text;
 
 namespace ECommons.GameHelpers;
 
-public class VfxManager
+public static class VfxManager
 {
     public static readonly List<VfxInfo> TrackedEffects = [];
 
@@ -122,6 +122,43 @@ public class VfxManager
                     $"[EC.VfxManager] VFX #{vfxID} Caught. {log}");
         }
     }
+
+    #region Search `out` Filter Extensions
+
+    extension(List<VfxInfo> vfxList)
+    {
+        public List<VfxInfo> FilterToTarget(ulong targetID) =>
+            vfxList.Where(x => x.TargetID == targetID).ToList();
+
+        public List<VfxInfo> FilterToCaster(ulong casterID) =>
+            vfxList.Where(x => x.CasterID == casterID).ToList();
+        
+        public List<VfxInfo> FilterToNoTarget() =>
+            vfxList.Where(x => x.TargetID == ulong.MaxValue).ToList();
+        
+        public List<VfxInfo> FilterToNoCaster() =>
+            vfxList.Where(x => x.CasterID == ulong.MaxValue).ToList();
+        
+        public List<VfxInfo> FilterToPath(string pathSearch) =>
+            vfxList.Where(x => x.Path.Contains(pathSearch, Lower)).ToList();
+        
+        public List<VfxInfo> FilterToExactPath(string path) =>
+            vfxList.Where(x => x.Path.Equals(path, Lower)).ToList();
+        
+        public List<VfxInfo> FilterYoungerThan(TimeSpan duration) =>
+            vfxList.Where(x => x.AgeDuration < duration).ToList();
+
+        public List<VfxInfo> FilterToTargetRole(CombatRole role) =>
+            vfxList.Where(x =>
+            {
+                var obj = Svc.Objects
+                    .FirstOrDefault(o => o is ICharacter c &&
+                                         c.GameObjectId == x.TargetID);
+                return obj is ICharacter chara && chara.GetRole() == role;
+            }).ToList();
+    }
+
+    #endregion
 
     #region Boilerplate
 
