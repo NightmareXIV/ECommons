@@ -1,7 +1,6 @@
 #region
 
 using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Memory;
 using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
@@ -19,32 +18,38 @@ namespace ECommons.GameHelpers;
 
 public class VfxManager
 {
-    /// <summary>
-    /// Flat list of all tracked VFX instances, regardless of target grouping.
-    /// </summary>
     public static readonly List<VfxInfo> TrackedEffects = [];
 
     public static readonly TimeSpan VfxExpiryDuration = TimeSpan.FromSeconds(30);
 
-    // https://github.com/PunishXIV/Splatoon/blob/main/Splatoon/Utility/Utils.cs#L482
-    private static readonly string[] BlacklistedVfx =
-    [
-        "vfx/common/eff/dk04ht_canc0h.avfx",
-        "vfx/common/eff/dk02ht_totu0y.avfx",
-        "vfx/common/eff/dk05th_stup0t.avfx",
-        "vfx/common/eff/dk10ht_wra0c.avfx",
-        "vfx/common/eff/cmat_ligct0c.avfx",
-        "vfx/common/eff/dk07ht_da00c.avfx",
-        "vfx/common/eff/cmat_icect0c.avfx",
-        "vfx/common/eff/dk10ht_ice2c.avfx",
-        "vfx/common/eff/combo_001f.avfx",
-        "vfx/common/eff/dk02ht_da00c.avfx",
-        "vfx/common/eff/dk06gd_par0h.avfx",
-        "vfx/common/eff/dk04ht_fir0h.avfx",
-        "vfx/common/eff/dk05th_stdn0t.avfx",
-        "vfx/common/eff/dk06mg_mab0h.avfx",
-        "vfx/common/eff/mgc_2kt001c1t.avfx",
-    ];
+    public static bool TryGetVfxFor(ulong objectId, out List<VfxInfo> vfxList) =>
+        TryGetVfxFor(objectId, null, out vfxList);
+
+    public static bool TryGetVfxFor(ulong objectId, string? pathSearch,
+        out List<VfxInfo> vfxList)
+    {
+        vfxList = [];
+        if(objectId == 0)
+            return false;
+
+        lock(TrackedEffects)
+        {
+            foreach(var info in TrackedEffects)
+            {
+                if(info.TargetID != objectId)
+                    continue;
+
+                if(!string.IsNullOrWhiteSpace(pathSearch) &&
+                   !info.Path.Contains(pathSearch,
+                       StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                vfxList.Add(info);
+            }
+        }
+
+        return vfxList.Count > 0;
+    }
 
     internal static unsafe void Init()
     {
@@ -53,17 +58,6 @@ public class VfxManager
         GameObjectCtor.GameObjectConstructorEvent += EmptyVfxList;
         Svc.ClientState.TerritoryChanged          += EmptyVfxList;
         Svc.Framework.Update                      += EmptyVfxListPeriodically;
-    }
-
-    internal static unsafe void Dispose()
-    {
-        lock(TrackedEffects)
-            TrackedEffects.Clear();
-        ActorVfx.ActorVfxCreateEvent              -= TrackOnVfxCreate;
-        ActorVfx.ActorVfxDtorEvent                -= RemoveSpecificVfx;
-        GameObjectCtor.GameObjectConstructorEvent -= EmptyVfxList;
-        Svc.ClientState.TerritoryChanged          -= EmptyVfxList;
-        Svc.Framework.Update                      -= EmptyVfxListPeriodically;
     }
 
     private static unsafe void TrackOnVfxCreate
@@ -113,6 +107,43 @@ public class VfxManager
         lock(TrackedEffects)
             TrackedEffects.Add(info);
     }
+
+    #region Boilerplate
+
+    internal static unsafe void Dispose()
+    {
+        lock(TrackedEffects)
+            TrackedEffects.Clear();
+        ActorVfx.ActorVfxCreateEvent              -= TrackOnVfxCreate;
+        ActorVfx.ActorVfxDtorEvent                -= RemoveSpecificVfx;
+        GameObjectCtor.GameObjectConstructorEvent -= EmptyVfxList;
+        Svc.ClientState.TerritoryChanged          -= EmptyVfxList;
+        Svc.Framework.Update                      -= EmptyVfxListPeriodically;
+    }
+
+    // https://github.com/PunishXIV/Splatoon/blob/main/Splatoon/Utility/Utils.cs#L482
+    private static readonly string[] BlacklistedVfx =
+    [
+        "vfx/common/eff/dk04ht_canc0h.avfx",
+        "vfx/common/eff/dk02ht_totu0y.avfx",
+        "vfx/common/eff/dk05th_stup0t.avfx",
+        "vfx/common/eff/dk10ht_wra0c.avfx",
+        "vfx/common/eff/cmat_ligct0c.avfx",
+        "vfx/common/eff/dk07ht_da00c.avfx",
+        "vfx/common/eff/cmat_icect0c.avfx",
+        "vfx/common/eff/dk10ht_ice2c.avfx",
+        "vfx/common/eff/combo_001f.avfx",
+        "vfx/common/eff/dk02ht_da00c.avfx",
+        "vfx/common/eff/dk06gd_par0h.avfx",
+        "vfx/common/eff/dk04ht_fir0h.avfx",
+        "vfx/common/eff/dk05th_stdn0t.avfx",
+        "vfx/common/eff/dk06mg_mab0h.avfx",
+        "vfx/common/eff/mgc_2kt001c1t.avfx",
+    ];
+
+    #endregion
+
+    #region Culling of VFXs
 
     private static void EmptyVfxList(ushort _)
     {
@@ -165,10 +196,13 @@ public class VfxManager
         {
             lock(TrackedEffects)
             {
-                TrackedEffects.RemoveAll(info => info.AgeDuration >= VfxExpiryDuration);
+                TrackedEffects.RemoveAll(info =>
+                    info.AgeDuration >= VfxExpiryDuration);
             }
         }
     }
+
+    #endregion
 }
 
 public record struct VfxInfo
