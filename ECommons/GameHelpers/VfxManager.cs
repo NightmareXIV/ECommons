@@ -10,7 +10,6 @@ using ECommons.Throttlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -173,14 +172,14 @@ public class VfxManager
 
     private static unsafe void RemoveSpecificVfx(nint vfxAddress)
     {
-        ulong actorCaster;
-        ulong actorTarget;
+        ulong casterID;
+        ulong targetID;
 
         try
         {
             var realVfx = (VfxStruct*)vfxAddress;
-            actorCaster = (uint)realVfx->ActorCaster;
-            actorTarget = (uint)realVfx->ActorTarget;
+            casterID = (uint)realVfx->CasterID;
+            targetID = (uint)realVfx->TargetID;
         }
         catch
         {
@@ -191,8 +190,8 @@ public class VfxManager
         {
             TrackedEffects.RemoveAll(info =>
                 info.VfxID == vfxAddress.ToInt64() &&
-                info.CasterID == actorCaster &&
-                info.TargetID == actorTarget);
+                info.CasterID == casterID &&
+                info.TargetID == targetID);
         }
     }
 
@@ -232,25 +231,28 @@ public class VfxManager
 
 public record struct VfxInfo
 {
-    /// <summary>Identifier of the actor that spawned the VFX.</summary>
+    /// Identifier of the actor that spawned the VFX.
     public ulong CasterID;
 
-    /// <summary>Source path of the spawned VFX asset.</summary>
+    /// Source path of the spawned VFX asset.
     public string Path;
 
-    /// <summary>Tick count at which the VFX was spawned.</summary>
+    /// Tick count at which the VFX was spawned.
     public long SpawnTick;
 
-    /// <summary>Identifier of the target the VFX is attached to.</summary>
+    /// Identifier of the target the VFX is attached to.
     public ulong TargetID;
 
-    /// <summary>Unique identifier of the VFX instance.</summary>
+    /// Unique identifier of the VFX instance.
     public long VfxID;
 
+    /// How many ticks the VFX has existed for.
     public long Age => Environment.TickCount64 - SpawnTick;
 
+    /// How many seconds the VFX has existed for.
     public float AgeSeconds => Age / 1000f;
 
+    /// The TimeSpan that the VFX has existed for.
     public TimeSpan AgeDuration => TimeSpan.FromSeconds(AgeSeconds);
 }
 
@@ -258,10 +260,9 @@ public record struct VfxInfo
 [StructLayout(LayoutKind.Explicit)]
 public struct VfxStruct
 {
-    [FieldOffset(0x38)] public byte    Flags;
-    [FieldOffset(0x50)] public Vector3 Position;
-    [FieldOffset(0x70)] public Vector3 Scale;
+    /// Identifier of the actor that spawned the VFX.
+    [FieldOffset(0x128)] public int CasterID;
 
-    [FieldOffset(0x128)] public int ActorCaster;
-    [FieldOffset(0x130)] public int ActorTarget;
+    /// Identifier of the target the VFX is attached to.
+    [FieldOffset(0x130)] public int TargetID;
 }
