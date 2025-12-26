@@ -13,11 +13,56 @@ namespace ECommons.Hooks;
 
 public static unsafe class ActorVfx
 {
+    /// <summary>
+    ///     The signature your method must match to subscribe to
+    ///     <see cref="ActorVfxCreateEvent" />.
+    /// </summary>
+    /// <param name="vfxPtr">
+    ///     Pointer to the newly-created Actor VFX instance, this is the
+    ///     <see langword="return" /> from calling <c>.Original()</c> inside
+    ///     of that Detour, prior to calling your Delegate.<br />
+    ///     Due to that, this delegate does NOT match the signature of the
+    ///     Detour itself.<br />
+    ///     Can be cast to a <see cref="ECommons.GameHelpers.VfxStruct" />.
+    /// </param>
+    /// <param name="vfxPathPtr">
+    ///     Pointer to the VFX path string.<br />
+    ///     Can resolve to a string with
+    ///     <see
+    ///         cref="Dalamud.Memory.MemoryHelper.ReadString(nint, System.Text.Encoding, int)">
+    ///         MemoryHelper.ReadString((nint)vfxPathPtr, Encoding.ASCII, 256)
+    ///     </see>
+    ///     .
+    /// </param>
+    /// <param name="casterAddress">Address of the caster GameObject.</param>
+    /// <param name="targetAddress">Address of the target GameObject.</param>
+    /// <param name="a4">Unknown float parameter.</param>
+    /// <param name="a5">Unknown char parameter.</param>
+    /// <param name="a6">Unknown ushort parameter.</param>
+    /// <param name="a7">Unknown char parameter.</param>
+    /// <remarks>
+    ///     WARNING! Do NOT try to call <c>.Original()</c> within your delegate!<br />
+    ///     These delegates are called after that is already done (to provide
+    ///     <paramref name="vfxPtr" />).
+    /// </remarks>
     public delegate void ActorVfxCreateCallbackDelegate(
         nint vfxPtr,
         char* vfxPathPtr, nint casterAddress, nint targetAddress,
         float a4, char a5, ushort a6, char a7);
 
+    /// <summary>
+    ///     The signature your method must match to subscribe to
+    ///     <see cref="ActorVfxDtorEvent" />.
+    /// </summary>
+    /// <param name="actorVfxAddress">
+    ///     Address of the Actor VFX instance being destructed.<br />
+    ///     Can be cast to a <see cref="ECommons.GameHelpers.VfxStruct" />.
+    /// </param>
+    /// <remarks>
+    ///     WARNING! Do NOT try to call <c>.Original()</c> within your delegate!
+    ///     <br />
+    ///     These delegates are called right before that is already done.
+    /// </remarks>
     public delegate void ActorVfxDtorCallbackDelegate(nint actorVfxAddress);
 
     public const string CreateSig =
@@ -167,36 +212,53 @@ public static unsafe class ActorVfx
         }
     }
 
+    /// <remarks>
+    ///     Already called when you subscribe a delegate to
+    ///     <see cref="ActorVfxCreateEvent" />.
+    /// </remarks>
     public static void EnableCreate()
     {
         if(ActorVfxCreateHook?.IsEnabled == false)
             ActorVfxCreateHook?.Enable();
     }
 
+    /// <remarks>
+    ///     Already called when you subscribe a delegate to
+    ///     <see cref="ActorVfxDtorEvent" />.
+    /// </remarks>
     public static void EnableDtor()
     {
         if(ActorVfxDtorHook?.IsEnabled == false)
             ActorVfxDtorHook?.Enable();
     }
 
-    public static void Disable()
+    /// <remarks>
+    ///     Already called in <see cref="Dispose()" />.
+    /// </remarks>
+    public static void DisableCreate()
     {
         if(ActorVfxCreateHook?.IsEnabled == true)
             ActorVfxCreateHook?.Disable();
     }
 
+    /// <remarks>
+    ///     Already called in <see cref="Dispose()" />.
+    /// </remarks>
     public static void DisableDtor()
     {
         if(ActorVfxDtorHook?.IsEnabled == true)
             ActorVfxDtorHook?.Disable();
     }
 
+    /// <remarks>
+    ///     Already called in <see cref="ECommons.ECommonsMain.Dispose()" />.
+    /// </remarks>
     public static void Dispose()
     {
         if(ActorVfxCreateHook != null)
         {
             PluginLog.Information("Disposing ActorVfx Create Hook");
-            Disable();
+            DisableCreate();
             if(!ActorVfxCreateHook.IsDisposed)
                 ActorVfxCreateHook?.Dispose();
             ActorVfxCreateHook = null;
