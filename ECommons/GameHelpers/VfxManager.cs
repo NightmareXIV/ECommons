@@ -19,36 +19,120 @@ using System.Text;
 
 namespace ECommons.GameHelpers;
 
+/// <summary>
+///     Tracks all VFXs created in the game, culling them when the game removes
+///     them, or after it should have, and keeps them ready for you to query
+///     with the <c>TryGet</c> Methods or directly from
+///     <see cref="TrackedEffects"/>.
+/// </summary>
 public static class VfxManager
 {
+    /// <summary>
+    ///     List of all currently tracked VFXs.
+    /// </summary>
     public static readonly List<VfxInfo> TrackedEffects = [];
 
+    /// <summary>
+    ///     How long to keep VFXs tracked after their creation before
+    ///     automatically removing them.<br/>
+    ///     (Should not generally be needed, as they are un-tracked on destruction)
+    /// </summary>
     public static readonly TimeSpan VfxExpiryDuration = TimeSpan.FromSeconds(30);
 
+    /// <summary>
+    ///     Whether VfxManager should log anything at all.
+    /// </summary>
     public static bool Logging = false;
 
-    /// For filtering logging to only specific vfx paths or specific object IDs.
-    /// Can be the full path or a substring.
+    /// <summary>
+    ///     If set, will restrict logging to logs whose bodies contain this string.
+    ///     <br/>
+    ///     Useful for filtering to your player ID or specific VFX paths.
+    /// </summary>
     public static string? LoggingFilter = null;
 
+    /// <summary>
+    ///     If populated, will only start tracking of VFXs whose paths
+    ///     contain at least one of the strings in this list.
+    /// </summary>
     public static List<string> WhitelistedVfxPathSearches { get; set; } = [];
 
+    /// <summary>
+    ///     Searches <see cref="TrackedEffects"/> for VFXs matching the given
+    ///     Object ID.
+    /// </summary>
+    /// <param name="objectID">The Object to search for.</param>
+    /// <param name="vfxList">
+    ///     List of discovered <see cref="VfxInfo">VFXs</see> (empty if
+    ///     <see langword="false"/> is returned).
+    ///     <br/>
+    ///     Can then be filtered further with the extension methods provided in 
+    ///     VfxManager, <see cref="FilterToTarget"/>, etc.
+    /// </param>
+    /// <param name="searchCasterAsWell">
+    ///     Whether the VFX's CasterID should be searched in addition to
+    ///     the TargetID.
+    /// </param>
+    /// <returns>
+    ///     <see langword="true"/> if any matching VFXs were found.
+    /// </returns>
     public static bool TryGetVfxFor
-    (ulong objectId, out List<VfxInfo> vfxList,
+    (ulong objectID, out List<VfxInfo> vfxList,
         bool searchCasterAsWell = false) =>
-        TryGetVfx(objectId, null, out vfxList, searchCasterAsWell);
+        TryGetVfx(objectID, null, out vfxList, searchCasterAsWell);
 
+    /// <summary>
+    ///     Searches <see cref="TrackedEffects"/> for VFXs matching the given
+    ///     Path.
+    /// </summary>
+    /// <param name="pathSearch">
+    ///     The Path to search for.<br/>
+    ///     Checks if the VFX's path contains this string.
+    /// </param>
+    /// <param name="vfxList">
+    ///     List of discovered <see cref="VfxInfo">VFXs</see> (empty if
+    ///     <see langword="false"/> is returned).
+    ///     <br/>
+    ///     Can then be filtered further with the extension methods provided in 
+    ///     VfxManager, <see cref="FilterToTarget"/>, etc.
+    /// </param>
+    /// <returns>
+    ///     <see langword="true"/> if any matching VFXs were found.
+    /// </returns>
     public static bool TryGetVfxLike
         (string pathSearch, out List<VfxInfo> vfxList) =>
         TryGetVfx(null, pathSearch, out vfxList);
 
+    /// <summary>
+    ///     Searches <see cref="TrackedEffects"/> for VFXs matching any given
+    ///     Object ID and any given path.
+    /// </summary>
+    /// <param name="objectID">The Object to search for.</param>
+    /// <param name="pathSearch">
+    ///     The Path to search for.<br/>
+    ///     Checks if the VFX's path contains this string.
+    /// </param>
+    /// <param name="vfxList">
+    ///     List of discovered <see cref="VfxInfo">VFXs</see> (empty if
+    ///     <see langword="false"/> is returned).
+    ///     <br/>
+    ///     Can then be filtered further with the extension methods provided in 
+    ///     VfxManager, <see cref="FilterToTarget"/>, etc.
+    /// </param>
+    /// <param name="searchCasterAsWell">
+    ///     Whether the VFX's CasterID should be searched in addition to
+    ///     the TargetID.
+    /// </param>
+    /// <returns>
+    ///     <see langword="true"/> if any matching VFXs were found.
+    /// </returns>
     private static bool TryGetVfx
-    (ulong? objectId, string? pathSearch, out List<VfxInfo> vfxList,
+    (ulong? objectID, string? pathSearch, out List<VfxInfo> vfxList,
         bool searchCasterAsWell = false)
     {
         vfxList = [];
 
-        var hasObjectFilter = objectId.HasValue && objectId.Value != 0;
+        var hasObjectFilter = objectID.HasValue && objectID.Value != 0;
         var hasPathFilter   = !string.IsNullOrWhiteSpace(pathSearch);
 
         if(!hasObjectFilter && !hasPathFilter)
@@ -59,8 +143,8 @@ public static class VfxManager
             foreach(var info in TrackedEffects)
             {
                 if(hasObjectFilter &&
-                   info.TargetID != objectId!.Value &&
-                   (!searchCasterAsWell || info.CasterID != objectId.Value))
+                   info.TargetID != objectID!.Value &&
+                   (!searchCasterAsWell || info.CasterID != objectID.Value))
                     continue;
 
                 if(hasPathFilter &&
@@ -74,6 +158,12 @@ public static class VfxManager
         return vfxList.Count > 0;
     }
 
+    /// <summary>
+    ///     Our Delegate subscribed to
+    ///     <see cref="ActorVfx.ActorVfxCreateEvent"/> in
+    ///     <see cref="Init"/> to track created VFXs.
+    /// </summary>
+    /// <seealso cref="ActorVfx.ActorVfxCreateCallbackDelegate"/>
     private static unsafe void TrackOnVfxCreate
     (nint vfxPtr, char* vfxPathPtr, nint casterAddress, nint targetAddress,
         float a4, char a5, ushort a6, char a7)
@@ -156,27 +246,39 @@ public static class VfxManager
 
     extension(List<VfxInfo> vfxList)
     {
+        /// Returns only the VFXs targeting the given Object ID.
         public List<VfxInfo> FilterToTarget(ulong targetID) =>
             vfxList.Where(x => x.TargetID == targetID).ToList();
 
+        /// Returns only the VFXs cast by the given Object ID.
+        /// <remarks>
+        ///     The casting Actor of a VFX is not necessarily the enemy initiating
+        ///     the VFX, e.g. tank busters often have the tank as the caster.
+        /// </remarks>
         public List<VfxInfo> FilterToCaster(ulong casterID) =>
             vfxList.Where(x => x.CasterID == casterID).ToList();
 
+        /// Returns only the VFXs with no defined target.
         public List<VfxInfo> FilterToNoTarget() =>
             vfxList.Where(x => x.TargetID == ulong.MaxValue).ToList();
 
+        /// Returns only the VFXs with no defined caster.
         public List<VfxInfo> FilterToNoCaster() =>
             vfxList.Where(x => x.CasterID == ulong.MaxValue).ToList();
 
+        /// Returns only the VFXs whose paths contain the given string.
         public List<VfxInfo> FilterToPath(string pathSearch) =>
             vfxList.Where(x => x.Path.Contains(pathSearch, Lower)).ToList();
 
+        /// Returns only the VFXs whose paths exactly match the given string.
         public List<VfxInfo> FilterToExactPath(string path) =>
             vfxList.Where(x => x.Path.Equals(path, Lower)).ToList();
 
+        /// Returns only the VFXs younger than the given duration.
         public List<VfxInfo> FilterYoungerThan(TimeSpan duration) =>
             vfxList.Where(x => x.AgeDuration < duration).ToList();
 
+        /// Returns only the VFXs targeting Characters with the given Role.
         public List<VfxInfo> FilterToTargetRole(CombatRole role) =>
             vfxList.Where(x =>
             {
@@ -218,12 +320,14 @@ public static class VfxManager
 
     #region Culling of VFXs
 
+    /// Completely empties the VFX list (used on territory change).
     private static void EmptyVfxList(ushort _)
     {
         lock(TrackedEffects)
             TrackedEffects.Clear();
     }
 
+    /// Empties VFXs related to the given GameObject (used on GameObject creation).
     private static void EmptyVfxList(nint objectAddress)
     {
         if(!Svc.ClientState.IsLoggedIn || !GenericHelpers.IsScreenReady() ||
@@ -250,6 +354,14 @@ public static class VfxManager
             TrackedEffects.RemoveAll(x => x.TargetID == actorID);
     }
 
+    /// Removes a specific VFX from tracking (used on VFX destruction).
+    /// <remarks>
+    ///     Removes all VFXs matching the given VFX pointer's ID
+    ///     and Caster/Target IDs.<br/>
+    ///     (will also match VFXs with the same ID, but have now-undefined
+    ///     target/casters - this can happen because it was undefined to begin
+    ///     with, OR if the game object was destroyed before the VFX)
+    /// </remarks>
     private static unsafe void RemoveSpecificVfx(nint vfxAddress)
     {
         var vfxID    = vfxAddress.ToInt64();
@@ -261,8 +373,10 @@ public static class VfxManager
         lock(TrackedEffects)
             removed = TrackedEffects.RemoveAll(info =>
                 info.VfxID == vfxID &&
-                info.CasterID == casterID &&
-                info.TargetID == targetID);
+                (info.CasterID == casterID ||
+                 casterID is ulong.MaxValue) &&
+                (info.TargetID == targetID ||
+                 targetID is ulong.MaxValue));
 
         if(Logging)
         {
@@ -275,8 +389,11 @@ public static class VfxManager
         }
     }
 
+    /// Used to track whether the player was previously in combat.
     private static bool _lastTickInCombatFlag;
 
+    /// Periodically empties old VFXs, and empties all VFXs when
+    /// transitioning out of combat.
     private static void EmptyVfxListPeriodically(IFramework _)
     {
         // Clear tracked VFXs only when transitioning out of combat
@@ -307,6 +424,9 @@ public static class VfxManager
     #endregion
 }
 
+/// <summary>
+///     The data behind a <c>nint vfxPtr</c>.
+/// </summary>
 public record struct VfxInfo
 {
     /// Identifier of the actor that spawned the VFX.
