@@ -1,9 +1,11 @@
 #region
 
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Memory;
 using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
+using ECommons.GameFunctions;
 using ECommons.Hooks;
 using ECommons.Logging;
 using ECommons.Throttlers;
@@ -23,26 +25,38 @@ public class VfxManager
 
     public static readonly TimeSpan VfxExpiryDuration = TimeSpan.FromSeconds(30);
 
-    public static bool TryGetVfxFor(ulong objectId, out List<VfxInfo> vfxList) =>
-        TryGetVfxFor(objectId, null, out vfxList);
+    public static bool TryGetVfxFor
+    (ulong objectId, out List<VfxInfo> vfxList,
+        bool searchCasterAsWell = false) =>
+        TryGetVfx(objectId, null, out vfxList, searchCasterAsWell);
 
-    public static bool TryGetVfxFor(ulong objectId, string? pathSearch,
-        out List<VfxInfo> vfxList)
+    public static bool TryGetVfxLike
+        (string pathSearch, out List<VfxInfo> vfxList) =>
+        TryGetVfx(null, pathSearch, out vfxList);
+
+    private static bool TryGetVfx
+    (ulong? objectId, string? pathSearch, out List<VfxInfo> vfxList,
+        bool searchCasterAsWell = false)
     {
         vfxList = [];
-        if(objectId == 0)
+
+        var hasObjectFilter = objectId.HasValue && objectId.Value != 0;
+        var hasPathFilter   = !string.IsNullOrWhiteSpace(pathSearch);
+
+        if(!hasObjectFilter && !hasPathFilter)
             return false;
 
         lock(TrackedEffects)
         {
             foreach(var info in TrackedEffects)
             {
-                if(info.TargetID != objectId)
+                if(hasObjectFilter &&
+                   info.TargetID != objectId!.Value &&
+                   (!searchCasterAsWell || info.CasterID != objectId.Value))
                     continue;
 
-                if(!string.IsNullOrWhiteSpace(pathSearch) &&
-                   !info.Path.Contains(pathSearch,
-                       StringComparison.OrdinalIgnoreCase))
+                if(hasPathFilter &&
+                   !info.Path.Contains(pathSearch!, Lower))
                     continue;
 
                 vfxList.Add(info);
@@ -178,29 +192,17 @@ public class VfxManager
 
     private static unsafe void RemoveSpecificVfx(nint vfxAddress)
     {
-        var   vfxID = vfxAddress.ToInt64();
-        ulong casterID;
-        ulong targetID;
-
-        try
-        {
-            var realVfx = (VfxStruct*)vfxAddress;
-            casterID = realVfx->CasterID;
-            targetID = realVfx->TargetID;
-        }
-        catch
-        {
-            return;
-        }
+        var vfxID    = vfxAddress.ToInt64();
+        var realVfx  = (VfxStruct*)vfxAddress;
+        var casterID = realVfx->CasterID;
+        var targetID = realVfx->TargetID;
 
         int removed;
         lock(TrackedEffects)
             removed = TrackedEffects.RemoveAll(info =>
                 info.VfxID == vfxID &&
-                (info.CasterID == casterID ||
-                 casterID is ulong.MaxValue) &&
-                (info.TargetID == targetID ||
-                 targetID is ulong.MaxValue));
+                info.CasterID == casterID &&
+                info.TargetID == targetID);
 
         if(Logging)
         {
@@ -217,14 +219,12 @@ public class VfxManager
 
     private static void EmptyVfxListPeriodically(IFramework _)
     {
-        // Clear tracked VFXs when exiting combat
+        // Clear tracked VFXs only when transitioning out of combat
         var inCombat = Svc.Condition[ConditionFlag.InCombat];
         if(!inCombat && _lastTickInCombatFlag)
         {
             lock(TrackedEffects)
-            {
                 TrackedEffects.Clear();
-            }
         }
 
         _lastTickInCombatFlag = inCombat;
