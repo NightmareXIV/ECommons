@@ -65,6 +65,7 @@ public class VfxManager
     (nint vfxPtr, char* vfxPathPtr, nint casterAddress, nint targetAddress,
         float a4, char a5, ushort a6, char a7)
     {
+        var    vfxID     = vfxPtr.ToInt64();
         var    spawnTick = Environment.TickCount64;
         ulong  casterID;
         ulong  targetID;
@@ -81,17 +82,22 @@ public class VfxManager
             path = MemoryHelper
                 .ReadString(new nint(vfxPathPtr), Encoding.ASCII, 256);
         }
-        catch
+        catch(Exception ex)
         {
+            if(Logging)
+            {
+                var log = ex.ToStringFull();
+                if(LoggingFilter is null || log.Contains(LoggingFilter, Lower))
+                    PluginLog.Debug(
+                        $"[EC.VfxManager] VFX #{vfxID} FAILED to Catch. {log}");
+            }
+
             return;
         }
 
-        if(BlacklistedVfx.Contains(path))
-            return;
-
         var info = new VfxInfo
         {
-            VfxID     = vfxPtr.ToInt64(),
+            VfxID     = vfxID,
             CasterID  = casterID,
             TargetID  = targetID,
             Path      = path,
@@ -101,14 +107,27 @@ public class VfxManager
         lock(TrackedEffects)
             TrackedEffects.Add(info);
 
-        PluginLog.Verbose(
-            $"[EC.VfxManager] VFX #{vfxPtr.ToInt64()} Caught. " +
-            $"Path: `{path}`, " +
-            $"caster: {casterID}, " +
-            $"target: {targetID}");
+        if(Logging)
+        {
+            var log = $"Path: `{path}`, " +
+                      $"Caster: {casterID}, " +
+                      $"Target: {targetID}";
+            if(LoggingFilter is null || log.Contains(LoggingFilter, Lower))
+                PluginLog.Verbose(
+                    $"[EC.VfxManager] VFX #{vfxID} Caught. {log}");
+        }
     }
 
     #region Boilerplate
+
+    private const StringComparison Lower =
+        StringComparison.OrdinalIgnoreCase;
+
+    public static bool Logging = false;
+
+    /// For filtering logging to only specific vfx paths or specific object IDs.
+    /// Can be the full path or a substring.
+    public static string? LoggingFilter = null;
 
     internal static unsafe void Dispose()
     {
@@ -120,26 +139,6 @@ public class VfxManager
         Svc.ClientState.TerritoryChanged          -= EmptyVfxList;
         Svc.Framework.Update                      -= EmptyVfxListPeriodically;
     }
-
-    // https://github.com/PunishXIV/Splatoon/blob/main/Splatoon/Utility/Utils.cs#L482
-    private static readonly string[] BlacklistedVfx =
-    [
-        "vfx/common/eff/dk04ht_canc0h.avfx",
-        "vfx/common/eff/dk02ht_totu0y.avfx",
-        "vfx/common/eff/dk05th_stup0t.avfx",
-        "vfx/common/eff/dk10ht_wra0c.avfx",
-        "vfx/common/eff/cmat_ligct0c.avfx",
-        "vfx/common/eff/dk07ht_da00c.avfx",
-        "vfx/common/eff/cmat_icect0c.avfx",
-        "vfx/common/eff/dk10ht_ice2c.avfx",
-        "vfx/common/eff/combo_001f.avfx",
-        "vfx/common/eff/dk02ht_da00c.avfx",
-        "vfx/common/eff/dk06gd_par0h.avfx",
-        "vfx/common/eff/dk04ht_fir0h.avfx",
-        "vfx/common/eff/dk05th_stdn0t.avfx",
-        "vfx/common/eff/dk06mg_mab0h.avfx",
-        "vfx/common/eff/mgc_2kt001c1t.avfx",
-    ];
 
     #endregion
 
@@ -179,6 +178,7 @@ public class VfxManager
 
     private static unsafe void RemoveSpecificVfx(nint vfxAddress)
     {
+        var   vfxID = vfxAddress.ToInt64();
         ulong casterID;
         ulong targetID;
 
@@ -193,20 +193,23 @@ public class VfxManager
             return;
         }
 
+        int removed;
         lock(TrackedEffects)
-        {
-            var removed = TrackedEffects.RemoveAll(info =>
-                info.VfxID == vfxAddress.ToInt64() &&
+            removed = TrackedEffects.RemoveAll(info =>
+                info.VfxID == vfxID &&
                 (info.CasterID == casterID ||
                  casterID is ulong.MaxValue) &&
                 (info.TargetID == targetID ||
                  targetID is ulong.MaxValue));
 
-            PluginLog.Verbose(
-                $"[EC.VfxManager] VFX #{vfxAddress.ToInt64()} Destroyed. " +
-                $"caster: {casterID}, " +
-                $"target: {targetID} - " +
-                $"Removed {removed} tracked entries.");
+        if(Logging)
+        {
+            var log = $"Removed {removed} Tracked VFX. " +
+                      $"Caster:{casterID}, " +
+                      $"Target:{targetID}";
+            if(LoggingFilter is null || log.Contains(LoggingFilter, Lower))
+                PluginLog.Verbose(
+                    $"[EC.VfxManager] VFX #{vfxID} Destroyed. {log}");
         }
     }
 
