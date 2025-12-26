@@ -25,6 +25,8 @@ public static class VfxManager
 
     public static readonly TimeSpan VfxExpiryDuration = TimeSpan.FromSeconds(30);
 
+    public static List<string> WhitelistedVfxPathSearches { get; set; } = [];
+
     public static bool Logging = false;
 
     /// For filtering logging to only specific vfx paths or specific object IDs.
@@ -104,6 +106,27 @@ public static class VfxManager
             }
 
             return;
+        }
+
+        // Skip VFX that do not match the whitelist (if set up)
+        if(WhitelistedVfxPathSearches.Count > 0)
+        {
+            if (!WhitelistedVfxPathSearches.Any(x =>
+                path.Contains(x, Lower)))
+            {
+                if(Logging)
+                {
+                    var log = $"Path: `{path}`, " +
+                              $"Caster: {casterID}, " +
+                              $"Target: {targetID}";
+                    if(LoggingFilter is null || log.Contains(LoggingFilter, Lower))
+                        PluginLog.Debug(
+                            $"[EC.VfxManager] VFX #{vfxID} SKIPPED Catching" +
+                            $"(not whitelisted). {log}");
+                }
+                
+                return;
+            }
         }
 
         var info = new VfxInfo
