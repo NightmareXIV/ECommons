@@ -180,18 +180,26 @@ public class VfxManager
         }
     }
 
+    private static bool _lastTickInCombatFlag;
+
     private static void EmptyVfxListPeriodically(IFramework _)
     {
-        // todo: only do this when it doesn't match the last flag (e.g. "on combat end")
-        if(!Svc.Condition[ConditionFlag.InCombat])
+        // Clear tracked VFXs when exiting combat
+        var inCombat = Svc.Condition[ConditionFlag.InCombat];
+        if(!inCombat && _lastTickInCombatFlag)
         {
             lock(TrackedEffects)
             {
                 TrackedEffects.Clear();
-                return;
             }
         }
+        _lastTickInCombatFlag = inCombat;
 
+        // Early exit
+        if(!inCombat)
+            return;
+
+        // Cull old VFXs periodically
         if(EzThrottler.Throttle("VfxManager_PeriodicEmpty", 140))
         {
             lock(TrackedEffects)
