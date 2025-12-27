@@ -270,6 +270,10 @@ public static class VfxManager
 
     extension(List<VfxInfo> vfxList)
     {
+        /// Returns only the VFXs with defined targets.
+        public List<VfxInfo> FilterToTargeted() =>
+            vfxList.Where(x => x.TargetID != ulong.MaxValue).ToList();
+        
         /// Returns only the VFXs targeting the given Object ID.
         public List<VfxInfo> FilterToTarget(ulong targetID) =>
             vfxList.Where(x => x.TargetID == targetID).ToList();
