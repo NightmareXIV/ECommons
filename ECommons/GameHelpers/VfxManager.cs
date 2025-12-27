@@ -222,6 +222,21 @@ public static class VfxManager
             }
         }
 
+        VfxInfo.PlacementData? placement = null;
+        try
+        {
+            placement = new VfxInfo.PlacementData
+            {
+                Position = vfx->Position,
+                Rotation = vfx->Rotation,
+                Scale    = vfx->Scale,
+            };
+        }
+        catch
+        {
+            // Ignore placement extraction failures
+        }
+
         var info = new VfxInfo
         {
             VfxID     = vfxID,
@@ -229,12 +244,7 @@ public static class VfxManager
             TargetID  = targetID,
             Path      = path,
             SpawnTick = spawnTick,
-            Placement = new VfxInfo.PlacementData
-            {
-                Position = ((VfxStruct*)vfxPtr)->Position,
-                Rotation = ((VfxStruct*)vfxPtr)->Rotation,
-                Scale    = ((VfxStruct*)vfxPtr)->Scale,
-            },
+            Placement = placement,
         };
 
         lock(TrackedEffects)
@@ -445,7 +455,7 @@ public record struct VfxInfo
     /// Source path of the spawned VFX asset.
     public string Path;
 
-    public PlacementData Placement;
+    public PlacementData? Placement;
 
     /// Tick count at which the VFX was spawned.
     public long SpawnTick;
