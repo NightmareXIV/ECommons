@@ -41,6 +41,11 @@ public static class VfxManager
     public static readonly TimeSpan VfxExpiryDuration = TimeSpan.FromSeconds(30);
 
     /// <summary>
+    ///     Whether VFXs should be un-tracked on their destruction event.
+    /// </summary>
+    public static readonly bool EnableDtorCulling = true;
+
+    /// <summary>
     ///     Whether VfxManager should log anything at all.
     /// </summary>
     public static bool Logging = false;
@@ -383,6 +388,9 @@ public static class VfxManager
     /// </remarks>
     private static unsafe void RemoveSpecificVfx(nint vfxAddress)
     {
+        if (!EnableDtorCulling)
+            return;
+
         var vfxID    = vfxAddress.ToInt64();
         var realVfx  = (VfxStruct*)vfxAddress;
         var casterID = realVfx->CasterID;
