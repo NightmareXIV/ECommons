@@ -24,82 +24,100 @@ public partial class AddonMaster
             }
         }
 
-        public uint CurrentScore
+        public uint? CurrentScore
         {
             get
             {
-                var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[2].String.Value).GetText();
+                if(Addon->AtkValuesCount < 2)
+                    return null;
 
-                // Number coversion test #1.
-                if(uint.TryParse(rawValue, NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
+                var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[2].String.Value);
+                if(rawValue == null)
+                    return null;
+
+                if(uint.TryParse(rawValue.TextValue, NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
                     return result;
 
-                // Fallback: if the first test fails
-                var cleanedValue = System.Text.RegularExpressions.Regex.Replace(rawValue, @"[^\d]", "");
+                var cleanedValue = System.Text.RegularExpressions.Regex.Replace(rawValue.TextValue, @"[^\d]", "");
                 if(uint.TryParse(cleanedValue, out result))
                     return result;
 
-                return 0; // fallback if parsing fails
+                return null;
             }
         }
 
-        public uint SilverScore
+        public uint? SilverScore
         {
             get
             {
-                var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[3].String.Value).GetText();
+                if(Addon->AtkValuesCount < 2)
+                    return null;
 
-                // Number coversion test #1.
-                if(uint.TryParse(rawValue, NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
+                var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[3].String.Value);
+                if(rawValue == null)
+                    return null;
+
+                if(uint.TryParse(rawValue.TextValue, NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
                     return result;
 
-                // Fallback: if the first test fails
-                var cleanedValue = System.Text.RegularExpressions.Regex.Replace(rawValue, @"[^\d]", "");
+                var cleanedValue = System.Text.RegularExpressions.Regex.Replace(rawValue.TextValue, @"[^\d]", "");
                 if(uint.TryParse(cleanedValue, out result))
                     return result;
 
-                return 0; // fallback if parsing fails
+                return null;
             }
         }
 
-        public uint GoldScore
+        public uint? GoldScore
         {
             get
             {
-                var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[4].String.Value).GetText();
+                if(Addon->AtkValuesCount < 2)
+                    return null;
 
-                // Number coversion test #1.
-                if(uint.TryParse(rawValue, NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
+                var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[4].String.Value);
+                if(rawValue == null)
+                    return null;
+
+                if(uint.TryParse(rawValue.TextValue, NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
                     return result;
 
-                // Fallback: if the first test fails
-                var cleanedValue = System.Text.RegularExpressions.Regex.Replace(rawValue, @"[^\d]", "");
+                var cleanedValue = System.Text.RegularExpressions.Regex.Replace(rawValue.TextValue, @"[^\d]", "");
                 if(uint.TryParse(cleanedValue, out result))
                     return result;
 
-                return 0; // fallback if parsing fails
+                return null;
             }
         }
 
-        public uint CriticalScore
+        public uint? CriticalScore
         {
             get
             {
-                var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[5].String.Value).GetText();
+                if(Addon->AtkValuesCount < 2)
+                    return null;
 
-                // Extract the left side of the slash
-                var leftSide = rawValue.Split('/')[0].Trim();
+                var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[5].String.Value);
+                if(rawValue == null)
+                    return null;
 
-                // Number conversion test #1.
-                if(uint.TryParse(leftSide, NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
+                var text = rawValue.TextValue;
+
+                if(text.Contains("/"))
+                {
+                    var parts = text.Split('/');
+                    if(parts.Length == 2 && uint.TryParse(parts[0].Trim(), out var numerator))
+                        return numerator;
+                }
+
+                if(uint.TryParse(text, NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
                     return result;
 
-                // Fallback: if the first test fails
-                var cleanedValue = System.Text.RegularExpressions.Regex.Replace(leftSide, @"[^\d]", "");
+                var cleanedValue = System.Text.RegularExpressions.Regex.Replace(text, @"[^\d]", "");
                 if(uint.TryParse(cleanedValue, out result))
                     return result;
 
-                return 0; // fallback if parsing fails
+                return null;
             }
         }
 

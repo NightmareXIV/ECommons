@@ -44,7 +44,7 @@ public static unsafe class Player
         || Svc.Condition[ConditionFlag.InCombat]
         || GameMain.Instance()->TerritoryLoadState != 2;
 
-    public static string Name => Svc.PlayerState.CharacterName;
+    public static string? Name => Object.Name.ToString();
     public static string NameWithWorld => GetNameWithWorld(Object) ?? string.Empty;
     public static string GetNameWithWorld(this IPlayerCharacter? pc) => pc == null ? string.Empty : (pc.Name.ToString() + "@" + pc.HomeWorld.ValueNullable?.Name.ToString());
     public static ulong CID => Svc.PlayerState.ContentId;
@@ -52,7 +52,7 @@ public static unsafe class Player
     public static Sex Sex => Svc.PlayerState.Sex;
 
     /// <remarks>Unsynced level</remarks>
-    public static int Level => Svc.PlayerState.Level;
+    public static int Level => Object?.Level ?? 0;
     public static Number MaxLevel => PlayerState.Instance()->MaxLevel;
     public static bool IsLevelSynced => PlayerState.Instance()->IsLevelSynced;
     public static int SyncedLevel => PlayerState.Instance()->SyncedLevel;
@@ -62,14 +62,14 @@ public static unsafe class Player
     #region Excel
     public static RowRef<Race> Race => Svc.PlayerState.Race;
     public static RowRef<Tribe> Tribe => Lumina.Excel.Sheets.Tribe.GetRef(PlayerState.Instance()->Tribe);
-    public static RowRef<World> HomeWorld => Svc.PlayerState.HomeWorld;
-    public static RowRef<World> CurrentWorld => Svc.PlayerState.CurrentWorld;
+    public static RowRef<World> HomeWorld => Object?.HomeWorld ?? default;
+    public static RowRef<World> CurrentWorld => Object?.CurrentWorld ?? default;
     public static RowRef<WorldDCGroupType> HomeDateCenter => HomeWorld.Value.DataCenter;
     public static RowRef<WorldDCGroupType> CurrentDataCenter => CurrentWorld.Value.DataCenter;
     public static RowRef<TerritoryType> Territory => TerritoryType.GetRef(Svc.ClientState.TerritoryType);
     public static RowRef<TerritoryIntendedUse> TerritoryIntendedUse => Territory.Value.TerritoryIntendedUse;
     public static RowRef<TerritoryType> HomeAetheryteTerritory => Aetheryte.GetRef(PlayerState.Instance()->HomeAetheryteId).Value.Territory;
-    public static RowRef<ClassJob> ClassJob => Svc.PlayerState.ClassJob;
+    public static RowRef<ClassJob> ClassJob => Object?.ClassJob ?? default;
     public static RowRef<OnlineStatus> OnlineStatus => Object?.OnlineStatus ?? default;
     public static RowRef<ContentFinderCondition> ContentFinderCondition => Lumina.Excel.Sheets.ContentFinderCondition.GetRef(GameMain.Instance()->CurrentContentFinderConditionId);
 
