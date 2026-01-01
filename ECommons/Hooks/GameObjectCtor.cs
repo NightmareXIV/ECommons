@@ -5,7 +5,10 @@
 using Dalamud.Hooking;
 using ECommons.DalamudServices;
 using ECommons.Logging;
+using ECommons.Schedulers;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 #endregion
 
@@ -42,23 +45,31 @@ public class GameObjectCtor
     {
         try
         {
-            var @event = _gameObjectConstructorEvent;
-            if(@event != null)
+            Svc.Framework.RunOnTick(run, delayTicks:1);
+            Task run()
             {
-                // Iterate individual subscribers so a failing subscriber doesn't stop the rest.
-                foreach(var subscriber in @event.GetInvocationList())
+                var @event = _gameObjectConstructorEvent;
+                if(@event != null)
                 {
-                    try
+                    var obj = Svc.Objects.FirstOrDefault(x => x.Address == a1);
+                    if(obj != null)
                     {
-                        var subscriberMethod =
-                            (GameObjectConstructorCallbackDelegate)subscriber;
-                        subscriberMethod(a1);
-                    }
-                    catch(Exception e)
-                    {
-                        e.Log();
+                        // Iterate individual subscribers so a failing subscriber doesn't stop the rest.
+                        foreach(var subscriber in @event.GetInvocationList())
+                        {
+                            try
+                            {
+                                var subscriberMethod = (GameObjectConstructorCallbackDelegate)subscriber;
+                                subscriberMethod(a1);
+                            }
+                            catch(Exception e)
+                            {
+                                e.Log();
+                            }
+                        }
                     }
                 }
+                return Task.CompletedTask;
             }
         }
         catch(Exception e)
