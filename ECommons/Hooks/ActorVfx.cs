@@ -3,8 +3,10 @@
 #region
 
 using Dalamud.Hooking;
+using ECommons.Automation;
 using ECommons.DalamudServices;
 using ECommons.Logging;
+using FFXIVClientStructs.FFXIV.Client.System.String;
 using System;
 
 #endregion
@@ -26,12 +28,7 @@ public static unsafe class ActorVfx
     ///     Can be cast to a <see cref="ECommons.GameHelpers.VfxStruct" />.
     /// </param>
     /// <param name="vfxPathPtr">
-    ///     Pointer to the VFX path string.<br />
-    ///     Can resolve to a string with
-    ///     <see
-    ///         cref="Dalamud.Memory.MemoryHelper.ReadString(nint, System.Text.Encoding, int)">
-    ///         MemoryHelper.ReadString((nint)vfxPathPtr, Encoding.ASCII, 256)
-    ///     </see>
+    ///     Pointer to the VFX path string.<br />Call <see cref="Utf8String.ToString"/>() on it. 
     ///     .
     /// </param>
     /// <param name="casterAddress">Address of the caster GameObject.</param>
@@ -45,10 +42,7 @@ public static unsafe class ActorVfx
     ///     These delegates are called after that is already done (to provide
     ///     <paramref name="vfxPtr" />).
     /// </remarks>
-    public delegate void ActorVfxCreateCallbackDelegate(
-        nint vfxPtr,
-        char* vfxPathPtr, nint casterAddress, nint targetAddress,
-        float a4, char a5, ushort a6, char a7);
+    public delegate void ActorVfxCreateCallbackDelegate(nint vfxPtr, Utf8String* vfxPathPtr, nint casterAddress, nint targetAddress, float a4, byte a5, ushort a6, byte a7);
 
     /// <summary>
     ///     The signature your method must match to subscribe to
@@ -65,11 +59,9 @@ public static unsafe class ActorVfx
     /// </remarks>
     public delegate void ActorVfxDtorCallbackDelegate(nint actorVfxAddress);
 
-    public const string CreateSig =
-        "40 53 55 56 57 48 81 EC ?? ?? ?? ?? 0F 29 B4 24 ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 0F B6 AC 24 ?? ?? ?? ?? 0F 28 F3 49 8B F8";
+    public static readonly string CreateSig = "40 53 55 56 57 48 81 EC ?? ?? ?? ?? 0F 29 B4 24 ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 0F B6 AC 24 ?? ?? ?? ?? 0F 28 F3 49 8B F8";
 
-    public const string DtorSig =
-        "48 89 5C 24 ?? 57 48 83 EC ?? 48 8D 05 ?? ?? ?? ?? 48 8B D9 48 89 01 8B FA 48 8D 05 ?? ?? ?? ?? 48 89 81 ?? ?? ?? ?? 48 8B 89 ?? ?? ?? ?? 48 85 C9 74 ?? 48 8B 01 48 8B D3";
+    public static readonly string DtorSig = "48 89 5C 24 ?? 57 48 83 EC ?? 48 8D 05 ?? ?? ?? ?? 48 8B D9 48 89 01 8B FA 48 8D 05 ?? ?? ?? ?? 48 89 81 ?? ?? ?? ?? 48 8B 89 ?? ?? ?? ?? 48 85 C9 74 ?? 48 8B 01 48 8B D3";
 
     private static Hook<ActorVfxCreateDelegate> ActorVfxCreateHook;
 
@@ -107,8 +99,7 @@ public static unsafe class ActorVfx
         remove => _actorVfxDtorEvent -= value;
     }
 
-    internal static nint ActorVfxCreateDetour(char* a1, nint a2, nint a3, float a4,
-        char a5, ushort a6, char a7)
+    internal static nint ActorVfxCreateDetour(nint a1, nint a2, nint a3, float a4, byte a5, ushort a6, byte a7)
     {
         var output = ActorVfxCreateHook!.Original(a1, a2, a3, a4, a5, a6, a7);
 
@@ -122,9 +113,8 @@ public static unsafe class ActorVfx
                 {
                     try
                     {
-                        var subscriberMethod =
-                            (ActorVfxCreateCallbackDelegate)subscriber;
-                        subscriberMethod(output, a1, a2, a3, a4, a5, a6, a7);
+                        var subscriberMethod = (ActorVfxCreateCallbackDelegate)subscriber;
+                        subscriberMethod(output, (Utf8String*)a1, a2, a3, a4, a5, a6, a7);
                     }
                     catch(Exception e)
                     {
@@ -179,12 +169,9 @@ public static unsafe class ActorVfx
 
         if(Svc.SigScanner.TryScanText(CreateSig, out var ptr))
         {
-            ActorVfxCreateHook =
-                Svc.Hook.HookFromAddress<ActorVfxCreateDelegate>(ptr,
-                    ActorVfxCreateDetour);
+            ActorVfxCreateHook = Svc.Hook.HookFromAddress<ActorVfxCreateDelegate>(ptr, ActorVfxCreateDetour);
             EnableCreate();
-            PluginLog.Information(
-                "Requested Actor Vfx Create hook and successfully initialized");
+            PluginLog.Information("Requested Actor Vfx Create hook and successfully initialized");
         }
         else
         {
@@ -274,8 +261,7 @@ public static unsafe class ActorVfx
         }
     }
 
-    private delegate nint ActorVfxCreateDelegate(char* a1, nint a2, nint a3,
-        float a4, char a5, ushort a6, char a7);
+    private delegate nint ActorVfxCreateDelegate(nint a1, nint a2, nint a3, float a4, byte a5, ushort a6, byte a7);
 
     private delegate void ActorVfxDtorDelegate(nint a1);
 }

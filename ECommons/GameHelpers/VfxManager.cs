@@ -9,6 +9,7 @@ using ECommons.GameFunctions;
 using ECommons.Hooks;
 using ECommons.Logging;
 using ECommons.Throttlers;
+using FFXIVClientStructs.FFXIV.Client.System.String;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -133,9 +134,7 @@ public static class VfxManager
     /// <returns>
     ///     <see langword="true" /> if any matching VFXs were found.
     /// </returns>
-    private static bool TryGetVfx
-    (ulong? objectID, string? pathSearch, out List<VfxInfo> vfxList,
-        bool searchCasterAsWell = false)
+    private static bool TryGetVfx(ulong? objectID, string? pathSearch, out List<VfxInfo> vfxList, bool searchCasterAsWell = false)
     {
         vfxList = [];
 
@@ -171,9 +170,7 @@ public static class VfxManager
     ///     <see cref="Init" /> to track created VFXs.
     /// </summary>
     /// <seealso cref="ActorVfx.ActorVfxCreateCallbackDelegate" />
-    private static unsafe void TrackOnVfxCreate
-    (nint vfxPtr, char* vfxPathPtr, nint casterAddress, nint targetAddress,
-        float a4, char a5, ushort a6, char a7)
+    private static unsafe void TrackOnVfxCreate(nint vfxPtr, Utf8String* vfxPathPtr, nint casterAddress, nint targetAddress, float a4, byte a5, ushort a6, byte a7)
     {
         var    vfx       = (VfxStruct*)vfxPtr;
         var    vfxID     = vfxPtr.ToInt64();
@@ -190,8 +187,7 @@ public static class VfxManager
 
             casterID = casterObject?.GameObjectId ?? ulong.MaxValue;
             targetID = targetObject?.GameObjectId ?? ulong.MaxValue;
-            path = MemoryHelper
-                .ReadString(new nint(vfxPathPtr), Encoding.ASCII, 256);
+            path = vfxPathPtr->ToString();
         }
         catch(Exception ex)
         {
