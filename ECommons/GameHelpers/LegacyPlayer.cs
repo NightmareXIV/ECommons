@@ -83,7 +83,6 @@ public static unsafe class Player
     public static RowRef<ClassJob> ClassJob => Svc.PlayerState.ClassJob;
     public static Job Job => (Job)Svc.PlayerState.ClassJob.RowId;
     public static GrandCompany GrandCompany => (GrandCompany)PlayerState.Instance()->GrandCompany;
-    [Obsolete("Use GameHelpers.Player.Job")]
     public static Job GetJob(this IPlayerCharacter pc) => (Job)(pc?.ClassJob.RowId ?? 0);
 
     [Obsolete("Use GameHelpers.Player.HomeWorld.RowId")]
