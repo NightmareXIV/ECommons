@@ -170,7 +170,7 @@ public static class VfxManager
     ///     <see cref="Init" /> to track created VFXs.
     /// </summary>
     /// <seealso cref="ActorVfx.ActorVfxCreateCallbackDelegate" />
-    private static unsafe void TrackOnVfxCreate(nint vfxPtr, Utf8String* vfxPathPtr, nint casterAddress, nint targetAddress, float a4, byte a5, ushort a6, byte a7)
+    private static unsafe void TrackOnVfxCreate(nint vfxPtr, nint vfxPathPtr, nint casterAddress, nint targetAddress, float a4, byte a5, ushort a6, byte a7)
     {
         var    vfx       = (VfxStruct*)vfxPtr;
         var    vfxID     = vfxPtr.ToInt64();
@@ -187,7 +187,7 @@ public static class VfxManager
 
             casterID = casterObject?.GameObjectId ?? ulong.MaxValue;
             targetID = targetObject?.GameObjectId ?? ulong.MaxValue;
-            path = vfxPathPtr->ToString();
+            path = MemoryHelper.ReadString(new nint(vfxPathPtr), Encoding.ASCII, 256);
         }
         catch(Exception ex)
         {

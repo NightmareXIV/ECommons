@@ -28,7 +28,12 @@ public static unsafe class ActorVfx
     ///     Can be cast to a <see cref="ECommons.GameHelpers.VfxStruct" />.
     /// </param>
     /// <param name="vfxPathPtr">
-    ///     Pointer to the VFX path string.<br />Call <see cref="Utf8String.ToString"/>() on it. 
+    ///     Pointer to the VFX path string.<br />
+    ///     Can resolve to a string with
+    ///     <see
+    ///         cref="Dalamud.Memory.MemoryHelper.ReadString(nint, System.Text.Encoding, int)">
+    ///         MemoryHelper.ReadString((nint)vfxPathPtr, Encoding.ASCII, 256)
+    ///     </see>
     ///     .
     /// </param>
     /// <param name="casterAddress">Address of the caster GameObject.</param>
@@ -42,7 +47,7 @@ public static unsafe class ActorVfx
     ///     These delegates are called after that is already done (to provide
     ///     <paramref name="vfxPtr" />).
     /// </remarks>
-    public delegate void ActorVfxCreateCallbackDelegate(nint vfxPtr, Utf8String* vfxPathPtr, nint casterAddress, nint targetAddress, float a4, byte a5, ushort a6, byte a7);
+    public delegate void ActorVfxCreateCallbackDelegate(nint vfxPtr, nint vfxPathPtr, nint casterAddress, nint targetAddress, float a4, byte a5, ushort a6, byte a7);
 
     /// <summary>
     ///     The signature your method must match to subscribe to
@@ -114,7 +119,7 @@ public static unsafe class ActorVfx
                     try
                     {
                         var subscriberMethod = (ActorVfxCreateCallbackDelegate)subscriber;
-                        subscriberMethod(output, (Utf8String*)a1, a2, a3, a4, a5, a6, a7);
+                        subscriberMethod(output, a1, a2, a3, a4, a5, a6, a7);
                     }
                     catch(Exception e)
                     {
