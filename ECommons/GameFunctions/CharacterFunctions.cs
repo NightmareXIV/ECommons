@@ -95,4 +95,9 @@ public static unsafe class CharacterFunctions
         public float Health => (float)chr.CurrentHp / (float)chr.MaxHp;
         public uint MissingHp => chr.MaxHp - chr.CurrentHp;
     }
+
+    extension(IBattleChara b)
+    {
+        public float RemainingCastTime => b.TotalCastTime - b.CurrentCastTime;
+    }
 }
