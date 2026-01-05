@@ -2,6 +2,7 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Windowing;
+using ECommons.MathHelpers;
 using System;
 using System.Numerics;
 using System.Reflection.Emit;

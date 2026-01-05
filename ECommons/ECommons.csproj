@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Authors>NightmareXIV</Authors>
-        <BaseVersion>3.1.0.12</BaseVersion>
+        <BaseVersion>3.1.0.13</BaseVersion>
         <PackageKind></PackageKind>
         <VersionSuffix Condition="'$(PackageKind)' != ''">-$(PackageKind)</VersionSuffix>
         <Version>$(BaseVersion)$(VersionSuffix)</Version>
@@ -111,10 +111,6 @@
         </Reference>
         <Reference Include="InteropGenerator.Runtime">
             <HintPath>$(DalamudLibPath)InteropGenerator.Runtime.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="SharpDX.Mathematics">
-            <HintPath>$(DalamudLibPath)SharpDX.Mathematics.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Reloaded.Hooks.Definitions">
