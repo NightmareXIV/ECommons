@@ -37,6 +37,15 @@ public static unsafe partial class ImGuiEx
     public static ImGuiTableFlags DefaultTableFlags = ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg | ImGuiTableFlags.Borders | ImGuiTableFlags.SizingFixedFit;
     private static Dictionary<string, int> SelectedPages = [];
 
+    public static void SimpleTableTextColumns(params string[] texts)
+    {
+        foreach(var x in texts)
+        {
+            ImGui.TableNextColumn();
+            ImGuiEx.Text(x);
+        }
+    }
+
     /// <summary>
     /// Fully equals to <see cref="ImGui.DragFloat"/>.
     /// </summary>
