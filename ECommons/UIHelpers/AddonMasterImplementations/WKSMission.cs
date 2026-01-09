@@ -91,6 +91,31 @@ public partial class AddonMaster
             }
         }
 
+        public class ClassDropdown(WKSMission master, int index)
+        {
+            public void Select()
+            {
+                Callback.Fire(master.Base, true, 11, index);
+            }
+        }
+
+        public uint NumClasses => Addon->AtkValues[1].UInt; 
+
+        public ClassDropdown[] SelectClass
+        {
+            get
+            {
+                var ret = new List<ClassDropdown>();
+                for (int i = 0; i < NumClasses; i++)
+                {
+                    var jobSelect = new ClassDropdown(this, i);
+                    ret.Add(jobSelect);
+                }
+
+                return [.. ret];
+            }
+        }
+
         public override string AddonDescription => "Steller Missions Ui";
 
         public void Help() => ClickButtonIfEnabled(HelpButton);
