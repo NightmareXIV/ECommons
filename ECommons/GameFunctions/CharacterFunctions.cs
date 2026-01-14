@@ -94,6 +94,8 @@ public static unsafe class CharacterFunctions
     {
         public float Health => (float)chr.CurrentHp / (float)chr.MaxHp;
         public uint MissingHp => chr.MaxHp - chr.CurrentHp;
+        public uint StatusLoop => chr.Struct()->StatusLoopVfxId;
+        public int ModelId => chr.Struct()->ModelContainer.ModelCharaId;
     }
 
     extension(IBattleChara b)

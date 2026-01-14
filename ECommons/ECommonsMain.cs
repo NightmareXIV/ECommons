@@ -86,7 +86,7 @@ var type = "unknown build";
         if(!ReducedLogging) PluginLog.Information($"This is ECommons v{typeof(ECommonsMain).Assembly.GetName().Version} ({type}) and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}. Hello!");
         Svc.Log.MinimumLogLevel = LogEventLevel.Verbose;
         GenericHelpers.Safe(CmdManager.Init);
-        if(modules.Contains(Module.VfxTracking))
+        if(modules.ContainsAny(Module.VfxTracking, Module.All))
         {
             GenericHelpers.Safe(VfxManager.Init);
         }
