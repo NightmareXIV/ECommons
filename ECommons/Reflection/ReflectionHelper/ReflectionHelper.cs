@@ -19,6 +19,7 @@ public static partial class ReflectionHelper
     /// <returns>Value of a field/property</returns>
     public static object GetFoP(this object obj, string name)
     {
+        if(obj == null || name == null) return null;
         var type = obj.GetType();
         while(type != null)
         {

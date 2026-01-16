@@ -2,6 +2,7 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Windowing;
+using ECommons.MathHelpers;
 using System;
 using System.Numerics;
 using System.Reflection.Emit;
@@ -146,17 +147,21 @@ public static unsafe partial class ImGuiEx
         return enabled && ret;
     }
 
+    public static bool Checkbox(string label, ref bool? value) => Checkbox(label, ref value, true, false);
+
     /// <summary>
     /// Tri-way <see cref="ImGui.Checkbox"/>. Null will be displayed as a bullet. Switching order: false -> null -> true.
     /// </summary>
     /// <param name="label"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static bool Checkbox(string label, ref bool? value)
+    public static bool Checkbox(string label, ref bool? value, bool enabled, bool inverted)
     {
+        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        bool ret = false;
         if(value != null)
         {
-            var b = value.Value;
+            var b = inverted?!value.Value:value.Value;
             if(ImGui.Checkbox(label, ref b))
             {
                 if(b)
@@ -165,9 +170,9 @@ public static unsafe partial class ImGuiEx
                 }
                 else
                 {
-                    value = false;
+                    value = inverted;
                 }
-                return true;
+                ret = true;
             }
         }
         else
@@ -175,11 +180,11 @@ public static unsafe partial class ImGuiEx
             var b = true;
             if(ImGuiEx.CheckboxBullet(label, ref b))
             {
-                value = true;
-                return true;
+                value = !inverted;
+                ret = true;
             }
         }
-        return false;
+        return ret;
     }
 
     /// <summary>

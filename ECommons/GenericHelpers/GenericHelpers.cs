@@ -36,6 +36,16 @@ public static unsafe partial class GenericHelpers
     private static ulong UidCnt = 0;
     public static string GetTemporaryId() => $"{UidPrefix}{UidCnt++:X}";
 
+    public static bool ApproximatelyEquals(this Vector3 one, Vector3 two, float diff = 0.01f)
+    {
+        return Math.Abs(one.X - two.X) < diff && Math.Abs(one.Y - two.Y) < diff && Math.Abs(one.Z - two.Z) < diff;
+    }
+
+    public static bool ApproximatelyEquals(this float one, float two, float diff = 0.01f)
+    {
+        return Math.Abs(one - two) < diff;
+    }
+
     /// <summary>
     /// Returns sum of all elements in the <paramref name="sequence"/>.
     /// </summary>
