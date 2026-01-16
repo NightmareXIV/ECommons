@@ -1,5 +1,7 @@
-﻿using ECommons.DalamudServices;
+﻿using Dalamud.Game.ClientState.Objects.Types;
+using ECommons.DalamudServices;
 using ECommons.Logging;
+using ECommons.ObjectLifeTracker;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -417,5 +419,17 @@ public static class MathHelper
     public static bool InRange(this sbyte f, sbyte inclusiveStart, sbyte end, bool includeEnd = false)
     {
         return f >= inclusiveStart && (includeEnd ? f <= end : f < end);
+    }
+
+
+    public static List<T> EnumerateObjectsClockwise<T>(IEnumerable<T> objects, Func<T, Vector2> getPosition, Vector2 centerPosition, Vector2 startingPosition)
+    {
+        var orderedList = objects.OrderBy(x =>
+        {
+            var relAngle = MathHelper.GetRelativeAngle(centerPosition, startingPosition);
+            var a = (MathHelper.GetRelativeAngle(centerPosition, getPosition(x)) - relAngle + 360) % 360;
+            return a;
+        }).ToList();
+        return orderedList;
     }
 }
