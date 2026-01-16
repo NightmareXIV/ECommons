@@ -67,6 +67,17 @@ public static class EzConfig
     /// </summary>
     public static object? Config { get; private set; }
 
+    public static T Get<T>()
+    {
+        return (T)Config;
+    }
+
+    public static T Set<T>(T newReference)
+    {
+        Config = newReference;
+        return (T)Config;
+    }
+
     private static bool WasCalled = false;
 
     public static event Action? OnSave;
