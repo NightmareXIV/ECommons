@@ -15,7 +15,7 @@ public class EzDtr : IDisposable
     public IDtrBarEntry? Entry;
     internal static List<EzDtr> Registered = [];
     internal Func<SeString> Text;
-    internal Action? OnClick;
+    internal Action<DtrInteractionEvent>? OnClick;
 
     /// <summary>
     /// Creates a new <see cref="EzDtr"/>
@@ -24,6 +24,16 @@ public class EzDtr : IDisposable
     /// <param name="onClick">Action performed whenever the entry is clicked</param>
     /// <param name="title">Name of the Dtr entry. Defaults to the plugin name.</param>
     public EzDtr(Func<SeString> text, Action? onClick = null, string? title = null)
+    {
+        title ??= DalamudReflector.GetPluginName();
+        Text = text;
+        OnClick = onClick != null ? _ => onClick() : null;
+        Entry ??= Svc.DtrBar.Get(title);
+        Svc.Framework.Update += OnUpdate;
+        Registered.Add(this);
+    }
+
+    public EzDtr(Func<SeString> text, Action<DtrInteractionEvent>? onClick = null, string? title = null)
     {
         title ??= DalamudReflector.GetPluginName();
         Text = text;
@@ -39,7 +49,7 @@ public class EzDtr : IDisposable
         {
             Entry.Text = Text();
             if(OnClick != null)
-                Entry.OnClick = (x) => OnClick();
+                Entry.OnClick = OnClick;
         }
     }
 
