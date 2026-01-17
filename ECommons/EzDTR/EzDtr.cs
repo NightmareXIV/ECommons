@@ -50,7 +50,11 @@ public class EzDtr : IDisposable
     {
         if(Entry.Shown)
         {
-            if(ShowCondition != null && !ShowCondition()) return;
+            if(ShowCondition != null && !ShowCondition())
+            {
+                Entry.Text = string.Empty;
+                return;
+            }
             Entry.Text = Text();
             if(OnClick != null)
                 Entry.OnClick = OnClick;
