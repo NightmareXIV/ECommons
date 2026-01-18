@@ -243,8 +243,9 @@ public static class VfxManager
             var index = TrackedEffects.FindIndex(x => x.VfxID == vfxID);
             if(index >= 0)
             {
-                info        =  TrackedEffects[index];
-                info.HasRun |= hasRun;
+                info           =  TrackedEffects[index];
+                info.SpawnTick =  spawnTick;
+                info.HasRun    |= hasRun;
 
                 if(info.CasterID == ulong.MaxValue && casterID != ulong.MaxValue)
                     info.CasterID = casterID;
@@ -618,7 +619,11 @@ public record struct VfxInfo
 
     public PlacementData? Placement;
 
-    /// Tick count at which the VFX was spawned.
+    /// <summary>Tick count at which the VFX was spawned.</summary>
+    /// <remarks>
+    ///     If <see cref="IsStatic"/>, then will be updated once the
+    ///     VFX is actually run.
+    /// </remarks>
     public long SpawnTick;
 
     /// Identifier of the target the VFX is attached to.
