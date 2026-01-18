@@ -408,7 +408,8 @@ public static class VfxManager
         var targetID = vfx->StaticTargetID;
 
         // Cache path for use during Run events (even if we skip creation tracking)
-        StaticVfxPathCache[vfxID] = path;
+        lock (StaticVfxPathCache)
+            StaticVfxPathCache[vfxID] = path;
 
         // Bail if we don't want to start tracking yet
         if(!EnableStaticVfxCreationTracking)
@@ -426,11 +427,12 @@ public static class VfxManager
         var vfxID    = vfxPtr.ToInt64();
         var casterID = vfx->StaticCasterID;
         var targetID = vfx->StaticTargetID;
+        var path     = string.Empty;
 
         // Reuse cached path from creation if available
-        var path = StaticVfxPathCache.TryGetValue(vfxID, out var cachedPath)
-            ? cachedPath
-            : string.Empty;
+        lock (StaticVfxPathCache)
+            if (StaticVfxPathCache.TryGetValue(vfxID, out var cachedPath))
+                path = cachedPath;
 
         TrackVfx(vfx, casterID, targetID, path, isStatic: true, hasRun: true);
     }
@@ -464,6 +466,8 @@ public static class VfxManager
     {
         lock(TrackedEffects)
             TrackedEffects.Clear();
+        lock (StaticVfxPathCache)
+            StaticVfxPathCache.Clear();
         ActorVfx.ActorVfxCreateEvent              -= TrackOnActorVfxCreate;
         ActorVfx.ActorVfxDtorEvent                -= RemoveSpecificVfx;
         StaticVfx.StaticVfxCreateEvent            -= TrackOnStaticVfxCreate;
