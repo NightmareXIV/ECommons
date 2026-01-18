@@ -295,10 +295,7 @@ public static class VfxManager
 
     extension(List<VfxInfo> vfxList)
     {
-        /// <summary>
-        ///     Returns only the VFXs that are either non-static, or static
-        ///     VFXs that have already run.
-        /// </summary>
+        /// Returns only the VFXs that are either non-static, or that have run.
         public List<VfxInfo> FilterToReady() =>
             vfxList.Where(x => !x.IsStatic || x.HasRun).ToList();
 
