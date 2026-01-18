@@ -3,10 +3,8 @@
 #region
 
 using Dalamud.Hooking;
-using ECommons.Automation;
 using ECommons.DalamudServices;
 using ECommons.Logging;
-using FFXIVClientStructs.FFXIV.Client.System.String;
 using System;
 
 #endregion
