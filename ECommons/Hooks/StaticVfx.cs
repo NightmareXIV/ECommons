@@ -31,7 +31,7 @@ public static class StaticVfx
     /// </param>
     /// <remarks>
     ///     WARNING! Do NOT try to call <c>.Original()</c> within your delegate!<br />
-    ///     These delegates are called after that is already done (to provide
+    ///     These delegates are already called after that is run (to provide
     ///     <paramref name="vfxPtr" />).
     /// </remarks>
     public delegate void StaticVfxCreateCallbackDelegate(nint vfxPtr, string path,
@@ -48,7 +48,7 @@ public static class StaticVfx
     /// <remarks>
     ///     WARNING! Do NOT try to call <c>.Original()</c> within your delegate!
     ///     <br />
-    ///     These delegates are called right before that is already done.
+    ///     These delegates are already called right before that is run.
     /// </remarks>
     public delegate void StaticVfxDtorCallbackDelegate(nint staticVfxAddress);
 
@@ -72,7 +72,7 @@ public static class StaticVfx
     /// <remarks>
     ///     WARNING! Do NOT try to call <c>.Original()</c> within your delegate!
     ///     <br />
-    ///     These delegates are called right before that is already done.
+    ///     These delegates are already called right before that is run.
     /// </remarks>
     public delegate void StaticVfxRunCallbackDelegate(nint staticVfxAddress,
         float a1, uint a2);
@@ -99,7 +99,7 @@ public static class StaticVfx
 
     /// <summary>
     ///     Add a <see cref="StaticVfxCreateCallbackDelegate" /> subscriber
-    ///     to this event be called when a static VFX is created.
+    ///     to this event to be called when a static VFX is created.
     /// </summary>
     public static event StaticVfxCreateCallbackDelegate StaticVfxCreateEvent
     {
@@ -113,7 +113,7 @@ public static class StaticVfx
 
     /// <summary>
     ///     Add a <see cref="StaticVfxRunCallbackDelegate" /> subscriber
-    ///     to this event be called when a static VFX is run.
+    ///     to this event to be called when a static VFX is run.
     /// </summary>
     public static event StaticVfxRunCallbackDelegate StaticVfxRunEvent
     {
@@ -127,7 +127,7 @@ public static class StaticVfx
 
     /// <summary>
     ///     Add a <see cref="StaticVfxDtorCallbackDelegate" /> subscriber
-    ///     to this event be called when a static VFX is destructed.
+    ///     to this event to be called when a static VFX is destructed.
     /// </summary>
     public static event StaticVfxDtorCallbackDelegate StaticVfxDtorEvent
     {

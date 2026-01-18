@@ -679,7 +679,7 @@ public struct VfxStruct
 /// <summary>
 ///     The quaternion struct used by the VFX system for rotations.
 /// </summary>
-/// <seealso href="https://github.com/0ceal0t/Dalamud-VFXEditor/blob/c320f08c981f3bf7353157c3d2faebcb00cba511/VFXEditor/Interop/Structs/Quat.cs"> From VFXEditor</seealso>
+/// <seealso href="https://github.com/0ceal0t/Dalamud-VFXEditor/blob/c320f08c981f3bf7353157c3d2faebcb00cba511/VFXEditor/Interop/Structs/Quat.cs">From VFXEditor</seealso>
 [StructLayout(LayoutKind.Sequential)]
 public struct Quat
 {
