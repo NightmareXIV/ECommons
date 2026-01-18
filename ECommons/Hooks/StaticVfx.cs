@@ -30,7 +30,8 @@ public static class StaticVfx
     ///     The FFXIV subsystem that is responsible for creating the VFX.
     /// </param>
     /// <remarks>
-    ///     WARNING! Do NOT try to call <c>.Original()</c> within your delegate!<br />
+    ///     WARNING! Do NOT try to call <c>.Original()</c> within your delegate!
+    ///     <br />
     ///     These delegates are already called after that is run (to provide
     ///     <paramref name="vfxPtr" />).
     /// </remarks>

@@ -41,7 +41,8 @@ public static unsafe class ActorVfx
     /// <param name="a6">Unknown ushort parameter.</param>
     /// <param name="a7">Unknown char parameter.</param>
     /// <remarks>
-    ///     WARNING! Do NOT try to call <c>.Original()</c> within your delegate!<br />
+    ///     WARNING! Do NOT try to call <c>.Original()</c> within your delegate!
+    ///     <br />
     ///     These delegates are called after that is already run (to provide
     ///     <paramref name="vfxPtr" />).
     /// </remarks>
