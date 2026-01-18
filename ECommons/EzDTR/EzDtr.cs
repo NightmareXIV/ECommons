@@ -48,13 +48,14 @@ public class EzDtr : IDisposable
 
     internal void OnUpdate(object _)
     {
-        if(Entry.Shown)
+        if(Entry != null)
         {
             if(ShowCondition != null && !ShowCondition())
             {
-                Entry.Text = string.Empty;
+                Entry.Shown = false;
                 return;
             }
+            Entry.Shown = true;
             Entry.Text = Text();
             if(OnClick != null)
                 Entry.OnClick = OnClick;
@@ -65,7 +66,7 @@ public class EzDtr : IDisposable
     {
         Svc.Framework.Update -= OnUpdate;
         Registered.Remove(this);
-        Entry.Remove();
+        Entry?.Remove();
     }
 
     public static void DisposeAll() => Registered.ToArray().Each(x => x.Dispose());
