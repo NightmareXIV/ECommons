@@ -612,6 +612,11 @@ public record struct VfxInfo
     public bool IsStatic;
 
     /// Source path of the spawned VFX asset.
+    /// <remarks>
+    ///     For Static VFXs, this field is less certain, and may even be empty,
+    ///     when the VFX was created long before it was run (which is mostly
+    ///     not the case when looking for VFX for mechanics, but still possible).
+    /// </remarks>
     public string Path;
 
     public PlacementData? Placement;
