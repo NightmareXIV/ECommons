@@ -253,7 +253,7 @@ public static class VfxManager
                     info.CasterID = casterID;
                 if(info.TargetID == ulong.MaxValue && targetID != ulong.MaxValue)
                     info.TargetID = targetID;
-                if(string.IsNullOrEmpty(info.Path) && !string.IsNullOrEmpty(path))
+                if(!string.IsNullOrEmpty(path))
                     info.Path = path;
                 if(info.Placement is null && placement is not null)
                     info.Placement = placement;
