@@ -97,8 +97,8 @@ public static unsafe partial class GenericHelpers
     /// <typeparam name="T"></typeparam>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static T? FindRow<T>(Func<T, bool> predicate) where T : struct, IExcelRow<T>
-         => GetSheet<T>().FirstOrNull(predicate);
+    public static T? FindRow<T>(Func<T, bool> predicate, ClientLanguage? language = null) where T : struct, IExcelRow<T>
+         => GetSheet<T>(language).FirstOrNull(predicate);
 
     /// <summary>
     /// TODO: document
@@ -106,8 +106,8 @@ public static unsafe partial class GenericHelpers
     /// <typeparam name="T"></typeparam>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static T[] FindRows<T>(Func<T, bool> predicate) where T : struct, IExcelRow<T>
-        => GetSheet<T>().Where(predicate).ToArray();
+    public static T[] FindRows<T>(Func<T, bool> predicate, ClientLanguage? language = null) where T : struct, IExcelRow<T>
+        => GetSheet<T>(language).Where(predicate).ToArray();
 
     /// <summary>
     /// TODO: document
