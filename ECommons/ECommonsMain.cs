@@ -164,6 +164,7 @@ var type = "unknown build";
         GenericHelpers.Safe(MapEffect.Dispose);
         GenericHelpers.Safe(SendAction.Dispose);
         GenericHelpers.Safe(ActorVfx.Dispose);
+        GenericHelpers.Safe(StaticVfx.Dispose);
         GenericHelpers.Safe(GameObjectCtor.Dispose);
         GenericHelpers.Safe(VfxManager.Dispose);
         GenericHelpers.Safe(Automation.LegacyTaskManager.TaskManager.DisposeAll);
