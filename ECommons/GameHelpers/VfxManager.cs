@@ -59,7 +59,7 @@ public static class VfxManager
     /// <summary>
     ///     Whether VfxManager should log anything at all.
     /// </summary>
-    public static bool Logging { get; set; } = true;
+    public static bool Logging { get; set; } = false;
 
     /// <summary>
     ///     If set, will restrict logging to logs whose bodies contain this string.
@@ -530,9 +530,9 @@ public static class VfxManager
         if(!EnableDtorCulling)
             return;
 
-        long       vfxID;
-        ulong      casterID;
-        ulong      targetID;
+        long  vfxID;
+        ulong casterID;
+        ulong targetID;
         try
         {
             vfxID = vfxAddress.ToInt64();
