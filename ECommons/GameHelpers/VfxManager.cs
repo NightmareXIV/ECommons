@@ -16,6 +16,8 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable UnusedMember.Global
 
 #endregion
@@ -52,19 +54,19 @@ public static class VfxManager
     ///     when they are Ran.<br />
     ///     Similar to using the filter <see cref="FilterToReady" />.
     /// </summary>
-    public static readonly bool EnableStaticVfxCreationTracking = false;
+    public static bool EnableStaticVfxCreationTracking { get; set; } = false;
 
     /// <summary>
     ///     Whether VfxManager should log anything at all.
     /// </summary>
-    public static bool Logging = false;
+    public static bool Logging { get; set; } = true;
 
     /// <summary>
     ///     If set, will restrict logging to logs whose bodies contain this string.
     ///     <br />
     ///     Useful for filtering to your player ID or specific VFX paths.
     /// </summary>
-    public static string? LoggingFilter = null;
+    public static string? LoggingFilter { get; set; }
 
     /// <summary>
     ///     If populated, will only start tracking of VFXs whose paths
