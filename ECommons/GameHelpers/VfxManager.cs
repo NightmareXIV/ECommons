@@ -532,11 +532,11 @@ public static class VfxManager
 
         var vfxID   = vfxAddress.ToInt64();
         var realVfx = (VfxStruct*)vfxAddress;
-        var casterID = realVfx->CasterID != ulong.MaxValue
-            ? realVfx->CasterID
+        var casterID = realVfx->ActorCasterID != ulong.MaxValue
+            ? realVfx->ActorCasterID
             : realVfx->StaticCasterID;
-        var targetID = realVfx->TargetID != ulong.MaxValue
-            ? realVfx->TargetID
+        var targetID = realVfx->ActorTargetID != ulong.MaxValue
+            ? realVfx->ActorTargetID
             : realVfx->StaticTargetID;
 
         int removed;
@@ -674,10 +674,10 @@ public struct VfxStruct
     [FieldOffset(0x70)] public Vector3 Scale;
 
     /// Identifier of the actor that spawned the VFX. (ActorVfx)
-    [FieldOffset(0x128)] public ulong CasterID;
+    [FieldOffset(0x128)] public ulong ActorCasterID;
 
     /// Identifier of the target the VFX is attached to. (ActorVfx)
-    [FieldOffset(0x130)] public ulong TargetID;
+    [FieldOffset(0x130)] public ulong ActorTargetID;
 
     /// Identifier of the actor that spawned the VFX. (StaticVfx)
     [FieldOffset(0x1B8)] public ulong StaticCasterID;
