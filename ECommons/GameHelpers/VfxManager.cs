@@ -541,14 +541,7 @@ public static class VfxManager
 
         int removed;
         lock(TrackedEffects)
-        {
-            removed = TrackedEffects.RemoveAll(info =>
-                info.VfxID == vfxID &&
-                (info.CasterID == casterID ||
-                 casterID is ulong.MaxValue) &&
-                (info.TargetID == targetID ||
-                 targetID is ulong.MaxValue));
-        }
+            removed = TrackedEffects.RemoveAll(info => info.VfxID == vfxID);
 
         // Drop any cached static path for this VFX
         lock(StaticVfxPathCache)
