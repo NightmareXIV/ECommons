@@ -530,14 +530,24 @@ public static class VfxManager
         if(!EnableDtorCulling)
             return;
 
-        var vfxID   = vfxAddress.ToInt64();
-        var realVfx = (VfxStruct*)vfxAddress;
-        var casterID = realVfx->ActorCasterID != ulong.MaxValue
-            ? realVfx->ActorCasterID
-            : realVfx->StaticCasterID;
-        var targetID = realVfx->ActorTargetID != ulong.MaxValue
-            ? realVfx->ActorTargetID
-            : realVfx->StaticTargetID;
+        long       vfxID;
+        ulong      casterID;
+        ulong      targetID;
+        try
+        {
+            vfxID = vfxAddress.ToInt64();
+            var realVfx = (VfxStruct*)vfxAddress;
+            casterID = realVfx->ActorCasterID != ulong.MaxValue
+                ? realVfx->ActorCasterID
+                : realVfx->StaticCasterID;
+            targetID = realVfx->ActorTargetID != ulong.MaxValue
+                ? realVfx->ActorTargetID
+                : realVfx->StaticTargetID;
+        }
+        catch
+        {
+            return;
+        }
 
         int removed;
         lock(TrackedEffects)
