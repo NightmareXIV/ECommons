@@ -216,7 +216,7 @@ public static class VfxManager
                 var log = $"Path: `{path}`, Caster: {casterID}, Target: {targetID}";
                 if(LoggingFilter is null || log.Contains(LoggingFilter, Lower))
                     PluginLog.Debug(
-                        $"[EC.VfxManager] VFX #{vfxID} SKIPPED Catching " +
+                        $"[EC.VfxManager] VFX #{vfxID:X8} SKIPPED Catching " +
                         $"(not whitelisted). {log}");
             }
 
@@ -289,7 +289,7 @@ public static class VfxManager
                 : "Caught";
             if(LoggingFilter is null || log.Contains(LoggingFilter, Lower))
                 PluginLog.Verbose(
-                    $"[EC.VfxManager] VFX #{info.VfxID} {verb}. {log}");
+                    $"[EC.VfxManager] VFX #{info.VfxID:X8} {verb}. {log}");
         }
     }
 
@@ -387,7 +387,7 @@ public static class VfxManager
                 var log = ex.ToStringFull();
                 if(LoggingFilter is null || log.Contains(LoggingFilter, Lower))
                     PluginLog.Debug(
-                        $"[EC.VfxManager] VFX #{vfxID} FAILED to Catch. {log}");
+                        $"[EC.VfxManager] VFX #{vfxID:X8} FAILED to Catch. {log}");
             }
 
             return;
@@ -404,13 +404,14 @@ public static class VfxManager
     {
         var vfx      = (VfxStruct*)vfxPtr;
         var vfxID    = vfxPtr.ToInt64();
+
+        // More than likely, these are ulong.MaxValue until Run event
         var casterID = vfx->StaticCasterID;
         var targetID = vfx->StaticTargetID;
 
         // Cache path for use during Run events (even if we skip creation tracking)
         lock (StaticVfxPathCache)
             StaticVfxPathCache[vfxID] = path;
-
         // Bail if we don't want to start tracking yet
         if(!EnableStaticVfxCreationTracking)
             return;
@@ -559,7 +560,7 @@ public static class VfxManager
                       $"Caster: {casterID}, Target: {targetID}";
             if(LoggingFilter is null || log.Contains(LoggingFilter, Lower))
                 PluginLog.Verbose(
-                    $"[EC.VfxManager] VFX #{vfxID} Destroyed. {log}");
+                    $"[EC.VfxManager] VFX #{vfxID:X8} Destroyed. {log}");
         }
     }
 
