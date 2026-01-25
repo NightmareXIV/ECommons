@@ -230,7 +230,7 @@ public static unsafe partial class GenericHelpers
     /// <param name="predicate"></param>
     /// <param name="language"></param>
     /// <returns></returns>
-    public static T? FindRowSub<T>(Func<T, bool> predicate, ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
+    public static T? FindSubrow<T>(Func<T, bool> predicate, ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
     {
         return GetSubrowSheet<T>(language).SelectMany(m => m).Cast<T?>().FirstOrDefault(t => predicate(t.Value), null);
     }

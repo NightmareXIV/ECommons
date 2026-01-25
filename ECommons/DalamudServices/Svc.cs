@@ -54,6 +54,7 @@ public class Svc
     [PluginService] public static ITextureReadbackProvider TextureReadback { get; private set; }
     [PluginService] public static ITitleScreenMenu TitleScreenMenu { get; private set; }
     [PluginService] public static IToastGui Toasts { get; private set; }
+    [PluginService] public static IUnlockState UnlockState { get; private set; }
 
     public static Legacy.IGameNetwork GameNetwork
     {
