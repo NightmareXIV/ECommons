@@ -312,9 +312,15 @@ public static unsafe partial class GenericHelpers
         /// <param name="id"></param>
         /// <param name="language"></param>
         /// <returns></returns>
+        [OverloadResolutionPriority(1)]
         public static RowRef<T> GetRef(uint id, Lumina.Data.Language? language = null)
         {
             return new(Svc.Data.Excel, id, language);
+        }
+
+        public static RowRef<T> GetRef(int id, Lumina.Data.Language? language = null)
+        {
+            return GetRef<T>((uint)id, language);
         }
 
         public static T Get(uint id, Dalamud.Game.ClientLanguage? language = null)
