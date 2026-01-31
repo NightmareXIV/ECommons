@@ -18,9 +18,11 @@ public partial class AddonMaster
         {
             get
             {
-                return MemoryHelper
-                    .ReadSeStringNullTerminated((nint)Addon->AtkValues[0].String.Value)
-                    .GetText();
+                if(Addon->AtkValues[0].IsString())
+                {
+                    return MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[0].String.Value).GetText();
+                }
+                return null;
             }
         }
 
@@ -28,7 +30,7 @@ public partial class AddonMaster
         {
             get
             {
-                if(Addon->AtkValuesCount < 2)
+                if(Addon->AtkValuesCount < 2 || !Addon->AtkValues[2].IsString())
                     return null;
 
                 var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[2].String.Value);
@@ -50,7 +52,7 @@ public partial class AddonMaster
         {
             get
             {
-                if(Addon->AtkValuesCount < 2)
+                if(Addon->AtkValuesCount < 2 || !Addon->AtkValues[3].IsString())
                     return null;
 
                 var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[3].String.Value);
@@ -72,7 +74,7 @@ public partial class AddonMaster
         {
             get
             {
-                if(Addon->AtkValuesCount < 2)
+                if(Addon->AtkValuesCount < 2 || !Addon->AtkValues[4].IsString())
                     return null;
 
                 var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[4].String.Value);
@@ -94,7 +96,7 @@ public partial class AddonMaster
         {
             get
             {
-                if(Addon->AtkValuesCount < 2)
+                if(Addon->AtkValuesCount < 2 || !Addon->AtkValues[5].IsString())
                     return null;
 
                 var rawValue = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[5].String.Value);
