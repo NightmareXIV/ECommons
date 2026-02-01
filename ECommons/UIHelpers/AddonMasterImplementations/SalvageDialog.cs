@@ -1,5 +1,6 @@
 ﻿using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using System;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 public partial class AddonMaster
@@ -20,13 +21,10 @@ public partial class AddonMaster
         public void Desynthesize() => ClickButtonIfEnabled(DesynthesizeButton);
         public void Cancel() => ClickButtonIfEnabled(CancelButton);
 
+        [Obsolete("Do not use")]
         public void Checkbox()
         {
-            if(Addon->BulkDesynthCheckboxNode != null && !Addon->BulkDesynthCheckboxNode->IsChecked)
-            {
-                Addon->BulkDesynthCheckboxNode->IsChecked = true;
-                DesynthesizeButton->SetEnabledState(true);
-            }
+            // do nothing for now
         }
     }
 }

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace ECommons;
 public static unsafe partial class GenericHelpers
@@ -97,8 +98,10 @@ public static unsafe partial class GenericHelpers
     /// <typeparam name="T"></typeparam>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static T? FindRow<T>(Func<T, bool> predicate) where T : struct, IExcelRow<T>
-         => GetSheet<T>().FirstOrNull(predicate);
+    public static T? FindRow<T>(Func<T, bool> predicate, ClientLanguage? language = null) where T : struct, IExcelRow<T>
+    {
+        return GetSheet<T>(language).FirstOrNull(predicate);
+    }
 
     /// <summary>
     /// TODO: document
@@ -106,8 +109,8 @@ public static unsafe partial class GenericHelpers
     /// <typeparam name="T"></typeparam>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static T[] FindRows<T>(Func<T, bool> predicate) where T : struct, IExcelRow<T>
-        => GetSheet<T>().Where(predicate).ToArray();
+    public static T[] FindRows<T>(Func<T, bool> predicate, ClientLanguage? language = null) where T : struct, IExcelRow<T>
+        => GetSheet<T>(language).Where(predicate).ToArray();
 
     /// <summary>
     /// TODO: document
@@ -227,8 +230,10 @@ public static unsafe partial class GenericHelpers
     /// <param name="predicate"></param>
     /// <param name="language"></param>
     /// <returns></returns>
-    public static T? FindRow<T>(Func<T, bool> predicate, ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
-        => GetSubrowSheet<T>(language).SelectMany(m => m).Cast<T?>().FirstOrDefault(t => predicate(t.Value), null);
+    public static T? FindSubrow<T>(Func<T, bool> predicate, ClientLanguage? language = null) where T : struct, IExcelSubrow<T>
+    {
+        return GetSubrowSheet<T>(language).SelectMany(m => m).Cast<T?>().FirstOrDefault(t => predicate(t.Value), null);
+    }
     #endregion
 
     #region Rawrows
@@ -307,9 +312,15 @@ public static unsafe partial class GenericHelpers
         /// <param name="id"></param>
         /// <param name="language"></param>
         /// <returns></returns>
+        [OverloadResolutionPriority(1)]
         public static RowRef<T> GetRef(uint id, Lumina.Data.Language? language = null)
         {
             return new(Svc.Data.Excel, id, language);
+        }
+
+        public static RowRef<T> GetRef(int id, Lumina.Data.Language? language = null)
+        {
+            return GetRef<T>((uint)id, language);
         }
 
         public static T Get(uint id, Dalamud.Game.ClientLanguage? language = null)

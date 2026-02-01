@@ -84,4 +84,22 @@ public static unsafe class CharacterFunctions
         if(c.Struct()->GetCastInfo() == null) return false;
         return c.IsCasting && c.CastActionId.EqualsAny(spellId);
     }
+
+    extension(IGameObject obj)
+    {
+        public uint ObjectId => obj.EntityId;
+    }
+
+    extension(ICharacter chr)
+    {
+        public float Health => (float)chr.CurrentHp / (float)chr.MaxHp;
+        public uint MissingHp => chr.MaxHp - chr.CurrentHp;
+        public uint StatusLoop => chr.Struct()->StatusLoopVfxId;
+        public int ModelId => chr.Struct()->ModelContainer.ModelCharaId;
+    }
+
+    extension(IBattleChara b)
+    {
+        public float RemainingCastTime => b.TotalCastTime - b.CurrentCastTime;
+    }
 }

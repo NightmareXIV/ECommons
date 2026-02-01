@@ -8,10 +8,16 @@ using System.Threading.Tasks;
 
 namespace ECommons.MathHelpers;
 [Serializable]
+[Newtonsoft.Json.JsonConverter(typeof(ENullableConverter))]
+[System.Text.Json.Serialization.JsonConverter(typeof(ENullableConverterSystemJson))]
 public partial struct ENullable<T> where T : struct
 {
     private readonly bool hasValue; // Do not rename (binary serialization)
     internal T value; // Do not rename (binary serialization) or make readonly (can be mutated in ToString, etc.)
+
+    public ENullable()
+    {
+    }
 
     public ENullable(T value)
     {

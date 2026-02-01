@@ -37,6 +37,15 @@ public static unsafe partial class ImGuiEx
     public static ImGuiTableFlags DefaultTableFlags = ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg | ImGuiTableFlags.Borders | ImGuiTableFlags.SizingFixedFit;
     private static Dictionary<string, int> SelectedPages = [];
 
+    public static void SimpleTableTextColumns(params string[] texts)
+    {
+        foreach(var x in texts)
+        {
+            ImGui.TableNextColumn();
+            ImGuiEx.Text(x);
+        }
+    }
+
     /// <summary>
     /// Fully equals to <see cref="ImGui.DragFloat"/>.
     /// </summary>
@@ -316,6 +325,46 @@ public static unsafe partial class ImGuiEx
             try
             {
                 if(ImGuiDragDrop.AcceptDragDropPayload<T>(dragDropIdentifier, out var outId, ImGuiDragDropFlags.AcceptBeforeDelivery | ImGuiDragDropFlags.AcceptNoPreviewTooltip))
+                {
+                    field = outId;
+                }
+            }
+            catch(Exception e)
+            {
+                e.Log();
+            }
+            ImGui.EndDragDropTarget();
+        }
+    }
+
+    /// <summary>
+    /// Allows you to create simple "drag this item to quickly copy it" to allow user to quickly mass change it. Use it in for/foreach loops when drawing ImGui elements.
+    /// </summary>
+    /// <typeparam name="T">Must be a struct. For classes, there is <see cref="ImGuiEx.DragDropRepopulateClass{T}(string, T, Action{T})"/>.</typeparam>
+    /// <param name="dragDropIdentifier">Plugin-unique identifier, internal and invisible to used. Must be relatively short. </param>
+    /// <param name="data">Element's current data</param>
+    /// <param name="field">A field which will be assigned data value when dragged onto.</param>
+    public static void DragDropRepopulate<T>(string dragDropIdentifier, T? data, ref T? field) where T : struct
+    {
+        ImGuiEx.Tooltip("Drag this selector to other selectors to set their values to the same");
+        if(ImGui.BeginDragDropSource(ImGuiDragDropFlags.SourceNoPreviewTooltip))
+        {
+            try
+            {
+                ImGuiDragDrop.SetDragDropPayload<ENullable<T>>(dragDropIdentifier, (ENullable<T>)data);
+                ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeAll);
+            }
+            catch(Exception e)
+            {
+                e.Log();
+            }
+            ImGui.EndDragDropSource();
+        }
+        if(ImGui.BeginDragDropTarget())
+        {
+            try
+            {
+                if(ImGuiDragDrop.AcceptDragDropPayload<ENullable<T>>(dragDropIdentifier, out var outId, ImGuiDragDropFlags.AcceptBeforeDelivery | ImGuiDragDropFlags.AcceptNoPreviewTooltip))
                 {
                     field = outId;
                 }

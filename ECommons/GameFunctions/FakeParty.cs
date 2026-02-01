@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using ECommons.DalamudServices;
+using ECommons.GameHelpers.LegacyPlayer;
 using System.Collections.Generic;
 
 namespace ECommons.GameFunctions;
@@ -25,12 +26,19 @@ public static class FakeParty
         }
         else
         {
-            foreach(var x in Svc.Party)
+            if(Svc.Party.Count > 0)
             {
-                if(x.GameObject is IPlayerCharacter pc)
+                foreach(var x in Svc.Party)
                 {
-                    yield return pc;
+                    if(x.GameObject is IPlayerCharacter pc)
+                    {
+                        yield return pc;
+                    }
                 }
+            }
+            else
+            {
+                yield return Player.Object;
             }
         }
     }
