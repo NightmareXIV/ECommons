@@ -58,11 +58,11 @@ public static unsafe class Player
     public static bool IsInHomeWorld => Available && Svc.PlayerState.CurrentWorld.RowId == Svc.PlayerState.HomeWorld.RowId;
     public static bool IsInHomeDC => Available && Svc.PlayerState.CurrentWorld.Value.DataCenter.RowId == Svc.PlayerState.HomeWorld.Value.DataCenter.RowId;
     [Obsolete("Use GameHelpers.Player.HomeWorldName")]
-    public static string HomeWorld => Svc.PlayerState.HomeWorld.Value.Name.ToString();
+    public static string HomeWorld => Svc.PlayerState.HomeWorld.ValueNullable?.Name.ToString() ?? "";
     [Obsolete("Use GameHelpers.Player.CurrentWorldName")]
-    public static string CurrentWorld => Svc.PlayerState.CurrentWorld.Value.Name.ToString();
+    public static string CurrentWorld => Svc.PlayerState.CurrentWorld.ValueNullable?.Name.ToString() ?? "";
     [Obsolete("Use GameHelpers.Player.HomeDataCenterName")]
-    public static string HomeDataCenter => Svc.PlayerState.HomeWorld.Value.DataCenter.Value.Name.ToString();
+    public static string HomeDataCenter => Svc.PlayerState.HomeWorld.ValueNullable?.DataCenter.Value.Name.ToString() ?? "";
     [Obsolete("Use GameHelpers.Player.CurrentDataCenterName")]
     public static string CurrentDataCenter => Svc.PlayerState.CurrentWorld.Value.DataCenter.Value.Name.ToString();
 
