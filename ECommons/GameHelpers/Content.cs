@@ -302,10 +302,11 @@ public static class Content
     {
         return TerritoryIntendedUse switch
         {
-            TerritoryIntendedUseEnum.Barracks or
-                TerritoryIntendedUseEnum.Rival_Wings or
+            TerritoryIntendedUseEnum.Rival_Wings or
                 TerritoryIntendedUseEnum.Crystalline_Conflict or
-                TerritoryIntendedUseEnum.Frontline =>
+                TerritoryIntendedUseEnum.Frontline when
+                ContentFinderConditionRow?.Name
+                    .ToString().Contains("Curious") == false =>
                 GameHelpers.ContentType.PVP,
 
             TerritoryIntendedUseEnum.Dungeon or
@@ -351,6 +352,11 @@ public static class Content
             TerritoryIntendedUseEnum.Raid or
                 TerritoryIntendedUseEnum.Raid_2 =>
                 GameHelpers.ContentType.Raid,
+
+            _ when TerritoryName?.Equals("Wolves' Den Pier") == true &&
+                   ContentFinderConditionRow?.Name
+                       .ToString().Contains("Curious") == false =>
+                GameHelpers.ContentType.PVP,
 
             _ => @default,
         };
