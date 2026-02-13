@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace ECommons.MathHelpers;
 
@@ -421,12 +422,32 @@ public static class MathHelper
         return f >= inclusiveStart && (includeEnd ? f <= end : f < end);
     }
 
-
+    [OverloadResolutionPriority(1)]
     public static List<T> EnumerateObjectsClockwise<T>(IEnumerable<T> objects, Func<T, Vector2> getPosition, Vector2 centerPosition, Vector2 startingPosition)
     {
         var orderedList = objects.OrderBy(x =>
         {
             var relAngle = MathHelper.GetRelativeAngle(centerPosition, startingPosition);
+            var a = (MathHelper.GetRelativeAngle(centerPosition, getPosition(x)) - relAngle + 360) % 360;
+            return a;
+        }).ToList();
+        return orderedList;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="objects"></param>
+    /// <param name="getPosition"></param>
+    /// <param name="centerPosition"></param>
+    /// <param name="startingAngle">Degrees from North. </param>
+    /// <returns></returns>
+    public static List<T> EnumerateObjectsClockwise<T>(IEnumerable<T> objects, Func<T, Vector2> getPosition, Vector2 centerPosition, float startingAngle)
+    {
+        var orderedList = objects.OrderBy(x =>
+        {
+            var relAngle = startingAngle;
             var a = (MathHelper.GetRelativeAngle(centerPosition, getPosition(x)) - relAngle + 360) % 360;
             return a;
         }).ToList();

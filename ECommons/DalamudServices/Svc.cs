@@ -15,6 +15,7 @@ public class Svc
     [PluginService] public static IAddonEventManager AddonEventManager { get; private set; }
     [PluginService] public static IAddonLifecycle AddonLifecycle { get; private set; }
     [PluginService] public static IAetheryteList AetheryteList { get; private set; }
+    [PluginService] public static IAgentLifecycle AgentLifecycle { get; private set; }
     [PluginService] public static IDalamudPluginInterface PluginInterface { get; private set; }
     [PluginService] public static IBuddyList Buddies { get; private set; }
     [PluginService] public static IChatGui Chat { get; private set; }
@@ -53,6 +54,7 @@ public class Svc
     [PluginService] public static ITextureReadbackProvider TextureReadback { get; private set; }
     [PluginService] public static ITitleScreenMenu TitleScreenMenu { get; private set; }
     [PluginService] public static IToastGui Toasts { get; private set; }
+    [PluginService] public static IUnlockState UnlockState { get; private set; }
 
     public static Legacy.IGameNetwork GameNetwork
     {

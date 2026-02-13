@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 namespace ECommons.UIHelpers.AtkReaderImplementations;
+
 public unsafe class ReaderMiragePrismPrismSetConvert(AtkUnitBase* Addon) : AtkReader(Addon)
 {
     public uint Unk00 => ReadUInt(0) ?? 0;
@@ -13,8 +14,8 @@ public unsafe class ReaderMiragePrismPrismSetConvert(AtkUnitBase* Addon) : AtkRe
     /// <remarks>
     /// Also the amount of glamour prisms required
     /// </remarks>
-    public uint ItemCount => ReadUInt(15) ?? 0;
-    public List<Item> Items => Loop<Item>(16, 7, (int)ItemCount);
+    public uint ItemCount => ReadUInt(20) ?? 0;
+    public List<Item> Items => Loop<Item>(21, 7, (int)ItemCount);
 
     public unsafe class Item(nint Addon, int start) : AtkReader(Addon, start)
     {
@@ -24,6 +25,13 @@ public unsafe class ReaderMiragePrismPrismSetConvert(AtkUnitBase* Addon) : AtkRe
         public uint Unk04 => ReadUInt(3) ?? 0;
         public uint InventoryType => ReadUInt(4) ?? 0; // 9999 if the item hasn't been filled
         public uint InventorySlot => ReadUInt(5) ?? 0; // 0 if item hasn't been filled
-        public uint Unk07 => ReadUInt(6) ?? 0; // 2 if item hasn't been filled
+        public ItemFlag Flag => (ItemFlag)(ReadUInt(6) ?? 0);
+    }
+
+    public enum ItemFlag : uint
+    {
+        Missing = 0,
+        Unfilled = 2,
+        Filled = 3,
     }
 }

@@ -20,11 +20,14 @@ public static class ExcelWorldHelper
     public static bool IsPublic(this World w)
     {
         if(w.IsPublic) return true;
-        if(Svc.ClientState.ClientLanguage == (Dalamud.Game.ClientLanguage)4)
+        if(Svc.ClientState.ClientLanguage >= (Dalamud.Game.ClientLanguage)4)
         {
             //TODO: somehow differentiate CN, KR, TW
             //104	豆豆柴	8	104	5	False
-            if(w.RowId.EqualsAny<uint>(1180, 1183, 1186, 1192, 1200, 1201)) return true;
+#pragma warning disable RS0030
+            if(w.RowId > 1000 && w.UserType.EqualsAny<byte>(101, 201)) return true;
+            //.EqualsAny<uint>(1180, 1183, 1186, 1192, 1200, 1201)
+#pragma warning restore RS0030
         }
         return false;//w.RowId.EqualsAny<uint>(408, 409, 410, 411, 415);
     }

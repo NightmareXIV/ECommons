@@ -3,10 +3,8 @@
 #region
 
 using Dalamud.Hooking;
-using ECommons.Automation;
 using ECommons.DalamudServices;
 using ECommons.Logging;
-using FFXIVClientStructs.FFXIV.Client.System.String;
 using System;
 
 #endregion
@@ -43,8 +41,9 @@ public static unsafe class ActorVfx
     /// <param name="a6">Unknown ushort parameter.</param>
     /// <param name="a7">Unknown char parameter.</param>
     /// <remarks>
-    ///     WARNING! Do NOT try to call <c>.Original()</c> within your delegate!<br />
-    ///     These delegates are called after that is already done (to provide
+    ///     WARNING! Do NOT try to call <c>.Original()</c> within your delegate!
+    ///     <br />
+    ///     These delegates are called after that is already run (to provide
     ///     <paramref name="vfxPtr" />).
     /// </remarks>
     public delegate void ActorVfxCreateCallbackDelegate(nint vfxPtr, nint vfxPathPtr, nint casterAddress, nint targetAddress, float a4, byte a5, ushort a6, byte a7);
@@ -60,7 +59,7 @@ public static unsafe class ActorVfx
     /// <remarks>
     ///     WARNING! Do NOT try to call <c>.Original()</c> within your delegate!
     ///     <br />
-    ///     These delegates are called right before that is already done.
+    ///     These delegates are already called right before that is run.
     /// </remarks>
     public delegate void ActorVfxDtorCallbackDelegate(nint actorVfxAddress);
 
