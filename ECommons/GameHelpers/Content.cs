@@ -353,6 +353,11 @@ public static class Content
                 TerritoryIntendedUseEnum.Raid_2 =>
                 GameHelpers.ContentType.Raid,
 
+            _ when TerritoryName?.Equals("Wolves' Den Pier") == true &&
+                   ContentFinderConditionRow?.Name
+                       .ToString().Contains("Curious") == false =>
+                GameHelpers.ContentType.PVP,
+
             _ => @default,
         };
     }
