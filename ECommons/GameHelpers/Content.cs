@@ -302,8 +302,7 @@ public static class Content
     {
         return TerritoryIntendedUse switch
         {
-            TerritoryIntendedUseEnum.Barracks or
-                TerritoryIntendedUseEnum.Rival_Wings or
+            TerritoryIntendedUseEnum.Rival_Wings or
                 TerritoryIntendedUseEnum.Crystalline_Conflict or
                 TerritoryIntendedUseEnum.Frontline =>
                 GameHelpers.ContentType.PVP,
