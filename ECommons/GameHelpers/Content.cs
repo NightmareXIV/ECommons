@@ -304,7 +304,9 @@ public static class Content
         {
             TerritoryIntendedUseEnum.Rival_Wings or
                 TerritoryIntendedUseEnum.Crystalline_Conflict or
-                TerritoryIntendedUseEnum.Frontline =>
+                TerritoryIntendedUseEnum.Frontline when
+                ContentFinderConditionRow?.Name
+                    .ToString().Contains("Curious") == false =>
                 GameHelpers.ContentType.PVP,
 
             TerritoryIntendedUseEnum.Dungeon or
