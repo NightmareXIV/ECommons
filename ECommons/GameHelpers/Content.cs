@@ -5,6 +5,7 @@ using Lumina.Excel.Sheets;
 using System.Linq;
 using SheetContentType = Lumina.Excel.Sheets.ContentType;
 using TerritoryHelper = ECommons.TerritoryName;
+using MapRowRef = Lumina.Excel.Sheets.Map;
 
 #nullable disable
 
@@ -73,6 +74,7 @@ public enum ContentDifficulty
 /// </remarks>
 public static class Content
 {
+    
     /// <summary>
     ///     The ID of the current territory the player is in.
     /// </summary>
@@ -117,6 +119,13 @@ public static class Content
     /// </summary>
     public static uint MapID =>
         Svc.ClientState.MapId;
+    
+    /// <summary>
+    ///     The Sheet row for the current map the player is in.
+    /// </summary>
+    public static MapRowRef? MapRow =>
+        Svc.Data.Excel.GetSheet<MapRowRef>(Language.English)!
+            .GetRowOrDefault(MapID);
 
     /// <summary>
     ///     The intended use of the current territory the player is in.
@@ -297,7 +306,7 @@ public static class Content
     ///     <see cref="ContentType.OverWorld" />.
     /// </param>
     /// <returns>The determined <see cref="ContentType" />.</returns>
-    private static ContentType? DetermineContentType
+    private static unsafe ContentType? DetermineContentType
         (ContentType @default = GameHelpers.ContentType.OverWorld)
     {
         return TerritoryIntendedUse switch
@@ -305,8 +314,7 @@ public static class Content
             TerritoryIntendedUseEnum.Rival_Wings or
                 TerritoryIntendedUseEnum.Crystalline_Conflict or
                 TerritoryIntendedUseEnum.Frontline when
-                ContentFinderConditionRow?.Name
-                    .ToString().Contains("Curious") == false =>
+                ContentFinderConditionRowId is not 160 /*Curious Gorge*/ =>
                 GameHelpers.ContentType.PVP,
 
             TerritoryIntendedUseEnum.Dungeon or
@@ -331,11 +339,10 @@ public static class Content
                 GameHelpers.ContentType.FieldRaid,
 
             _ when
-                (ContentName?.Contains("Delubrum") ?? false) ||
-                (ContentName?.Contains("Lacus") ?? false) ||
-                (ContentName?.Contains("Dalriada") ?? false) ||
-                (ContentName?.Contains("Forked Tower") ?? false) ||
-                MapID is >= 520 and <= 527 =>
+                MapRow?.PlaceName.RowId is 3597 /*Delubrum Reginae*/ ||
+                MapRow?.PlaceName.RowId is 3535 /*Castrum Lacus Litore*/ ||
+                MapRow?.PlaceName.RowId is 3682 /*The Dalriada*/ ||
+                MapRow?.PlaceName.RowId is 5179 /*Tower of Blood*/ =>
                 GameHelpers.ContentType.FieldRaid,
 
             TerritoryIntendedUseEnum.Eureka or
@@ -353,9 +360,8 @@ public static class Content
                 TerritoryIntendedUseEnum.Raid_2 =>
                 GameHelpers.ContentType.Raid,
 
-            _ when TerritoryName?.Equals("Wolves' Den Pier") == true &&
-                   ContentFinderConditionRow?.Name
-                       .ToString().Contains("Curious") == false =>
+            _ when TerritoryID is 250 /*Wolves' Den Pier*/ &&
+                   ContentFinderConditionRowId is not 160 /*Curious Gorge*/ =>
                 GameHelpers.ContentType.PVP,
 
             _ => @default,
