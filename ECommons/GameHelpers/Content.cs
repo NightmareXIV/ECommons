@@ -305,8 +305,7 @@ public static class Content
             TerritoryIntendedUseEnum.Rival_Wings or
                 TerritoryIntendedUseEnum.Crystalline_Conflict or
                 TerritoryIntendedUseEnum.Frontline when
-                ContentFinderConditionRow?.Name
-                    .ToString().Contains("Curious") == false =>
+                ContentFinderConditionRowId is not 160 /*Curious Gorge*/ =>
                 GameHelpers.ContentType.PVP,
 
             TerritoryIntendedUseEnum.Dungeon or
@@ -335,7 +334,7 @@ public static class Content
                 (ContentName?.Contains("Lacus") ?? false) ||
                 (ContentName?.Contains("Dalriada") ?? false) ||
                 (ContentName?.Contains("Forked Tower") ?? false) ||
-                MapID is >= 520 and <= 527 =>
+                MapID is >= 520 and <= 527 /*Hydatos*/ =>
                 GameHelpers.ContentType.FieldRaid,
 
             TerritoryIntendedUseEnum.Eureka or
@@ -353,9 +352,8 @@ public static class Content
                 TerritoryIntendedUseEnum.Raid_2 =>
                 GameHelpers.ContentType.Raid,
 
-            _ when TerritoryName?.Equals("Wolves' Den Pier") == true &&
-                   ContentFinderConditionRow?.Name
-                       .ToString().Contains("Curious") == false =>
+            _ when TerritoryID is 250 /*Wolves' Den Pier*/ &&
+                   ContentFinderConditionRowId is not 160 /*Curious Gorge*/ =>
                 GameHelpers.ContentType.PVP,
 
             _ => @default,
