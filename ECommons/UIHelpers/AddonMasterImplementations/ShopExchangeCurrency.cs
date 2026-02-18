@@ -38,20 +38,15 @@ public partial class AddonMaster
         // 1064 - Start of ItemIds
         // 454 - Start of Shop Price
 
-        public class ShopItemInfo(ShopExchangeCurrency master, int index)
+        public class ShopItemInfo(ShopExchangeCurrency master)
         {
             public uint ItemId;
+            public uint Index;
             public uint CostAmount;
             public void Select(int amount = 1)
             {
-                Callback.Fire(master.Base, true, 0, index, amount);
+                Callback.Fire(master.Base, true, 0, Index, amount);
             }
-        }
-
-        public class CostInfo
-        {
-            public uint itemId;
-            public uint cost;
         }
 
         /// <summary>
@@ -72,9 +67,11 @@ public partial class AddonMaster
                     else
                     {
                         var costAmount = Addon->AtkValues[454 + (i * 1)].UInt;
-                        var newEntry = new ShopItemInfo(this, i)
+                        var index = Addon->AtkValues[1308 + (i * 1)].UInt;
+                        var newEntry = new ShopItemInfo(this)
                         {
                             ItemId = itemId,
+                            Index = index,
                             CostAmount = costAmount
                         };
                         ret.Add(newEntry);
