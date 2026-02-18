@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace ECommons.Automation;
 
+[Obsolete("Use RaptureMacroModule.Macro instead.")]
 [StructLayout(LayoutKind.Sequential, Size = 0x688)]
 public readonly struct Macro : IDisposable
 {
