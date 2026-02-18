@@ -19,17 +19,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 using ECommons.DalamudServices;
-using ECommons.EzHookManager;
-using ECommons.Logging;
-using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.String;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using Lumina.Excel.Sheets;
 using System;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.InteropServices;
 using System.Text;
-using static ECommons.Automation.Chat.Memory;
-using Framework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
 namespace ECommons.Automation;
 #nullable disable
 
@@ -38,67 +32,6 @@ namespace ECommons.Automation;
 /// </summary>
 public static unsafe class Chat
 {
-    public static class Memory
-    {
-        public static readonly string SendChatSignature = "48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 48 8B F2 48 8B F9 45 84 C9";
-        public static readonly string SanitiseStringSignature = "48 89 5C 24 ?? 55 56 57 41 54 41 55 41 56 41 57 48 8D 6C 24 ?? 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 70 4D 8B F8 4C 89 44 24 ?? 4C 8B 05 ?? ?? ?? ?? 44 8B E2";
-
-        public delegate void ProcessChatBoxDelegate(IntPtr uiModule, IntPtr message, IntPtr unused, byte a4);
-        public static ProcessChatBoxDelegate ProcessChatBox
-        {
-            get
-            {
-                if(field == null)
-                {
-                    var addr = Svc.SigScanner.ScanText(SendChatSignature);
-                    PluginLog.Debug($"ProcessChatBox addr: {(nint)addr:X16}");
-                    field = EzDelegate.Get<ProcessChatBoxDelegate>(addr) ?? throw new InvalidOperationException("Could not find signature for chat sending");
-                }
-                return field;
-            }
-        }
-        public delegate void SanitizeStringDeletage(Utf8String* stringPtr, int a2, nint a3);
-        public static SanitizeStringDeletage SanitizeString
-        {
-            get
-            {
-                if(field == null)
-                {
-                    var addr = Svc.SigScanner.ScanText(SanitiseStringSignature);
-                    PluginLog.Debug($"SanitizeString addr: {(nint)addr:X16}");
-                    field = EzDelegate.Get<SanitizeStringDeletage>(addr) ?? throw new InvalidOperationException("Could not find SanitizeString signature");
-                }
-                return field;
-            }
-        }
-
-        [StructLayout(LayoutKind.Explicit)]
-        public readonly struct ChatPayload : IDisposable
-        {
-            [FieldOffset(0)]
-            private readonly IntPtr textPtr;
-            [FieldOffset(16)]
-            private readonly ulong textLen;
-            [FieldOffset(8)]
-            private readonly ulong unk1;
-            [FieldOffset(24)]
-            private readonly ulong unk2;
-            internal ChatPayload(byte[] stringBytes)
-            {
-                textPtr = Marshal.AllocHGlobal(stringBytes.Length + 30);
-                Marshal.Copy(stringBytes, 0, textPtr, stringBytes.Length);
-                Marshal.WriteByte(textPtr + stringBytes.Length, 0);
-                textLen = (ulong)(stringBytes.Length + 1);
-                unk1 = 64;
-                unk2 = 0;
-            }
-            public void Dispose()
-            {
-                Marshal.FreeHGlobal(textPtr);
-            }
-        }
-    }
-
     /// <summary>
     /// <para>
     /// Send a given message to the chat box. <b>This can send chat to the server.</b>
@@ -112,16 +45,13 @@ public static unsafe class Chat
     /// </summary>
     /// <param name="message">Message to send</param>
     /// <exception cref="InvalidOperationException">If the signature for this function could not be found</exception>
-    [Obsolete("Use safe message sending")]
     public static void SendMessageUnsafe(byte[] message)
     {
-        var uiModule = (IntPtr)Framework.Instance()->GetUIModule();
-        using var payload = new ChatPayload(message);
-        var mem1 = Marshal.AllocHGlobal(400);
-        Marshal.StructureToPtr(payload, mem1, false);
-        ProcessChatBox(uiModule, mem1, IntPtr.Zero, 0);
-        Marshal.FreeHGlobal(mem1);
+        var mes = Utf8String.FromSequence(message);
+        UIModule.Instance()->ProcessChatBoxEntry(mes);
+        mes->Dtor(true);
     }
+
     /// <summary>
     /// <para>
     /// Send a given message to the chat box. <b>This can send chat to the server.</b>
@@ -139,28 +69,39 @@ public static unsafe class Chat
     {
         var bytes = Encoding.UTF8.GetBytes(message);
         if(bytes.Length == 0)
-        {
             throw new ArgumentException("message is empty", nameof(message));
-        }
+
         if(bytes.Length > 500)
-        {
             throw new ArgumentException("message is longer than 500 bytes", nameof(message));
-        }
+
         if(message.Length != SanitiseText(message).Length)
-        {
             throw new ArgumentException("message contained invalid characters", nameof(message));
-        }
-        if(message.Contains('\n'))
-        {
-            throw new ArgumentException("message can't contain multiple lines", nameof(message));
-        }
-        if(message.Contains('\r'))
-        {
-            throw new ArgumentException("message can't contain carriage return", nameof(message));
-        }
- // Type or member is obsolete
+
         SendMessageUnsafe(bytes);
-#pragma warning restore CS0618 // Type or member is obsolete
+    }
+
+    /// <summary>
+    /// <para>
+    /// Sanitises a string by removing any invalid input.
+    /// </para>
+    /// <para>
+    /// The result of this method is safe to use with
+    /// <see cref="SendMessage"/>, provided that it is not empty or too
+    /// long.
+    /// </para>
+    /// </summary>
+    /// <param name="text">text to sanitise</param>
+    /// <returns>sanitised text</returns>
+    /// <exception cref="InvalidOperationException">If the signature for this function could not be found</exception>
+    public static string SanitiseText(string text)
+    {
+        var uText = Utf8String.FromString(text);
+
+        uText->SanitizeString((AllowedEntities)0x27F);
+        var sanitised = uText->ToString();
+        uText->Dtor(true);
+
+        return sanitised;
     }
 
     /// <summary>
@@ -190,43 +131,5 @@ public static unsafe class Chat
     public static void ExecuteAction(uint actionId)
     {
         ExecuteCommand($"/action \"{Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRowOrDefault(actionId)?.Name}\"");
-    }
-
-    /// <summary>
-    /// <para>
-    /// Sanitises a string by removing any invalid input.
-    /// </para>
-    /// <para>
-    /// The result of this method is safe to use with
-    /// <see cref="SendMessage"/>, provided that it is not empty or too
-    /// long.
-    /// </para>
-    /// </summary>
-    /// <param name="text">text to sanitise</param>
-    /// <returns>sanitised text</returns>
-    /// <exception cref="InvalidOperationException">If the signature for this function could not be found</exception>
-    public static string SanitiseText(string text)
-    {
-        if(SanitizeString == null)
-        {
-            throw new InvalidOperationException("Could not find signature for chat sanitisation");
-        }
-        var uText = Utf8String.FromString(text);
-        SanitizeString(uText, 0x27F, IntPtr.Zero);
-        var sanitised = uText->ToString();
-        uText->Dtor();
-        IMemorySpace.Free(uText);
-        return sanitised;
-    }
-
-    [Obsolete("Use Chat.<MethodName> directly instead of Chat.Instance.<MethodName>")]
-    public static class Instance
-    {
-        public static void ExecuteCommand(string message) => Chat.ExecuteCommand(message);
-        public static void SendMessageUnsafe(byte[] message) => Chat.SendMessageUnsafe(message);
-        public static void SendMessage(string message) => Chat.SendMessage(message);
-        public static void ExecuteGeneralAction(uint generalActionId) => Chat.ExecuteGeneralAction(generalActionId);
-        public static void ExecuteAction(uint actionId) => Chat.ExecuteAction(actionId);
-        public static string SanitiseText(string text) => Chat.SanitiseText(text);
     }
 }
