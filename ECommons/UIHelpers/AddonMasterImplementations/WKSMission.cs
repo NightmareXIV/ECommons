@@ -49,7 +49,7 @@ public partial class AddonMaster
             get
             {
                 var ret = new List<StellarMissions>();
-                for(var i = 0; i < NumEntries; i++)
+                for(var i = 0; i < NumEntries - 1; i++)
                 {
                     var missionName = Addon->AtkValues[803 + i * 2];
                     var missionId = Addon->AtkValues[41 + i * 6].UInt;
