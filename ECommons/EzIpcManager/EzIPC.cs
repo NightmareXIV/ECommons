@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Dalamud.Plugin.Ipc;
 
 namespace ECommons.EzIpcManager;
 
@@ -51,6 +52,96 @@ public static class EzIPC
     /// <returns>Array of disposal tokens that can be used to dispose registered providers and event subscription. <b>Typical use of EzIPC never has any need to store and deal with these tokens</b>; you only ever need them when you want to unregister IPC before your plugin's Dispose method is called.</returns>
     public static EzIPCDisposalToken[] Init(Type staticType, string? prefix = null, SafeWrapper safeWrapper = SafeWrapper.None) => Init(null, staticType, prefix, safeWrapper);
 
+    private static Action ActionWithContext(ICallGateProvider provider, Action<IpcContext> action)
+    {
+	    return () => action(provider.GetContext());
+    }
+
+    private static Action<T1> ActionWithContext<T1>(ICallGateProvider provider, Action<T1, IpcContext> action)
+    {
+	    return arg1 => action(arg1, provider.GetContext());
+    }
+
+    private static Action<T1, T2> ActionWithContext<T1, T2>(ICallGateProvider provider, Action<T1, T2, IpcContext> action)
+    {
+        return (arg1, arg2) => action(arg1, arg2, provider.GetContext());
+    }
+
+    private static Action<T1, T2, T3> ActionWithContext<T1, T2, T3>(ICallGateProvider provider, Action<T1, T2, T3, IpcContext> action)
+    {
+        return (arg1, arg2, arg3) => action(arg1, arg2, arg3, provider.GetContext());
+    }
+
+    private static Action<T1, T2, T3, T4> ActionWithContext<T1, T2, T3, T4>(ICallGateProvider provider, Action<T1, T2, T3, T4, IpcContext> action)
+    {
+        return (arg1, arg2, arg3, arg4) => action(arg1, arg2, arg3, arg4, provider.GetContext());
+    }
+
+    private static Action<T1, T2, T3, T4, T5> ActionWithContext<T1, T2, T3, T4, T5>(ICallGateProvider provider, Action<T1, T2, T3, T4, T5, IpcContext> action)
+    {
+        return (arg1, arg2, arg3, arg4, arg5) => action(arg1, arg2, arg3, arg4, arg5, provider.GetContext());
+    }
+
+    private static Action<T1, T2, T3, T4, T5, T6> ActionWithContext<T1, T2, T3, T4, T5, T6>(ICallGateProvider provider, Action<T1, T2, T3, T4, T5, T6, IpcContext> action)
+    {
+        return (arg1, arg2, arg3, arg4, arg5, arg6) => action(arg1, arg2, arg3, arg4, arg5, arg6, provider.GetContext());
+    }
+
+    private static Action<T1, T2, T3, T4, T5, T6, T7> ActionWithContext<T1, T2, T3, T4, T5, T6, T7>(ICallGateProvider provider, Action<T1, T2, T3, T4, T5, T6, T7, IpcContext> action)
+    {
+        return (arg1, arg2, arg3, arg4, arg5, arg6, arg7) => action(arg1, arg2, arg3, arg4, arg5, arg6, arg7, provider.GetContext());
+    }
+
+    private static Action<T1, T2, T3, T4, T5, T6, T7, T8> ActionWithContext<T1, T2, T3, T4, T5, T6, T7, T8>(ICallGateProvider provider, Action<T1, T2, T3, T4, T5, T6, T7, T8, IpcContext> action)
+    {
+        return (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) => action(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, provider.GetContext());
+    }
+
+    private static Func<TRet> FuncWithContext<TRet>(ICallGateProvider provider, Func<IpcContext, TRet> func)
+    {
+	    return () => func(provider.GetContext());
+    }
+
+    private static Func<T1, TRet> FuncWithContext<T1, TRet>(ICallGateProvider provider, Func<T1, IpcContext, TRet> func)
+    {
+        return arg1 => func(arg1, provider.GetContext());
+    }
+
+    private static Func<T1, T2, TRet> FuncWithContext<T1, T2, TRet>(ICallGateProvider provider, Func<T1, T2, IpcContext, TRet> func)
+    {
+        return (arg1, arg2) => func(arg1, arg2, provider.GetContext());
+    }
+
+    private static Func<T1, T2, T3, TRet> FuncWithContext<T1, T2, T3, TRet>(ICallGateProvider provider, Func<T1, T2, T3, IpcContext, TRet> func)
+    {
+        return (arg1, arg2, arg3) => func(arg1, arg2, arg3, provider.GetContext());
+    }
+
+    private static Func<T1, T2, T3, T4, TRet> FuncWithContext<T1, T2, T3, T4, TRet>(ICallGateProvider provider, Func<T1, T2, T3, T4, IpcContext, TRet> func)
+    {
+        return (arg1, arg2, arg3, arg4) => func(arg1, arg2, arg3, arg4, provider.GetContext());
+    }
+
+    private static Func<T1, T2, T3, T4, T5, TRet> FuncWithContext<T1, T2, T3, T4, T5, TRet>(ICallGateProvider provider, Func<T1, T2, T3, T4, T5, IpcContext, TRet> func)
+    {
+        return (arg1, arg2, arg3, arg4, arg5) => func(arg1, arg2, arg3, arg4, arg5, provider.GetContext());
+    }
+
+    private static Func<T1, T2, T3, T4, T5, T6, TRet> FuncWithContext<T1, T2, T3, T4, T5, T6, TRet>(ICallGateProvider provider, Func<T1, T2, T3, T4, T5, T6, IpcContext, TRet> func)
+    {
+        return (arg1, arg2, arg3, arg4, arg5, arg6) => func(arg1, arg2, arg3, arg4, arg5, arg6, provider.GetContext());
+    }
+
+    private static Func<T1, T2, T3, T4, T5, T6, T7, TRet> FuncWithContext<T1, T2, T3, T4, T5, T6, T7, TRet>(ICallGateProvider provider, Func<T1, T2, T3, T4, T5, T6, T7, IpcContext, TRet> func)
+    {
+        return (arg1, arg2, arg3, arg4, arg5, arg6, arg7) => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7, provider.GetContext());
+    }
+
+    private static Func<T1, T2, T3, T4, T5, T6, T7, T8, TRet> FuncWithContext<T1, T2, T3, T4, T5, T6, T7, T8, TRet>(ICallGateProvider provider, Func<T1, T2, T3, T4, T5, T6, T7, T8, IpcContext, TRet> func)
+    {
+        return (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, provider.GetContext());
+    }
+    
     private static EzIPCDisposalToken[] Init(object? instance, Type instanceType, string? prefix, SafeWrapper safeWrapper)
     {
         if(safeWrapper == SafeWrapper.Inherit) throw new InvalidOperationException($"{nameof(SafeWrapper.Inherit)} is only valid option when used in EzIPC attribute. Please choose your desired SafeWrapper.");
@@ -65,23 +156,78 @@ public static class EzIPC
                 var attr = method.GetCustomAttributes(true).OfType<EzIPCAttribute>().FirstOrDefault();
                 if(attr != null)
                 {
+
+	                var parameters = method.GetParameters();
+	                bool getContext = false;
+	                if (parameters[^1].ParameterType == typeof(IpcContext))
+	                {
+		                parameters = parameters[..^1];
+		                getContext = true;
+	                }
                     if(!ECommonsMain.ReducedLogging)
                     {
-                        PluginLog.Debug($"[EzIPC Provider] Attempting to register {instanceType.Name}.{method.Name} as IPC method ({method.GetParameters().Length})");
+                        PluginLog.Debug($"[EzIPC Provider] Attempting to register {instanceType.Name}.{method.Name} as IPC method ({parameters.Length}){(getContext ? " with IpcContext" : "")}");
                     }
                     var ipcName = attr.IPCName ?? method.Name;
                     ipcName = ipcName.Replace("%m", method.Name);
                     ipcName = ipcName.Replace("%p", Svc.PluginInterface.InternalName);
-                    var reg = FindIpcProvider(method.GetParameters().Length + 1) ?? throw new NullReferenceException("[EzIPC Provider] Could not retrieve GetIpcProvider. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
+                    var reg = FindIpcProvider(parameters.Length + 1) ?? throw new NullReferenceException("[EzIPC Provider] Could not retrieve GetIpcProvider. Did you called EzIPC.Init before ECommonsMain.Init or specified more than 9 arguments?");
                     var isAction = method.ReturnType == typeof(void);
-                    var genericArray = (Type[])[.. method.GetParameters().Select(x => x.ParameterType), isAction ? attr.ActionLastGenericType : method.ReturnType];
+                    var genericArray = (Type[])[.. parameters.Select(x => x.ParameterType), isAction ? attr.ActionLastGenericType : method.ReturnType];
                     var genericMethod = reg.MakeGenericMethod([.. genericArray]);
                     var name = attr.ApplyPrefix ? $"{prefix}.{ipcName}" : ipcName;
                     if(!ECommonsMain.ReducedLogging)
                     {
                         PluginLog.Debug($"[EzIPC Provider] Registering IPC method {name} with method {instanceType.FullName}.{method.Name}");
                     }
-                    genericMethod.Invoke(Svc.PluginInterface, [name]).Call(isAction ? "RegisterAction" : "RegisterFunc", [ReflectionHelper.CreateDelegate(method, instance)], true);
+
+                    Delegate methodDelegate = ReflectionHelper.CreateDelegate(method, instance);
+                    ICallGateProvider provider = (ICallGateProvider)genericMethod.Invoke(Svc.PluginInterface, [name]);
+                    if (getContext)
+                    {
+	                    if (isAction)
+	                    {
+		                    if (genericArray.Length == 1)
+		                    {
+			                    methodDelegate = ActionWithContext(provider, (Action<IpcContext>)methodDelegate);
+		                    }
+		                    else
+		                    {
+			                    methodDelegate = (Delegate)(genericArray.Length switch
+			                    {
+				                    2 => ActionWithContext<object>,
+				                    3 => ActionWithContext<object, object>,
+				                    4 => ActionWithContext<object, object, object>,
+				                    5 => ActionWithContext<object, object, object, object>,
+				                    6 => ActionWithContext<object, object, object, object, object>,
+				                    7 => ActionWithContext<object, object, object, object, object, object>,
+				                    8 => ActionWithContext<object, object, object, object, object, object, object>,
+				                    9 => ActionWithContext<object, object, object, object, object, object, object,
+					                    object>,
+				                    _ => methodDelegate
+			                    }).Method.GetGenericMethodDefinition().MakeGenericMethod(genericArray[..^1]).Invoke(null, [provider, methodDelegate]);
+		                    }
+	                    }
+	                    else
+	                    {
+		                    methodDelegate = (Delegate)(genericArray.Length switch
+		                    {
+			                    1 => FuncWithContext<object>,
+			                    2 => FuncWithContext<object, object>,
+			                    3 => FuncWithContext<object, object, object>,
+			                    4 => FuncWithContext<object, object, object, object>,
+			                    5 => FuncWithContext<object, object, object, object, object>,
+			                    6 => FuncWithContext<object, object, object, object, object, object>,
+			                    7 => FuncWithContext<object, object, object, object, object, object, object>,
+			                    8 => FuncWithContext<object, object, object, object, object, object, object, object>,
+			                    9 => FuncWithContext<object, object, object, object, object, object, object, object,
+				                    object>,
+			                    _ => methodDelegate
+		                    }).Method.GetGenericMethodDefinition().MakeGenericMethod(genericArray).Invoke(null, [provider, methodDelegate]);
+	                    }
+                    }
+
+                    provider.Call(isAction ? "RegisterAction" : "RegisterFunc", [methodDelegate], true);
                     var token = new EzIPCDisposalToken(name, false, () =>
                     {
                         if(!ECommonsMain.ReducedLogging)
