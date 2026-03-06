@@ -72,7 +72,6 @@ public partial class AddonMaster
             public readonly string Text => SeString.GetText();
             public readonly void Select()
             {
-                PluginLog.Information($"[VVDVoteRoute] Select:{Text}");
                 Callback.Fire((AtkUnitBase*)Addon, true, Index);
             }
 
