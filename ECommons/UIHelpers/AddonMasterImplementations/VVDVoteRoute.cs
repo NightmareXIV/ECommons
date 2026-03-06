@@ -67,6 +67,7 @@ public partial class AddonMaster
             private readonly AtkUnitBase* Addon = addon;
             public int Index { get; init; } = index;
             public readonly int ListIndex => Index * step + offset;
+            
             public readonly AtkTextNode* TextNode => am.ListItems[Index].Value->ButtonTextNode;
             public readonly SeString SeString => MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[ListIndex].String.Value);
             public readonly string Text => SeString.GetText();
@@ -93,6 +94,5 @@ public partial class AddonMaster
         private void Entry10() => Entries[9].Select();
         private void Entry11() => Entries[10].Select();
         private void Entry12() => Entries[11].Select();
-
     }
 }
