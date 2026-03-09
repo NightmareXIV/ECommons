@@ -1,11 +1,13 @@
-﻿using Dalamud.Interface;
+﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Interface;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
 using ECommons.MathHelpers;
-using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ECommons.ImGuiMethods;
 public static partial class ImGuiEx
@@ -56,12 +58,76 @@ public static partial class ImGuiEx
         return IconButton(icon, id, size.Scale(), enabled);
     }
 
-    public static bool IconButtonWithText(FontAwesomeIcon icon, string id, bool enabled = true)
+    /// <summary>
+    /// Icon button with text, but text and icon are middle aligned and supports "enabled" parameter
+    /// </summary>
+    /// <param name="icon"></param>
+    /// <param name="id"></param>
+    /// <param name="enabled"></param>
+    /// <param name="defaultColor"></param>
+    /// <param name="activeColor"></param>
+    /// <param name="hoveredColor"></param>
+    /// <param name="size"></param>
+    /// <returns></returns>
+    public static bool IconButtonWithText(FontAwesomeIcon icon, string id, bool enabled = true, System.Numerics.Vector4? defaultColor = null, System.Numerics.Vector4? activeColor = null, System.Numerics.Vector4? hoveredColor = null, System.Numerics.Vector2? size = null)
     {
+#pragma warning disable RS0030
         if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
-        var result = ImGuiComponents.IconButtonWithText(icon, $"{id}") && enabled;
+        using var col = new ImRaii.Color();
+        if(defaultColor.HasValue)
+        {
+            col.Push(ImGuiCol.Button, defaultColor.Value);
+        }
+        if(activeColor.HasValue)
+        {
+            col.Push(ImGuiCol.ButtonActive, activeColor.Value);
+        }
+        if(hoveredColor.HasValue)
+        {
+            col.Push(ImGuiCol.ButtonHovered, hoveredColor.Value);
+        }
+        if(size.HasValue)
+        {
+            size *= ImGuiHelpers.GlobalScale;
+        }
+        bool button;
+        Vector2 iconSize;
+        using(ImRaii.PushFont(UiBuilder.IconFont))
+        {
+            iconSize = ImGui.CalcTextSize(icon.ToIconString());
+        }
+        var textStr = id;
+        if(textStr.Contains('#'))
+        {
+            textStr = textStr[..textStr.IndexOf('#', StringComparison.Ordinal)];
+        }
+        var framePadding = ImGui.GetStyle().FramePadding;
+        var iconPadding = 3 * ImGuiHelpers.GlobalScale;
+        var cursor = ImGui.GetCursorScreenPos();
+        float buttonHeight, buttonWidth;
+        using(ImRaii.PushId(id))
+        {
+            var textSize = ImGui.CalcTextSize(textStr);
+            buttonWidth = size is { X: not 0 } ? size.Value.X : iconSize.X + textSize.X + (framePadding.X * 2) + iconPadding;
+            buttonHeight = size is { Y: not 0 } ? size.Value.Y : ImGui.GetFrameHeight();
+            button = ImGui.Button(string.Empty, new Vector2(buttonWidth, buttonHeight));
+        }
+        var textSize2 = ImGui.CalcTextSize(textStr);
+        var totalContentWidth = iconSize.X + iconPadding + textSize2.X;
+        var iconOffsetX = (buttonWidth - totalContentWidth) / 2f;
+        var iconOffsetY = (buttonHeight - iconSize.Y) / 2f;
+        var textOffsetY = (buttonHeight - textSize2.Y) / 2f;
+        var iconPos = new Vector2(cursor.X + iconOffsetX, cursor.Y + iconOffsetY);
+        var textPos = new Vector2(iconPos.X + iconSize.X + iconPadding, cursor.Y + textOffsetY);
+        var dl = ImGui.GetWindowDrawList();
+        using(ImRaii.PushFont(UiBuilder.IconFont))
+        {
+            dl.AddText(iconPos, ImGui.GetColorU32(ImGuiCol.Text), icon.ToIconString());
+        }
+        dl.AddText(textPos, ImGui.GetColorU32(ImGuiCol.Text), textStr);
         if(!enabled) ImGui.PopStyleVar();
-        return result;
+        return button;
+#pragma warning restore
     }
 
     public static bool SmallButton(string label, bool enabled = true)
