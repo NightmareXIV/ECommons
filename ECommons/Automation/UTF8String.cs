@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ECommons.Automation;
 
+[Obsolete("Use FFXIVClientStructs.FFXIV.Client.System.String.UTF8String instead.")]
 [StructLayout(LayoutKind.Sequential, Size = 0x68)]
 public readonly struct UTF8String : IDisposable
 {

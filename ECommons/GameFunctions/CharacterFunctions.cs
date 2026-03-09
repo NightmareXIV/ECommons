@@ -1,4 +1,5 @@
 ﻿using Dalamud.Game.ClientState.Objects.Types;
+using ECommons.DalamudServices;
 using ECommons.MathHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
@@ -101,5 +102,38 @@ public static unsafe class CharacterFunctions
     extension(IBattleChara b)
     {
         public float RemainingCastTime => b.TotalCastTime - b.CurrentCastTime;
+    }
+
+    public static List<TetherInfo> GetTethers(this ICharacter c, bool onlySource = false)
+    {
+        List<TetherInfo> ret = [];
+        {
+            var t = c.Struct()->Vfx.Tethers;
+            for(int i = 0; i < t.Length; i++)
+            {
+                if(t[i].Id != 0)
+                {
+                    ret.Add(new(t[i], t[i].TargetId.ObjectId, true));
+                }
+            }
+        }
+        if(!onlySource)
+        {
+            foreach(var obj in Svc.Objects)
+            {
+                if(obj is ICharacter chr)
+                {
+                    var t = chr.Struct()->Vfx.Tethers;
+                    for(int i = 0; i < t.Length; i++)
+                    {
+                        if(t[i].Id != 0 && t[i].TargetId == c.GameObjectId)
+                        {
+                            ret.Add(new(t[i], chr.ObjectId, false));
+                        }
+                    }
+                }
+            }
+        }
+        return ret;
     }
 }

@@ -51,8 +51,8 @@ public partial class AddonMaster
                 var ret = new List<StellarMissions>();
                 for(var i = 0; i < NumEntries; i++)
                 {
-                    var missionName = Addon->AtkValues[803 + i * 2];
-                    var missionId = Addon->AtkValues[41 + i * 6].UInt;
+                    var missionName = Addon->AtkValues[801 + i * 2];
+                    var missionId = Addon->AtkValues[35 + i * 6].UInt;
 
                     // category header?
                     if(missionId == 0)
