@@ -148,11 +148,24 @@ public static unsafe partial class ImGuiEx
     /// <param name="label"></param>
     /// <param name="result"></param>
     /// <returns></returns>
+    [OverloadResolutionPriority(1)]
     public static bool FilteringCheckbox(string label, out bool result)
     {
         var ret = false;
         ref var value = ref Ref<bool>.Get($"{ImGui.GetID(label)}_filter");
         if(ImGui.Checkbox(label, ref value))
+        {
+            ret = true;
+        }
+        result = value;
+        return ret;
+    }
+
+    public static bool FilteringCheckbox(string label, out bool? result)
+    {
+        var ret = false;
+        ref var value = ref Ref<bool?>.Get($"{ImGui.GetID(label)}_filter1");
+        if(ImGuiEx.Checkbox(label, ref value))
         {
             ret = true;
         }
