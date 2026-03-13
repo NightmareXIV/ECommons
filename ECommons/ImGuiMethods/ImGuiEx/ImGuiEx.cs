@@ -921,7 +921,7 @@ public static unsafe partial class ImGuiEx
         {
             ImGui.SetCursorPos(cursor);
         }
-        if(ImGui.IsItemHovered())
+        if(helpText != null && ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
             ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
