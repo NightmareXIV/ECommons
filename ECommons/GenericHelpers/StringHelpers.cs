@@ -182,6 +182,7 @@ public static unsafe partial class GenericHelpers
     public static string? NullWhenEmpty(this string s) => s == string.Empty ? null : s;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [OverloadResolutionPriority(1)]
     public static bool IsNullOrEmpty(this string? s) => string.IsNullOrEmpty(s);
 
     /// <summary>

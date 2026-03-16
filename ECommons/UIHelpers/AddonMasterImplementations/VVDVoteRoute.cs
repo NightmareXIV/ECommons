@@ -22,6 +22,7 @@ public partial class AddonMaster
         public VVDVoteRoute(void* addon) : base(addon) { }
 
         public int EntryCount => Addon->AtkValues[2].Int;
+        public int SelectedEntryNPC => Addon->AtkValues[3].Int;
         public SeString SeString => GenericHelpers.ReadSeString(&Base->GetTextNodeById(4)->NodeText);
         public string Text => SeString.GetText();
         
