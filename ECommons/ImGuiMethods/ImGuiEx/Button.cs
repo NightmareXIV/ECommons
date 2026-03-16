@@ -126,7 +126,7 @@ public static partial class ImGuiEx
         }
         dl.AddText(textPos, ImGui.GetColorU32(ImGuiCol.Text), textStr);
         if(!enabled) ImGui.PopStyleVar();
-        return button;
+        return button && enabled;
 #pragma warning restore
     }
 
