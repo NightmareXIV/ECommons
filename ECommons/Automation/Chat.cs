@@ -132,4 +132,15 @@ public static unsafe class Chat
     {
         ExecuteCommand($"/action \"{Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRowOrDefault(actionId)?.Name}\"");
     }
+
+    [Obsolete("Use Chat.<MethodName> directly instead of Chat.Instance.<MethodName>")]
+    public static class Instance
+    {
+        public static void ExecuteCommand(string message) => Chat.ExecuteCommand(message);
+        public static void SendMessageUnsafe(byte[] message) => Chat.SendMessageUnsafe(message);
+        public static void SendMessage(string message) => Chat.SendMessage(message);
+        public static void ExecuteGeneralAction(uint generalActionId) => Chat.ExecuteGeneralAction(generalActionId);
+        public static void ExecuteAction(uint actionId) => Chat.ExecuteAction(actionId);
+        public static string SanitiseText(string text) => Chat.SanitiseText(text);
+    }
 }
