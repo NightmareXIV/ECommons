@@ -20,4 +20,9 @@ public interface IGameNetwork
     /// Event that is called when a network message is sent/received.
     /// </summary>
     public event OnNetworkMessageDelegate NetworkMessage;
+
+    /// <summary>
+    /// Event that is called when a replayed network message is sent/received.
+    /// </summary>
+    public event OnNetworkMessageDelegate NetworkMessageReplayed;
 }
