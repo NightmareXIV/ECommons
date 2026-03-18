@@ -2,5 +2,5 @@
 
 public enum CreationMode
 {
-    ReadOnly, CreateAndKeep, CreateAndRelinquish
+    ReadOnly, CreateAndKeep, CreateAndRelinquish, ReadAndKeep
 }

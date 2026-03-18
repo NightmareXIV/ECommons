@@ -11,13 +11,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 
 namespace ECommons.ImGuiMethods.TerritorySelection;
 #nullable disable
 
 public unsafe class TerritorySelector : Window
 {
-    public enum Category { World, Housing, Inn, Dungeon, Raid, Trial, Deep_Dungeon, Other, All }
+    public enum Category { [Obfuscation] World, [Obfuscation] Housing, [Obfuscation] Inn, [Obfuscation] Dungeon, [Obfuscation] Raid, [Obfuscation] Trial, [Obfuscation] Deep_Dungeon, [Obfuscation] Other, [Obfuscation] All }
     public enum Column { ID, Zone, Region, IntendedUse }
     public enum DisplayMode { PlaceNameDutyUnion, PlaceNameAndDuty, PlaceNameOnly }
 
