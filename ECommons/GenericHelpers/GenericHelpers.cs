@@ -20,6 +20,7 @@ using Lumina.Excel.Sheets;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -381,9 +382,9 @@ public static unsafe partial class GenericHelpers
     /// <param name="obj"></param>
     /// <returns>Deserialized copy of <paramref name="obj"/></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T JSONClone<T>(this T obj)
+    public static T JSONClone<T>(this T obj, JsonSerializerSettings jsonSettings = null)
     {
-        return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj));
+        return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj, jsonSettings), jsonSettings);
     }
 
     /// <summary>
