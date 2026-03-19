@@ -1,4 +1,5 @@
 ﻿using ECommons.Logging;
+using System;
 using System.Linq;
 using System.Reflection;
 
@@ -75,6 +76,15 @@ public static partial class ReflectionHelper
     {
         return obj.GetType().Assembly.GetType(type).GetField(name, StaticFlags)?.GetValue(null)
             ?? obj.GetType().Assembly.GetType(type).GetProperty(name, StaticFlags)?.GetValue(null);
+    }
+
+    /// <summary>
+    /// Subject for future refactoring and changes!
+    /// </summary>
+    public static object GetStaticFoP(this Type obj, string name)
+    {
+        return obj.GetField(name, StaticFlags)?.GetValue(null)
+            ?? obj.GetProperty(name, StaticFlags)?.GetValue(null);
     }
 
     /// <summary>
