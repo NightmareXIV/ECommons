@@ -245,6 +245,11 @@ public static unsafe partial class GenericHelpers
                 sb.Append(tp.Text);
                 if(onlyFirst) break;
             }
+            if(x is AutoTranslatePayload atp)
+            {
+                sb.Append(atp.Text);
+                if(onlyFirst) break;
+            }
             if(x.Type == PayloadType.Unknown && x.Encode().SequenceEqual<byte>([0x02, 0x1d, 0x01, 0x03]))
             {
                 sb.Append(' ');
