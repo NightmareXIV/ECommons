@@ -1,5 +1,7 @@
 ﻿using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
+using ECommons.ExcelServices;
+using ECommons.GameHelpers.LegacyPlayer;
 using ECommons.Logging;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using System;
@@ -38,4 +40,5 @@ public static unsafe class PlayerFunctions
     {
         return (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)o.Address;
     }
+
 }

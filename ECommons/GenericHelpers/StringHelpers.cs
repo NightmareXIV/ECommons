@@ -14,6 +14,14 @@ using System.Text;
 namespace ECommons;
 public static unsafe partial class GenericHelpers
 {
+    public static string[] SplitOnce(this string value, string delimiter)
+    {
+        var index = value.IndexOf(delimiter, StringComparison.Ordinal);
+        if(index < 0) return [value];
+
+        return [value[..index], value[(index + delimiter.Length)..]];
+    }
+
     public static bool ContainsPartOf(this string haystack, SeString needle)
     {
         var text = haystack;
@@ -235,6 +243,11 @@ public static unsafe partial class GenericHelpers
             if(x is TextPayload tp)
             {
                 sb.Append(tp.Text);
+                if(onlyFirst) break;
+            }
+            if(x is AutoTranslatePayload atp)
+            {
+                sb.Append(atp.Text);
                 if(onlyFirst) break;
             }
             if(x.Type == PayloadType.Unknown && x.Encode().SequenceEqual<byte>([0x02, 0x1d, 0x01, 0x03]))

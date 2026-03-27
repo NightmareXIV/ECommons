@@ -7,6 +7,7 @@ using FFXIVClientStructs.FFXIV.Client.Network;
 using Serilog;
 using System;
 using System.Runtime.InteropServices;
+using TerraFX.Interop.Windows;
 
 namespace ECommons.DalamudServices.Legacy;
 internal sealed unsafe class GameNetwork : IGameNetwork
@@ -17,6 +18,9 @@ internal sealed unsafe class GameNetwork : IGameNetwork
 
     private readonly HitchDetector hitchDetectorUp;
     private readonly HitchDetector hitchDetectorDown;
+
+    public unsafe delegate byte OnReceiveReplayPacket(nint thisPtr, ushort* opcode, nint* packet);
+    private readonly Hook<OnReceiveReplayPacket> OnReceiveReplayPacketHook;
 
     internal unsafe GameNetwork()
     {
@@ -34,9 +38,11 @@ internal sealed unsafe class GameNetwork : IGameNetwork
 
         this.processZonePacketDownHook = Svc.Hook.HookFromAddress<PacketDispatcher.Delegates.OnReceivePacket>(onReceivePacketAddress, this.ProcessZonePacketDownDetour);
         this.processZonePacketUpHook = Svc.Hook.HookFromAddress<ProcessZonePacketUpDelegate>(this.address.ProcessZonePacketUp, this.ProcessZonePacketUpDetour);
+        this.OnReceiveReplayPacketHook = Svc.Hook.HookFromAddress<OnReceiveReplayPacket>(this.address.ContentsReplayManager_ProcessPacket, this.OnReceiveReplayPacketDetour);
 
         this.processZonePacketDownHook.Enable();
         this.processZonePacketUpHook.Enable();
+        this.OnReceiveReplayPacketHook.Enable();
 
         Purgatory.Add(Dispose);
     }
@@ -47,12 +53,37 @@ internal sealed unsafe class GameNetwork : IGameNetwork
     /// <inheritdoc/>
     public event IGameNetwork.OnNetworkMessageDelegate? NetworkMessage;
 
+    public event IGameNetwork.OnNetworkMessageDelegate? NetworkMessageReplayed;
+
     /// <inheritdoc/>
     private void Dispose()
     {
         PluginLog.Debug($"Disposing GameNetwork");
         this.processZonePacketDownHook.Dispose();
         this.processZonePacketUpHook.Dispose();
+        this.OnReceiveReplayPacketHook.Dispose();
+    }
+
+    private byte OnReceiveReplayPacketDetour(nint thisPtr, ushort* opcode, nint* packet)
+    {
+        foreach(var d in Delegate.EnumerateInvocationList(this.NetworkMessageReplayed))
+        {
+            try
+            {
+                d.Invoke(
+                    *packet,
+                    *opcode,
+                    0,
+                    0,
+                    NetworkMessageDirection.ZoneDown);
+            }
+            catch(Exception ex)
+            {
+                ex.Log();
+            }
+        }
+        var ret = OnReceiveReplayPacketHook.Original(thisPtr, opcode, packet);
+        return ret;
     }
 
     private void ProcessZonePacketDownDetour(PacketDispatcher* dispatcher, uint targetId, IntPtr dataPtr)

@@ -142,7 +142,7 @@ public static class DalamudReflector
                 Svc.PluginInterface.GetType().Assembly
                     .GetType("Dalamud.Plugin.Internal.Types.PluginRepository")!,
                 happyHttpClient, masterURL, true);
-            await pluginRepository.Call<Task>("ReloadPluginMasterAsync", []);
+            await pluginRepository.Call<Task>("ReloadAsync", []);
 
             var pluginMaster = pluginRepository!.GetType()
                 .GetProperty("PluginMaster")!
