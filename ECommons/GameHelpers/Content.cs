@@ -419,13 +419,13 @@ public static class Content
             { ContentType.RowId: 37 } =>
                 GameHelpers.ContentDifficulty.Chaotic,
 
-            { ContentType.RowId: 30, AllowUndersized: true } =>
+            { ContentType.RowId: 30, AllowUndersized: false, Unknown34: 0 } =>
                 GameHelpers.ContentDifficulty.Criterion,
 
             { ContentType.RowId: 5 } when ContentDifficultyFromName == "Savage" =>
                 GameHelpers.ContentDifficulty.Savage,
 
-            { ContentType.RowId: 30, AllowUndersized: false } =>
+            { ContentType.RowId: 30, AllowUndersized: false, Unknown34: 1 } =>
                 GameHelpers.ContentDifficulty.CriterionSavage,
 
             { ContentType.RowId: 28 } =>
