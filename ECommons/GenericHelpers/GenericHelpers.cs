@@ -37,6 +37,50 @@ public static unsafe partial class GenericHelpers
     private static ulong UidCnt = 0;
     public static string GetTemporaryId() => $"{UidPrefix}{UidCnt++:X}";
 
+    public static string[] Split(this string s, IEnumerable<string> separators, StringSplitOptions options = StringSplitOptions.None)
+    {
+        ArgumentNullException.ThrowIfNull(s);
+        ArgumentNullException.ThrowIfNull(separators);
+
+        var separatorArray = separators.Where(sep => sep != null).ToArray();
+
+        var parts = new List<string>();
+        int start = 0;
+
+        while(start <= s.Length)
+        {
+            int matchIndex = -1;
+            int matchLength = 0;
+
+            foreach(var sep in separatorArray)
+            {
+                if(sep.Length == 0) continue;
+
+                int idx = s.IndexOf(sep, start, StringComparison.Ordinal);
+                if(idx >= 0 && (matchIndex < 0 || idx < matchIndex || (idx == matchIndex && sep.Length > matchLength)))
+                {
+                    matchIndex = idx;
+                    matchLength = sep.Length;
+                }
+            }
+
+            if(matchIndex < 0)
+            {
+                parts.Add(s[start..]);
+                break;
+            }
+
+            parts.Add(s[start..matchIndex]);
+            start = matchIndex + matchLength;
+        }
+
+        if(options.HasFlag(StringSplitOptions.RemoveEmptyEntries)) parts.RemoveAll(p => p.Length == 0);
+        if(options.HasFlag(StringSplitOptions.TrimEntries)) parts = [.. parts.Select(p => p.Trim())];
+        if(options.HasFlag(StringSplitOptions.RemoveEmptyEntries) && options.HasFlag(StringSplitOptions.TrimEntries)) parts.RemoveAll(p => p.Length == 0);
+
+        return [.. parts];
+    }
+
     public static bool ApproximatelyEquals(this Vector3 one, Vector3 two, float diff = 0.01f)
     {
         return Math.Abs(one.X - two.X) < diff && Math.Abs(one.Y - two.Y) < diff && Math.Abs(one.Z - two.Z) < diff;
