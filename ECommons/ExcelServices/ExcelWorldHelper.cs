@@ -25,7 +25,13 @@ public static class ExcelWorldHelper
             //TODO: somehow differentiate CN, KR, TW
             //104	豆豆柴	8	104	5	False
 #pragma warning disable RS0030
-            if(w.RowId > 1000 && w.UserType.EqualsAny<byte>(101, 201)) return true;
+            // KR case
+            if(w.RowId > 2000 && w.UserType.Equals(201))
+            {
+                var internalName = w.InternalName.ToString();
+                return internalName.StartsWith("Kr") && !internalName.Equals("KrOmega");
+            }
+            if(w.RowId > 1000 && w.UserType.Equals(101)) return true;
             //.EqualsAny<uint>(1180, 1183, 1186, 1192, 1200, 1201)
 #pragma warning restore RS0030
         }
