@@ -84,6 +84,7 @@ public class ThreadLoadImageHandler
         {
             result = new();
             CachedTextures[url] = result;
+            PluginLog.Debug($"[ThreadLoadImageHandler] Requesting {url} for the first time");
             BeginThreadIfNotRunning();
         }
         textureWrap = result.Texture;
