@@ -1,15 +1,21 @@
-﻿using Dalamud.Interface.Utility;
+﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Utility;
 using ECommons.Throttlers;
-using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using static FFXIVClientStructs.FFXIV.Component.GUI.AtkResNode.Delegates;
 
 namespace ECommons.ImGuiMethods;
 public static partial class ImGuiEx
 {
+    public static bool InputFancyNumeric(float width, string label, ref int number, int step, Action? afterInput = null)
+    {
+        ImGui.SetNextItemWidth(step > 0?width - ImGui.GetFrameHeight() * 2 - 2:width);
+        return InputFancyNumeric(label, ref number, step, afterInput);
+    }
     public static bool InputFancyNumeric(string label, ref int number, int step, Action? afterInput = null)
     {
         var str = $"{number:N0}";
