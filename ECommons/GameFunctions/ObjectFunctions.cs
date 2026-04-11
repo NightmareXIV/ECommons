@@ -1,4 +1,5 @@
-﻿using Dalamud.Game.ClientState.Objects.Types;
+﻿using Dalamud.Game.ClientState.Objects.SubKinds;
+using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.DalamudServices;
 using ECommons.EzHookManager;
 using ECommons.Logging;
@@ -18,6 +19,16 @@ public static unsafe class ObjectFunctions
     private static string GetNameplateColorSig = "48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 48 8B 35 ?? ?? ?? ?? 48 8B F9";
 
     public static FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject* Struct(this IGameObject o)
+    {
+        return (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)o.Address;
+    }
+
+    public static FFXIVClientStructs.FFXIV.Client.Game.Object.EventObject* Struct(this IEventObj o)
+    {
+        return (FFXIVClientStructs.FFXIV.Client.Game.Object.EventObject*)o.Address;
+    }
+
+    public static FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject* GameObject(this IEventObj o)
     {
         return (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)o.Address;
     }
