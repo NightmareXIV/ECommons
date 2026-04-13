@@ -37,7 +37,7 @@ public static unsafe partial class ImGuiEx
         {
             contentRegionAvailX ??= ImGui.GetContentRegionAvail().X;
             var cur = ImGui.GetCursorPos();
-            ImGui.SetCursorPosX(contentRegionAvailX.Value - value);
+            ImGui.SetCursorPosX(cur.X + contentRegionAvailX.Value - value);
             DrawAndStore();
             ImGui.SetCursorPos(cur);
         }

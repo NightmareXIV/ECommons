@@ -383,6 +383,12 @@ public static partial class ImGuiEx
         return EnumCombo(name, ref refConfigField, null, names);
     }
 
+    public static bool EnumCombo<T>(float width, string name, ref T refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : Enum, IConvertible
+    {
+        ImGui.SetNextItemWidth(width);
+        return EnumCombo(name, ref refConfigField, filter, names);
+    }
+
     /// <summary>
     /// Draws an easy combo selector for an enum with a search field for long lists.
     /// </summary>

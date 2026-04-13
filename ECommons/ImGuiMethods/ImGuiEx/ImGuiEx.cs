@@ -74,7 +74,7 @@ public static unsafe partial class ImGuiEx
         foreach(var x in texts)
         {
             ImGui.TableNextColumn();
-            ImGuiEx.Text(x);
+            ImGuiEx.Text(x ?? "");
         }
     }
 
