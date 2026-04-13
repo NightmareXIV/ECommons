@@ -1297,7 +1297,16 @@ public static unsafe partial class ImGuiEx
                         ImGui.PopStyleColor();
                     }
                     if(x.child) ImGui.BeginChild(x.name + "child");
-                    x.function();
+                    ImGui.PushID(x.name + "tab");
+                    try
+                    {
+                        x.function();
+                    }
+                    catch(Exception e)
+                    {
+                        e.Log();
+                    }
+                    ImGui.PopID();
                     if(x.child) ImGui.EndChild();
                     ImGui.EndTabItem();
                 }
