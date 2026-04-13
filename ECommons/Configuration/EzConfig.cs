@@ -21,26 +21,8 @@ namespace ECommons.Configuration;
 public static class EzConfig
 {
     public static string? PluginConfigDirectoryOverride { get; set; } = null;
-    public static bool UseExternalWriter
-    {
-        get
-        {
-            return field;
-        }
-        set
-        {
-            if(Util.GetHostPlatform() != OSPlatform.Windows)
-            {
-                field = false;
-                PluginLog.Warning($"External file writer is only supported on Windows. OS detected: {Util.GetHostPlatform()}. External file writer is disabled.");
-            }
-            else
-            {
-                field = value;
-            }
-        }
-    } = false;
-
+    public static bool UseDefaultAsyncSave { get; set; } = false;
+    
     public static Action<string, string>? SaveFileActionOverride
     {
         get => field;
@@ -161,10 +143,11 @@ public static class EzConfig
     /// <param name="appendConfigDirectory">If true, plugin configuration directory will be added to path</param>
     /// <param name="serializationFactory">If null, then default factory will be used.</param>
     /// <param name="writeFileAsync">Whether to perform writing operation in a separate thread. Serialization is performed in current thread.</param>
-    public static void SaveConfiguration(this object Configuration, string path, bool prettyPrint = false, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null, bool writeFileAsync = false)
+    public static void SaveConfiguration(this object Configuration, string path, bool prettyPrint = false, bool appendConfigDirectory = true, ISerializationFactory? serializationFactory = null, bool? writeFileAsync = null, bool? useReliableFileStorage = null)
     {
         WasCalled = true;
         serializationFactory ??= DefaultSerializationFactory;
+        writeFileAsync ??= UseDefaultAsyncSave;
         string serializedString = null;
         byte[] serializedBinary = null;
         if(serializationFactory.IsBinary)
@@ -173,21 +156,9 @@ public static class EzConfig
         }
         else
         {
-            serializedString = serializationFactory.Serialize(Configuration) ?? throw new NullReferenceException();
+            serializedString = serializationFactory.Serialize(Configuration, prettyPrint) ?? throw new NullReferenceException();
         }
         if(appendConfigDirectory) path = Path.Combine(EzConfig.GetPluginConfigDirectory(), path);
-        if(UseExternalWriter)
-        {
-            if(serializationFactory.IsBinary)
-            {
-                ExternalWriter.PlaceWriteOrder(new(path, serializedBinary));
-            }
-            else
-            {
-                ExternalWriter.PlaceWriteOrder(new(path, serializedString));
-            }
-        }
-        else
         {
             void Write()
             {
@@ -203,7 +174,7 @@ public static class EzConfig
                         {
                             serializationFactory.WriteFile(path, serializedString);
                         }
-                        
+
                     }
                 }
                 catch(Exception e)
@@ -211,7 +182,7 @@ public static class EzConfig
                     e.Log();
                 }
             }
-            if(writeFileAsync)
+            if(writeFileAsync.Value)
             {
                 Task.Run(Write);
             }
