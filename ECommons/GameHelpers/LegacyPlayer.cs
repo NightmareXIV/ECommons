@@ -55,10 +55,10 @@ public static unsafe class Player
 
     public static bool IsInHomeWorld => Available && Object.CurrentWorld.RowId == Object.HomeWorld.RowId;
     public static bool IsInHomeDC => Available && Object.CurrentWorld.Value.DataCenter.RowId == Object.HomeWorld.Value.DataCenter.RowId;
-    public static string HomeWorld => Object.HomeWorld.Value.Name.ToString();
-    public static string CurrentWorld => Object.CurrentWorld.Value.Name.ToString();
-    public static string HomeDataCenter => Object.HomeWorld.Value.DataCenter.Value.Name.ToString();
-    public static string CurrentDataCenter => Object.CurrentWorld.Value.DataCenter.Value.Name.ToString();
+    public static string HomeWorld => Object?.HomeWorld.Value.Name.ToString();
+    public static string CurrentWorld => Object?.CurrentWorld.Value.Name.ToString();
+    public static string HomeDataCenter => Object?.HomeWorld.Value.DataCenter.Value.Name.ToString();
+    public static string CurrentDataCenter => Object?.CurrentWorld.Value.DataCenter.Value.Name.ToString();
 
     public static Character* Character => (Character*)Object.Address;
     public static BattleChara* BattleChara => (BattleChara*)Object.Address;

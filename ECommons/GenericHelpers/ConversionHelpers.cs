@@ -105,4 +105,29 @@ public static unsafe partial class GenericHelpers
         }
         return sb.ToString();
     }
+
+    /// <summary>
+    /// Converts byte array to hex string where bytes are separated by a specified character
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <param name="separator"></param>
+    /// <returns></returns>
+    public static string ToHexString(this IEnumerable<byte> bytes, string separator)
+    {
+        var first = true;
+        var sb = new StringBuilder();
+        foreach(var x in bytes)
+        {
+            if(first)
+            {
+                first = false;
+            }
+            else if(!separator.IsNullOrEmpty())
+            {
+                sb.Append(separator);
+            }
+            sb.Append($"{x:X2}");
+        }
+        return sb.ToString();
+    }
 }

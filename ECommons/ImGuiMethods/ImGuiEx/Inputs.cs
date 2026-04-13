@@ -1,15 +1,21 @@
-﻿using Dalamud.Interface.Utility;
+﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Utility;
 using ECommons.Throttlers;
-using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using static FFXIVClientStructs.FFXIV.Component.GUI.AtkResNode.Delegates;
 
 namespace ECommons.ImGuiMethods;
 public static partial class ImGuiEx
 {
+    public static bool InputFancyNumeric(float width, string label, ref int number, int step, Action? afterInput = null)
+    {
+        ImGui.SetNextItemWidth(step > 0?width - ImGui.GetFrameHeight() * 2 - 2:width);
+        return InputFancyNumeric(label, ref number, step, afterInput);
+    }
     public static bool InputFancyNumeric(string label, ref int number, int step, Action? afterInput = null)
     {
         var str = $"{number:N0}";
@@ -375,6 +381,12 @@ public static partial class ImGuiEx
     public static bool EnumCombo<T>(string name, ref T refConfigField, IDictionary<T, string> names) where T : Enum, IConvertible
     {
         return EnumCombo(name, ref refConfigField, null, names);
+    }
+
+    public static bool EnumCombo<T>(float width, string name, ref T refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : Enum, IConvertible
+    {
+        ImGui.SetNextItemWidth(width);
+        return EnumCombo(name, ref refConfigField, filter, names);
     }
 
     /// <summary>
