@@ -37,6 +37,38 @@ public static unsafe partial class ImGuiEx
     public static ImGuiTableFlags DefaultTableFlags = ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg | ImGuiTableFlags.Borders | ImGuiTableFlags.SizingFixedFit;
     private static Dictionary<string, int> SelectedPages = [];
 
+    public static void PushStyleVar(IEnumerable<ImGuiStyleVar> styleVars, Vector2 value)
+    {
+        foreach(var x in styleVars)
+        {
+            ImGui.PushStyleVar(x, value);
+        }
+    }
+
+    public static void PushStyleVar(IEnumerable<ImGuiStyleVar> styleVars, float value)
+    {
+        foreach(var x in styleVars)
+        {
+            ImGui.PushStyleVar(x, value);
+        }
+    }
+
+    public static void PushStyleColor(IEnumerable<ImGuiCol> col, Vector4 value)
+    {
+        foreach(var x in col)
+        {
+            ImGui.PushStyleColor(x, value);
+        }
+    }
+
+    public static void PushStyleColor(IEnumerable<ImGuiCol> col, uint value)
+    {
+        foreach(var x in col)
+        {
+            ImGui.PushStyleColor(x, value);
+        }
+    }
+
     /// <inheritdoc cref="ImGuiEx.TryGetTableSortDirection(out ImGuiSortDirection, out int, out bool)"/>
     public static bool TryGetTableSortDirection(out bool isAscending) => TryGetTableSortDirection(out isAscending, out _, out _);
 
