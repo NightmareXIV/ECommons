@@ -69,7 +69,7 @@ public static partial class ImGuiEx
     /// <param name="hoveredColor"></param>
     /// <param name="size"></param>
     /// <returns></returns>
-    public static bool IconButtonWithText(FontAwesomeIcon icon, string id, bool enabled = true, System.Numerics.Vector4? defaultColor = null, System.Numerics.Vector4? activeColor = null, System.Numerics.Vector4? hoveredColor = null, System.Numerics.Vector2? size = null)
+    public static bool IconButtonWithText(FontAwesomeIcon icon, string id, bool enabled = true, System.Numerics.Vector4? defaultColor = null, System.Numerics.Vector4? activeColor = null, System.Numerics.Vector4? hoveredColor = null, System.Numerics.Vector2? size = null, bool scaling = true)
     {
 #pragma warning disable RS0030
         if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
@@ -86,7 +86,7 @@ public static partial class ImGuiEx
         {
             col.Push(ImGuiCol.ButtonHovered, hoveredColor.Value);
         }
-        if(size.HasValue)
+        if(size.HasValue && scaling)
         {
             size *= ImGuiHelpers.GlobalScale;
         }
