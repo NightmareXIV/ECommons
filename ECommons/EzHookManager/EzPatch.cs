@@ -42,6 +42,15 @@ public class EzPatch : IDisposable
         }
     }
 
+    public EzPatch(ICollection<byte?> signature, nint offset, Data patchData, bool autoEnable = true, bool silent = false)
+    {
+        var addr = Svc.SigScanner.ScanAllText(signature.Select(x => x == null?"??":$"{x:X2}").Print(" "));
+        if(addr.Length > 0)
+        {
+            Initialize(addr[0] + offset, patchData, autoEnable, silent);
+        }
+    }
+
     private void Initialize(nint addr, Data patchData, bool autoEnable = true, bool silent = false)
     {
         try
