@@ -11,7 +11,7 @@ namespace ECommons.Hooks;
 
 public static unsafe class ActionEffect
 {
-    public const string Sig = "40 55 56 57 41 54 41 55 41 56 41 57 48 8D AC 24";
+    public const string Sig = "40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 ?? ?? ?? ?? 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 70 4C 8B BD";
 
     public delegate void ProcessActionEffect(uint sourceId, Character* sourceCharacter, Vector3* pos, EffectHeader* effectHeader, EffectEntry* effectArray, ulong* effectTail);
     internal static Hook<ProcessActionEffect> ProcessActionEffectHook = null;

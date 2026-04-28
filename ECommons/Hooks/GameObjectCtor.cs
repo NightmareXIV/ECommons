@@ -18,8 +18,7 @@ public class GameObjectCtor
 {
     public delegate void GameObjectConstructorCallbackDelegate(nint objectAddress);
 
-    public const string Sig =
-        "48 8D 05 ?? ?? ?? ?? C7 81 ?? ?? ?? ?? ?? ?? ?? ?? 48 89 01 48 8B C1 C3";
+    public const string Sig = "48 8D 05 ?? ?? ?? ?? 48 89 01 33 C0 48 89 41 10 48 89 41 18 89 81 ?? ?? ?? ?? 48 89 81";
 
     private static Hook<GameObjectConstructorDelegate> GameObjectConstructorHook;
 
