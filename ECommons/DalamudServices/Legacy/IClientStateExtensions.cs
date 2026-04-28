@@ -11,5 +11,6 @@ public static class IClientStateExtensions
     extension(IClientState value)
     {
         public IPlayerCharacter LocalPlayer => Svc.Objects.LocalPlayer;
+        public ulong LocalContentId => Svc.PlayerState.ContentId;
     }
 }
