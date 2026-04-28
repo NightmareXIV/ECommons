@@ -62,7 +62,7 @@ public class EzPatch : IDisposable
             Silent = silent;
             if(patchData.OriginalData.Count == 0)
             {
-                if(!silent) PluginLog.Debug($"Reading {patchData.PatchData.Count} bytes from {addr:X} and using it as original data for patch {patchData.PatchData}");
+                if(!silent) PluginLog.Debug($"Reading {patchData.PatchData.Count} bytes from {addr:X} and using it as original data for patch {patchData.PatchData.ToHexString()}");
                 if(SafeMemory.ReadBytes(addr, patchData.PatchData.Count, out var result))
                 {
                     if(!silent) PluginLog.Debug($"Successfully read {result.ToHexString()}");
