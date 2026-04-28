@@ -4,6 +4,7 @@ using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Statuses;
 using Dalamud.Game.Player;
 using ECommons.DalamudServices;
+using ECommons.DalamudServices.Legacy;
 using ECommons.ExcelServices;
 using ECommons.GameFunctions;
 using ECommons.MathHelpers;
@@ -100,8 +101,8 @@ public static unsafe class Player
     public static float DistanceTo(Vector2 other) => Vector2.Distance(Position.ToVector2(), other);
     public static float DistanceTo(IGameObject other) => Vector3.Distance(Position, other.Position);
 
-    [Obsolete("Use IsJumping")]
+    [Obsolete("Use IsJumping", true)]
     public static unsafe bool Dismounting => **(byte**)(Svc.ClientState.LocalPlayer.Address + 1400) == 1;
-    [Obsolete("Use IsJumping")]
+    [Obsolete("Use IsJumping", true)]
     public static bool Jumping => Svc.Condition[ConditionFlag.Jumping] || Svc.Condition[ConditionFlag.Jumping61];
 }

@@ -73,7 +73,7 @@ public static partial class ImGuiEx
     {
 #pragma warning disable RS0030
         if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
-        using var col = new ImRaii.Color();
+        using var col = new ImRaii.ColorDisposable();
         if(defaultColor.HasValue)
         {
             col.Push(ImGuiCol.Button, defaultColor.Value);

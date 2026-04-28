@@ -2,7 +2,7 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Collections.Generic;
 using Callback = ECommons.Automation.Callback;
-using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
+
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
 
@@ -36,7 +36,7 @@ public partial class AddonMaster
             get
             {
                 var missionName = Addon->AtkValues[1063];
-                if(missionName.Type.EqualsAny(ValueType.String, ValueType.ManagedString, ValueType.String8))
+                if(missionName.Type.EqualsAny(AtkValueType.String, AtkValueType.ManagedString, AtkValueType.String8))
                 {
                     return MemoryHelper.ReadSeStringNullTerminated((nint)missionName.String.Value).GetText();
                 }
@@ -58,7 +58,7 @@ public partial class AddonMaster
                     if(missionId == 0)
                         continue;
 
-                    if(missionName.Type.EqualsAny(ValueType.String, ValueType.ManagedString, ValueType.String8))
+                    if(missionName.Type.EqualsAny(AtkValueType.String, AtkValueType.ManagedString, AtkValueType.String8))
                     {
                         var mission = new StellarMissions(this, i)
                         {
