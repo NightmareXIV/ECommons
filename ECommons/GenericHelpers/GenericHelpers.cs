@@ -36,6 +36,11 @@ public static unsafe partial class GenericHelpers
     private static string UidPrefix = $"{Random.Shared.Next(0, 0xFFFF):X4}";
     private static ulong UidCnt = 0;
     public static string GetTemporaryId() => $"{UidPrefix}{UidCnt++:X}";
+    
+    public static bool NextBool(this Random random)
+    {
+        return random.Next(2) == 0;
+    }
 
     public static string[] Split(this string s, IEnumerable<string> separators, StringSplitOptions options = StringSplitOptions.None)
     {
