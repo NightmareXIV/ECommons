@@ -30,6 +30,8 @@ public partial class AddonMaster
         /// </summary>
         public uint NumEntries => Addon->AtkValues[32].UInt; // Should be 17 as of phaenna
 
+        public uint CurrentTab => Addon->AtkValues[26].UInt;
+
         public uint SelectedMissionId => Addon->AtkValues[1062].UInt;
         public string SelectedMissionName
         {
