@@ -133,6 +133,14 @@ public static class EzIPC
                         {
                             var safeWrapperObj = CreateSafeWrapper(wrapper, adjustedGenericArgs) ?? throw new NullReferenceException("Safe wrapper creation failed. Please report this exception to developer.");
                             var safeWrapperMethod = safeWrapperObj.GetType().GetMethod(isAction ? "InvokeAction" : "InvokeFunction", ReflectionHelper.AllFlags);
+                            try
+                            {
+                                safeWrapperObj.SetFoP("Subscriber", callerInfo);
+                            }
+                            catch(Exception e)
+                            {
+                                e.Log();
+                            }
                             safeWrapperObj.SetFoP(isAction ? "Action" : "Function", invocationDelegate);
                             ReflectionHelper.AssignDelegateToField(reference, instance, ReflectionHelper.CreateDelegate(safeWrapperMethod, safeWrapperObj));
                         }
