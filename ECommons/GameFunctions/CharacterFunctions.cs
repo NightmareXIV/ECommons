@@ -81,7 +81,7 @@ public static unsafe class CharacterFunctions
                     return default;
                 }
                 var ret = *info;
-                ret.ActionType = (*(byte*)(((nint)info) + 1));
+                //ret.ActionType = (*(byte*)(((nint)info) + 1));
                 return ret;
             }
         }
