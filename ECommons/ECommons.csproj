@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Authors>NightmareXIV</Authors>
-        <BaseVersion>3.2.0.6</BaseVersion>
+        <BaseVersion>3.2.0.7</BaseVersion>
         <PackageKind>stg</PackageKind>
         <VersionSuffix Condition="'$(PackageKind)' != ''">-$(PackageKind)</VersionSuffix>
         <Version>$(BaseVersion)$(VersionSuffix)</Version>
