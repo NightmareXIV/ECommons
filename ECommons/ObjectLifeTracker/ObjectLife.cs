@@ -23,7 +23,7 @@ public static class ObjectLife
         {
             IGameObjectLifeTime = [];
  // Type or member is obsolete
-            IGameObject_ctor_hook = Svc.Hook.HookFromAddress<IGameObject_ctor>(Svc.SigScanner.ScanText("48 8D 05 ?? ?? ?? ?? C7 81 ?? ?? ?? ?? ?? ?? ?? ?? 48 89 01 48 8B C1 C3"), IGameObject_ctor_detour);
+            IGameObject_ctor_hook = Svc.Hook.HookFromAddress<IGameObject_ctor>(Svc.SigScanner.ScanText("48 8D 05 ?? ?? ?? ?? 48 89 01 33 C0 48 89 41 10 48 89 41 18 89 81 ?? ?? ?? ?? 48 89 81"), IGameObject_ctor_detour);
 #pragma warning restore CS0618 // Type or member is obsolete
             IGameObject_ctor_hook.Enable();
             foreach(var x in Svc.Objects)

@@ -25,7 +25,13 @@ public static class ExcelWorldHelper
             //TODO: somehow differentiate CN, KR, TW
             //104	豆豆柴	8	104	5	False
 #pragma warning disable RS0030
-            if(w.RowId > 1000 && w.UserType.EqualsAny<byte>(101, 201)) return true;
+            // KR case
+            if(w.RowId > 2000 && w.UserType.Equals(201))
+            {
+                var internalName = w.InternalName.ToString();
+                return internalName.StartsWith("Kr") && !internalName.Equals("KrOmega");
+            }
+            if(w.RowId > 1000 && w.UserType.Equals(101)) return true;
             //.EqualsAny<uint>(1180, 1183, 1186, 1192, 1200, 1201)
 #pragma warning restore RS0030
         }
@@ -88,12 +94,12 @@ public static class ExcelWorldHelper
 
     public static WorldDCGroupType[] GetDataCenters(Region? region = null, bool checkForPublicWorlds = false)
     {
-        return Svc.Data.GetExcelSheet<WorldDCGroupType>().Where(x => (region == null || (Region)x.Region == region.Value) && (!checkForPublicWorlds || GetPublicWorlds(x.RowId).Length > 0)).ToArray();
+        return Svc.Data.GetExcelSheet<WorldDCGroupType>().Where(x => (region == null || (Region)x.Region.RowId == region.Value) && (!checkForPublicWorlds || GetPublicWorlds(x.RowId).Length > 0)).ToArray();
     }
 
     public static WorldDCGroupType[] GetDataCenters(System.Collections.Generic.IEnumerable<Region> regions, bool checkForPublicWorlds = false)
     {
-        return Svc.Data.GetExcelSheet<WorldDCGroupType>().Where(x => regions.Contains((Region)x.Region) && (!checkForPublicWorlds || GetPublicWorlds(x.RowId).Length > 0)).ToArray();
+        return Svc.Data.GetExcelSheet<WorldDCGroupType>().Where(x => regions.Contains((Region)x.Region.RowId) && (!checkForPublicWorlds || GetPublicWorlds(x.RowId).Length > 0)).ToArray();
     }
 
     [Obsolete("Please use Get")]
@@ -132,6 +138,6 @@ public static class ExcelWorldHelper
         var dc = world.DataCenter;
         var dcg = Svc.Data.GetExcelSheet<WorldDCGroupType>().GetRowOrDefault(dc.Value.RowId);
         if(dcg == null) return 0;
-        return (Region)dcg.Value.Region;
+        return (Region)dcg.Value.Region.RowId;
     }
 }

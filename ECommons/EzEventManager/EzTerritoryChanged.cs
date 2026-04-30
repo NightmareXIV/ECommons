@@ -10,9 +10,9 @@ namespace ECommons.EzEventManager;
 public class EzTerritoryChanged : IDisposable
 {
     internal static List<EzTerritoryChanged> Registered = [];
-    internal Action<ushort> Delegate;
+    internal Action<uint> Delegate;
 
-    public EzTerritoryChanged(Action<ushort> @delegate)
+    public EzTerritoryChanged(Action<uint> @delegate)
     {
         Delegate = @delegate ?? throw new ArgumentNullException(nameof(@delegate));
         Svc.ClientState.TerritoryChanged += Delegate;

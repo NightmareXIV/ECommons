@@ -36,6 +36,19 @@ public class EzPatch : IDisposable
     public EzPatch(string signature, nint offset, Data patchData, bool autoEnable = true, bool silent = false)
     {
         var addr = Svc.SigScanner.ScanAllText(signature);
+        if(addr.Length > 1)
+        {
+            PluginLog.Warning($"[EzPatch] Found more than 1 address. Is signature up to date?");
+        }
+        if(addr.Length > 0)
+        {
+            Initialize(addr[0] + offset, patchData, autoEnable, silent);
+        }
+    }
+
+    public EzPatch(ICollection<byte?> signature, nint offset, Data patchData, bool autoEnable = true, bool silent = false)
+    {
+        var addr = Svc.SigScanner.ScanAllText(signature.Select(x => x == null?"??":$"{x:X2}").Print(" "));
         if(addr.Length > 0)
         {
             Initialize(addr[0] + offset, patchData, autoEnable, silent);
@@ -49,7 +62,7 @@ public class EzPatch : IDisposable
             Silent = silent;
             if(patchData.OriginalData.Count == 0)
             {
-                if(!silent) PluginLog.Debug($"Reading {patchData.PatchData.Count} bytes from {addr:X} and using it as original data for patch {patchData.PatchData}");
+                if(!silent) PluginLog.Debug($"Reading {patchData.PatchData.Count} bytes from {addr:X} and using it as original data for patch {patchData.PatchData.ToHexString()}");
                 if(SafeMemory.ReadBytes(addr, patchData.PatchData.Count, out var result))
                 {
                     if(!silent) PluginLog.Debug($"Successfully read {result.ToHexString()}");
@@ -105,8 +118,18 @@ public class EzPatch : IDisposable
             }
             if(!Enabled)
             {
+                if(!Silent)
+                {
+                    SafeMemory.ReadBytes(Address, this.PatchData.PatchData.Count, out var buf);
+                    PluginLog.Debug($"Enabling patch at {Address:X16}. Before: {buf.ToHexString()}");
+                }
                 SafeMemory.WriteBytes(Address, [..this.PatchData.PatchData]);
                 Enabled = true;
+                if(!Silent)
+                {
+                    SafeMemory.ReadBytes(Address, this.PatchData.PatchData.Count, out var buf);
+                    PluginLog.Debug($"Enabled patch at {Address:X16}. After: {buf.ToHexString()}");
+                }
             }
         }
         catch(Exception e)
@@ -121,8 +144,18 @@ public class EzPatch : IDisposable
         {
             if(Enabled)
             {
+                if(!Silent)
+                {
+                    SafeMemory.ReadBytes(Address, this.PatchData.PatchData.Count, out var buf);
+                    PluginLog.Debug($"Disabling patch at {Address:X16}. Before: {buf.ToHexString()}");
+                }
                 SafeMemory.WriteBytes(Address, [.. this.PatchData.OriginalData]);
                 Enabled = false;
+                if(!Silent)
+                {
+                    SafeMemory.ReadBytes(Address, this.PatchData.PatchData.Count, out var buf);
+                    PluginLog.Debug($"Disabled patch at {Address:X16}. After: {buf.ToHexString()}");
+                }
             }
         }
         catch(Exception e)

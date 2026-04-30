@@ -115,25 +115,25 @@ public static class PatreonBanner
         {
             if(ImGui.Selectable("Subscribe on Patreon"))
             {
-                GenericHelpers.ShellStart("https://subscribe.nightmarexiv.com");
+                GenericHelpers.ShellStart("https://subscribe.nightmarexiv.org");
             }
             if(ImGui.Selectable("Donate one-time via Ko-Fi"))
             {
-                GenericHelpers.ShellStart("https://donate.nightmarexiv.com");
+                GenericHelpers.ShellStart("https://donate.nightmarexiv.org");
             }
             if(ImGui.Selectable("Donate via Cryptocurrency"))
             {
-                GenericHelpers.ShellStart($"https://crypto.nightmarexiv.com/{(IsOfficialPlugin() ? "?" + Svc.PluginInterface.Manifest.Name : "")}");
+                GenericHelpers.ShellStart($"https://crypto.nightmarexiv.org/{(IsOfficialPlugin() ? "?" + Svc.PluginInterface.Manifest.Name : "")}");
             }
             if(!IsOfficialPlugin())
             {
                 if(ImGui.Selectable("Join NightmareXIV Discord"))
                 {
-                    GenericHelpers.ShellStart("https://discord.nightmarexiv.com");
+                    GenericHelpers.ShellStart("https://discord.nightmarexiv.org");
                 }
                 if(ImGui.Selectable("Explore other NightmareXIV plugins"))
                 {
-                    GenericHelpers.ShellStart("https://explore.nightmarexiv.com");
+                    GenericHelpers.ShellStart("https://explore.nightmarexiv.org");
                 }
             }
             ImGui.EndPopup();

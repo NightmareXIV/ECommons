@@ -39,6 +39,15 @@ public static class EzSharedData
                 return true;
             }
         }
+        if(Mode == CreationMode.ReadAndKeep)
+        {
+            if(Svc.PluginInterface.TryGetData<T>(Name, out Data))
+            {
+                Cache[Name] = Data;
+                Keep.Add(Name);
+                return true;
+            }
+        }
         else if(Mode == CreationMode.CreateAndRelinquish)
         {
             Data = Svc.PluginInterface.GetOrCreateData<T>(Name, () => DefaultValue);

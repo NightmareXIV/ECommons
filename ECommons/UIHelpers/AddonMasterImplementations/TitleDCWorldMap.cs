@@ -33,7 +33,7 @@ public unsafe partial class AddonMaster
             if(data != null)
             {
                 if(data.Value.Name.GetText().IsNullOrEmpty()) return false;
-                if(data.Value.Region == 0) return false;
+                if(data.Value.Region.RowId == 0) return false;
                 UncheckedSelect(dc);
                 return true;
             }

@@ -8,10 +8,10 @@ using ECommons.DalamudServices;
 using ECommons.EzSharedDataManager;
 using ECommons.Logging;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace ECommons.EzContextMenu;
 /// <summary>
@@ -83,7 +83,7 @@ public static unsafe class ContextMenuPrefixRemover
         for(var i = 0; i < numEntries; i++)
         {
             var entry = addon->AtkValues[7 + i];
-            if(entry.Type.EqualsAny(ValueType.String, ValueType.ManagedString, ValueType.String8))
+            if(entry.Type.EqualsAny(AtkValueType.String, AtkValueType.ManagedString, AtkValueType.String8))
             {
                 var seString = MemoryHelper.ReadSeStringNullTerminated((nint)entry.String.Value);
                 if(seString.Payloads.Count < 2) continue;

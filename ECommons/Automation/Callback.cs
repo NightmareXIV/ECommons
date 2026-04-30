@@ -8,7 +8,6 @@ using System.Data;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 #nullable disable
 
 namespace ECommons.Automation;
@@ -85,24 +84,24 @@ public static unsafe class Callback
                 switch(v)
                 {
                     case uint uintValue:
-                        atkValues[i].Type = ValueType.UInt;
+                        atkValues[i].Type = AtkValueType.UInt;
                         atkValues[i].UInt = uintValue;
                         break;
                     case int intValue:
-                        atkValues[i].Type = ValueType.Int;
+                        atkValues[i].Type = AtkValueType.Int;
                         atkValues[i].Int = intValue;
                         break;
                     case float floatValue:
-                        atkValues[i].Type = ValueType.Float;
+                        atkValues[i].Type = AtkValueType.Float;
                         atkValues[i].Float = floatValue;
                         break;
                     case bool boolValue:
-                        atkValues[i].Type = ValueType.Bool;
+                        atkValues[i].Type = AtkValueType.Bool;
                         atkValues[i].Byte = (byte)(boolValue ? 1 : 0);
                         break;
                     case string stringValue:
                         {
-                            atkValues[i].Type = ValueType.String;
+                            atkValues[i].Type = AtkValueType.String;
                             var stringBytes = Encoding.UTF8.GetBytes(stringValue);
                             var stringAlloc = Marshal.AllocHGlobal(stringBytes.Length + 1);
                             Marshal.Copy(stringBytes, 0, stringAlloc, stringBytes.Length);
@@ -131,7 +130,7 @@ public static unsafe class Callback
         {
             for(var i = 0; i < values.Length; i++)
             {
-                if(atkValues[i].Type == ValueType.String)
+                if(atkValues[i].Type == AtkValueType.String)
                 {
                     Marshal.FreeHGlobal(new IntPtr(atkValues[i].String));
                 }
@@ -164,25 +163,25 @@ public static unsafe class Callback
         var str = new StringBuilder(a.Type.ToString()).Append(": ");
         switch(a.Type)
         {
-            case ValueType.Int:
+            case AtkValueType.Int:
                 {
                     str.Append(a.Int);
                     break;
                 }
-            case ValueType.String8:
-            case ValueType.WideString:
-            case ValueType.ManagedString:
-            case ValueType.String:
+            case AtkValueType.String8:
+            case AtkValueType.WideString:
+            case AtkValueType.ManagedString:
+            case AtkValueType.String:
                 {
                     str.Append(Marshal.PtrToStringUTF8(new IntPtr(a.String)));
                     break;
                 }
-            case ValueType.UInt:
+            case AtkValueType.UInt:
                 {
                     str.Append(a.UInt);
                     break;
                 }
-            case ValueType.Bool:
+            case AtkValueType.Bool:
                 {
                     str.Append(a.Byte != 0);
                     break;

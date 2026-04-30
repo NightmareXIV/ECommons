@@ -2,7 +2,7 @@
 using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Collections.Generic;
-using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
+
 using Callback = ECommons.Automation.Callback;
 
 namespace ECommons.UIHelpers.AddonMasterImplementations;
@@ -32,7 +32,7 @@ public partial class AddonMaster
                 for(var i = 0; i < 5; i++)
                 {
                     var itemName = Addon->AtkValues[35 + i * 2];
-                    if(itemName.Type.EqualsAny(ValueType.String, ValueType.ManagedString, ValueType.String8))
+                    if(itemName.Type.EqualsAny(AtkValueType.String, AtkValueType.ManagedString, AtkValueType.String8))
                     {
                         var item = new CraftItems(this, i)
                         {

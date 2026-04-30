@@ -1,5 +1,6 @@
 ﻿using Dalamud.Game;
 using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using System;
 
 namespace ECommons.DalamudServices.Legacy;
@@ -13,10 +14,12 @@ internal sealed class GameNetworkAddressResolver : BaseAddressResolver
     /// Gets the address of the ProcessZonePacketUp method.
     /// </summary>
     public IntPtr ProcessZonePacketUp { get; private set; }
+    public IntPtr ContentsReplayManager_ProcessPacket { get; private set; }
 
     /// <inheritdoc/>
     protected override void Setup64Bit(ISigScanner sig)
     {
         this.ProcessZonePacketUp = sig.ScanText("48 89 5C 24 ?? 48 89 74 24 ?? 4C 89 64 24 ?? 55 41 56 41 57 48 8B EC 48 83 EC 70"); // unnamed in cs
+        this.ContentsReplayManager_ProcessPacket = sig.ScanText("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 60 48 8B FA 48 8B F1");
     }
 }

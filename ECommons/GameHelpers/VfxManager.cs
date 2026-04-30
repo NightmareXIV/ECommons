@@ -151,10 +151,12 @@ public static class VfxManager
         vfxList = [];
 
         var hasObjectFilter = objectID.HasValue && objectID.Value != 0;
-        var hasPathFilter   = !string.IsNullOrWhiteSpace(pathSearch);
+        var hasPathFilter = !string.IsNullOrWhiteSpace(pathSearch);
 
         if(!hasObjectFilter && !hasPathFilter)
+        {
             return false;
+        }
 
         lock(TrackedEffects)
         {
@@ -163,11 +165,15 @@ public static class VfxManager
                 if(hasObjectFilter &&
                    info.TargetID != objectID!.Value &&
                    (!searchCasterAsWell || info.CasterID != objectID.Value))
+                {
                     continue;
+                }
 
                 if(hasPathFilter &&
                    !info.Path.Contains(pathSearch!, Lower))
+                {
                     continue;
+                }
 
                 vfxList.Add(info);
             }
@@ -202,9 +208,11 @@ public static class VfxManager
         string path, bool isStatic, bool hasRun)
     {
         if(vfx == null)
+        {
             return;
+        }
 
-        var vfxID     = ((nint)vfx).ToInt64();
+        var vfxID = ((nint)vfx).ToInt64();
         var spawnTick = Environment.TickCount64;
 
         // Skip VFX that do not match the whitelist (if set up)
@@ -215,9 +223,11 @@ public static class VfxManager
             {
                 var log = $"Path: `{path}`, Caster: {casterID}, Target: {targetID}";
                 if(LoggingFilter is null || log.Contains(LoggingFilter, Lower))
+                {
                     PluginLog.Debug(
                         $"[EC.VfxManager] VFX #{vfxID:X8} SKIPPED Catching " +
                         $"(not whitelisted). {log}");
+                }
             }
 
             return;
@@ -231,7 +241,7 @@ public static class VfxManager
             {
                 Position = vfx->Position,
                 Rotation = vfx->Rotation,
-                Scale    = vfx->Scale,
+                Scale = vfx->Scale,
             };
         }
         catch
@@ -245,18 +255,29 @@ public static class VfxManager
             var index = TrackedEffects.FindIndex(x => x.VfxID == vfxID);
             if(index >= 0)
             {
-                info           =  TrackedEffects[index];
-                info.SpawnTick =  spawnTick;
-                info.HasRun    |= hasRun;
+                info = TrackedEffects[index];
+                info.SpawnTick = spawnTick;
+                info.HasRun |= hasRun;
 
                 if(info.CasterID == ulong.MaxValue && casterID != ulong.MaxValue)
+                {
                     info.CasterID = casterID;
+                }
+
                 if(info.TargetID == ulong.MaxValue && targetID != ulong.MaxValue)
+                {
                     info.TargetID = targetID;
+                }
+
                 if(!string.IsNullOrEmpty(path))
+                {
                     info.Path = path;
+                }
+
                 if(info.Placement is null && placement is not null)
+                {
                     info.Placement = placement;
+                }
 
                 TrackedEffects[index] = info;
             }
@@ -264,14 +285,14 @@ public static class VfxManager
             {
                 info = new VfxInfo
                 {
-                    VfxID     = vfxID,
-                    CasterID  = casterID,
-                    TargetID  = targetID,
-                    Path      = path,
+                    VfxID = vfxID,
+                    CasterID = casterID,
+                    TargetID = targetID,
+                    Path = path,
                     SpawnTick = spawnTick,
                     Placement = placement,
-                    IsStatic  = isStatic,
-                    HasRun    = hasRun,
+                    IsStatic = isStatic,
+                    HasRun = hasRun,
                 };
 
                 TrackedEffects.Add(info);
@@ -288,8 +309,10 @@ public static class VfxManager
                 ? "Updated"
                 : "Caught";
             if(LoggingFilter is null || log.Contains(LoggingFilter, Lower))
+            {
                 PluginLog.Verbose(
                     $"[EC.VfxManager] VFX #{info.VfxID:X8} {verb}. {log}");
+            }
         }
     }
 
@@ -362,10 +385,10 @@ public static class VfxManager
     (nint vfxPtr, nint vfxPathPtr, nint casterAddress, nint targetAddress,
         float a4, byte a5, ushort a6, byte a7)
     {
-        var    vfx   = (VfxStruct*)vfxPtr;
-        var    vfxID = vfxPtr.ToInt64();
-        ulong  casterID;
-        ulong  targetID;
+        var vfx = (VfxStruct*)vfxPtr;
+        var vfxID = vfxPtr.ToInt64();
+        ulong casterID;
+        ulong targetID;
         string path;
 
         try
@@ -386,8 +409,10 @@ public static class VfxManager
             {
                 var log = ex.ToStringFull();
                 if(LoggingFilter is null || log.Contains(LoggingFilter, Lower))
+                {
                     PluginLog.Debug(
                         $"[EC.VfxManager] VFX #{vfxID:X8} FAILED to Catch. {log}");
+                }
             }
 
             return;
@@ -402,19 +427,23 @@ public static class VfxManager
     private static unsafe void TrackOnStaticVfxCreate(nint vfxPtr, string path,
         string systemSource)
     {
-        var vfx      = (VfxStruct*)vfxPtr;
-        var vfxID    = vfxPtr.ToInt64();
+        var vfx = (VfxStruct*)vfxPtr;
+        var vfxID = vfxPtr.ToInt64();
 
         // More than likely, these are ulong.MaxValue until Run event
         var casterID = vfx->StaticCasterID;
         var targetID = vfx->StaticTargetID;
 
         // Cache path for use during Run events (even if we skip creation tracking)
-        lock (StaticVfxPathCache)
+        lock(StaticVfxPathCache)
+        {
             StaticVfxPathCache[vfxID] = path;
+        }
         // Bail if we don't want to start tracking yet
         if(!EnableStaticVfxCreationTracking)
+        {
             return;
+        }
 
         TrackVfx(vfx, casterID, targetID, path, isStatic: true, hasRun: false);
     }
@@ -424,16 +453,20 @@ public static class VfxManager
     /// </summary>
     private static unsafe void TrackOnStaticVfxRun(nint vfxPtr, float a1, uint a2)
     {
-        var vfx      = (VfxStruct*)vfxPtr;
-        var vfxID    = vfxPtr.ToInt64();
+        var vfx = (VfxStruct*)vfxPtr;
+        var vfxID = vfxPtr.ToInt64();
         var casterID = vfx->StaticCasterID;
         var targetID = vfx->StaticTargetID;
-        var path     = string.Empty;
+        var path = string.Empty;
 
         // Reuse cached path from creation if available
-        lock (StaticVfxPathCache)
-            if (StaticVfxPathCache.TryGetValue(vfxID, out var cachedPath))
+        lock(StaticVfxPathCache)
+        {
+            if(StaticVfxPathCache.TryGetValue(vfxID, out var cachedPath))
+            {
                 path = cachedPath;
+            }
+        }
 
         TrackVfx(vfx, casterID, targetID, path, isStatic: true, hasRun: true);
     }
@@ -453,30 +486,36 @@ public static class VfxManager
 
     internal static void Init()
     {
-        ActorVfx.ActorVfxCreateEvent              += TrackOnActorVfxCreate;
-        ActorVfx.ActorVfxDtorEvent                += RemoveSpecificVfx;
-        StaticVfx.StaticVfxCreateEvent            += TrackOnStaticVfxCreate;
-        StaticVfx.StaticVfxRunEvent               += TrackOnStaticVfxRun;
-        StaticVfx.StaticVfxDtorEvent              += RemoveSpecificVfx;
+        ActorVfx.ActorVfxCreateEvent += TrackOnActorVfxCreate;
+        ActorVfx.ActorVfxDtorEvent += RemoveSpecificVfx;
+        StaticVfx.StaticVfxCreateEvent += TrackOnStaticVfxCreate;
+        StaticVfx.StaticVfxRunEvent += TrackOnStaticVfxRun;
+        StaticVfx.StaticVfxDtorEvent += RemoveSpecificVfx;
         GameObjectCtor.GameObjectConstructorEvent += EmptyVfxList;
-        Svc.ClientState.TerritoryChanged          += EmptyVfxList;
-        Svc.Framework.Update                      += EmptyVfxListPeriodically;
+        Svc.ClientState.TerritoryChanged += EmptyVfxList;
+        Svc.Framework.Update += EmptyVfxListPeriodically;
     }
 
     internal static void Dispose()
     {
         lock(TrackedEffects)
+        {
             TrackedEffects.Clear();
-        lock (StaticVfxPathCache)
+        }
+
+        lock(StaticVfxPathCache)
+        {
             StaticVfxPathCache.Clear();
-        ActorVfx.ActorVfxCreateEvent              -= TrackOnActorVfxCreate;
-        ActorVfx.ActorVfxDtorEvent                -= RemoveSpecificVfx;
-        StaticVfx.StaticVfxCreateEvent            -= TrackOnStaticVfxCreate;
-        StaticVfx.StaticVfxRunEvent               -= TrackOnStaticVfxRun;
-        StaticVfx.StaticVfxDtorEvent              -= RemoveSpecificVfx;
+        }
+
+        ActorVfx.ActorVfxCreateEvent -= TrackOnActorVfxCreate;
+        ActorVfx.ActorVfxDtorEvent -= RemoveSpecificVfx;
+        StaticVfx.StaticVfxCreateEvent -= TrackOnStaticVfxCreate;
+        StaticVfx.StaticVfxRunEvent -= TrackOnStaticVfxRun;
+        StaticVfx.StaticVfxDtorEvent -= RemoveSpecificVfx;
         GameObjectCtor.GameObjectConstructorEvent -= EmptyVfxList;
-        Svc.ClientState.TerritoryChanged          -= EmptyVfxList;
-        Svc.Framework.Update                      -= EmptyVfxListPeriodically;
+        Svc.ClientState.TerritoryChanged -= EmptyVfxList;
+        Svc.Framework.Update -= EmptyVfxListPeriodically;
     }
 
     #endregion
@@ -484,10 +523,12 @@ public static class VfxManager
     #region Culling of VFXs
 
     /// Completely empties the VFX list (used on territory change).
-    private static void EmptyVfxList(ushort _)
+    private static void EmptyVfxList(uint _)
     {
         lock(TrackedEffects)
+        {
             TrackedEffects.Clear();
+        }
     }
 
     /// Empties VFXs related to the given GameObject (used on GameObject creation).
@@ -495,13 +536,17 @@ public static class VfxManager
     {
         if(!Svc.ClientState.IsLoggedIn || !GenericHelpers.IsScreenReady() ||
            !Player.Available || Player.IsBusy)
+        {
             return;
+        }
 
         var actorObject = Svc.Objects
             .FirstOrDefault(x => x.Address == objectAddress);
 
         if(actorObject == null)
+        {
             return;
+        }
 
         ulong actorID;
         try
@@ -514,7 +559,9 @@ public static class VfxManager
         }
 
         lock(TrackedEffects)
+        {
             TrackedEffects.RemoveAll(x => x.TargetID == actorID);
+        }
     }
 
     /// Removes a specific VFX from tracking (used on VFX destruction).
@@ -528,9 +575,11 @@ public static class VfxManager
     private static unsafe void RemoveSpecificVfx(nint vfxAddress)
     {
         if(!EnableDtorCulling)
+        {
             return;
+        }
 
-        long  vfxID;
+        long vfxID;
         ulong casterID;
         ulong targetID;
         try
@@ -551,19 +600,25 @@ public static class VfxManager
 
         int removed;
         lock(TrackedEffects)
+        {
             removed = TrackedEffects.RemoveAll(info => info.VfxID == vfxID);
+        }
 
         // Drop any cached static path for this VFX
         lock(StaticVfxPathCache)
+        {
             StaticVfxPathCache.Remove(vfxID);
+        }
 
         if(Logging)
         {
             var log = $"Removed {removed} Tracked VFX. " +
                       $"Caster: {casterID}, Target: {targetID}";
             if(LoggingFilter is null || log.Contains(LoggingFilter, Lower))
+            {
                 PluginLog.Verbose(
                     $"[EC.VfxManager] VFX #{vfxID:X8} Destroyed. {log}");
+            }
         }
     }
 
@@ -579,14 +634,18 @@ public static class VfxManager
         if(!inCombat && _lastTickInCombatFlag)
         {
             lock(TrackedEffects)
+            {
                 TrackedEffects.Clear();
+            }
         }
 
         _lastTickInCombatFlag = inCombat;
 
         // Early exit
         if(!inCombat)
+        {
             return;
+        }
 
         // Cull old VFXs periodically
         if(EzThrottler.Throttle("VfxManager_PeriodicEmpty", 140))
@@ -652,7 +711,7 @@ public record struct VfxInfo
     public class PlacementData
     {
         public Vector3 Position;
-        public Quat    Rotation;
+        public Quat Rotation;
         public Vector3 Scale;
     }
 }

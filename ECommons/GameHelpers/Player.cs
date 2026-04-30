@@ -6,6 +6,7 @@ using Dalamud.Game.Player;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
 using ECommons.GameFunctions;
+using ECommons.GameHelpers.LegacyPlayer;
 using ECommons.MathHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
@@ -112,4 +113,9 @@ public static unsafe class Player
     public static float DistanceTo(Vector3 other) => Vector3.Distance(Position, other);
     public static float DistanceTo(Vector2 other) => Vector2.Distance(Position.ToVector2(), other);
     public static float DistanceTo(IGameObject other) => Vector3.Distance(Position, other.Position);
+
+    extension(IPlayerCharacter pc)
+    {
+        public Job Job => (Job)(pc?.GetJob() ?? 0);
+    }
 }
