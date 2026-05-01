@@ -4,10 +4,10 @@ using System.Runtime.Loader;
 namespace ECommons.Reflection;
 internal class CachedPluginEntry
 {
-    internal IDalamudPlugin Plugin;
+    internal object Plugin;
     internal AssemblyLoadContext Context;
 
-    internal CachedPluginEntry(IDalamudPlugin plugin, AssemblyLoadContext context)
+    internal CachedPluginEntry(object plugin, AssemblyLoadContext context)
     {
         Plugin = plugin;
         Context = context;

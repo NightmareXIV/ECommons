@@ -11,7 +11,7 @@ namespace ECommons.SplatoonAPI;
 
 public static class Splatoon
 {
-    public static IDalamudPlugin Instance { get; internal set; }
+    public static object Instance { get; internal set; }
     public static int Version { get; internal set; }
 
     internal static Action OnConnect;

@@ -40,7 +40,7 @@ namespace ECommons;
 
 public static class ECommonsMain
 {
-    public static IDalamudPlugin Instance = null;
+    public static object Instance = null;
     public static bool Disposed { get; private set; } = false;
 
     /// <summary>
@@ -48,8 +48,12 @@ public static class ECommonsMain
     /// </summary>
     public static bool ReducedLogging = false;
 
-    public unsafe static void Init(IDalamudPluginInterface pluginInterface, IDalamudPlugin instance, params Module[] modules)
+    public unsafe static void Init(IDalamudPluginInterface pluginInterface, object instance, params Module[] modules)
     {
+        if(instance is not IDalamudPlugin && instance is not IAsyncDalamudPlugin)
+        {
+            throw new InvalidOperationException($"Invalid \"instance\" argument has been detected. Must be an instance of type that implements either {nameof(IDalamudPlugin)} or {nameof(IAsyncDalamudPlugin)} interface.");
+        }
         Instance = instance;
         try
         {
