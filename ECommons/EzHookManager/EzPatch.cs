@@ -77,7 +77,7 @@ public class EzPatch : IDisposable
                     {
                         Address = addr;
                         PatchData = patchData;
-                        if(!silent) PluginLog.Debug($"Patch created at {Address} with {PatchData}");
+                        if(!silent) PluginLog.Debug($"Patch created at {Address:X16} with {PatchData}");
                         References.Add(this);
                         if(autoEnable) Enable();
                     }

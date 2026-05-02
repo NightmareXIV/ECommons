@@ -46,6 +46,9 @@ public static class Houses
     public const ushort Private_Cottage_Minimalist = 1249;
     public const ushort Private_House_Minimalist = 1250;
     public const ushort Private_Mansion_Minimalist = 1251;
+    public const ushort Private_Cottage_Minimalist_Dark = 1374;
+    public const ushort Private_House_Minimalist_Dark = 1375;
+    public const ushort Private_Mansion_Minimalist_Dark = 1376;
     private static ushort[] list = null;
     public static ushort[] List
     {

@@ -222,6 +222,11 @@ public enum Job : byte
     /// Pictomancer 
     /// </summary>
     PCT = 42,
+
+    /// <summary>
+    /// Beastmaster
+    /// </summary>
+    BST = 43,
 }
 
 public static class JobExtensions

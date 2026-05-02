@@ -89,7 +89,9 @@ public static unsafe partial class GenericHelpers
     /// <param name="enumerable"></param>
     /// <returns></returns>
     public static T GetRandom<T>(this IEnumerable<T> enumerable)
-        => enumerable.ElementAt(Random.Shared.Next(enumerable.Count()));
+    {
+        return enumerable.ElementAt(Random.Shared.Next(enumerable.Count()));
+    }
 
     /// <inheritdoc cref="SafeSelect{K, V}(IReadOnlyDictionary{K, V}, K, V)"/>
     public static V? SafeSelect<K, V>(this IReadOnlyDictionary<K, V> dictionary, K? key) => SafeSelect(dictionary, key, default);
