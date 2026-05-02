@@ -286,7 +286,7 @@ public static class DalamudReflector
                     {
                         instance = plugin;
                         context = t.GetFoP("loader")?.GetFoP<AssemblyLoadContext>("context");
-                        pluginCache[internalName] = new(plugin, context);
+                        pluginCache?[internalName] = new(plugin, context);
                         return true;
                     }
                 }
