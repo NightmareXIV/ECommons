@@ -9,9 +9,9 @@ public unsafe partial class AddonMaster
 
         public LookingForGroupCondition(void* addon) : base(addon) { }
 
-        public AtkComponentButton* RecruitButton => Base->GetComponentButtonById(111);
-        public AtkComponentButton* CancelButton => Base->GetComponentButtonById(112);
-        public AtkComponentButton* ResetButton => Base->GetComponentButtonById(110);
+        public AtkComponentButton* RecruitButton => Base->GetComponentButtonById(113);
+        public AtkComponentButton* CancelButton => Base->GetComponentButtonById(114);
+        public AtkComponentButton* ResetButton => Base->GetComponentButtonById(112);
 
         public override string AddonDescription { get; } = "Party finder creation window";
 
