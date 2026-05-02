@@ -261,7 +261,7 @@ public static class DalamudReflector
             }
         }
 
-        if(!ignoreCache && pluginCache.TryGetValue(internalName, out var entry) && entry.Plugin != null)
+        if(!ignoreCache && pluginCache?.TryGetValue(internalName, out var entry) == true && entry.Plugin != null)
         {
             instance = entry.Plugin;
             context = entry.Context;
