@@ -28,16 +28,16 @@ public partial class AddonMaster
         /// Keeps the current number of missions that are displayed. <br></br>
         /// This includes the tabs seperating the missions by type [A, B, C, D]
         /// </summary>
-        public uint NumEntries => Addon->AtkValues[32].UInt; // Should be 17 as of phaenna
+        public uint NumEntries => Addon->AtkValues[33].UInt; // Should be 17 as of phaenna
 
-        public uint CurrentTab => Addon->AtkValues[26].UInt;
+        public uint CurrentTab => Addon->AtkValues[27].UInt;
 
-        public uint SelectedMissionId => Addon->AtkValues[1062].UInt;
+        public uint SelectedMissionId => Addon->AtkValues[1063].UInt;
         public string SelectedMissionName
         {
             get
             {
-                var missionName = Addon->AtkValues[1063];
+                var missionName = Addon->AtkValues[1064];
                 if(missionName.Type.EqualsAny(AtkValueType.String, AtkValueType.ManagedString, AtkValueType.String8))
                 {
                     return MemoryHelper.ReadSeStringNullTerminated((nint)missionName.String.Value).GetText();
@@ -53,8 +53,8 @@ public partial class AddonMaster
                 var ret = new List<StellarMissions>();
                 for(var i = 0; i < NumEntries; i++)
                 {
-                    var missionName = Addon->AtkValues[801 + i * 2];
-                    var missionId = Addon->AtkValues[35 + i * 6].UInt;
+                    var missionName = Addon->AtkValues[802 + (i * 2)];
+                    var missionId = Addon->AtkValues[36 + (i * 6)].UInt;
 
                     // category header?
                     if(missionId == 0)
