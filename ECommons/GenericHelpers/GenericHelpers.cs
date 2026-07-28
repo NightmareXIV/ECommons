@@ -37,6 +37,16 @@ public static unsafe partial class GenericHelpers
     private static ulong UidCnt = 0;
     public static string GetTemporaryId() => $"{UidPrefix}{UidCnt++:X}";
     
+    public static T Run<T>(Func<T> func)
+    {
+        return func();
+    }
+
+    public static void Run(System.Action action)
+    {
+        action();
+    }
+
     public static bool NextBool(this Random random)
     {
         return random.Next(2) == 0;
