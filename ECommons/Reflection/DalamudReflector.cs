@@ -453,7 +453,7 @@ public static class DalamudReflector
                 AddRepo(masterURL, true);
             ReloadPluginMasters(); // necessary to avoid it be listed as orphaned
 
-            var installCall = pm.Call<Task>("InstallPluginAsync", [pluginManifest, false, PluginLoadReason.Installer, null]);
+            var installCall = pm.Call<Task>("InstallPluginAsync", [pluginManifest, false, PluginLoadReason.Installer]);
             await installCall;
 
             var localPlugin = installCall.GetFoP("Result");
