@@ -18,7 +18,7 @@ public static class ExcelTerritoryHelper
     private static uint[] Sanctuaries = null;
 
     /// <summary>
-    /// Checks if territory belongs to main cities, inns, residential areas or houses. 
+    /// Checks if territory belongs to main cities, inns, residential areas, houses or known "fake-sanctuaries" that behave like sanctuaries.
     /// </summary>
     /// <param name="territoryType"></param>
     /// <returns></returns>
@@ -27,7 +27,12 @@ public static class ExcelTerritoryHelper
         if(Sanctuaries == null)
         {
             var f = BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy;
-            var s = new List<uint>();
+            var s = new List<uint>
+            {
+                915, // Gangos
+                1278 // Phantom Village
+            };
+            
             typeof(MainCities).GetFields(f)
                 .Union(typeof(Inns).GetFields(f))
                 .Union(typeof(ResidentalAreas).GetFields(f))
