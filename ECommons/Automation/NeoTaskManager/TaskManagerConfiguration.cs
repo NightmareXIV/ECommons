@@ -160,39 +160,4 @@ public class TaskManagerConfiguration
         if(ShowError == null) throw new NullReferenceException();
         if(ExecuteDefaultConfigurationEvents == null) throw new NullReferenceException();
     }
-
-    /// <summary>
-    /// Produces copy of other configuration and fills it's null properties from current configuration.
-    /// </summary>
-    /// <param name="dominantConfiguration">Dominant configuration</param>
-    /// <param name="copyEvents">Whether to copy events. If true, events from other current configuration will be used, if false - from other.</param>
-    /// <returns></returns>
-    public TaskManagerConfiguration With(TaskManagerConfiguration? dominantConfiguration, bool copyEvents = true)
-    {
-        var ret = new TaskManagerConfiguration()
-        {
-            TimeLimitMS = dominantConfiguration?.TimeLimitMS ?? TimeLimitMS,
-            AbortOnError = dominantConfiguration?.AbortOnError ?? AbortOnError,
-            AbortOnTimeout = dominantConfiguration?.AbortOnTimeout ?? AbortOnTimeout,
-            ShowDebug = dominantConfiguration?.ShowDebug ?? ShowDebug,
-            ShowError = dominantConfiguration?.ShowError ?? ShowError,
-            TimeoutSilently = dominantConfiguration?.TimeoutSilently ?? TimeoutSilently,
-            ExecuteDefaultConfigurationEvents = dominantConfiguration?.ExecuteDefaultConfigurationEvents ?? ExecuteDefaultConfigurationEvents,
-        };
-        if(copyEvents)
-        {
-            ret.OnTaskCompletion = dominantConfiguration?.OnTaskCompletion;
-            ret.OnTaskTimeout = (dominantConfiguration?.OnTaskTimeout);
-            ret.OnTaskException = (dominantConfiguration?.OnTaskException);
-            ret.CompanionAction = (dominantConfiguration?.CompanionAction);
-        }
-        else
-        {
-            ret.OnTaskCompletion = (OnTaskCompletion);
-            ret.OnTaskTimeout = (OnTaskTimeout);
-            ret.OnTaskException = (OnTaskException);
-            ret.CompanionAction = (CompanionAction);
-        }
-        return ret;
-    }
 }
