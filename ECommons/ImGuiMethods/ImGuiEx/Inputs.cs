@@ -1,4 +1,5 @@
 ﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
 using ECommons.Throttlers;
 using System;
@@ -454,7 +455,7 @@ public static partial class ImGuiEx
     public static void InputList<T>(string name, List<T> list, Dictionary<T, string> overrideValues, Action addFunction)
     {
         var text = list.Count == 0 ? "- No values -" : (list.Count == 1 ? $"{(overrideValues != null && overrideValues.ContainsKey(list[0]) ? overrideValues[list[0]] : list[0])}" : $"- {list.Count} elements -");
-        if(ImGui.BeginCombo(name, text))
+        if(ImGui.BeginCombo(name, text, ImGuiComboFlags.HeightLarge))
         {
             addFunction();
             var rem = -1;
@@ -605,6 +606,77 @@ public static partial class ImGuiEx
                     refConfigField = (T)x;
                 }
                 if(ImGui.IsWindowAppearing() && equals) ImGui.SetScrollHereY();
+            }
+            ImGui.EndCombo();
+        }
+        return ret;
+    }
+
+
+    public static bool EnumCombo<T>(string name, ICollection<T> collection, Func<T, bool> filter = null, IDictionary<T, string> names = null, string nameOfNoneSelected = "Not selected") where T : Enum, IConvertible
+    {
+        var ret = false;
+        string comboName;
+        if(collection.Count == 0)
+        {
+            comboName = nameOfNoneSelected;
+        }
+        else
+        {
+            comboName = collection.Select(x => (names != null && names.TryGetValue(x, out var n)) ? n : x.ToString().Replace("_", " ")).Print();
+        }
+        if(ImGui.BeginCombo(name, comboName, ImGuiComboFlags.HeightLarge))
+        {
+            var values = Enum.GetValues(typeof(T));
+            Box<string> fltr = null;
+            if(values.Length > 10)
+            {
+                if(!EnumComboSearch.ContainsKey(name)) EnumComboSearch.Add(name, new(""));
+                fltr = EnumComboSearch[name];
+                ImGuiEx.SetNextItemFullWidth();
+                ImGui.InputTextWithHint($"##{name.Replace("#", "_")}", "Filter...", ref fltr.Value, 50);
+            }
+            foreach(var x in values)
+            {
+                var contains = collection.Any(c => EqualityComparer<T>.Default.Equals((T)x, c));
+                var element = (names != null && names.TryGetValue((T)x, out var n)) ? n : x.ToString().Replace("_", " ");
+                if((filter == null || filter((T)x))
+                    && (fltr == null || element.Contains(fltr.Value, StringComparison.OrdinalIgnoreCase))
+                    && ImGui.Checkbox(element, ref contains)
+                    )
+                {
+                    ret = true;
+                    if(contains)
+                    {
+                        collection.Add((T)x);
+                    }
+                    else
+                    {
+                        collection.Remove((T)x);
+                    }
+                }
+            }
+            foreach(var x in collection.Where(z => !Enum.IsDefined(typeof(T), z)))
+            {
+                ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.DalamudRed);
+                var contains = collection.Any(c => EqualityComparer<T>.Default.Equals((T)x, c));
+                var element = (names != null && names.TryGetValue((T)x, out var n)) ? n : x.ToString().Replace("_", " ");
+                if((filter == null || filter((T)x))
+                    && (fltr == null || element.Contains(fltr.Value, StringComparison.OrdinalIgnoreCase))
+                    && ImGui.Checkbox(element, ref contains)
+                    )
+                {
+                    ret = true;
+                    if(contains)
+                    {
+                        collection.Add((T)x);
+                    }
+                    else
+                    {
+                        collection.Remove((T)x);
+                    }
+                }
+                ImGui.PopStyleColor();
             }
             ImGui.EndCombo();
         }
