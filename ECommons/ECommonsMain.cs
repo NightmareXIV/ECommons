@@ -170,7 +170,6 @@ var type = "unknown build";
         }
         GenericHelpers.Safe(EzConfig.Dispose);
         GenericHelpers.Safe(ThreadLoadImageHandler.ClearAll);
-        GenericHelpers.Safe(GameIcons.ClearAll);
         GenericHelpers.Safe(ObjectLife.Dispose);
         GenericHelpers.Safe(DalamudReflector.Dispose);
         if(EzConfigGui.WindowSystem != null)

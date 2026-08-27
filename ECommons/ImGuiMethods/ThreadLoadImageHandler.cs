@@ -1,8 +1,10 @@
 ﻿using Dalamud.Interface.Internal;
+using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods.ImageLoading;
 using ECommons.Logging;
+using Lumina.Data.Files;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -20,7 +22,7 @@ namespace ECommons.ImGuiMethods;
 public class ThreadLoadImageHandler
 {
     internal static ConcurrentDictionary<string, ImageLoadingResult> CachedTextures = [];
-    internal static ConcurrentDictionary<(uint ID, bool HQ), ImageLoadingResult> CachedIcons = [];
+    internal static ConcurrentDictionary<(GameIconLookup Lookup, int Width, int Height), ImageLoadingResult> CachedIcons = [];
 
     private static readonly List<Func<byte[], byte[]>> _conversionsToBitmap = [b => b,];
     private static volatile bool ThreadRunning = false;
@@ -41,11 +43,25 @@ public class ThreadLoadImageHandler
             Safe(() => { x.Value.TextureWrap?.Dispose(); });
         }
         Safe(CachedTextures.Clear);
+        ClearIcons();
+    }
+
+    public static void ClearIcons()
+    {
         foreach(var x in CachedIcons)
         {
             Safe(() => { x.Value.TextureWrap?.Dispose(); });
         }
         Safe(CachedIcons.Clear);
+    }
+
+    internal static void InvalidateIcon(uint iconId)
+    {
+        foreach(var x in CachedIcons)
+        {
+            if(x.Key.Lookup.IconId != iconId) continue;
+            if(CachedIcons.TryRemove(x.Key, out var result)) Safe(() => { result.TextureWrap?.Dispose(); });
+        }
     }
 
     /// <inheritdoc cref="TryGetIconTextureWrap(uint, bool, out IDalamudTextureWrap)" />
@@ -58,17 +74,40 @@ public class ThreadLoadImageHandler
     /// <param name="hq"></param>
     /// <param name="textureWrap"></param>
     /// <returns></returns>
-    public static bool TryGetIconTextureWrap(uint icon, bool hq, out IDalamudTextureWrap textureWrap)
+    public static bool TryGetIconTextureWrap(uint icon, bool hq, out IDalamudTextureWrap textureWrap) => TryGetIconTextureWrap(new GameIconLookup(icon, hiRes: hq), out textureWrap);
+
+    public static bool TryGetIconTextureWrap(GameIconLookup lookup, out IDalamudTextureWrap textureWrap) => TryGetSharedIcon(lookup, out textureWrap);
+
+    public static bool TryGetResampledIcon(int icon, bool hq, int width, int height, out IDalamudTextureWrap textureWrap) => TryGetResampledIcon((uint)icon, hq, width, height, out textureWrap);
+
+    public static bool TryGetResampledIcon(uint icon, bool hq, int width, int height, out IDalamudTextureWrap textureWrap) => TryGetResampledIcon(new GameIconLookup(icon, hiRes: hq), width, height, out textureWrap);
+
+    public static bool TryGetResampledIcon(GameIconLookup lookup, int width, int height, out IDalamudTextureWrap textureWrap)
     {
-        ImageLoadingResult result;
-        if(!CachedIcons.TryGetValue((icon, hq), out result))
-        {
-            result = new();
-            CachedIcons[(icon, hq)] = result;
-            BeginThreadIfNotRunning();
-        }
-        textureWrap = result.Texture;
-        return result.Texture != null;
+        if(!TryResolveRequestedSize(ref width, ref height)) return TryGetSharedIcon(lookup, out textureWrap);
+
+        var key = (lookup, width, height);
+        var added = false;
+        var result = CachedIcons.GetOrAdd(key, _ => { added = true; return new(); });
+        if(added) BeginThreadIfNotRunning();
+        textureWrap = result.TextureWrap;
+        if(textureWrap != null) return true;
+        return TryGetSharedIcon(lookup, out textureWrap);
+    }
+
+    private static bool TryGetSharedIcon(GameIconLookup lookup, out IDalamudTextureWrap textureWrap)
+    {
+        textureWrap = Svc.Texture.TryGetFromGameIcon(lookup, out var shared) ? shared.GetWrapOrDefault() : null;
+        return textureWrap != null;
+    }
+
+    private static bool TryResolveRequestedSize(ref int width, ref int height)
+    {
+        if(GameIcons.Resize == null) return false;
+        if(width <= 0) width = height;
+        if(height <= 0) height = width;
+        if(width <= 0 || height <= 0) return false;
+        return width <= GameIcons.MaximumSize && height <= GameIcons.MaximumSize;
     }
 
     /// <summary>
@@ -168,8 +207,14 @@ public class ThreadLoadImageHandler
                             {
                                 idleTicks = 0;
                                 keyValuePair.Value.IsCompleted = true;
-                                PluginLog.Verbose($"Loading icon {keyValuePair.Key.ID}, hq={keyValuePair.Key.HQ}");
-                                keyValuePair.Value.ImmediateTexture = Svc.Texture.GetFromGameIcon(new(keyValuePair.Key.ID, hiRes: keyValuePair.Key.HQ));
+                                var key = keyValuePair.Key;
+                                PluginLog.Verbose($"Resampling icon {key.Lookup} to {key.Width}x{key.Height}");
+                                var resampled = ResizeIcon(key.Lookup, key.Width, key.Height);
+                                keyValuePair.Value.TextureWrap = resampled;
+                                if(resampled != null && (!CachedIcons.TryGetValue(key, out var current) || !ReferenceEquals(current, keyValuePair.Value)))
+                                {
+                                    Safe(resampled.Dispose);
+                                }
                             }
                         }
                     }
@@ -212,5 +257,37 @@ public class ThreadLoadImageHandler
     public static void RemoveConversionToBitmap(Func<byte[], byte[]> conversion)
     {
         _conversionsToBitmap.Remove(conversion);
+    }
+
+    private static IDalamudTextureWrap ResizeIcon(GameIconLookup lookup, int width, int height)
+    {
+        var resize = GameIcons.Resize;
+        if(resize == null) return null;
+        if(!TryGetIconTexFile(lookup, out var file) || file.Header.Width == 0 || file.Header.Height == 0)
+        {
+            PluginLog.Warning($"[ThreadLoadImageHandler] Could not find icon {lookup.IconId}");
+            return null;
+        }
+        return resize(file, width, height);
+    }
+
+    private static bool TryGetIconTexFile(GameIconLookup lookup, out TexFile file)
+    {
+        file = null;
+        if(!Svc.Texture.TryGetIconPath(lookup, out var path)) return false;
+
+        var substituted = Svc.TextureSubstitution.GetSubstitutedPath(path);
+        if(substituted != path && Path.IsPathRooted(substituted))
+        {
+            if(substituted.EndsWith(".tex", StringComparison.OrdinalIgnoreCase) && File.Exists(substituted))
+                file = Svc.Data.GameData.GetFileFromDisk<TexFile>(substituted, path);
+        }
+        else
+        {
+            file = Svc.Data.GetFile<TexFile>(substituted);
+        }
+
+        file ??= Svc.Data.GetFile<TexFile>(path);
+        return file != null;
     }
 }
