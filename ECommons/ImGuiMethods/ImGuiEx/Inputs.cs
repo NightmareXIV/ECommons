@@ -197,6 +197,7 @@ public static partial class ImGuiEx
         if(width != 0) ImGui.SetNextItemWidth(step > 0?width - ImGui.GetFrameHeight() * 2 - 2:width);
         return InputFancyNumeric(label, ref number, step, afterInput);
     }
+
     public static bool InputFancyNumeric(string label, ref int number, int step, Action? afterInput = null)
     {
         var str = $"{number:N0}";
