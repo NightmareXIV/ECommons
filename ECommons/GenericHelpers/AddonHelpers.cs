@@ -6,18 +6,25 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace ECommons;
+
 public static unsafe partial class GenericHelpers
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAddonReady(AtkUnitBase* Addon)
-        => Addon->IsVisible && Addon->UldManager.LoadedState == AtkLoadState.Loaded && Addon->IsFullyLoaded();
+    {
+        return Addon->IsVisible && Addon->UldManager.LoadedState == AtkLoadState.Loaded && Addon->IsFullyLoaded();
+    }
 
     public static bool IsReady(this ref AtkUnitBase Addon)
-        => Addon.IsVisible && Addon.UldManager.LoadedState == AtkLoadState.Loaded && Addon.IsFullyLoaded();
+    {
+        return Addon.IsVisible && Addon.UldManager.LoadedState == AtkLoadState.Loaded && Addon.IsFullyLoaded();
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAddonReady(AtkComponentNode* Addon)
-        => Addon->AtkResNode.IsVisible() && Addon->Component->UldManager.LoadedState == AtkLoadState.Loaded;
+    {
+        return Addon->AtkResNode.IsVisible() && Addon->Component->UldManager.LoadedState == AtkLoadState.Loaded;
+    }
 
     /// <summary>
     /// Gets a node given a chain of node IDs

@@ -1240,6 +1240,11 @@ public static unsafe partial class ImGuiEx
         }
     }
 
+    /// <summary>
+    /// Begins popup next to current element rather than cursor position.
+    /// </summary>
+    /// <param name="popupId"></param>
+    /// <returns></returns>
     public static bool BeginPopupNextToElement(string popupId)
     {
         ImGui.SameLine(0, 0);
@@ -1283,11 +1288,22 @@ public static unsafe partial class ImGuiEx
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + size!.Value.Y);
     }
 
-    public static void SetTooltip(string text)
+    /// <summary>
+    /// Displays tooltip with wrapped text.
+    /// </summary>
+    /// <param name="text"></param>
+    public static void SetTooltip(string text) => SetTooltip(null, text);
+
+    /// <summary>
+    /// Displays tooltip with wrapped text.
+    /// </summary>
+    /// <param name="col"></param>
+    /// <param name="text"></param>
+    public static void SetTooltip(Vector4? col, string text)
     {
         ImGui.BeginTooltip();
         ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
-        ImGui.TextUnformatted(text);
+        ImGuiEx.Text(col, text);
         ImGui.PopTextWrapPos();
         ImGui.EndTooltip();
     }
@@ -1328,6 +1344,18 @@ public static unsafe partial class ImGuiEx
         if(ImGui.IsItemHovered())
         {
             SetTooltip(s);
+        }
+    }
+
+    /// <summary>
+    /// Displays tooltip if the item is hovered
+    /// </summary>
+    /// <param name="s"></param>
+    public static void Tooltip(Vector4? col, string s)
+    {
+        if(ImGui.IsItemHovered())
+        {
+            SetTooltip(col, s);
         }
     }
 

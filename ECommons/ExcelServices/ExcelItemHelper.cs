@@ -40,6 +40,16 @@ public static class ExcelItemHelper
         if(data == null) return $"#{id}";
         return GetName(data, includeID);
     }
+
+    public static float GetCooldown(this Item item)
+    {
+        if(!item.ItemAction.IsValid) return 0f;
+        if(!item.ItemAction.Value.Action.IsValid) return 0f;
+        var cdGroup = item.ItemAction.Value.Action.Value.CooldownGroup;
+        if(cdGroup == 0) return 0f;
+        return ExcelActionHelper.GetActionCooldown(item.ItemAction.Value.Action.RowId);
+    }
+
     /// <summary>
     /// Gets item name. If name is missing, prints item's ID. Item names are stripped off non-text payloads. Results are cached.
     /// </summary>
