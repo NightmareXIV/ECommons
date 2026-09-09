@@ -171,6 +171,7 @@ public static class ExcelJobHelper
         if(job == Job.SGE && cat.SGE) return true;
         if(job == Job.VPR && cat.VPR) return true;
         if(job == Job.PCT && cat.PCT) return true;
+        if(job == Job.BST && cat.BST) return true;
         return false;
     }
 }
