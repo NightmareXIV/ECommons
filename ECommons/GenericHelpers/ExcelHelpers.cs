@@ -328,6 +328,11 @@ public static unsafe partial class GenericHelpers
             return Svc.Data.GetExcelSheet<T>(language: language).GetRow(id);
         }
 
+        public static bool TryGet(uint id, out T value, Dalamud.Game.ClientLanguage? language = null)
+        {
+            return Svc.Data.GetExcelSheet<T>(language: language).TryGetRow(id, out value);
+        }
+
         public static ExcelSheet<T> Values
         {
             get
