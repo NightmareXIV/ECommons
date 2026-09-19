@@ -22,6 +22,7 @@ public static class TaskManagerConfigurationExtensions
                 ShowError = dominantConfiguration?.ShowError ?? value.ShowError,
                 TimeoutSilently = dominantConfiguration?.TimeoutSilently ?? value.TimeoutSilently,
                 ExecuteDefaultConfigurationEvents = dominantConfiguration?.ExecuteDefaultConfigurationEvents ?? value.ExecuteDefaultConfigurationEvents,
+                DiscardGuid = dominantConfiguration?.DiscardGuid ?? value.DiscardGuid,
             };
             if(copyEvents)
             {
