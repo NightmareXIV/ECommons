@@ -27,6 +27,18 @@ public class TaskManagerConfiguration
         ShowError = showError;
         ExecuteDefaultConfigurationEvents = executeDefaultConfigurationEvents;
     }
+    
+    /// <inheritdoc cref="TaskManagerConfiguration.TaskManagerConfiguration(int?, bool?, bool?, bool?, bool?, bool?, bool?)"/>
+    public TaskManagerConfiguration(TimeSpan? timeLimitMS = null, bool? abortOnTimeout = null, bool? abortOnError = null, bool? timeoutSilently = null, bool? showDebug = null, bool? showError = null, bool? executeDefaultConfigurationEvents = null)
+    {
+        TimeLimitMS = (int?)(timeLimitMS?.TotalMilliseconds ?? null);
+        AbortOnTimeout = abortOnTimeout;
+        AbortOnError = abortOnError;
+        TimeoutSilently = timeoutSilently;
+        ShowDebug = showDebug;
+        ShowError = showError;
+        ExecuteDefaultConfigurationEvents = executeDefaultConfigurationEvents;
+    }
 
     /// <summary>
     /// After this amount of time task will fail. Default is 30000 (30s).
