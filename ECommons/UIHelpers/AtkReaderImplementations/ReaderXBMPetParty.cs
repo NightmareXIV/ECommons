@@ -66,10 +66,15 @@ public unsafe class ReaderXBMPetParty(AtkUnitBase* UnitBase, int BeginOffset = 0
         public bool FlatDamage_Death     => ReadBool(56) ?? false;
         public bool Poison               => ReadBool(57) ?? false;
 
-        public uint           FedCurrent => ReadUInt(72) ?? 0u;
-        public uint           FedMax     => ReadUInt(73) ?? 0u;
-        public List<FedEntry> FedItems   => Loop<FedEntry>(BeginOffset + 13 - 6, 2, (int)FedCurrent);
-        public uint           Number     => ReadUInt(76) ?? 0u;
+        public uint           FedCurrent     => ReadUInt(72) ?? 0u;
+        public uint           FedMax         => ReadUInt(73) ?? 0u;
+
+        /// <summary>
+        /// 0-2 Selected horns. 3 means not selected
+        /// </summary>
+        public uint           SelectionIndex => ReadUInt(74) ?? 0;
+        public List<FedEntry> FedItems       => Loop<FedEntry>(BeginOffset + 13 - 6, 2, (int)FedCurrent);
+        public uint           Number         => ReadUInt(76)     ?? 0u;
     }
 
     public class FedEntry(nint UnitBasePtr, int BeginOffset = 0) : AtkReader(UnitBasePtr, BeginOffset)
