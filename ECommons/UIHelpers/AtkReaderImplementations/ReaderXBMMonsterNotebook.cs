@@ -24,51 +24,42 @@ public unsafe class ReaderXBMMonsterNotebook(AtkUnitBase* UnitBase, int BeginOff
         public uint     Unk7         => ReadUInt(7) ?? 0;
     }
 
-    public SeString SelectedNumberString => ReadSeString(229);
-
-    public uint SelectedNumber
-    {
-        get
-        {
-            var text = SelectedNumberString.GetText();
-            var ind  = text.IndexOf('.');
-
-            return uint.TryParse(text[(ind + 1)..].Trim(), out var selectedNumber) ? selectedNumber : 0;
-        }
-    }
+    public uint CurrentNumber  => ReadUInt(5) ?? 0;
+    public uint SelectedNumber => ReadUInt(6) ?? 0;
+    public bool Filtered => ReadBool(8) ?? false;
 
     public bool Selected => ReadBool(255) ?? false;
 
-    public SeString SelectedName       => ReadSeString(230);
-    public SeString Classification     => ReadSeString(239);
+    public bool     CurrentRankCapped     => ReadBool(237) ?? false;
+    public SeString CurrentName           => ReadSeString(230);
+    public SeString CurrentClassification => ReadSeString(239);
 
-
-    public SeString SelectedRankString => ReadSeString(258);
-    public int      SelectedRank       => int.TryParse(SelectedRankString.GetText().Trim(), out var rank) ? rank : 0;
-    public uint     SelectedXP         => ReadUInt(261) ?? 0;
-    public SeString SelectedHP => ReadSeString(259);
-    public int SelectedMaxHP
+    public SeString CurrentRankString => ReadSeString(258);
+    public int      CurrentRank       => int.TryParse(CurrentRankString.GetText().Trim(), out var rank) ? rank : 0;
+    public uint     CurrentXP         => ReadUInt(261) ?? 0;
+    public SeString CurrentHP => ReadSeString(259);
+    public int CurrentMaxHP
     {
         get
         {
-            var text = SelectedHP.GetText();
+            var text = CurrentHP.GetText();
             var ind  = text.IndexOf('/');
 
             return int.TryParse(text[(ind + 1)..].Trim(), out var hp) ? hp : 0;
         }
     }
-    public SeString SelectedStrengthString => ReadSeString(265);
-    public int      SelectedStrength       => int.TryParse(SelectedStrengthString.GetText().Trim(), out var i) ? i : 0;
+    public SeString CurrentStrengthString => ReadSeString(265);
+    public int      CurrentStrength       => int.TryParse(CurrentStrengthString.GetText().Trim(), out var i) ? i : 0;
 
-    public SeString SelectedPhysResistanceString => ReadSeString(267);
-    public int SelectedPhysResistance => int.TryParse(SelectedPhysResistanceString.GetText().Trim(), out var i) ? i : 0;
+    public SeString CurrentPhysResistanceString => ReadSeString(267);
+    public int CurrentPhysResistance => int.TryParse(CurrentPhysResistanceString.GetText().Trim(), out var i) ? i : 0;
 
-    public SeString SelectedConstitutionString => ReadSeString(269);
-    public int SelectedConstitution => int.TryParse(SelectedConstitutionString.GetText().Trim(), out var i) ? i : 0;
+    public SeString CurrentConstitutionString => ReadSeString(269);
+    public int CurrentConstitution => int.TryParse(CurrentConstitutionString.GetText().Trim(), out var i) ? i : 0;
 
-    public SeString SelectedIntelligenceString => ReadSeString(271);
-    public int SelectedIntelligence => int.TryParse(SelectedIntelligenceString.GetText().Trim(), out var i) ? i : 0;
+    public SeString CurrentIntelligenceString => ReadSeString(271);
+    public int CurrentIntelligence => int.TryParse(CurrentIntelligenceString.GetText().Trim(), out var i) ? i : 0;
 
-    public SeString SelectedMagicResistanceString => ReadSeString(273);
-    public int SelectedMagicResistance => int.TryParse(SelectedMagicResistanceString.GetText().Trim(), out var i) ? i : 0;
+    public SeString CurrentMagicResistanceString => ReadSeString(273);
+    public int CurrentMagicResistance => int.TryParse(CurrentMagicResistanceString.GetText().Trim(), out var i) ? i : 0;
 }
