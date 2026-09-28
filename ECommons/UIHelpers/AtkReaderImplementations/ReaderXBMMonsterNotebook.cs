@@ -1,4 +1,5 @@
 ﻿using Dalamud.Game.Text.SeStringHandling;
+using ECommons.StringHelpers;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Collections.Generic;
 
@@ -45,7 +46,7 @@ public unsafe class ReaderXBMMonsterNotebook(AtkUnitBase* UnitBase, int BeginOff
             var text = CurrentHP.GetText();
             var ind  = text.IndexOf('/');
 
-            return int.TryParse(text[(ind + 1)..].Trim(), out var hp) ? hp : 0;
+            return DigitParsers.Digits(text[(ind + 1)..]);
         }
     }
     public SeString CurrentStrengthString => ReadSeString(265);

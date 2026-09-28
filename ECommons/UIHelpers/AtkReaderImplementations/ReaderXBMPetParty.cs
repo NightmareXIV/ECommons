@@ -1,4 +1,5 @@
 ﻿using Dalamud.Game.Text.SeStringHandling;
+using ECommons.StringHelpers;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Collections.Generic;
 
@@ -20,16 +21,7 @@ public unsafe class ReaderXBMPetParty(AtkUnitBase* UnitBase, int BeginOffset = 0
 
         public SeString RankString => ReadSeString(0);
 
-        public uint Rank
-        {
-            get
-            {
-                var text = RankString.GetText();
-                var ind  = text.IndexOf('');
-
-                return uint.TryParse(text[(ind + 1)..].Trim(), out var rankString) ? rankString : 0;
-            }
-        }
+        public int Rank => DigitParsers.FirstNumber(RankString.GetText());
 
         public uint IconId   => ReadUInt(1) ?? 0;
         public bool Disabled => ReadBool(2) ?? false;

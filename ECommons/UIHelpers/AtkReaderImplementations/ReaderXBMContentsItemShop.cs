@@ -1,4 +1,5 @@
 ﻿using Dalamud.Game.Text.SeStringHandling;
+using ECommons.StringHelpers;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ public unsafe class ReaderXBMContentsItemShop(AtkUnitBase* UnitBase, int BeginOf
 {
 
     public string CoinsString => ReadString(1);
-    public uint   Coins       => uint.TryParse(CoinsString.Replace(",", ""), out var value) ? value : 0u;
+    public int   Coins       => DigitParsers.FirstNumber(CoinsString.Replace(",", ""));
 
 
     public uint StockCount => ReadUInt(2) ?? 0u;
@@ -28,16 +29,7 @@ public unsafe class ReaderXBMContentsItemShop(AtkUnitBase* UnitBase, int BeginOf
 
         public uint     Item        => ReadUInt(1) ?? 0u;
         public SeString PriceString => ReadSeString(2);
-        public uint     Price
-        {
-            get
-            {
-                var text = PriceString.GetText().Replace(",", "").Trim();
-                var ind  = text.IndexOf('(');
-
-                return uint.TryParse(ind >= 0 ? text[..ind] : text, out var rankString) ? rankString : 0;
-            }
-        }
+        public int     Price       => DigitParsers.FirstNumber(PriceString.GetText().Replace(",", ""));
 
         public bool Discounted => ReadBool(3) ?? false;
         public bool Bought     => ReadBool(4) ?? false;
@@ -51,6 +43,11 @@ public unsafe class ReaderXBMContentsItemShop(AtkUnitBase* UnitBase, int BeginOf
 
     public class ItemEntry(nint UnitBasePtr, int BeginOffset = 0) : AtkReader(UnitBasePtr, BeginOffset)
     {
+        public int GetIndex(int initialOffset)
+        {
+            return (BeginOffset - initialOffset) / ITEM_ENTRY_SIZE;
+        }
+
         public bool   Unk0     => ReadBool(0) ?? false;
 
         /// <summary>
@@ -70,6 +67,11 @@ public unsafe class ReaderXBMContentsItemShop(AtkUnitBase* UnitBase, int BeginOf
 
     public class GearEntry(nint UnitBasePtr, int BeginOffset = 0) : AtkReader(UnitBasePtr, BeginOffset)
     {
+        public int GetIndex(int initialOffset)
+        {
+            return (BeginOffset - initialOffset) / GEAR_ENTRY_SIZE;
+        }
+
         public bool   Owned  => ReadBool(0) ?? false;
         public uint   IconId => ReadUInt(2) ?? 0;
         public uint   Id     => ReadUInt(3) ?? 0;

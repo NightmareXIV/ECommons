@@ -1,4 +1,5 @@
 ﻿using Dalamud.Game.Text.SeStringHandling;
+using ECommons.StringHelpers;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace ECommons.UIHelpers.AtkReaderImplementations;
 public unsafe class ReaderXBMContentsTreasure(AtkUnitBase* UnitBase, int BeginOffset = 0) : AtkReader(UnitBase, BeginOffset)
 {
     public string CoinsString => ReadString(2);
-    public uint Coins => uint.TryParse(CoinsString.Replace(",", ""), out var value) ? value : 0u;
+    public int    Coins       => DigitParsers.FirstNumber(CoinsString.Replace(",", ""));
 
     private const int TreasureOffset = 3;
     private const int TreasureEntrySize = 5;
