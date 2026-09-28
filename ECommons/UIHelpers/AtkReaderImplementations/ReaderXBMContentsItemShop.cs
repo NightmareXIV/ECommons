@@ -52,7 +52,11 @@ public unsafe class ReaderXBMContentsItemShop(AtkUnitBase* UnitBase, int BeginOf
     public class ItemEntry(nint UnitBasePtr, int BeginOffset = 0) : AtkReader(UnitBasePtr, BeginOffset)
     {
         public bool   Unk0     => ReadBool(0) ?? false;
-        public bool   Sellable => ReadBool(1) ?? false;
+
+        /// <summary>
+        /// In Shops: Sellable. In Main: Usable
+        /// </summary>
+        public bool   Available => ReadBool(1) ?? false;
         public uint   IconId   => ReadUInt(2) ?? 0;
         public uint   Id       => ReadUInt(3) ?? 0;
         public string Name     => ReadString(4);
@@ -66,9 +70,9 @@ public unsafe class ReaderXBMContentsItemShop(AtkUnitBase* UnitBase, int BeginOf
 
     public class GearEntry(nint UnitBasePtr, int BeginOffset = 0) : AtkReader(UnitBasePtr, BeginOffset)
     {
-        public bool   Owned => ReadBool(0) ?? false;
-        public uint   Unk2  => ReadUInt(2) ?? 0;
-        public uint   Id    => ReadUInt(3) ?? 0;
-        public string Name  => ReadString(4);
+        public bool   Owned  => ReadBool(0) ?? false;
+        public uint   IconId => ReadUInt(2) ?? 0;
+        public uint   Id     => ReadUInt(3) ?? 0;
+        public string Name   => ReadString(4);
     }
 }
