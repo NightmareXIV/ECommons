@@ -34,6 +34,10 @@ public unsafe class ReaderXBMResult(AtkUnitBase* UnitBase, int BeginOffset = 0) 
         public uint     Count  => ReadUInt(15) ?? 0;
     }
 
+    public uint TotalScore => ReadUInt(68) ?? 0;
+    public SeString Rank => ReadSeString(69);
+
+
     public uint BeastCount => ReadUInt(72) ?? 0;
 
     private const int              BeastOffset = 73;
