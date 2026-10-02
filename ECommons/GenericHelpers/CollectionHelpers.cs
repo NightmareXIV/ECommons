@@ -933,6 +933,40 @@ public static unsafe partial class GenericHelpers
     }
 
     /// <summary>
+    /// Attempts to get last element of <see cref="IEnumerable"/>.
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool TryGetLast<TSource>(this IEnumerable<TSource> source, out TSource value)
+    {
+        if(source == null)
+        {
+            value = default;
+            return false;
+        }
+        if(source is IList<TSource> list)
+        {
+            if(list.Count > 0)
+            {
+                value = list[^1];
+                return true;
+            }
+        }
+        else
+        {
+            if(source.Any())
+            {
+                value = Enumerable.Last(source);
+                return true;
+            }
+        }
+        value = default;
+        return false;
+    }
+
+    /// <summary>
     /// Attempts to get first element of IEnumerable
     /// </summary>
     /// <typeparam name="TSource"></typeparam>

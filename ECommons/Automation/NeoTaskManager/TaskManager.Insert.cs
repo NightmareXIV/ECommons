@@ -46,10 +46,10 @@ public partial class TaskManager
         foreach(var task in Enumerable.Reverse(tasks))
         {
             if(task == null) continue;
-            if(IsStackActive)
+            if(Stack.TryGetLast(out var stack))
             {
                 Log($"(stack) Inserted task {task.Name}@{task.Location}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
-                Stack.Insert(0, task);
+                stack.Insert(0, task);
             }
             else
             {
