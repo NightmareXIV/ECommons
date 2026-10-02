@@ -27,8 +27,9 @@ public partial class AddonMaster
         public SeString SeString => GenericHelpers.ReadSeString(&Addon->PromptText->NodeText);
         public SeString SeStringNullTerminated => MemoryHelper.ReadSeStringNullTerminated(new nint(Addon->AtkValues[0].String));
         public string Text => SeString.GetText();
+        [Obsolete("Please use Text")]
         public string TextLegacy => string.Join(string.Empty, SeStringNullTerminated.Payloads.OfType<TextPayload>().Select(t => t.Text)).Replace('\n', ' ').Trim();
-        public int ButtonsVisible => Enumerable.Range(1, 3).Count(x => Addon->AtkValues[x].Type.EqualsAny(AtkValueType.String, AtkValueType.String8, AtkValueType.ManagedString, AtkValueType.WideString));
+        public int ButtonsVisible => Enumerable.Range(1, 3).Count(x => Addon->AtkValues[x].Type.EqualsAny(AtkValueType.String, AtkValueType.ConstString, AtkValueType.ManagedString, AtkValueType.WideString));
 
         public AtkComponentButton* ThirdButton => Addon->GetComponentButtonById(14);
 
