@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using System.Text.RegularExpressions;
+using TerraFX.Interop.Windows;
 
 namespace ECommons.Reflection.FieldPropertyUnion;
 public class UnionProperty : IFieldPropertyUnion
@@ -44,7 +46,17 @@ public class UnionProperty : IFieldPropertyUnion
 
     public bool IsDefined(Type attributeType, bool inherit) => PropertyInfo.IsDefined(attributeType, inherit);
 
-    public void SetValue(object? obj, object? value) => PropertyInfo.SetValue(obj, value);
+    public void SetValue(object? obj, object? value)
+    {
+        var setMethod = ReflectionHelper.GetAccessibleSetMethod(PropertyInfo) ?? throw new InvalidOperationException(
+        $"No accessible setter found for {PropertyInfo.DeclaringType}.{PropertyInfo.Name}");
+        setMethod.Invoke(obj,  [value]);
+    }
 
-    public void SetValue(object? obj, object? value, BindingFlags invokeAttr, Binder? binder, CultureInfo? culture) => PropertyInfo.SetValue(obj, value, invokeAttr, binder, null, culture);
+    public void SetValue(object? obj, object? value, BindingFlags invokeAttr, Binder? binder, CultureInfo? culture)
+    {
+        var setMethod = ReflectionHelper.GetAccessibleSetMethod(PropertyInfo) ?? throw new InvalidOperationException(
+        $"No accessible setter found for {PropertyInfo.DeclaringType}.{PropertyInfo.Name}");
+        setMethod.Invoke(obj, invokeAttr, binder, [value], culture);
+    }
 }

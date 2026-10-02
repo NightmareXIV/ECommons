@@ -20,4 +20,5 @@ public static class EzThrottler
     public static long GetRemainingTime(string name, bool allowNegative = false) => Throttler.GetRemainingTime(name, allowNegative);
 
     public static void ImGuiPrintDebugInfo() => Throttler.ImGuiPrintDebugInfo();
+    public static void Clear() => Throttler.Clear();
 }
