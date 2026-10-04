@@ -197,7 +197,16 @@ public partial class TaskManager : IDisposable
                 else if(result == null)
                 {
                     Log($"→→Received abort request from task [{CurrentTask.Name}@{CurrentTask.Location}]", ShowDebug);
-                    Abort();
+                    if(CurrentTask.Configuration.DiscardGuid != null)
+                    {
+                        var n = Tasks.RemoveAll(x => x.Configuration.DiscardGuid == CurrentTask.Configuration.DiscardGuid);
+                        if(!TimeoutSilently) PluginLog.Warning($"Removed {n} tasks from stacks with matching GUID {CurrentTask.Configuration.DiscardGuid}");
+                        CurrentTask = null;
+                    }
+                    else
+                    {
+                        Abort();
+                    }
                 }
             }
             catch(TaskTimeoutException e)
@@ -208,7 +217,16 @@ public partial class TaskManager : IDisposable
                 }
                 if(AbortOnTimeout)
                 {
-                    Abort();
+                    if(CurrentTask.Configuration?.DiscardGuid != null)
+                    {
+                        var n = Tasks.RemoveAll(x => x.Configuration?.DiscardGuid == CurrentTask.Configuration.DiscardGuid);
+                        if(!TimeoutSilently) PluginLog.Warning($"Removed {n} tasks from stacks with matching GUID {CurrentTask.Configuration.DiscardGuid}");
+                        CurrentTask = null;
+                    }
+                    else
+                    {
+                        Abort();
+                    }
                 }
                 else
                 {

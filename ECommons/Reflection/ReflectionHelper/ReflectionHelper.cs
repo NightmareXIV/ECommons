@@ -146,4 +146,12 @@ public static partial class ReflectionHelper
     {
         return (T)Call(obj, name, @params, matchExactArgumentTypes);
     }
+
+    public static MethodInfo? GetAccessibleSetMethod(PropertyInfo property)
+    {
+        var setMethod = property.GetSetMethod(true);
+        if(setMethod != null) return setMethod;
+        var declaringProperty = property.DeclaringType?.GetProperty(property.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        return declaringProperty?.GetSetMethod(true);
+    }
 }
