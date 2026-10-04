@@ -32,9 +32,15 @@ public unsafe class ClickHelper
 
     public static void InvokeReceiveEvent(AtkEventListener* eventListener, EventType type, uint which, EventData eventData, InputData inputData)
     {
-        var receiveEvent = GetReceiveEvent(eventListener);
+        // Call the vtable entry through a raw function pointer rather than GetReceiveEvent. Dalamud's AddonVirtualTable
+        // replaces each addon's ReceiveEvent with Marshal.GetFunctionPointerForDelegate(AtkUnitBase.Delegates.ReceiveEvent),
+        // and Marshal.GetDelegateForFunctionPointer hands back that original managed delegate for such a pointer, so the
+        // cast to ReceiveEventDelegate throws "Unable to cast object of type 'ReceiveEvent' to type 'ReceiveEventDelegate'".
+        var receiveEvent = (delegate* unmanaged<AtkEventListener*, EventType, uint, void*, void*, nint>)GetReceiveEventPointer(eventListener);
         receiveEvent(eventListener, type, which, eventData.Data, inputData.Data);
     }
+
+    private static void* GetReceiveEventPointer(AtkEventListener* eventListener) => eventListener->VirtualTable->ReceiveEvent;
 
     public static void ClickAddonComponent(AtkComponentBase* unitbase, AtkComponentNode* target, uint which, EventType type, EventData? eventData = null, InputData? inputData = null)
     {
