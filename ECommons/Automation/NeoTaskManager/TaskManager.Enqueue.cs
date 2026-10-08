@@ -46,10 +46,10 @@ public partial class TaskManager
         foreach(var task in tasks)
         {
             if(task == null) continue;
-            if(IsStackActive)
+            if(Stack.TryGetLast(out var stack))
             {
                 Log($"(stack) Enqueued task {task.Name}@{task.Location}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
-                Stack.Add(task);
+                stack.Add(task);
             }
             else
             {

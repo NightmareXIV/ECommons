@@ -11,16 +11,17 @@ public partial class TaskManager
     /// <summary>
     /// Provides temporary dedicated storage for tasks where tasks are put for future use.
     /// </summary>
-    public List<TaskManagerTask> Stack { get; init; } = [];
+    public List<List<TaskManagerTask>> Stack { get; init; } = [];
 
     /// <summary>
     /// Whether stack mode is active. When active, newly enqueued and inserted tasks go into stack instead of main queue.
     /// </summary>
-    public bool IsStackActive { get; private set; } = false;
+    public bool IsStackActive => Stack.Count > 0;
 
     /// <summary>
     /// Enables stack mode. Euqueue and Insert calls will go into the stack instead of queue after this call.
     /// </summary>
+    [Obsolete($"Use {nameof(EnqueueStack)} with action")]
     public void BeginStack()
     {
         if(IsStackActive)
@@ -28,40 +29,47 @@ public partial class TaskManager
             PluginLog.Warning($"Warning: stack already exists");
         }
         if(DefaultConfiguration.ShowDebug == true) PluginLog.Debug($"Stack mode begins");
-        Stack.Clear();
-        IsStackActive = true;
+        Stack.Add([]);
     }
 
     /// <summary>
     /// Enqueues the whole stack of tasks into the end of primary queue, disables stack mode and clears the stack afterwards.
     /// </summary>
+    [Obsolete($"Use {nameof(EnqueueStack)} with action")]
     public void EnqueueStack()
     {
         if(DefaultConfiguration.ShowDebug == true) PluginLog.Debug($"Enqueueing stack with {Stack.Count} tasks");
-        IsStackActive = false;
-        EnqueueMulti([.. Stack]);
+        if(Stack.TryDequeueLast(out var stack))
+        {
+            EnqueueMulti([.. stack]);
+        }
         Stack.Clear();
     }
 
+    [Obsolete($"Use {nameof(EnqueueStack)} with action")]
     /// <summary>
     /// Inserts the whole stack of tasks into the beginning of primary queue, disables stack mode and clears the stack afterwards.
     /// </summary>
     public void InsertStack()
     {
         if(DefaultConfiguration.ShowDebug == true) PluginLog.Debug($"Inserting stack with {Stack.Count} tasks");
-        IsStackActive = false;
-        InsertMulti([.. Stack]);
+        if(Stack.TryDequeueLast(out var stack))
+        {
+            InsertMulti([.. stack]);
+        }
         Stack.Clear();
     }
 
     /// <summary>
     /// Disables stack mode and clears the stack.
     /// </summary>
+    [Obsolete($"Use {nameof(EnqueueStack)} with action")]
     public void DiscardStack()
     {
-        if(DefaultConfiguration.ShowDebug == true) PluginLog.Debug($"Discarding stack with {Stack.Count} tasks");
-        IsStackActive = false;
-        Stack.Clear();
+        if(Stack.TryDequeueLast(out var stack))
+        {
+            if(DefaultConfiguration.ShowDebug == true) PluginLog.Debug($"Discarding stack with {stack} tasks");
+        }
     }
 
     /// <summary>
