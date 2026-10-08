@@ -83,7 +83,7 @@ public class EzPatch : IDisposable
                     }
                     else
                     {
-                        throw new InvalidOperationException($"Could not create patch {patchData}: unexpected data");
+                        throw new InvalidOperationException($"Could not create patch {patchData}: unexpected data ({result.ToHexString()})");
                     }
                 }
             }
