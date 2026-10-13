@@ -49,7 +49,7 @@ public partial class TaskManager
             if(Stack.TryGetLast(out var stack))
             {
                 Log($"(stack) Enqueued task {task.Name}@{task.Location}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
-                stack.Add(task);
+                stack.Stack.Add(task);
             }
             else
             {

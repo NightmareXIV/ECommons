@@ -49,7 +49,7 @@ public partial class TaskManager
             if(Stack.TryGetLast(out var stack))
             {
                 Log($"(stack) Inserted task {task.Name}@{task.Location}", task.Configuration?.ShowDebug ?? DefaultConfiguration.ShowDebug!.Value);
-                stack.Insert(0, task);
+                stack.Stack.Insert(0, task);
             }
             else
             {

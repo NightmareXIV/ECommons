@@ -12,6 +12,30 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static bool TryGetValue<T>(this IList<T> collection, int index, out T result)
+    {
+        if(collection != null && (uint)index < (uint)collection.Count)
+        {
+            result = collection[index];
+            return true;
+        }
+
+        result = default!;
+        return false;
+    }
+
+    public static bool TryGetValue<T>(this T[] collection, int index, out T result)
+    {
+        if(collection != null && (uint)index < (uint)collection.Length)
+        {
+            result = collection[index];
+            return true;
+        }
+
+        result = default!;
+        return false;
+    }
+
     public static void SortBy<T, TKey>(this Span<T> span, Func<T, TKey> keySelector, IComparer<TKey>? comparer = null)
     {
         SortCore(span, keySelector, comparer, descending: false);
