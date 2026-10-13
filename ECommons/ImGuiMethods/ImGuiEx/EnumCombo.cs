@@ -3,6 +3,7 @@ using Dalamud.Interface.Colors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ECommons.ImGuiMethods;
@@ -29,6 +30,7 @@ public static partial class ImGuiEx
         return EnumCombo(name, ref refConfigField, filter, names, valuesList);
     }
 
+    [OverloadResolutionPriority(1)]
     /// <summary>
     /// Draws an easy combo selector for an enum with a search field for long lists.
     /// </summary>
