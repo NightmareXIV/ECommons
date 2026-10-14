@@ -324,6 +324,11 @@ public static unsafe partial class GenericHelpers
         return list == null ? default : index < 0 || index >= list.Count ? default : list[index];
     }
 
+    public static T? SafeSelectNullable<T>(this IReadOnlyList<T> list, int index) where T:struct
+    {
+        return list == null ? null : index < 0 || index >= list.Count ? null : list[index];
+    }
+
     /// <summary>
     /// Safely selects an entry of the <paramref name="array"/> at a specified <paramref name="index"/>, returning <see langword="default"/> value if index is out of range.
     /// </summary>
@@ -334,6 +339,11 @@ public static unsafe partial class GenericHelpers
     public static T SafeSelect<T>(this T[] array, int index)
     {
         return index < 0 || index >= array.Length ? default : array[index];
+    }
+
+    public static T? SafeSelectNullable<T>(this T[] array, int index) where T:struct
+    {
+        return index < 0 || index >= array.Length ? null : array[index];
     }
 
     [Obsolete($"Use {nameof(SafeSelect)}")]
