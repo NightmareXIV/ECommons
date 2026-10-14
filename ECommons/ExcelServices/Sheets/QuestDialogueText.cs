@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ExcelPage = Lumina.Excel.ExcelPage;
 
 namespace ECommons.ExcelServices.Sheets;
 //>:(
