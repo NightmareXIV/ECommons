@@ -1,13 +1,5 @@
-﻿using FFXIVClientStructs.FFXIV.Component.Excel;
-using Lumina;
-using Lumina.Excel;
-using Lumina.Excel.Sheets;
+﻿using Lumina.Excel;
 using Lumina.Text.ReadOnly;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommons.ExcelServices.Sheets;
 //>:(

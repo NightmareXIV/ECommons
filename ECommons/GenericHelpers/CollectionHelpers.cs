@@ -12,6 +12,30 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static bool TryGetValue<T>(this IList<T> collection, int index, out T result)
+    {
+        if(collection != null && (uint)index < (uint)collection.Count)
+        {
+            result = collection[index];
+            return true;
+        }
+
+        result = default!;
+        return false;
+    }
+
+    public static bool TryGetValue<T>(this T[] collection, int index, out T result)
+    {
+        if(collection != null && (uint)index < (uint)collection.Length)
+        {
+            result = collection[index];
+            return true;
+        }
+
+        result = default!;
+        return false;
+    }
+
     public static void SortBy<T, TKey>(this Span<T> span, Func<T, TKey> keySelector, IComparer<TKey>? comparer = null)
     {
         SortCore(span, keySelector, comparer, descending: false);
@@ -300,6 +324,11 @@ public static unsafe partial class GenericHelpers
         return list == null ? default : index < 0 || index >= list.Count ? default : list[index];
     }
 
+    public static T? SafeSelectNullable<T>(this IReadOnlyList<T> list, int index) where T:struct
+    {
+        return list == null ? null : index < 0 || index >= list.Count ? null : list[index];
+    }
+
     /// <summary>
     /// Safely selects an entry of the <paramref name="array"/> at a specified <paramref name="index"/>, returning <see langword="default"/> value if index is out of range.
     /// </summary>
@@ -310,6 +339,11 @@ public static unsafe partial class GenericHelpers
     public static T SafeSelect<T>(this T[] array, int index)
     {
         return index < 0 || index >= array.Length ? default : array[index];
+    }
+
+    public static T? SafeSelectNullable<T>(this T[] array, int index) where T:struct
+    {
+        return index < 0 || index >= array.Length ? null : array[index];
     }
 
     [Obsolete($"Use {nameof(SafeSelect)}")]
@@ -937,6 +971,40 @@ public static unsafe partial class GenericHelpers
                     value = e.Current;
                     return true;
                 }
+            }
+        }
+        value = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Attempts to get last element of <see cref="IEnumerable"/>.
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool TryGetLast<TSource>(this IEnumerable<TSource> source, out TSource value)
+    {
+        if(source == null)
+        {
+            value = default;
+            return false;
+        }
+        if(source is IList<TSource> list)
+        {
+            if(list.Count > 0)
+            {
+                value = list[^1];
+                return true;
+            }
+        }
+        else
+        {
+            if(source.Any())
+            {
+                value = Enumerable.Last(source);
+                return true;
             }
         }
         value = default;
