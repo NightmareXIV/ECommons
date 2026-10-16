@@ -848,7 +848,18 @@ public static unsafe partial class GenericHelpers
     /// <param name="objects"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool AnyNull(params object[] objects)
+    public static bool ContainsNull<T>(params T[] objects)
+    {
+        return objects.Any(s => s == null);
+    }
+
+    /// <summary>
+    /// Checks whether any of the <paramref name="objects"/> is null.
+    /// </summary>
+    /// <param name="objects"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ContainsNull<T>(this IEnumerable<T> objects)
     {
         return objects.Any(s => s == null);
     }
