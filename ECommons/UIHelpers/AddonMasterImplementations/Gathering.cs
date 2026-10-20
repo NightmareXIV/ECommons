@@ -67,6 +67,8 @@ public partial class AddonMaster
             public string ItemName => CheckBox->GetTextNodeById(23)->GetAsAtkTextNode()->NodeText.GetText();
             public uint ItemID => addon->ItemIds[index];
             public bool IsCollectable => Svc.Data.GetExcelSheet<Item>()?.GetRowOrDefault(ItemID)?.IsCollectable ?? false;
+            public bool IsHidden => CheckBox->GetTextNodeById(6)->GetAsAtkTextNode()->IsVisible();
+            public bool IsRare => CheckBox->GetTextNodeById(7)->GetAsAtkTextNode()->IsVisible();
             public int ItemLevel
             {
                 get
@@ -88,6 +90,14 @@ public partial class AddonMaster
                 get
                 {
                     var match = ExtractNumber().Match(CheckBox->GetTextNodeById(16)->GetAsAtkTextNode()->NodeText.GetText());
+                    return match.Success ? int.Parse(match.Value) : 0;
+                }
+            }
+            public int GatherAmount
+            {
+                get
+                {
+                    var match = ExtractNumber().Match(checkbox->GetComponentById(31)->GetTextNodeById(7)->GetAsAtkTextNode()->NodeText.GetText());
                     return match.Success ? int.Parse(match.Value) : 0;
                 }
             }
