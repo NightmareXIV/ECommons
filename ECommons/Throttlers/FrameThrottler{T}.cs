@@ -65,4 +65,9 @@ public class FrameThrottler<T>
             ImGuiEx.Text(Check(x.Key) ? ImGuiColors.HealerGreen : ImGuiColors.DalamudRed, $"{x.Key}: [{GetRemainingTime(x.Key)} frames remains] ({x.Value})");
         }
     }
+
+    public void Clear()
+    {
+        Throttlers.Clear();
+    }
 }

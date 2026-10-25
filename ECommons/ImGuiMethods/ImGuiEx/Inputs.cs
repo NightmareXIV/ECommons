@@ -1,4 +1,5 @@
 ﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
 using ECommons.Throttlers;
 using System;
@@ -6,16 +7,197 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
-using static FFXIVClientStructs.FFXIV.Component.GUI.AtkResNode.Delegates;
 
 namespace ECommons.ImGuiMethods;
 public static partial class ImGuiEx
 {
+    public static bool ColorEdit4(float width, string id, ref uint? nullableValueRef, ImGuiColorEditFlags flags = ImGuiColorEditFlags.NoInputs, bool enabled = true, uint defaultValue = default, bool isLabelPrefix = false, bool showCheckbox = true)
+    {
+        var ret = false;
+        Vector4? value = nullableValueRef?.ToVector4();
+        if(ColorEdit4(width, id, ref value, flags, enabled, defaultValue.ToVector4(), isLabelPrefix, showCheckbox))
+        {
+            ret = true;
+            nullableValueRef = value?.ToUint();
+        }
+        return ret;
+    }
+
+    public static bool ColorEdit4(float width, string id, ref Vector4? nullableValueRef, ImGuiColorEditFlags flags = ImGuiColorEditFlags.NoInputs, bool enabled = true, Vector4 defaultValue = default, bool isLabelPrefix = false, bool showCheckbox = true)
+    {
+        var ret = false;
+        var checkboxId = $"##{id}_checkbox";
+        var b = nullableValueRef != null;
+        if(isLabelPrefix && !id.StartsWith("##"))
+        {
+            if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+            ImGuiEx.TextV(id);
+            if(!enabled) ImGui.PopStyleVar();
+            ImGui.SameLine();
+        }
+        if(showCheckbox)
+        {
+            if(ImGuiEx.Checkbox(checkboxId, ref b, enabled: enabled))
+            {
+                nullableValueRef = b ? defaultValue : null;
+                ret = true;
+            }
+            ImGui.SameLine();
+        }
+        var value = nullableValueRef ?? defaultValue;
+        if(width != 0) ImGui.SetNextItemWidth(width);
+        if(ImGuiEx.ColorEdit4(width, "##coloredit4_" + id, ref value, flags, enabled && b))
+        {
+            nullableValueRef = value;
+            ret = true;
+        }
+        if(!isLabelPrefix && !id.StartsWith("##"))
+        {
+            ImGui.SameLine();
+            if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+            ImGuiEx.TextV(id);
+            if(!enabled) ImGui.PopStyleVar();
+        }
+        return ret;
+    }
+
+    public static bool ColorEdit4(float width, string id, ref uint valueRef, ImGuiColorEditFlags flags = ImGuiColorEditFlags.NoInputs, bool enabled = true)
+    {
+        var ret = false;
+        var value = valueRef.ToVector4();
+        if(ColorEdit4(width, id, ref value, flags, enabled))
+        {
+            ret = true;
+            valueRef = value.ToUint();
+        }
+        return ret;
+    }
+
+    public static bool ColorEdit4(float width, string id, ref Vector4 valueRef, ImGuiColorEditFlags flags = ImGuiColorEditFlags.NoInputs, bool enabled = true)
+    {
+        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        ImGui.SetNextItemWidth(width);
+        var ret = false;
+        var value = valueRef;
+        if(ImGui.ColorEdit4(id, ref value, flags) && enabled)
+        {
+            valueRef = value;
+            ret = true;
+        }
+        if(!enabled) ImGui.PopStyleVar();
+        return ret;
+    }
+
+    public static bool DragInt(float width, string id, ref int? nullableValueRef, float vSpeed = 1.0f, int vMin = 0, int vMax = 0, ImU8String format = default, ImGuiSliderFlags flags = ImGuiSliderFlags.None, bool enabled = true, int defaultValue = default, bool isLabelPrefix = false, bool showCheckbox = true)
+    {
+        var ret = false;
+        var checkboxId = $"##{id}_checkbox";
+        var b = nullableValueRef != null;
+        if(isLabelPrefix && !id.StartsWith("##"))
+        {
+            if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+            ImGuiEx.TextV(id);
+            if(!enabled) ImGui.PopStyleVar();
+            ImGui.SameLine();
+        }
+        if(showCheckbox)
+        {
+            if(ImGuiEx.Checkbox(checkboxId, ref b, enabled: enabled))
+            {
+                nullableValueRef = b ? defaultValue : null;
+                ret = true;
+            }
+            ImGui.SameLine();
+        }
+        var value = nullableValueRef ?? defaultValue;
+        if(ImGuiEx.DragInt(width, "##dragfloat_" + id, ref value, enabled ? vSpeed : 0, vMin, vMax, format, flags, enabled && b))
+        {
+            nullableValueRef = value;
+            ret = true;
+        }
+        if(!isLabelPrefix && !id.StartsWith("##"))
+        {
+            ImGui.SameLine();
+            if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+            ImGuiEx.TextV(id);
+            if(!enabled) ImGui.PopStyleVar();
+        }
+        return ret;
+    }
+
+    public static bool DragInt(float width, string id, ref int valueRef, float vSpeed = 1.0f, int vMin = 0, int vMax = 0, ImU8String format = default, ImGuiSliderFlags flags = ImGuiSliderFlags.None, bool enabled = true)
+    {
+        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        var ret = false;
+        var value = valueRef;
+        if(width != 0) ImGui.SetNextItemWidth(width);
+        if(ImGui.DragInt(id, ref value, vSpeed, vMin, vMax, format, flags) && enabled)
+        {
+            valueRef = value;
+            ret = true;
+        }
+        if(!enabled) ImGui.PopStyleVar();
+        return ret;
+    }
+
+    public static bool DragFloat(float width, string id, ref float? nullableValueRef, float vSpeed = 1.0f, float vMin = 0.0f, float vMax = 0.0f, ImU8String format = default, ImGuiSliderFlags flags = ImGuiSliderFlags.None, bool enabled = true, float defaultValue = default, bool isLabelPrefix = false, bool showCheckbox = true)
+    {
+        var ret = false;
+        var checkboxId = $"##{id}_checkbox";
+        var b = nullableValueRef != null;
+        if(isLabelPrefix && !id.StartsWith("##"))
+        {
+            if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+            ImGuiEx.TextV(id);
+            if(!enabled) ImGui.PopStyleVar();
+            ImGui.SameLine();
+        }
+        if(showCheckbox)
+        {
+            if(ImGuiEx.Checkbox(checkboxId, ref b, enabled: enabled))
+            {
+                nullableValueRef = b ? defaultValue : null;
+                ret = true;
+            }
+            ImGui.SameLine();
+        }
+        var value = nullableValueRef ?? defaultValue;
+        if(ImGuiEx.DragFloat(width, "##dragfloat_" + id, ref value, enabled?vSpeed:0, vMin, vMax, format, flags, enabled && b))
+        {
+            nullableValueRef = value;
+            ret = true;
+        }
+        if(!isLabelPrefix && !id.StartsWith("##"))
+        {
+            ImGui.SameLine();
+            if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+            ImGuiEx.TextV(id);
+            if(!enabled) ImGui.PopStyleVar();
+        }
+        return ret;
+    }
+
+    public static bool DragFloat(float width, string id, ref float valueRef, float vSpeed = 1.0f, float vMin = 0.0f, float vMax = 0.0f, ImU8String format = default, ImGuiSliderFlags flags = ImGuiSliderFlags.None, bool enabled = true)
+    {
+        if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.6f);
+        var ret = false;
+        var value = valueRef;
+        if(width != 0) ImGui.SetNextItemWidth(width);
+        if(ImGui.DragFloat(id, ref value, vSpeed, vMin, vMax, format, flags) && enabled)
+        {
+            valueRef = value;
+            ret = true;
+        }
+        if(!enabled) ImGui.PopStyleVar();
+        return ret;
+    }
+
     public static bool InputFancyNumeric(float width, string label, ref int number, int step, Action? afterInput = null)
     {
-        ImGui.SetNextItemWidth(step > 0?width - ImGui.GetFrameHeight() * 2 - 2:width);
+        if(width != 0) ImGui.SetNextItemWidth(step > 0?width - ImGui.GetFrameHeight() * 2 - 2:width);
         return InputFancyNumeric(label, ref number, step, afterInput);
     }
+
     public static bool InputFancyNumeric(string label, ref int number, int step, Action? afterInput = null)
     {
         var str = $"{number:N0}";
@@ -152,6 +334,21 @@ public static partial class ImGuiEx
         return ret || chk;
     }
 
+    public static bool InputFloat(float width, string label, ref float value, int step = 1, int step_fast = 100, ImGuiInputTextFlags flags = ImGuiInputTextFlags.None)
+    {
+        ImGui.SetNextItemWidth(width);
+        var ret = ImGui.InputFloat(label, ref value, step, step_fast, flags: flags);
+        return ret;
+    }
+
+    public static bool ColorEdit4(ImU8String label, scoped ref uint col, ImGuiColorEditFlags flags = ImGuiColorEditFlags.None)
+    {
+        var value = ImGui.ColorConvertU32ToFloat4(col);
+        var ret = ImGui.ColorEdit4(label, ref value, flags);
+        if(ret) col = ImGui.ColorConvertFloat4ToU32(value);
+        return ret;
+    }
+
     /// <summary>
     /// Supports activation by double-click
     /// </summary>
@@ -209,7 +406,7 @@ public static partial class ImGuiEx
     public static bool SliderIntAsFloat(string id, ref int value, int min, int max, float divider = 1000)
     {
         var f = (float)value / divider;
-        var ret = ImGui.SliderFloat(id, ref f, (float)min / divider, (float)max / divider);
+        var ret = ImGuiEx.SliderFloat(id, ref f, (float)min / divider, (float)max / divider);
         if(ret)
         {
             value = (int)(f * divider);
@@ -274,7 +471,7 @@ public static partial class ImGuiEx
     public static void InputList<T>(string name, List<T> list, Dictionary<T, string> overrideValues, Action addFunction)
     {
         var text = list.Count == 0 ? "- No values -" : (list.Count == 1 ? $"{(overrideValues != null && overrideValues.ContainsKey(list[0]) ? overrideValues[list[0]] : list[0])}" : $"- {list.Count} elements -");
-        if(ImGui.BeginCombo(name, text))
+        if(ImGui.BeginCombo(name, text, ImGuiComboFlags.HeightLarge))
         {
             addFunction();
             var rem = -1;
@@ -369,108 +566,8 @@ public static partial class ImGuiEx
         }
     }
 
-    public static Dictionary<string, Box<string>> EnumComboSearch = [];
-
-    /// <summary>
-    /// Draws an easy combo selector for an enum with a search field for long lists.
-    /// </summary>
-    /// <typeparam name="T">Enum</typeparam>
-    /// <param name="name">ImGui ID</param>
-    /// <param name="refConfigField">Value</param>
-    /// <param name="names">Optional Name overrides</param>
-    public static bool EnumCombo<T>(string name, ref T refConfigField, IDictionary<T, string> names) where T : Enum, IConvertible
-    {
-        return EnumCombo(name, ref refConfigField, null, names);
-    }
-
-    public static bool EnumCombo<T>(float width, string name, ref T refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : Enum, IConvertible
-    {
-        ImGui.SetNextItemWidth(width);
-        return EnumCombo(name, ref refConfigField, filter, names);
-    }
-
-    /// <summary>
-    /// Draws an easy combo selector for an enum with a search field for long lists.
-    /// </summary>
-    /// <typeparam name="T">Enum</typeparam>
-    /// <param name="name">ImGui ID</param>
-    /// <param name="refConfigField">Value</param>
-    /// <param name="filter">Optional filter</param>
-    /// <param name="names">Optional Name overrides</param>
-    /// <returns></returns>
-    public static bool EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : Enum, IConvertible
-    {
-        var ret = false;
-        if(ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString().Replace("_", " "), ImGuiComboFlags.HeightLarge))
-        {
-            var values = Enum.GetValues(typeof(T));
-            Box<string> fltr = null;
-            if(values.Length > 10)
-            {
-                if(!EnumComboSearch.ContainsKey(name)) EnumComboSearch.Add(name, new(""));
-                fltr = EnumComboSearch[name];
-                ImGuiEx.SetNextItemFullWidth();
-                ImGui.InputTextWithHint($"##{name.Replace("#", "_")}", "Filter...", ref fltr.Value, 50);
-            }
-            foreach(var x in values)
-            {
-                var equals = EqualityComparer<T>.Default.Equals((T)x, refConfigField);
-                var element = (names != null && names.TryGetValue((T)x, out n)) ? n : x.ToString().Replace("_", " ");
-                if((filter == null || filter((T)x))
-                    && (fltr == null || element.Contains(fltr.Value, StringComparison.OrdinalIgnoreCase))
-                    && ImGui.Selectable(element, equals)
-                    )
-                {
-                    ret = true;
-                    refConfigField = (T)x;
-                }
-                if(ImGui.IsWindowAppearing() && equals) ImGui.SetScrollHereY();
-            }
-            ImGui.EndCombo();
-        }
-        return ret;
-    }
-
-    public static bool EnumCombo<T>(string name, ref Nullable<T> refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null, string nullName = "Not selected") where T : struct, Enum, IConvertible
-    {
-        var ret = false;
-        if(ImGui.BeginCombo(name, refConfigField == null ? nullName : ((names != null && names.TryGetValue(refConfigField.Value, out var n)) ? n : refConfigField.Value.ToString().Replace("_", " ")), ImGuiComboFlags.HeightLarge))
-        {
-            var values = Enum.GetValues(typeof(T));
-            Box<string> fltr = null;
-            if(values.Length > 10)
-            {
-                if(!EnumComboSearch.ContainsKey(name)) EnumComboSearch.Add(name, new(""));
-                fltr = EnumComboSearch[name];
-                ImGuiEx.SetNextItemFullWidth();
-                ImGui.InputTextWithHint($"##{name.Replace("#", "_")}", "Filter...", ref fltr.Value, 50);
-            }
-            if(ImGui.Selectable(nullName, refConfigField == null))
-            {
-                ret = true;
-                refConfigField = null;
-            }
-            foreach(var x in values)
-            {
-                var equals = EqualityComparer<Nullable<T>>.Default.Equals((T)x, refConfigField);
-                var element = (names != null && names.TryGetValue((T)x, out n)) ? n : x.ToString().Replace("_", " ");
-                if((filter == null || filter((T)x))
-                    && (fltr == null || element.Contains(fltr.Value, StringComparison.OrdinalIgnoreCase))
-                    && ImGui.Selectable(element, equals)
-                    )
-                {
-                    ret = true;
-                    refConfigField = (T)x;
-                }
-                if(ImGui.IsWindowAppearing() && equals) ImGui.SetScrollHereY();
-            }
-            ImGui.EndCombo();
-        }
-        return ret;
-    }
-
     public static Dictionary<string, Box<string>> ComboSearch = [];
-    public static bool Combo<T>(string name, ref T refConfigField, IEnumerable<T> values, Func<T, bool> filter = null, Dictionary<T, string> names = null)
+    public static bool Combo<T>(string name, ref T refConfigField, IEnumerable<T> values, Func<T, bool> filter = null, IDictionary<T, string> names = null)
     {
         var ret = false;
         if(ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString(), ImGuiComboFlags.HeightLarge))

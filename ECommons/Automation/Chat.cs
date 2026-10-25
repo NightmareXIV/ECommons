@@ -1,23 +1,4 @@
-﻿/*
-https://git.annaclemens.io/ascclemens/XivCommon/src/branch/main/XivCommon/Functions/Chat.cs 
-MIT License
-Copyright (c) 2021 Anna Clemens
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+﻿using Dalamud.Memory;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -30,6 +11,7 @@ namespace ECommons.Automation;
 /// <summary>
 /// A class containing chat functionality
 /// </summary>
+// from: https://github.com/Infiziert90/ChatTwo/blob/5b58513a5226a2d3b40aca96be4f51c779fab363/ChatTwo/GameFunctions/ChatBox.cs#L9
 public static unsafe class Chat
 {
     /// <summary>
@@ -47,7 +29,7 @@ public static unsafe class Chat
     /// <exception cref="InvalidOperationException">If the signature for this function could not be found</exception>
     public static void SendMessageUnsafe(byte[] message)
     {
-        var mes = Utf8String.FromSequence(message);
+        var mes = Utf8String.FromSequence(message.NullTerminate());
         UIModule.Instance()->ProcessChatBoxEntry(mes);
         mes->Dtor(true);
     }

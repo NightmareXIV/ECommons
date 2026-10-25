@@ -54,6 +54,20 @@ public static class PluginLog
             InternalLog.Messages.PushBack(new(s, LogEventLevel.Warning));
         });
     }
+
+    public static bool TraceEnabled = false;
+    public static void Trace(string s)
+    {
+        if(TraceEnabled)
+        {
+            Svc.Log.Information($"[Trace] {s}");
+            Svc.Framework?.RunOnFrameworkThread(delegate
+            {
+                InternalLog.Messages.PushBack(new($"[Trace] ", LogEventLevel.Information));
+            });
+        }
+    }
+
     public static void LogInformation(string s)
     {
         Information(s);

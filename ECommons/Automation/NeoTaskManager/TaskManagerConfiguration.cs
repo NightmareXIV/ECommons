@@ -1,5 +1,6 @@
 ﻿using ECommons.Logging;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace ECommons.Automation.NeoTaskManager;
 /// <summary>
@@ -17,9 +18,23 @@ public class TaskManagerConfiguration
     /// <param name="showDebug">Default: false</param>
     /// <param name="showError">Default: true</param>
     /// <param name="executeDefaultConfigurationEvents">Default: true</param>
-    public TaskManagerConfiguration(int? timeLimitMS = null, bool? abortOnTimeout = null, bool? abortOnError = null, bool? timeoutSilently = null, bool? showDebug = null, bool? showError = null, bool? executeDefaultConfigurationEvents = null)
+    [OverloadResolutionPriority(1)]
+    public TaskManagerConfiguration(int? timeLimitMS = null, bool? abortOnTimeout = null, bool? abortOnError = null, bool? timeoutSilently = null, bool? showDebug = null, bool? showError = null, bool? executeDefaultConfigurationEvents = null, Guid? discardGuid = null)
     {
         TimeLimitMS = timeLimitMS;
+        AbortOnTimeout = abortOnTimeout;
+        AbortOnError = abortOnError;
+        TimeoutSilently = timeoutSilently;
+        ShowDebug = showDebug;
+        ShowError = showError;
+        ExecuteDefaultConfigurationEvents = executeDefaultConfigurationEvents;
+        DiscardGuid = discardGuid;
+    }
+    
+    /// <inheritdoc cref="TaskManagerConfiguration.TaskManagerConfiguration(int?, bool?, bool?, bool?, bool?, bool?, bool?)"/>
+    public TaskManagerConfiguration(TimeSpan? timeLimitMS = null, bool? abortOnTimeout = null, bool? abortOnError = null, bool? timeoutSilently = null, bool? showDebug = null, bool? showError = null, bool? executeDefaultConfigurationEvents = null)
+    {
+        TimeLimitMS = (int?)(timeLimitMS?.TotalMilliseconds ?? null);
         AbortOnTimeout = abortOnTimeout;
         AbortOnError = abortOnError;
         TimeoutSilently = timeoutSilently;
@@ -56,6 +71,11 @@ public class TaskManagerConfiguration
     /// Whether to always execute events that are registered in default configuration. Otherwise, default configuration's events will only be used when per-task configuration is missing. Default is true.
     /// </summary>
     public bool? ExecuteDefaultConfigurationEvents { get; set; } = null;
+
+    /// <summary>
+    /// If set, instead of discarding entire task stack on timeout or returning null only tasks with this guid will be discarded
+    /// </summary>
+    public Guid? DiscardGuid { get; set; } = null;
 
     /// <summary>
     /// Event that is fired when execution of a task results in an exception.
@@ -159,40 +179,5 @@ public class TaskManagerConfiguration
         if(ShowDebug == null) throw new NullReferenceException();
         if(ShowError == null) throw new NullReferenceException();
         if(ExecuteDefaultConfigurationEvents == null) throw new NullReferenceException();
-    }
-
-    /// <summary>
-    /// Produces copy of other configuration and fills it's null properties from current configuration.
-    /// </summary>
-    /// <param name="dominantConfiguration">Dominant configuration</param>
-    /// <param name="copyEvents">Whether to copy events. If true, events from other current configuration will be used, if false - from other.</param>
-    /// <returns></returns>
-    public TaskManagerConfiguration With(TaskManagerConfiguration? dominantConfiguration, bool copyEvents = true)
-    {
-        var ret = new TaskManagerConfiguration()
-        {
-            TimeLimitMS = dominantConfiguration?.TimeLimitMS ?? TimeLimitMS,
-            AbortOnError = dominantConfiguration?.AbortOnError ?? AbortOnError,
-            AbortOnTimeout = dominantConfiguration?.AbortOnTimeout ?? AbortOnTimeout,
-            ShowDebug = dominantConfiguration?.ShowDebug ?? ShowDebug,
-            ShowError = dominantConfiguration?.ShowError ?? ShowError,
-            TimeoutSilently = dominantConfiguration?.TimeoutSilently ?? TimeoutSilently,
-            ExecuteDefaultConfigurationEvents = dominantConfiguration?.ExecuteDefaultConfigurationEvents ?? ExecuteDefaultConfigurationEvents,
-        };
-        if(copyEvents)
-        {
-            ret.OnTaskCompletion = dominantConfiguration?.OnTaskCompletion;
-            ret.OnTaskTimeout = (dominantConfiguration?.OnTaskTimeout);
-            ret.OnTaskException = (dominantConfiguration?.OnTaskException);
-            ret.CompanionAction = (dominantConfiguration?.CompanionAction);
-        }
-        else
-        {
-            ret.OnTaskCompletion = (OnTaskCompletion);
-            ret.OnTaskTimeout = (OnTaskTimeout);
-            ret.OnTaskException = (OnTaskException);
-            ret.CompanionAction = (CompanionAction);
-        }
-        return ret;
     }
 }

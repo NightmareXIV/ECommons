@@ -136,10 +136,7 @@ public unsafe class TerritorySelector : Window
             Cache[Category.All] = [];
             foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>().Where(x => !HiddenTerritories.Contains(x.RowId)))
             {
-                if(x.PlaceName.ValueNullable?.Name.GetText().IsNullOrEmpty() == false)
-                {
-                    Cache[Category.All].Add(x);
-                }
+                Cache[Category.All].Add(x);
             }
         }
         foreach(var x in Cache.ToArray())

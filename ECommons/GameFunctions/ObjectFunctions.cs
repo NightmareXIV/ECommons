@@ -2,6 +2,7 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.DalamudServices;
 using ECommons.EzHookManager;
+using ECommons.GameFunctions.VirtualTableClassifier;
 using ECommons.Logging;
 using System;
 using System.Numerics;
@@ -80,7 +81,7 @@ public static unsafe class ObjectFunctions
         var num = 0;
         foreach(var o in Svc.Objects)
         {
-            if(o is IBattleNpc)
+            if(o.IsBattleNpc())
             {
                 var oStruct = (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)o.Address;
                 if(oStruct->GetIsTargetable() && o.IsHostile()

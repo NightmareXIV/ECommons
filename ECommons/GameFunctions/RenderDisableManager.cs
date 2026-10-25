@@ -26,6 +26,7 @@ public unsafe static class RenderDisableManager
     private static byte* RenderDisabled;
     private static HashSet<uint> RenderDisableRequests;
     private static uint[] RenderDisableProcessingFramecount;
+    private static bool IsSubscribed = false;
     /// <summary>
     /// Set to true if you want to output verbose logs. It is advised to just have a checkbox rather than permanently setting it to true. 
     /// </summary>
@@ -38,7 +39,13 @@ public unsafe static class RenderDisableManager
     /// <summary>
     /// Initializes RenderDisableManager. You do not need to call it manually. 
     /// </summary>
+    [Obsolete("Do not use Init. Just use PlaceRequest whenever you need to disable render, it will be initialized automatically upon first function call. Just remove this Init call. ", true)]
     public static void Init()
+    {
+        InitializeInternal();
+    }
+
+    private static void InitializeInternal()
     {
         if(Initialized)
         {
@@ -47,11 +54,28 @@ public unsafe static class RenderDisableManager
         }
         Initialized = true;
         FrameCounter = &Framework.Instance()->FrameCounter;
-        RenderDisabled = (byte*)(((nint)Manager.Instance()) + 230232);
+        RenderDisabled = (byte*)&Manager.Instance()->Is3DRenderingDisabled;
         RenderDisableRequests = Svc.PluginInterface.GetOrCreateData<HashSet<uint>>(Name_RenderDisableRequests, () => []);
         RenderDisableProcessingFramecount = Svc.PluginInterface.GetOrCreateData<uint[]>(Name_RenderDisableProcessingFramecount, () => [0]);
-        Svc.Framework.Update += Framework_Update;
         PluginLog.Information($"Initialized RenderDisableManager");
+    }
+
+    private static void SubscribeIfNeeded()
+    {
+        if(!IsSubscribed)
+        {
+            Svc.Framework.Update += Framework_Update;
+            IsSubscribed = true;
+        }
+    }
+
+    private static void UnsubscribeIfNeeded()
+    {
+        if(IsSubscribed)
+        {
+            Svc.Framework.Update -= Framework_Update;
+            IsSubscribed = false;
+        }
     }
 
     /// <summary>
@@ -59,13 +83,14 @@ public unsafe static class RenderDisableManager
     /// </summary>
     public static void PlaceRequest()
     {
-        if(!Initialized) Init();
+        if(!Initialized) InitializeInternal();
         if(!Svc.Framework.IsInFrameworkUpdateThread)
         {
             PluginLog.Error($"{nameof(RenderDisableManager)}.{nameof(PlaceRequest)} can only be used in Framework Update thread.");
             return;
         }
         RenderDisableRequests.Add(ECommonsMain.InstanceUniqueId);
+        SubscribeIfNeeded();
     }
 
     /// <summary>
@@ -112,6 +137,7 @@ public unsafe static class RenderDisableManager
                     if(Debug) PluginLog.Verbose($"[RenderDisableManager] Enabling render because there are no requests");
                     *RenderDisabled = 0;
                 }
+                UnsubscribeIfNeeded();
             }
             else
             {

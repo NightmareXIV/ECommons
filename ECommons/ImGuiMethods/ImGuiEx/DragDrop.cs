@@ -106,6 +106,7 @@ public static unsafe partial class ImGuiEx
             return ret;
         }
 
+        /// <inheritdoc cref="SetRowColor(string, bool)"/>
         public bool SetRowColor(T element, bool setColor = true)
         {
             return SetRowColor(GetUniqueId(element), setColor);

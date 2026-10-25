@@ -144,6 +144,7 @@ public static unsafe partial class ImGuiEx
         var col = (value ? selectedCheckboxIconColor : unselectedCheckboxIconColor) ?? ImGui.GetStyle().Colors[(int)ImGuiCol.Text];
         ImGui.GetWindowDrawList().AddText(cursor + padding, col.ToUint(), icon.ToIconString());
         ImGui.PopFont();
+        ImGui.NewLine();
         return enabled && ret;
     }
 

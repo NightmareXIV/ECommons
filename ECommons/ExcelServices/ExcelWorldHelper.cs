@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using static FFXIVClientStructs.FFXIV.Client.UI.Misc.DataCenterHelper;
 
 namespace ECommons.ExcelServices;
@@ -112,10 +113,16 @@ public static class ExcelWorldHelper
 
     [Obsolete("Please use GetName")]
     public static string GetWorldNameById(uint id) => GetName(id);
-    public static string GetName(int id) => GetName((uint)id);
-    public static string GetName(uint id)
+    [OverloadResolutionPriority(0)]
+    public static string GetName(int id) => GetName((uint)id, false);
+    [OverloadResolutionPriority(1)]
+    public static string GetName(uint id) => GetName((uint)id, false);
+    [OverloadResolutionPriority(0)]
+    public static string GetName(int id, bool includeId) => GetName((uint)id, includeId);
+    [OverloadResolutionPriority(1)]
+    public static string GetName(uint id, bool includeId)
     {
-        return Get(id)?.Name.ToString();
+        return Get(id)?.Name.ToString() + (includeId?$"#{id}":"");
     }
 
     [Obsolete("Please use Get")]

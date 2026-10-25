@@ -1,4 +1,5 @@
 ﻿using Dalamud.Game;
+using Dalamud.Utility;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices.TerritoryEnumeration;
 using ECommons.Logging;
@@ -92,16 +93,16 @@ public static class ExcelTerritoryHelper
         {
             if(tname.IsNullOrEmpty())
             {
-                return $"#{TerritoryType}";
+                return $"#{TerritoryType}".FirstCharToUpper();
             }
             else
             {
-                return $"{id}{tname}";
+                return $"{id}{tname.FirstCharToUpper()}";
             }
         }
         else
         {
-            return $"{id}{cfc}";
+            return $"{id}{cfc.FirstCharToUpper()}";
         }
     }
 

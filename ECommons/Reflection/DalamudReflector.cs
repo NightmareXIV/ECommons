@@ -380,7 +380,7 @@ public static class DalamudReflector
         var repolist = (System.Collections.IEnumerable)conf.GetFoP("ThirdRepoList");
         if(repolist != null)
             foreach(var r in repolist)
-                if((string)r.GetFoP("Url") == repoURL)
+                if(IsSameRepoUrl((string)r.GetFoP("Url"), repoURL))
                     return true;
         return false;
     }
@@ -396,13 +396,16 @@ public static class DalamudReflector
         var repolist = (System.Collections.IEnumerable)conf.GetFoP("ThirdRepoList");
         if(repolist != null)
             foreach(var r in repolist)
-                if((string)r.GetFoP("Url") == repoURL)
+                if(IsSameRepoUrl((string)r.GetFoP("Url"), repoURL))
                     return;
         var instance = Activator.CreateInstance(Svc.PluginInterface.GetType().Assembly.GetType("Dalamud.Configuration.ThirdPartyRepoSettings")!);
         instance.SetFoP("Url", repoURL);
         instance.SetFoP("IsEnabled", enabled);
         conf.GetFoP<System.Collections.IList>("ThirdRepoList").Add(instance!);
     }
+
+    private static bool IsSameRepoUrl(string? a, string? b)
+        => string.Equals(a?.Trim().TrimEnd('/'), b?.Trim().TrimEnd('/'), StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// Installs a plugin from a remote Plugin Master.
@@ -450,7 +453,7 @@ public static class DalamudReflector
                 AddRepo(masterURL, true);
             ReloadPluginMasters(); // necessary to avoid it be listed as orphaned
 
-            var installCall = pm.Call<Task>("InstallPluginAsync", [pluginManifest, false, PluginLoadReason.Installer, null]);
+            var installCall = pm.Call<Task>("InstallPluginAsync", [pluginManifest, false, PluginLoadReason.Installer]);
             await installCall;
 
             var localPlugin = installCall.GetFoP("Result");

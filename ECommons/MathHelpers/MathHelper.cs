@@ -259,12 +259,13 @@ public static class MathHelper
     }
 
     /// <summary>
-    /// 
+    /// Rotates point around origin by certain amount of degrees
     /// </summary>
     /// <param name="origin"></param>
     /// <param name="angle">Radians</param>
     /// <param name="p"></param>
     /// <returns></returns>
+    [OverloadResolutionPriority(1)]
     public static Vector3 RotateWorldPoint(Vector3 origin, float angle, Vector3 p)
     {
         if(angle == 0f) return p;
@@ -282,6 +283,33 @@ public static class MathHelper
         // translate point back:
         p.X = xnew + origin.X;
         p.Z = ynew + origin.Z;
+        return p;
+    }
+
+    /// <summary>
+    /// Rotates point around origin by certain amount of degrees
+    /// </summary>
+    /// <param name="origin"></param>
+    /// <param name="angle">Radians</param>
+    /// <param name="p"></param>
+    /// <returns></returns>
+    public static Vector2 RotateWorldPoint(Vector2 origin, float angle, Vector2 p)
+    {
+        if(angle == 0f) return p;
+        var s = (float)Math.Sin(angle);
+        var c = (float)Math.Cos(angle);
+
+        // translate point back to origin:
+        p.X -= origin.X;
+        p.Y -= origin.Y;
+
+        // rotate point
+        var xnew = p.X * c - p.Y * s;
+        var ynew = p.X * s + p.Y * c;
+
+        // translate point back:
+        p.X = xnew + origin.X;
+        p.Y = ynew + origin.Y;
         return p;
     }
 
@@ -306,6 +334,11 @@ public static class MathHelper
     public static Vector3 ToVector3(this Vector2 vector2, float Y)
     {
         return new Vector3(vector2.X, Y, vector2.Y);
+    }
+
+    public static Vector3 SwapYZ(this Vector3 v)
+    {
+        return new(v.X, v.Z, v.Y);
     }
 
     public static Vector3 ToVector3(this (float X, float Y, float Z) t) => new(t.X, t.Y, t.Z);
@@ -434,6 +467,18 @@ public static class MathHelper
         return orderedList;
     }
 
+    [OverloadResolutionPriority(1)]
+    public static List<EnumerationResult<T>> EnumerateObjectsClockwiseEx<T>(IEnumerable<T> objects, Func<T, Vector2> getPosition, Vector2 centerPosition, Vector2 startingPosition)
+    {
+        var orderedList = objects.Select(x =>
+        {
+            var relAngle = MathHelper.GetRelativeAngle(centerPosition, startingPosition);
+            var a = (MathHelper.GetRelativeAngle(centerPosition, getPosition(x)) - relAngle + 360) % 360;
+            return new EnumerationResult<T>(x, a);
+        }).OrderBy(x => x.AngleDegrees).ToList();
+        return orderedList;
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -445,12 +490,26 @@ public static class MathHelper
     /// <returns></returns>
     public static List<T> EnumerateObjectsClockwise<T>(IEnumerable<T> objects, Func<T, Vector2> getPosition, Vector2 centerPosition, float startingAngle)
     {
-        var orderedList = objects.OrderBy(x =>
+        return [.. EnumerateObjectsClockwiseEx(objects, getPosition, centerPosition, startingAngle).Select(x => x.Object)];
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="objects"></param>
+    /// <param name="getPosition"></param>
+    /// <param name="centerPosition"></param>
+    /// <param name="startingAngle">Degrees from North. </param>
+    /// <returns></returns>
+    public static List<EnumerationResult<T>> EnumerateObjectsClockwiseEx<T>(IEnumerable<T> objects, Func<T, Vector2> getPosition, Vector2 centerPosition, float startingAngle)
+    {
+        var orderedList = objects.Select(x => 
         {
-            var relAngle = startingAngle;
+            var relAngle = MathHelper.Mod(startingAngle, 360);
             var a = (MathHelper.GetRelativeAngle(centerPosition, getPosition(x)) - relAngle + 360) % 360;
-            return a;
-        }).ToList();
+            return new EnumerationResult<T>(x, a);
+        }).OrderBy(x => x.AngleDegrees).ToList();
         return orderedList;
     }
 }
