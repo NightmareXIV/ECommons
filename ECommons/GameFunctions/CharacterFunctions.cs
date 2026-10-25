@@ -19,27 +19,27 @@ public static unsafe class CharacterFunctions
 
     public static FFXIVClientStructs.FFXIV.Client.Game.Character.Character* Struct(this ICharacter o)
     {
-        return (FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)o.Address;
+        return (FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)o?.Address;
     }
 
     public static FFXIVClientStructs.FFXIV.Client.Game.Character.BattleChara* Struct(this IBattleChara o)
     {
-        return (FFXIVClientStructs.FFXIV.Client.Game.Character.BattleChara*)o.Address;
+        return (FFXIVClientStructs.FFXIV.Client.Game.Character.BattleChara*)o?.Address;
     }
 
     public static FFXIVClientStructs.FFXIV.Client.Game.Character.Character* Character(this IBattleChara o)
     {
-        return (FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)o.Address;
+        return (FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)o?.Address;
     }
 
     public static FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject* GameObject(this IBattleChara o)
     {
-        return (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)o.Address;
+        return (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)o?.Address;
     }
 
     public static FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject* IGameObject(this ICharacter o)
     {
-        return (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)o.Address;
+        return (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)o?.Address;
     }
 
     public static bool IsCharacterVisible(this ICharacter chr)
