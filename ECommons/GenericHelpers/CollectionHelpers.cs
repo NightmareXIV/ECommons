@@ -294,11 +294,13 @@ public static unsafe partial class GenericHelpers
         return key == null ? default : dictionary.TryGetValue(key, out var ret) ? ret : defaultValue;
     }
 
+    /// <inheritdoc cref="CircularSelect{T}(IList{T}, int)"/>
     public static T CircularSelect<T>(this IList<T> list, int index)
     {
         if(list.Count == 0) return default;
         return list[MathHelper.Mod(index, list.Count)];
     }
+
     /// <summary>
     /// Selects an entry of the <paramref name="list"/> at a specified <paramref name="index"/>, wrapping around if index is out of range.
     /// </summary>
@@ -306,19 +308,9 @@ public static unsafe partial class GenericHelpers
     /// <param name="list"></param>
     /// <param name="index"></param>
     /// <returns></returns>
-    public static T CircularSelect<T>(this IList<T> list, int index)
-    {
-        return list[MathHelper.Mod(index, list.Count)];
-    }
-
     public static T CircularSelect<T>(this T[] list, int index)
     {
         if(list.Length == 0) return default;
-        return list[MathHelper.Mod(index, list.Length)];
-    }
-    /// <inheritdoc cref="CircularSelect{T}(IList{T}, int)"/>
-    public static T CircularSelect<T>(this T[] list, int index)
-    {
         return list[MathHelper.Mod(index, list.Length)];
     }
 
