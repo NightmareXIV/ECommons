@@ -123,9 +123,17 @@ public static unsafe partial class GenericHelpers
         return defaultValue;
     }
 
-    public static T CircularSelect<T>(this IList<T> list, int index) => list[MathHelper.Mod(index, list.Count)];
+    public static T CircularSelect<T>(this IList<T> list, int index)
+    {
+        if(list.Count == 0) return default;
+        return list[MathHelper.Mod(index, list.Count)];
+    }
 
-    public static T CircularSelect<T>(this T[] list, int index) => list[MathHelper.Mod(index, list.Length)];
+    public static T CircularSelect<T>(this T[] list, int index)
+    {
+        if(list.Length == 0) return default;
+        return list[MathHelper.Mod(index, list.Length)];
+    }
 
     /// <summary>
     /// Safely selects an entry of the <paramref name="list"/> at a specified <paramref name="index"/>, returning default value if index is out of range.
