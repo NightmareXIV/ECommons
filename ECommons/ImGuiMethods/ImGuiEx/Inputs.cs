@@ -334,6 +334,21 @@ public static partial class ImGuiEx
         return ret || chk;
     }
 
+    public static bool InputFloat(float width, string label, ref float value, int step = 1, int step_fast = 100, ImGuiInputTextFlags flags = ImGuiInputTextFlags.None)
+    {
+        ImGui.SetNextItemWidth(width);
+        var ret = ImGui.InputFloat(label, ref value, step, step_fast, flags: flags);
+        return ret;
+    }
+
+    public static bool ColorEdit4(ImU8String label, scoped ref uint col, ImGuiColorEditFlags flags = ImGuiColorEditFlags.None)
+    {
+        var value = ImGui.ColorConvertU32ToFloat4(col);
+        var ret = ImGui.ColorEdit4(label, ref value, flags);
+        if(ret) col = ImGui.ColorConvertFloat4ToU32(value);
+        return ret;
+    }
+
     /// <summary>
     /// Supports activation by double-click
     /// </summary>
@@ -391,7 +406,7 @@ public static partial class ImGuiEx
     public static bool SliderIntAsFloat(string id, ref int value, int min, int max, float divider = 1000)
     {
         var f = (float)value / divider;
-        var ret = ImGui.SliderFloat(id, ref f, (float)min / divider, (float)max / divider);
+        var ret = ImGuiEx.SliderFloat(id, ref f, (float)min / divider, (float)max / divider);
         if(ret)
         {
             value = (int)(f * divider);
@@ -549,177 +564,6 @@ public static partial class ImGuiEx
                 uInt = num;
             }
         }
-    }
-
-    public static Dictionary<string, Box<string>> EnumComboSearch = [];
-
-    /// <summary>
-    /// Draws an easy combo selector for an enum with a search field for long lists.
-    /// </summary>
-    /// <typeparam name="T">Enum</typeparam>
-    /// <param name="name">ImGui ID</param>
-    /// <param name="refConfigField">Value</param>
-    /// <param name="names">Optional Name overrides</param>
-    public static bool EnumCombo<T>(string name, ref T refConfigField, IDictionary<T, string> names) where T : Enum, IConvertible
-    {
-        return EnumCombo(name, ref refConfigField, null, names);
-    }
-
-    public static bool EnumCombo<T>(float width, string name, ref T refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : Enum, IConvertible
-    {
-        ImGui.SetNextItemWidth(width);
-        return EnumCombo(name, ref refConfigField, filter, names);
-    }
-
-    /// <summary>
-    /// Draws an easy combo selector for an enum with a search field for long lists.
-    /// </summary>
-    /// <typeparam name="T">Enum</typeparam>
-    /// <param name="name">ImGui ID</param>
-    /// <param name="refConfigField">Value</param>
-    /// <param name="filter">Optional filter</param>
-    /// <param name="names">Optional Name overrides</param>
-    /// <returns></returns>
-    public static bool EnumCombo<T>(string name, ref T refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null) where T : Enum, IConvertible
-    {
-        var ret = false;
-        if(ImGui.BeginCombo(name, (names != null && names.TryGetValue(refConfigField, out var n)) ? n : refConfigField.ToString().Replace("_", " "), ImGuiComboFlags.HeightLarge))
-        {
-            var values = Enum.GetValues(typeof(T));
-            Box<string> fltr = null;
-            if(values.Length > 10)
-            {
-                if(!EnumComboSearch.ContainsKey(name)) EnumComboSearch.Add(name, new(""));
-                fltr = EnumComboSearch[name];
-                ImGuiEx.SetNextItemFullWidth();
-                ImGui.InputTextWithHint($"##{name.Replace("#", "_")}", "Filter...", ref fltr.Value, 50);
-            }
-            foreach(var x in values)
-            {
-                var equals = EqualityComparer<T>.Default.Equals((T)x, refConfigField);
-                var element = (names != null && names.TryGetValue((T)x, out n)) ? n : x.ToString().Replace("_", " ");
-                if((filter == null || filter((T)x))
-                    && (fltr == null || element.Contains(fltr.Value, StringComparison.OrdinalIgnoreCase))
-                    && ImGui.Selectable(element, equals)
-                    )
-                {
-                    ret = true;
-                    refConfigField = (T)x;
-                }
-                if(ImGui.IsWindowAppearing() && equals) ImGui.SetScrollHereY();
-            }
-            ImGui.EndCombo();
-        }
-        return ret;
-    }
-
-
-    public static bool EnumCombo<T>(string name, ICollection<T> collection, Func<T, bool> filter = null, IDictionary<T, string> names = null, string nameOfNoneSelected = "Not selected") where T : Enum, IConvertible
-    {
-        var ret = false;
-        string comboName;
-        if(collection.Count == 0)
-        {
-            comboName = nameOfNoneSelected;
-        }
-        else
-        {
-            comboName = collection.Select(x => (names != null && names.TryGetValue(x, out var n)) ? n : x.ToString().Replace("_", " ")).Print();
-        }
-        if(ImGui.BeginCombo(name, comboName, ImGuiComboFlags.HeightLarge))
-        {
-            var values = Enum.GetValues(typeof(T));
-            Box<string> fltr = null;
-            if(values.Length > 10)
-            {
-                if(!EnumComboSearch.ContainsKey(name)) EnumComboSearch.Add(name, new(""));
-                fltr = EnumComboSearch[name];
-                ImGuiEx.SetNextItemFullWidth();
-                ImGui.InputTextWithHint($"##{name.Replace("#", "_")}", "Filter...", ref fltr.Value, 50);
-            }
-            foreach(var x in values)
-            {
-                var contains = collection.Any(c => EqualityComparer<T>.Default.Equals((T)x, c));
-                var element = (names != null && names.TryGetValue((T)x, out var n)) ? n : x.ToString().Replace("_", " ");
-                if((filter == null || filter((T)x))
-                    && (fltr == null || element.Contains(fltr.Value, StringComparison.OrdinalIgnoreCase))
-                    && ImGui.Checkbox(element, ref contains)
-                    )
-                {
-                    ret = true;
-                    if(contains)
-                    {
-                        collection.Add((T)x);
-                    }
-                    else
-                    {
-                        collection.Remove((T)x);
-                    }
-                }
-            }
-            foreach(var x in collection.Where(z => !Enum.IsDefined(typeof(T), z)))
-            {
-                ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.DalamudRed);
-                var contains = collection.Any(c => EqualityComparer<T>.Default.Equals((T)x, c));
-                var element = (names != null && names.TryGetValue((T)x, out var n)) ? n : x.ToString().Replace("_", " ");
-                if((filter == null || filter((T)x))
-                    && (fltr == null || element.Contains(fltr.Value, StringComparison.OrdinalIgnoreCase))
-                    && ImGui.Checkbox(element, ref contains)
-                    )
-                {
-                    ret = true;
-                    if(contains)
-                    {
-                        collection.Add((T)x);
-                    }
-                    else
-                    {
-                        collection.Remove((T)x);
-                    }
-                }
-                ImGui.PopStyleColor();
-            }
-            ImGui.EndCombo();
-        }
-        return ret;
-    }
-
-    public static bool EnumCombo<T>(string name, ref Nullable<T> refConfigField, Func<T, bool> filter = null, IDictionary<T, string> names = null, string nullName = "Not selected") where T : struct, Enum, IConvertible
-    {
-        var ret = false;
-        if(ImGui.BeginCombo(name, refConfigField == null ? nullName : ((names != null && names.TryGetValue(refConfigField.Value, out var n)) ? n : refConfigField.Value.ToString().Replace("_", " ")), ImGuiComboFlags.HeightLarge))
-        {
-            var values = Enum.GetValues(typeof(T));
-            Box<string> fltr = null;
-            if(values.Length > 10)
-            {
-                if(!EnumComboSearch.ContainsKey(name)) EnumComboSearch.Add(name, new(""));
-                fltr = EnumComboSearch[name];
-                ImGuiEx.SetNextItemFullWidth();
-                ImGui.InputTextWithHint($"##{name.Replace("#", "_")}", "Filter...", ref fltr.Value, 50);
-            }
-            if(ImGui.Selectable(nullName, refConfigField == null))
-            {
-                ret = true;
-                refConfigField = null;
-            }
-            foreach(var x in values)
-            {
-                var equals = EqualityComparer<Nullable<T>>.Default.Equals((T)x, refConfigField);
-                var element = (names != null && names.TryGetValue((T)x, out n)) ? n : x.ToString().Replace("_", " ");
-                if((filter == null || filter((T)x))
-                    && (fltr == null || element.Contains(fltr.Value, StringComparison.OrdinalIgnoreCase))
-                    && ImGui.Selectable(element, equals)
-                    )
-                {
-                    ret = true;
-                    refConfigField = (T)x;
-                }
-                if(ImGui.IsWindowAppearing() && equals) ImGui.SetScrollHereY();
-            }
-            ImGui.EndCombo();
-        }
-        return ret;
     }
 
     public static Dictionary<string, Box<string>> ComboSearch = [];

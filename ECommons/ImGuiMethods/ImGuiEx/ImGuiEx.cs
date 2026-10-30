@@ -819,20 +819,22 @@ public static unsafe partial class ImGuiEx
     /// <param name="flags"></param>
     /// <param name="size"></param>
     /// <returns></returns>
-    public static bool Selectable(Vector4? color, string id, bool enabled = true, bool selected = false, ImGuiSelectableFlags flags = ImGuiSelectableFlags.None, Vector2 size = default)
+    public static bool Selectable(Vector4? color, string id, bool enabled = true, bool selected = false, ImGuiSelectableFlags flags = ImGuiSelectableFlags.None, Vector2 size = default, Vector2? alignment = null)
     {
         if(!enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.6f);
         if(color != null) ImGui.PushStyleColor(ImGuiCol.Text, color.Value);
+        if(alignment != null) ImGui.PushStyleVar(ImGuiStyleVar.SelectableTextAlign, alignment.Value);
         var ret = ImGui.Selectable(id, selected, flags, size) && enabled;
+        if(alignment != null) ImGui.PopStyleVar();
         if(color != null) ImGui.PopStyleColor();
         if(!enabled) ImGui.PopStyleVar();
         return ret;
     }
 
     ///<inheritdoc cref="ImGuiEx.Selectable(string, bool, bool, ImGuiSelectableFlags, Vector2)"/>
-    public static bool Selectable(string id, bool enabled = true, bool selected = false, ImGuiSelectableFlags flags = ImGuiSelectableFlags.None, Vector2 size = default)
+    public static bool Selectable(string id, bool enabled = true, bool selected = false, ImGuiSelectableFlags flags = ImGuiSelectableFlags.None, Vector2 size = default, Vector2? alignment = null)
     {
-        return Selectable(null, id, enabled, selected, flags, size);
+        return Selectable(null, id, enabled, selected, flags, size, alignment);
     }
 
     /// <summary>

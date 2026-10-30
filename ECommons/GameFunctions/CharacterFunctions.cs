@@ -39,17 +39,17 @@ public static unsafe class CharacterFunctions
 
         public BattleChara* Struct()
         {
-            return (BattleChara*)chr.Address;
+            return (BattleChara*)chr?.Address;
         }
 
         public Character* Character()
         {
-            return (Character*)chr.Address;
+            return (Character*)chr?.Address;
         }
 
         public GameObject* GameObject()
         {
-            return (GameObject*)chr.Address;
+            return (GameObject*)chr?.Address;
         }
 
         public bool HasStatus(uint id, float? lessThan = null, float? moreThan = null)
@@ -159,12 +159,12 @@ public static unsafe class CharacterFunctions
 
         public Character* Struct()
         {
-            return (Character*)chr.Address;
+            return (Character*)chr?.Address;
         }
 
         public GameObject* IGameObject()
         {
-            return (GameObject*)chr.Address;
+            return (GameObject*)chr?.Address;
         }
 
         public bool IsCharacterVisible()

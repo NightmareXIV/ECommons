@@ -5,7 +5,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace ECommons.Automation.NeoTaskManager;
 public class TaskManagerTask
 {
-    public string Name { get; init; }
+    public string Name { get; set; }
     public string Location { get; init; }
     public Func<bool?> Function { get; init; }
     public TaskManagerConfiguration? Configuration { get; init; }

@@ -18,6 +18,6 @@ public partial class AddonMaster
 
         public void Proceed() => ClickButtonIfEnabled(ProceedButton);
         public void Cancel() => ClickButtonIfEnabled(CancelButton);
-
+        public AtkComponentNumericInput* InputNumeric => Addon->GetComponentNodeById(32)->GetAsAtkComponentNumericInput();
     }
 }
