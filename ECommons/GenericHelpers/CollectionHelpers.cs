@@ -12,6 +12,20 @@ namespace ECommons;
 
 public static unsafe partial class GenericHelpers
 {
+    public static T FirstOrAdd<T>(this IList<T> list, Func<T> generator = null)
+    {
+        if(list.Count > 0)
+        {
+            return list[0];
+        }
+        else
+        {
+            var newItem = generator != null ? generator() : Activator.CreateInstance<T>();
+            list.Add(newItem);
+            return newItem;
+        }
+    }
+
     public static bool TryGetValue<T>(this IList<T> collection, int index, out T result)
     {
         if(collection != null && (uint)index < (uint)collection.Count)
