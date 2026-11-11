@@ -31,36 +31,40 @@ public unsafe class ReaderXBMMonsterNotebook(AtkUnitBase* UnitBase, int BeginOff
 
     public bool Selected => ReadBool(255) ?? false;
 
-    public bool     CurrentRankCapped     => ReadBool(237) ?? false;
     public SeString CurrentName           => ReadSeString(230);
     public SeString CurrentClassification => ReadSeString(239);
 
-    public SeString CurrentRankString => ReadSeString(258);
-    public int      CurrentRank       => int.TryParse(CurrentRankString.GetText().Trim(), out var rank) ? rank : 0;
-    public uint     CurrentXP         => ReadUInt(261) ?? 0;
-    public SeString CurrentHP => ReadSeString(259);
+    public SeString CurrentRankString         => ReadSeString(258) ?? CurrentRankUncappedString;
+    public int      CurrentRank               => DigitParsers.FirstNumber(CurrentRankString.GetText().Trim());
+    public SeString CurrentRankUncappedString => ReadSeString(259);
+    public int      CurrentRankUncapped       => DigitParsers.FirstNumber(CurrentRankUncappedString.GetText().Trim());
+    public bool     CurrentRankCapped         => CurrentRank != CurrentRankUncapped;
+    public uint     CurrentXP                 => ReadUInt(263) ?? 0;
+    public uint     CurrentMaxXP              => ReadUInt(264) ?? 0;
+    public SeString HPString                  => ReadSeString(261);
+    public int      CurrentHP                 => DigitParsers.FirstNumber(HPString.GetText().Trim());
     public int CurrentMaxHP
     {
         get
         {
-            var text = CurrentHP.GetText();
+            var text = HPString.GetText();
             var ind  = text.IndexOf('/');
 
             return DigitParsers.Digits(text[(ind + 1)..]);
         }
     }
-    public SeString CurrentStrengthString => ReadSeString(265);
+    public SeString CurrentStrengthString => ReadSeString(267);
     public int      CurrentStrength       => int.TryParse(CurrentStrengthString.GetText().Trim(), out var i) ? i : 0;
 
-    public SeString CurrentPhysResistanceString => ReadSeString(267);
+    public SeString CurrentPhysResistanceString => ReadSeString(269);
     public int CurrentPhysResistance => int.TryParse(CurrentPhysResistanceString.GetText().Trim(), out var i) ? i : 0;
 
-    public SeString CurrentConstitutionString => ReadSeString(269);
+    public SeString CurrentConstitutionString => ReadSeString(271);
     public int CurrentConstitution => int.TryParse(CurrentConstitutionString.GetText().Trim(), out var i) ? i : 0;
 
-    public SeString CurrentIntelligenceString => ReadSeString(271);
+    public SeString CurrentIntelligenceString => ReadSeString(273);
     public int CurrentIntelligence => int.TryParse(CurrentIntelligenceString.GetText().Trim(), out var i) ? i : 0;
 
-    public SeString CurrentMagicResistanceString => ReadSeString(273);
+    public SeString CurrentMagicResistanceString => ReadSeString(275);
     public int CurrentMagicResistance => int.TryParse(CurrentMagicResistanceString.GetText().Trim(), out var i) ? i : 0;
 }
