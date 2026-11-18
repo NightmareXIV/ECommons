@@ -489,6 +489,27 @@ public static unsafe partial class GenericHelpers
     }
 
     /// <summary>
+    /// Searches index of first element in a Span that matches the predicate.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="values"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static int IndexOf<T>(this Span<T> values, Predicate<T> predicate)
+    {
+        var ret = -1;
+        foreach(var v in values)
+        {
+            ret++;
+            if(predicate(v))
+            {
+                return ret;
+            }
+        }
+        return -1;
+    }
+
+    /// <summary>
     /// Searches index of first element in IEnumerable that matches the predicate.
     /// </summary>
     /// <typeparam name="T"></typeparam>

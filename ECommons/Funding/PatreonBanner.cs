@@ -81,7 +81,7 @@ public static class PatreonBanner
     }
 
     private static string PatreonButtonTooltip => $"""
-				If you like {Svc.PluginInterface.Manifest.Name}, please consider supporting it's developer via Patreon or via other means! 
+				If you like {Svc.PluginInterface.Manifest.Name}, please consider supporting its developer via Patreon or via other means! 
 				
 				This will help me to update the plugin while granting you access to priority feature requests, priority support, early plugin builds, participation in votes for features and more.
 
@@ -90,7 +90,7 @@ public static class PatreonBanner
 				""";
 
     private static string SmallPatreonButtonTooltip => $"""
-				If you like {Svc.PluginInterface.Manifest.Name}, please consider supporting it's developer via Patreon.
+				If you like {Svc.PluginInterface.Manifest.Name}, please consider supporting its developer via Patreon.
 
 				Left click - to go to Patreon;
 				Right click - Ko-Fi and other options.
