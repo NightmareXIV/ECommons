@@ -93,9 +93,19 @@ public static class ExcelWorldHelper
         return Svc.Data.GetExcelSheet<World>().Where(x => x.IsPublic() && (dataCenter == 0 || x.DataCenter.RowId == dataCenter)).ToArray();
     }
 
+    public static World[] GetVisualPublicWorlds(uint dataCenter)
+    {
+        return Svc.Data.GetExcelSheet<World>().Where(x => x.IsPublic() && (dataCenter == 0 || x.Unknown0 == dataCenter)).ToArray();
+    }
+
     public static WorldDCGroupType[] GetDataCenters(Region? region = null, bool checkForPublicWorlds = false)
     {
         return Svc.Data.GetExcelSheet<WorldDCGroupType>().Where(x => (region == null || (Region)x.Region.RowId == region.Value) && (!checkForPublicWorlds || GetPublicWorlds(x.RowId).Length > 0)).ToArray();
+    }
+
+    public static WorldDCGroupType[] GetVisualDataCenters(Region? region = null, bool checkForPublicWorlds = false)
+    {
+        return Svc.Data.GetExcelSheet<WorldDCGroupType>().Where(x => (region == null || (Region)x.Region.RowId == region.Value) && (!checkForPublicWorlds || GetVisualPublicWorlds(x.RowId).Length > 0)).ToArray();
     }
 
     public static WorldDCGroupType[] GetDataCenters(System.Collections.Generic.IEnumerable<Region> regions, bool checkForPublicWorlds = false)

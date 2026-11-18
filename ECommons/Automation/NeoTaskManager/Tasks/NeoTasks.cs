@@ -63,7 +63,7 @@ public static unsafe class NeoTasks
         }, $"ApproachObjectViaAutomove({getObjectFunc()}, {distance})", configuration);
     }
 
-    public static TaskManagerTask InteractWithObject(Func<IGameObject> getObjectFunc, bool checkLos = false, TaskManagerConfiguration? configuration = null)
+    public static TaskManagerTask InteractWithObject(Func<IGameObject?> getObjectFunc, bool checkLos = false, TaskManagerConfiguration? configuration = null)
     {
         return new(() =>
         {
